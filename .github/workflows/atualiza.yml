@@ -1,0 +1,99 @@
+# Câmara Aberta — rodada diária automática.
+# Atualiza pela API só o que mudou, regera os JSON, versiona os dados e publica o site.
+# Se qualquer checagem de sanidade falhar, o passo sai com erro, nada é commitado nem
+# publicado, e o site continua com os dados do dia anterior.
+
+name: Atualização diária
+
+on:
+  schedule:
+    - cron: "30 9 * * *"   # 6h30 em Brasília. O cron do GitHub é em UTC e pode atrasar.
+  workflow_dispatch:        # botão "Run workflow", para rodar na mão
+
+permissions:
+  contents: write   # commit dos dados
+  pages: write      # publicação
+  id-token: write
+
+concurrency:
+  group: atualizacao-diaria
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    # Windows de propósito: o servidor da Câmara não envia o certificado intermediário.
+    # No Windows o truststore completa a cadeia pelo sistema, como na máquina de
+    # desenvolvimento; no Linux a verificação provavelmente falha. Nunca verify=False.
+    runs-on: windows-latest
+    timeout-minutes: 350    # a primeira rodada, sem cache, refaz a coleta inteira (~3 h)
+    environment:
+      name: github-pages
+      url: ${{ steps.publicar.outputs.page_url }}
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - run: pip install -r requirements.txt
+
+      # O cache/ (~670 MB) não vai para o git. Sobrevive entre rodadas no cache do
+      # Actions: cada rodada restaura a última e salva uma nova.
+      - name: Restaurar o cache da API
+        uses: actions/cache/restore@v4
+        with:
+          path: cache
+          key: cache-api-${{ github.run_id }}
+          restore-keys: cache-api-
+
+      - name: Atualizar pela API (só o que mudou)
+        run: python atualiza.py
+
+      - name: Regerar deputados.json
+        run: python coleta.py --limite 513
+
+      - name: Votos (arquivos em lote do ano corrente)
+        run: python votos.py --atualizar
+
+      - name: Temas e frase-resumo
+        run: python temas.py
+
+      - name: Esta semana na Câmara
+        run: python semana.py
+
+      # Salva mesmo se algo falhou: o que foi baixado não precisa ser baixado de novo.
+      - name: Guardar o cache para a próxima rodada
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: cache
+          key: cache-api-${{ github.run_id }}
+
+      # O histórico dos dados fica no git: é o registro auditável do que mudou e quando.
+      # temas.py só reescreve o arquivo de deputado que mudou, então o commit é pequeno.
+      - name: Versionar os dados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add deputados.json proposicoes.json semana.json legislaturas.json temas
+          git diff --cached --quiet || git commit -m "Dados de $(date +%F)"
+          git push
+
+      - name: Montar o site
+        run: |
+          mkdir -p _site
+          cp index.html prototipo.html deputado.html deputados.json proposicoes.json \
+             semana.json legislaturas.json LICENSE .nojekyll _site/
+          cp -r temas _site/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: publicar
+        uses: actions/deploy-pages@v4

@@ -10,8 +10,10 @@
 <style>
 :root{
   --esq:#d85a30; --cesq:#b88f5a; --cen:#888780; --cdir:#4a7a9f; --dir:#0c447c; --sem:#c8cace;
-  --tinta:#000; --tinta2:#4a4d52; --tinta3:#8b8f96;
-  --linha:#e0e2e5; --linha2:#eff0f2; --fundo:#f4f5f6; --papel:#fff;
+  --tinta:#16181b; --tinta2:#4a4e55; --tinta3:#80858d;
+  --linha:#e4e5e8; --linha2:#f0f1f3; --fundo:#f6f6f4; --papel:#fff;
+  --raio:14px; --raio-p:8px;
+  --sombra:0 1px 2px rgba(16,18,22,.04),0 6px 24px rgba(16,18,22,.05);
   --serif:'Newsreader',Georgia,'Times New Roman',serif;
   --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
@@ -127,6 +129,10 @@ h1{font-family:var(--serif);font-size:clamp(34px,5.4vw,52px);font-weight:500;
 .cel span{font-size:11.5px;color:var(--tinta3)}
 
 .origem{font-size:11.5px;color:var(--tinta3);margin-top:12px;line-height:1.55}
+.ver-temas{display:inline-block;margin-top:16px;font-size:13px;font-weight:500;color:var(--tinta);
+           text-decoration:none;border:1px solid var(--tinta);border-radius:2px;padding:6px 12px}
+.ver-temas:hover{background:var(--tinta);color:#fff}
+.ver-temas[hidden]{display:none}
 
 .secao{font-family:var(--serif);font-size:17px;font-weight:600;
        margin:24px 0 3px;padding-top:18px;border-top:1px solid var(--linha)}
@@ -387,6 +393,7 @@ table.rank col.c-apr{width:104px}
 table.rank col.c-lei{width:98px}
 table.rank col.c-con{width:118px}
 table.rank col.c-abs{width:96px}
+table.rank col.c-div{width:112px}
 
 table.rank th{font-size:11.5px;font-weight:500;color:var(--tinta3);text-align:right;
               padding:0 10px 9px;border-bottom:1px solid var(--linha);
@@ -506,41 +513,6 @@ table.rank tbody tr:hover td{background:#f8f9fa}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
-
-.av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
-       background:var(--linha2);overflow:hidden;vertical-align:middle}
-.av-cx .av-ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-               font-weight:600;color:var(--tinta3);letter-spacing:-.02em;line-height:1}
-.av-cx img.av{position:absolute;inset:0;width:100%;height:100%;z-index:1;
-              object-fit:cover;object-position:center 22%;display:block;border:none}
-.av-cx img.av.falhou{display:none}
-
-.dep-cel{display:flex;align-items:center;gap:10px}
-.dep-txt{min-width:0;overflow:hidden}
-.dep-txt b{display:flex;align-items:center;gap:6px;font-weight:500;
-           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-.ficha-topo .retrato{display:flex;gap:15px;align-items:center}
-.ficha-topo .retrato>span{flex-shrink:0}
-
-.achado{align-items:center}
-.achado-txt{min-width:0;flex:1}
-
-
-.ades{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:11px;
-      padding-top:10px;border-top:1px solid var(--linha2)}
-.ades-c{text-align:center}
-.ades-tr{height:30px;background:var(--linha2);border-radius:2px;position:relative;
-         overflow:hidden}
-.ades-tr i{position:absolute;bottom:0;left:0;right:0;border-radius:2px;display:block}
-.ades-tr .meio{position:absolute;left:0;right:0;top:50%;height:1px;background:#c9ccd0}
-.ades-pc{font-size:11.5px;font-weight:600;margin-top:4px;line-height:1.1}
-.ades-nm{font-size:9.5px;color:var(--tinta3);line-height:1.15;margin-top:1px}
-.ades-tit{font-size:11px;color:var(--tinta3);margin-top:11px;padding-top:9px;
-          border-top:1px solid var(--linha2)}
-.ades-nenhum{font-size:11.5px;color:var(--tinta3);margin-top:10px;padding-top:9px;
-             border-top:1px solid var(--linha2);font-style:italic}
-
 @media(max-width:720px){
   table.rank{min-width:620px}
   table.rank col.c-vot{width:118px}
@@ -551,22 +523,255 @@ table.rank tbody tr:hover td{background:#f8f9fa}
   table.rank th{padding:0 7px 8px}
   .rank-topo{flex-direction:column;align-items:stretch;gap:10px}
 }
+
+/* ---------- camada executiva: frase-resumo ---------- */
+.achado-fr{display:block;font-style:normal;font-size:12px;line-height:1.4;color:var(--tinta2);
+           margin-top:2px;white-space:normal}
+.resumo-exec{font-family:var(--serif);font-size:18.5px;line-height:1.45;margin:0 0 4px}
+.resumo-fonte{font-size:11.5px;color:var(--tinta3);margin-bottom:16px}
+.frase.carreira{font-size:15px;color:var(--tinta2)}
+
+/* ---------- Esta semana na Câmara ---------- */
+.semana{background:var(--papel);border:1px solid var(--linha);border-radius:4px;
+        margin-top:30px;padding:20px 22px 18px}
+.semana[hidden]{display:none}
+.semana-cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.semana-cab h2{font-family:var(--serif);font-size:20px;font-weight:600}
+.semana-cab p{font-size:12.5px;color:var(--tinta3)}
+.sem-grade{display:grid;grid-template-columns:1fr 1fr;gap:0 34px;margin-top:6px}
+.sem-col{padding-top:14px;margin-top:10px;border-top:1px solid var(--linha)}
+.sem-col h3{font-family:var(--serif);font-size:16.5px;font-weight:600;display:flex;
+            justify-content:space-between;align-items:baseline;gap:10px}
+.sem-col h3 span{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--tinta2)}
+.sem-obs{font-size:12.5px;color:var(--tinta2);margin:4px 0 2px}
+.sem-it{padding:9px 0;border-bottom:1px solid var(--linha2)}
+.sem-it:last-child{border-bottom:none}
+.sem-l1{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.sem-l1 a{font-weight:600;font-size:13.5px;color:var(--tinta);text-decoration:none}
+.sem-l1 a:hover{text-decoration:underline}
+.sem-l1 b{font-weight:600;font-size:13.5px}
+.sem-l1 span{font-size:11.5px;color:var(--tinta3);white-space:nowrap}
+.sem-aut{font-size:12px;color:var(--tinta2)}
+.sem-aut a{color:inherit}
+.sem-em{font-size:13px;line-height:1.45;margin-top:2px}
+.sem-and{font-size:12px;color:var(--tinta3);margin-top:2px}
+.sem-mais{font-size:12px;color:var(--tinta3);padding-top:8px}
+.semana-pe{font-size:11.5px;color:var(--tinta3);margin-top:14px;line-height:1.6;max-width:80ch}
+@media(max-width:760px){.sem-grade{grid-template-columns:1fr}}
+/* categoria de cada proposição: tinta neutra — tema não tem ideologia (CLAUDE.md) */
+.sem-cat{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.sem-cat span{font-size:10.5px;line-height:1.5;color:var(--tinta2);border:1px solid var(--linha);
+              border-radius:2px;padding:0 6px;cursor:help}
+.sem-cat span.nula{border-style:dashed;color:var(--tinta3);cursor:default}
+
+/* ---------- filtros de estado e mandato ---------- */
+.sel{font:inherit;font-size:12.5px;padding:4px 8px;border:1px solid var(--linha);border-radius:2px;
+     background:var(--papel);color:var(--tinta);cursor:pointer;max-width:100%}
+.sel:focus-visible{outline:2px solid var(--tinta);outline-offset:1px}
+.sel.ativo{border-color:var(--tinta);font-weight:600}
+
+/* =====================================================================
+   REDESENHO — minimalista e orientado a quem chega pela primeira vez.
+   Sem dependências: só estas regras, que sobrepõem as de cima.
+   ===================================================================== */
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+[id]{scroll-margin-top:76px}            /* âncoras não ficam sob a barra fixa */
+
+/* barra fixa com as seções */
+.topo{position:sticky;top:0;z-index:80;background:rgba(246,246,244,.86);
+      backdrop-filter:saturate(160%) blur(12px);-webkit-backdrop-filter:saturate(160%) blur(12px);
+      border-bottom:1px solid var(--linha)}
+.topo-in{max-width:1080px;margin:0 auto;padding:0 22px;height:56px;display:flex;
+         align-items:center;justify-content:space-between;gap:20px}
+.marca{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--tinta);
+       text-decoration:none;letter-spacing:-.01em;white-space:nowrap}
+.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-size:13.5px;color:var(--tinta2);text-decoration:none;padding:7px 11px;
+       border-radius:999px;white-space:nowrap;transition:background .15s,color .15s}
+.nav a:hover{background:var(--linha2);color:var(--tinta)}
+.nav a:focus-visible,.marca:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+
+/* abertura */
+.capa{padding:64px 0 12px}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+        color:var(--tinta3);margin-bottom:10px}
+.capa h1{font-size:clamp(32px,5vw,50px);line-height:1.08;max-width:17ch}
+.chamada{font-family:var(--sans);font-size:clamp(16px,1.9vw,18px);color:var(--tinta2);
+         margin-top:14px;max-width:52ch;line-height:1.55}
+.busca{margin-top:30px;max-width:520px}
+.busca-ico{position:absolute;left:16px;top:50%;width:18px;height:18px;transform:translateY(-50%);
+           color:var(--tinta3);pointer-events:none;z-index:1}
+.busca input{font-size:16px;padding:15px 18px 15px 46px;border:1px solid var(--linha);
+             border-radius:var(--raio);box-shadow:var(--sombra);transition:border-color .15s,box-shadow .15s}
+.busca input:focus{border-color:var(--tinta2);box-shadow:0 0 0 4px rgba(22,24,27,.06)}
+.achados{border:1px solid var(--linha);border-radius:var(--raio-p);top:calc(100% + 8px);
+         box-shadow:0 16px 40px rgba(16,18,22,.12)}
+
+.passos{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+        margin-top:30px;counter-reset:passo}
+.passos a{display:block;height:100%;background:var(--papel);border:1px solid var(--linha);
+          border-radius:var(--raio);padding:18px 20px;text-decoration:none;color:inherit;
+          transition:border-color .15s,transform .15s,box-shadow .15s;counter-increment:passo}
+.passos a:hover{border-color:#c9ccd1;box-shadow:var(--sombra);transform:translateY(-1px)}
+.passos a:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+.passos b{display:block;font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:4px}
+.passos b::before{content:counter(passo);display:inline-grid;place-items:center;width:22px;height:22px;
+                  margin-right:9px;border-radius:50%;background:var(--tinta);color:#fff;
+                  font-family:var(--sans);font-size:12px;font-weight:600;vertical-align:2px}
+.passos span{font-size:13.5px;color:var(--tinta2);line-height:1.5;display:block}
+
+.glossario{margin-top:22px}
+.glossario summary,.nota summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;
+  gap:8px;font-size:13.5px;color:var(--tinta2);padding:6px 0;user-select:none}
+.glossario summary::-webkit-details-marker,.nota summary::-webkit-details-marker{display:none}
+.glossario summary::before,.nota summary::before{content:"";width:7px;height:7px;flex-shrink:0;
+  border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;
+  transform:rotate(-45deg);transition:transform .15s;margin-right:2px}
+.glossario[open] summary::before,.nota[open] summary::before{transform:rotate(45deg)}
+.glossario summary:hover,.nota summary:hover{color:var(--tinta)}
+.glossario .termos{border-top:none;margin-top:10px;padding:20px 22px;background:var(--papel);
+                   border:1px solid var(--linha);border-radius:var(--raio)}
+
+/* seções em cartão */
+.painel,.semana,.votos,.mapa{border-radius:var(--raio);box-shadow:var(--sombra);
+                              border:1px solid var(--linha);padding:28px 30px 22px;margin-top:28px}
+.sec-cab{margin-bottom:14px}
+.sec-cab .kicker{margin-bottom:6px}
+.sec-cab h2,.semana-cab h2,.votos-cab h2,.mapa-cab h2{font-family:var(--serif);
+  font-size:clamp(21px,2.6vw,25px);font-weight:600;line-height:1.2;letter-spacing:-.005em}
+.votos-cab,.mapa-cab{align-items:flex-end;margin-bottom:6px}
+.votos-cab .sec-cab,.mapa-cab .sec-cab{margin-bottom:0}
+.leitura{font-size:14.5px;line-height:1.55;max-width:66ch;color:var(--tinta2)}
+
+/* abas */
+.abas{gap:4px;margin-bottom:20px}
+.aba{font-size:14.5px;padding:10px 14px}
+
+/* botões: grupos segmentados, em pílula */
+.seg{display:inline-flex;align-items:center;gap:2px;background:var(--linha2);border-radius:999px;padding:3px}
+.seg .pino{border:none;background:transparent;border-radius:999px;padding:6px 14px;font-size:13px;
+           color:var(--tinta2)}
+.seg .pino:hover{color:var(--tinta);background:rgba(255,255,255,.6)}
+.seg .pino.on{background:var(--papel);color:var(--tinta);font-weight:500;
+              box-shadow:0 1px 2px rgba(16,18,22,.12)}
+.seg .rotulo{padding:0 4px 0 10px;margin:0}
+.seg-mini .pino{padding:5px 11px;font-size:12px}
+.pino{border-radius:999px}
+
+/* controles: "o que mostrar" em cima, "filtrar" embaixo */
+.controles{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin:4px 0 16px}
+.linha-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.linha-ctl.filtros{padding-top:12px;border-top:1px solid var(--linha2)}
+.campo{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--tinta3)}
+.sel{border-radius:999px;padding:6px 30px 6px 12px;font-size:13px;appearance:none;-webkit-appearance:none;
+     background:var(--papel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2380858d' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center}
+.sel.ativo{border-color:var(--tinta);color:var(--tinta)}
+.limpar{font:inherit;font-size:13px;color:var(--tinta);background:none;border:none;cursor:pointer;
+        padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
+.limpar[hidden]{display:none}
+.filtros .seg-mini{margin-left:auto}
+.quantos{font-size:13px}
+
+/* gráfico */
+.faixas{gap:12px 18px}
+.lado{padding-left:26px}
+.nota{margin-top:16px;padding-top:12px;border-top:1px solid var(--linha2)}
+.nota .rodape,.nota .rank-pe{margin-top:6px;padding-top:0;border-top:none;font-size:13px;
+                             line-height:1.65;color:var(--tinta2);max-width:78ch}
+
+/* semana: listas curtas */
+.semana-cab p{font-size:13px}
+.sem-it{padding:12px 0}
+.sem-mais-btn{font:inherit;font-size:13px;color:var(--tinta);background:var(--linha2);border:none;
+              border-radius:999px;padding:7px 14px;margin-top:10px;cursor:pointer}
+.sem-mais-btn:hover{background:#e6e7ea}
+.sem-mais-btn:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+.sem-cat span{border-radius:999px;padding:0 8px;background:var(--papel)}
+
+/* votações e regiões */
+.vt{border-radius:var(--raio-p)}
+.votos-pe,.mapa-pe{font-size:13px;line-height:1.65;color:var(--tinta2);max-width:80ch}
+.pilha{border-radius:6px;height:26px}
+
+/* ficha */
+.veu{background:rgba(16,18,22,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.ficha{border-radius:18px;padding:32px;box-shadow:0 30px 80px rgba(16,18,22,.25)}
+.grade{border-radius:var(--raio-p)}
+.origem{font-size:12.5px;line-height:1.6}
+.ver-temas{border-radius:999px;padding:8px 16px}
+
+/* rodapé do site */
+.rodape-site{margin-top:56px;border-top:1px solid var(--linha);background:var(--papel);
+             padding:40px 0 48px}
+.rodape-site .marca{display:block;margin-bottom:14px}
+.rodape-site h2{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:8px}
+.rodape-site p{font-size:13.5px;line-height:1.7;color:var(--tinta2);max-width:78ch}
+.rodape-site p+p{margin-top:10px}
+.rodape-site a{color:var(--tinta)}
+
+@media(max-width:820px){
+  .passos{grid-template-columns:1fr}
+  .topo-in{height:52px}
+  .nav a{padding:6px 9px;font-size:13px}
+}
+@media(max-width:720px){
+  .capa{padding:40px 0 4px}
+  .painel,.semana,.votos,.mapa{padding:22px 18px 18px;border-radius:12px}
+  .lado{padding-left:0}
+  .filtros .seg-mini{margin-left:0}
+  .ficha{padding:22px;border-radius:14px}
+}
+@media(max-width:520px){
+  .marca{font-size:17px}
+  .topo .marca{display:none}           /* no celular a barra fica só com as seções */
+}
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="#inicio">Câmara Aberta</a>
+    <nav class="nav" aria-label="Seções da página">
+      <a href="#deputados">Deputados</a>
+      <a href="#semana">Esta semana</a>
+      <a href="#votacoes">Votações</a>
+      <a href="#regioes">Regiões</a>
+      <a href="#sobre">Sobre os dados</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap" id="inicio">
 
   <div class="capa">
-    <h1>Câmara Aberta</h1>
-    <p class="chamada">Quem propôs o quê na Câmara dos Deputados, e o que de fato virou lei.</p>
+    <p class="kicker">Câmara dos Deputados · dados oficiais</p>
+    <h1>O que cada deputado propôs, e o que virou lei</h1>
+    <p class="chamada">Dados da Câmara e do TSE, organizados para qualquer pessoa entender.
+       Procure o seu deputado ou explore os 513.</p>
 
     <div class="busca">
+      <svg class="busca-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"
+        fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l5 5" stroke="currentColor"
+        stroke-width="1.8" stroke-linecap="round"/></svg>
       <input id="busca" type="search" autocomplete="off" spellcheck="false"
-             placeholder="Busque um deputado pelo nome" aria-label="Busque um deputado pelo nome">
+             placeholder="Nome do deputado ou partido" aria-label="Busque um deputado pelo nome ou partido">
       <div class="achados" id="achados"></div>
     </div>
 
+    <ol class="passos">
+      <li><a href="#deputados"><b>Compare os 513</b>
+        <span>Quem propõe muito e quem consegue aprovar, da esquerda à direita.</span></a></li>
+      <li><a href="#semana"><b>Veja a semana</b>
+        <span>O que foi apresentado, andou ou virou lei nos últimos 7 dias.</span></a></li>
+      <li><a href="#votacoes"><b>Entenda as votações</b>
+        <span>Quais votos dividiram a Câmara e quais passaram com apoio de todos.</span></a></li>
+    </ol>
+
+    <details class="glossario">
+      <summary>O que significam PL, PEC, espectro e quociente?</summary>
     <dl class="termos">
       <div class="termo">
         <dt>PL</dt>
@@ -598,9 +803,14 @@ table.rank tbody tr:hover td{background:#f8f9fa}
             chega lá.</dd>
       </div>
     </dl>
+    </details>
   </div>
 
-  <div class="painel">
+  <section class="painel" id="deputados" aria-labelledby="depTit">
+    <div class="sec-cab">
+      <p class="kicker">Deputados</p>
+      <h2 id="depTit">Onde cada um está no espectro, e quanto propôs</h2>
+    </div>
     <div class="abas">
       <button class="aba on" data-vista="vGrafico">Gráfico</button>
       <button class="aba" data-vista="vRanking">Ranking</button>
@@ -610,26 +820,31 @@ table.rank tbody tr:hover td{background:#f8f9fa}
     <p class="leitura" id="leitura"></p>
 
     <div class="controles">
-      <div class="bloco">
-        <span class="rotulo">Região</span>
-        <button class="pino on" data-reg="">Todas</button>
-        <button class="pino" data-reg="N">Norte</button>
-        <button class="pino" data-reg="NE">Nordeste</button>
-        <button class="pino" data-reg="CO">Centro-Oeste</button>
-        <button class="pino" data-reg="SE">Sudeste</button>
-        <button class="pino" data-reg="S">Sul</button>
+      <div class="linha-ctl">
+        <div class="seg" role="group" aria-label="O que a altura do gráfico mostra">
+          <button class="pino on" id="yApres">Proposições apresentadas</button>
+          <button class="pino" id="yLei">Que viraram lei</button>
+        </div>
+        <span class="quantos" id="quantos"></span>
       </div>
-      <div class="bloco">
-        <span class="rotulo">Eixo vertical</span>
-        <button class="pino on" id="yApres">Apresentadas</button>
-        <button class="pino" id="yLei">Viraram lei</button>
+      <div class="linha-ctl filtros">
+        <label class="campo"><span>Região</span>
+          <select class="sel" id="selReg">
+            <option value="">Todas</option><option value="N">Norte</option>
+            <option value="NE">Nordeste</option><option value="CO">Centro-Oeste</option>
+            <option value="SE">Sudeste</option><option value="S">Sul</option>
+          </select></label>
+        <label class="campo"><span>Estado</span>
+          <select class="sel" id="selUF"><option value="">Todos</option></select></label>
+        <label class="campo" id="campoMandato"><span>Mandato</span>
+          <select class="sel" id="selMandato"><option value="">Todos, carreira inteira</option></select></label>
+        <button class="limpar" id="limpar" hidden>Limpar filtros</button>
+        <div class="seg seg-mini" role="group" aria-label="Escala do eixo vertical">
+          <span class="rotulo">Escala</span>
+          <button class="pino on" id="pLog" title="Aproxima os valores pequenos dos grandes">Comprimida</button>
+          <button class="pino" id="pLin" title="Distâncias proporcionais aos números">Proporcional</button>
+        </div>
       </div>
-      <div class="bloco">
-        <span class="rotulo">Escala</span>
-        <button class="pino on" id="pLog">Comprimida</button>
-        <button class="pino" id="pLin">Proporcional</button>
-      </div>
-      <span class="quantos" id="quantos"></span>
     </div>
 
     <div class="corpo">
@@ -647,7 +862,10 @@ table.rank tbody tr:hover td{background:#f8f9fa}
         <table class="conta"><tbody id="conta"></tbody></table>
       </aside>
     </div>
-    <p class="rodape" id="rodape"></p>
+    <details class="nota">
+      <summary>Como ler este gráfico e de onde vêm os dados</summary>
+      <p class="rodape" id="rodape"></p>
+    </details>
     </div>
 
     <div class="vista" id="vRanking">
@@ -666,32 +884,28 @@ table.rank tbody tr:hover td{background:#f8f9fa}
           <colgroup>
             <col class="c-pos"><col class="c-dep"><col class="c-vot"><col class="c-pre">
             <col class="c-apr"><col class="c-lei"><col class="c-con"><col class="c-abs">
+            <col class="c-div">
           </colgroup>
           <thead><tr id="rankCab"></tr></thead>
           <tbody id="rankCorpo"></tbody>
         </table>
       </div>
-      <p class="rank-pe" id="rankPe"></p>
+      <details class="nota">
+        <summary>Como ler esta tabela</summary>
+        <p class="rank-pe" id="rankPe"></p>
+      </details>
     </div>
-  </div>
+  </section>
 
-  <div class="mapa">
-    <div class="mapa-cab">
-      <h2>Espectro por região</h2>
-      <div class="bloco">
-        <button class="pino on" id="mTam">Tamanho da bancada</button>
-        <button class="pino" id="mProp">Proporção interna</button>
-      </div>
-    </div>
-    <p class="leitura" id="mapaLeitura"></p>
-    <div class="regs" id="regs"></div>
-    <p class="mapa-pe" id="mapaPe"></p>
-  </div>
+  <section class="semana" id="semana" hidden aria-labelledby="semanaTit"></section>
 
-  <div class="votos">
+  <section class="votos" id="votacoes" aria-labelledby="votosTit">
     <div class="votos-cab">
-      <h2>Como a Câmara se dividiu</h2>
-      <div class="bloco">
+      <div class="sec-cab">
+        <p class="kicker">Votações de 2023 a 2026</p>
+        <h2 id="votosTit">Como a Câmara se dividiu</h2>
+      </div>
+      <div class="seg" role="group" aria-label="Quais votações mostrar">
         <button class="pino on" id="vDisp">Mais disputadas</button>
         <button class="pino" id="vCons">Mais consensuais</button>
       </div>
@@ -706,10 +920,40 @@ table.rank tbody tr:hover td{background:#f8f9fa}
     </div>
     <div id="votosLista"></div>
     <p class="votos-pe" id="votosPe"></p>
-  </div>
+  </section>
 
-  <div style="height:48px"></div>
+  <section class="mapa" id="regioes" aria-labelledby="mapaTit">
+    <div class="mapa-cab">
+      <div class="sec-cab">
+        <p class="kicker">Regiões</p>
+        <h2 id="mapaTit">O espectro em cada região</h2>
+      </div>
+      <div class="seg" role="group" aria-label="Largura das barras">
+        <button class="pino on" id="mTam">Tamanho da bancada</button>
+        <button class="pino" id="mProp">Proporção interna</button>
+      </div>
+    </div>
+    <p class="leitura" id="mapaLeitura"></p>
+    <div class="regs" id="regs"></div>
+    <p class="mapa-pe" id="mapaPe"></p>
+  </section>
 </div>
+
+<footer class="rodape-site" id="sobre">
+  <div class="wrap">
+    <p class="marca">Câmara Aberta</p>
+    <h2>Sobre os dados</h2>
+    <p>Deputados, proposições e votações: <a href="https://dadosabertos.camara.leg.br"
+       target="_blank" rel="noopener">Dados Abertos da Câmara dos Deputados</a>, atualizados
+       todos os dias. Votação de 2022 e quociente eleitoral: <a href="https://resultados.tse.jus.br"
+       target="_blank" rel="noopener">Tribunal Superior Eleitoral</a>. Posição no espectro: média
+       das respostas da pesquisa Brazilian Legislative Survey, de Power e Zucco (2021), calculada
+       por este site; os limites entre as faixas são escolha deste site, não da pesquisa.</p>
+    <p>O site não preenche lacunas por conta própria: quando um dado não existe ou não pôde ser
+       ligado com segurança, aparece “—” e a explicação ao lado. Código e dados abertos no
+       <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">GitHub</a>.</p>
+  </div>
+</footer>
 
 <div class="veu" id="veu">
   <div class="ficha" role="dialog" aria-modal="true" aria-labelledby="fNome">
@@ -721,6 +965,8 @@ table.rank tbody tr:hover td{background:#f8f9fa}
       <button class="sair" onclick="sair()" aria-label="Fechar">&times;</button>
     </div>
 
+    <p class="resumo-exec" id="fExec"></p>
+    <p class="resumo-fonte" id="fExecFonte"></p>
     <p class="frase" id="fFrase"></p>
     <div class="trilho"><i id="fBarra" style="width:0"></i></div>
     <div class="trilho-leg" id="fBarraLeg"></div>
@@ -734,6 +980,9 @@ table.rank tbody tr:hover td{background:#f8f9fa}
     <p class="origem" id="fDiverge"></p>
     <p class="origem" id="fEspTxt"></p>
     <p class="origem" id="fOrigem"></p>
+    <p class="origem" id="fMandatos"></p>
+    <p class="origem" id="fEleicao"></p>
+    <a class="ver-temas" id="fTemas" href="#" hidden>Ver as proposições por tema</a>
 
     <div class="partic" id="fPartic"></div>
 
@@ -782,15 +1031,16 @@ table.rank tbody tr:hover td{background:#f8f9fa}
      custa, em média, uma vaga ali.</p>
 
   <div class="conta-passo">
-    <div><b>22,8 mi</b><span>votos válidos em SP</span></div>
+    <div><b>23,4 mi</b><span>votos válidos em SP</span></div>
     <div><i>÷</i></div>
     <div><b>70</b><span>vagas de SP</span></div>
     <div><i>=</i></div>
-    <div><b>326 mil</b><span>quociente</span></div>
+    <div><b>333,9 mil</b><span>quociente</span></div>
   </div>
+  <p class="fraco">Eleição de 2022, resultado do TSE: 23.375.585 votos válidos em São Paulo.</p>
 
   <p>É por isso que comparar votação entre estados engana. Em Roraima, que tem 8 vagas e um
-     eleitorado bem menor, o quociente fica perto de 36 mil. Um deputado eleito lá com 40 mil
+     eleitorado bem menor, o quociente foi de 36,5 mil. Um deputado eleito lá com 40 mil
      votos teve desempenho melhor, na régua do próprio estado, que um eleito em São Paulo com
      200 mil.</p>
 
@@ -899,8 +1149,9 @@ const REGIOES={N:['AC','AP','AM','PA','RO','RR','TO'],
 const UF_REG={}; for(const r in REGIOES) REGIOES[r].forEach(u=>UF_REG[u]=r);
 
 
-// votos válidos por UF para deputado federal, ordem de grandeza da eleição de 2022.
-// Fonte a integrar: dados abertos do TSE.
+// SÓ PARA A DEMONSTRAÇÃO: ordem de grandeza da eleição de 2022, para gerar votos
+// sintéticos. Com dados reais, votos, válidos e quociente vêm do TSE via
+// deputados.json (eleicao.py) e estas constantes não são usadas.
 const VALIDOS_UF={SP:22800000,MG:10600000,RJ:8300000,BA:7200000,RS:6300000,PR:6100000,
  PE:4600000,CE:4600000,PA:3900000,SC:4200000,MA:3400000,GO:3400000,AM:2000000,ES:2300000,
  PB:2300000,MT:1900000,RN:1900000,AL:1700000,PI:1700000,DF:1700000,MS:1500000,SE:1200000,
@@ -994,6 +1245,18 @@ function posicionar(){
   });
 }
 
+// Camada executiva: frase por deputado, gerada por temas.py (modelo fixo, sem LLM).
+// Arquivo à parte (~90 kB) para não depender da página por tema. Sem ele, nada some:
+// a busca e a ficha só não mostram a frase.
+let FRASES={}, INICIO_LEG=null;
+async function carregarFrases(){
+  try{
+    const r=await fetch('temas/resumo.json',{cache:'no-store'});
+    if(!r.ok) return;
+    const j=await r.json(); FRASES=j.frases||{}; INICIO_LEG=j.inicioLegislatura||null;
+  }catch(e){}
+}
+
 async function carregar(){
   try{
     const r=await fetch('deputados.json',{cache:'no-store'});
@@ -1013,13 +1276,26 @@ async function carregar(){
       apoioCruzado:d.apoioCruzado ?? null,
       votacoesNominais:d.votacoesNominais ?? null,
       votos:d.votos ?? null,
+      divergencia:d.divergencia ?? null,
+      // Eleição de 2022: resultado do TSE (eleicao.py). Sem par exato, fica null —
+      // nunca cai nos VALIDOS_UF aproximados, que são só da demonstração.
       votosRecebidos:d.votosRecebidos ?? null,
-      quocienteUF:d.quocienteUF ?? (VALIDOS_UF[d.uf]&&VAGAS_UF[d.uf]
-                  ? Math.round(VALIDOS_UF[d.uf]/VAGAS_UF[d.uf]) : null),
-      validosUF:d.validosUF ?? VALIDOS_UF[d.uf] ?? null,
+      quocienteUF:d.quocienteUF ?? null,
+      validosUF:d.validosUF ?? null,
+      vagasUF:d.vagasUF ?? null,
+      situacaoEleicao:d.situacaoEleicao ?? null,
+      eleicaoNota:d.eleicaoNota ?? null,
+      condicaoPosse:d.condicaoPosse ?? null,
+      // Filtro de mandato: números por legislatura e períodos em exercício
+      porLegislatura:d.porLegislatura || null,
+      mandatos:d.mandatos || null,
       topLeis:(d.topLeis||d.topProposicoes||[])
     }));
     demo=false;
+    try{
+      const rl=await fetch('legislaturas.json',{cache:'no-store'});
+      if(rl.ok) LEGISLATURAS=await rl.json();
+    }catch(e){}
   }catch(e){ deputados=montarDemo(); demo=true; }
 
   // Gráfico 2: proposicoes.json (votos.py). Independente do deputados.json — se
@@ -1045,9 +1321,146 @@ async function carregar(){
   document.querySelector('.votos').classList.toggle('real',!votosDemo);
 
   semScoreNenhum = deputados.length>0 && deputados.every(d=>d.score==null);
+  // números da carreira guardados à parte: o filtro de mandato troca os ativos
+  deputados.forEach(d=>{
+    d._carreira={pecs:d.pecs,leis:d.leis,apresentadas:d.apresentadas,
+                 viraramLei:d.viraramLei,aprovadasPlenario:d.aprovadasPlenario};
+    d._votos=d.votos;
+    d._div=d.divergencia;
+  });
+  // referência para a ficha: a mediana da Câmara, não um ranking
+  const taxas=deputados.map(taxaDiv).filter(x=>x!=null).sort((a,b)=>a-b);
+  MEDIANA_DIV=taxas.length?taxas[Math.floor(taxas.length/2)]:null;
+  montarFiltros();
   posicionar();
   textos();
   desenhar();
+}
+
+// ---------- divergência do próprio partido (votos.py) ----------
+// Mede quantas vezes o deputado votou diferente da maioria do próprio partido, nas
+// votações nominais do Plenário. Frequência, não motivo — e nunca "fiel"/"traidor".
+// A versão por faixa do espectro existe no JSON mas não é exibida: juntava partidos de
+// lados opostos e punha a bancada inteira do NOVO como "divergente" (CLAUDE.md).
+let MEDIANA_DIV=null;
+const taxaDiv=d=>{const p=d.divergencia&&d.divergencia.partido;
+  return p&&p.comparaveis?p.diferentes/p.comparaveis:null;};
+const pct1=x=>(x*100).toFixed(1).replace('.',',')+'%';
+function textoDivergencia(d){
+  const t=taxaDiv(d);
+  if(t==null) return d.divergencia&&d.divergencia.nota
+    ? `Votos diferentes da maioria do próprio partido: sem número (${d.divergencia.nota}).` : '';
+  const p=d.divergencia.partido;
+  return `Votou diferente da maioria do próprio partido (o partido em que estava na data de cada `+
+    `voto) em ${pct1(t)} das ${nfBR(p.comparaveis)} votações nominais do Plenário em que havia `+
+    `maioria para comparar`+
+    (MEDIANA_DIV!=null?` (na Câmara, a mediana é ${pct1(MEDIANA_DIV)})`:'')+'. '+
+    'Divergir pode ser convicção, compromisso com a base ou acordo; o número mede quantas vezes, não por quê.';
+}
+
+// ---------- ficha: mandatos e eleição ----------
+const nfBR=n=>new Intl.NumberFormat('pt-BR').format(n);
+const dataBRc=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)}`:'';
+function textoMandatos(d){
+  const ms=d.mandatos||{};
+  if(mandato){
+    const per=ms[mandato];
+    if(!per) return `No mandato ${rotuloLeg(mandato)}, o histórico da Câmara não registra período `+
+      'em exercício; ele aparece aqui por ter apresentado proposição nesse período.';
+    return `Em exercício no mandato ${rotuloLeg(mandato)}: `+per.map(p=>
+      `de ${dataBRc(p.de)} ${p.ate?`a ${dataBRc(p.ate)}`:'até hoje'}`).join('; ')+'.';
+  }
+  const lista=Object.keys(ms).sort((a,b)=>b-a).map(rotuloLeg);
+  const posse=d.condicaoPosse==='Suplente'?' Tomou posse neste mandato como suplente.':'';
+  return lista.length
+    ? `Mandatos com exercício registrado na Câmara: ${lista.join(', ')} (histórico desde 2003).${posse}`
+    : '';
+}
+function textoEleicao(d){
+  const q=d.quocienteUF;
+  const regra=q?` O quociente eleitoral de ${d.uf} foi ${nfBR(q)} votos (${nfBR(d.validosUF)} `+
+    `válidos ÷ ${d.vagasUF} vagas).`:'';
+  if(d.votosRecebidos==null)
+    return `Eleição de 2022: o nome usado na Câmara não coincide com o nome de urna no `+
+      `resultado do TSE, então a votação não é mostrada — o site não atribui votos por `+
+      `nome parecido.${regra}`;
+  const x=q?(d.votosRecebidos/q).toFixed(2).replace('.',','):null;
+  const st=(d.situacaoEleicao||'').toLowerCase();
+  // eleicaoNota: posse como titular sem constar como eleito na totalização de 2022
+  const sit=!st?'':d.eleicaoNota
+    ? ` Na totalização do TSE de 26/12/2022 constava como ${st}; tomou posse como titular depois.`
+    : ` Situação na totalização do TSE: ${st}.`;
+  return `Eleição de 2022: ${nfBR(d.votosRecebidos)} votos`+(x?`, ${x}× o quociente eleitoral de ${d.uf}`:'')+
+    `.${regra}${sit} Fonte: TSE.`;
+}
+
+// ---------- filtros de estado e de mandato ----------
+let LEGISLATURAS=[], mandato='';
+const LEG_ATUAL=()=>LEGISLATURAS.length?String(LEGISLATURAS[LEGISLATURAS.length-1].id):null;
+const rotuloLeg=id=>{
+  const l=LEGISLATURAS.find(x=>String(x.id)===String(id));
+  return l?`${l.inicio.slice(0,4)}–${l.fim.slice(0,4)}`:`legislatura ${id}`;
+};
+// Estava no cargo naquele mandato: histórico da Câmara com período em exercício, OU
+// proposição apresentada nele (só quem está em exercício apresenta). O histórico de
+// exercício só tem registros a partir de 2003; a autoria cobre parte do que falta.
+const estaNoMandato=d=>!mandato||!!(d.mandatos&&d.mandatos[mandato])
+                      ||!!(d.porLegislatura&&d.porLegislatura[mandato]);
+function passa(d,{semFaixa=false}={}){
+  return estaNoMandato(d)&&(!filtro.reg||d.regiao===filtro.reg)&&(!filtro.uf||d.uf===filtro.uf)
+    &&(semFaixa||!filtro.faixas.size||filtro.faixas.has(d.ideologia));
+}
+// Troca os números ativos de cada deputado pelos do mandato escolhido. O resto do
+// código (gráfico, ranking, ficha) lê os mesmos campos de sempre.
+function aplicarMandato(){
+  const zero={pecs:0,leis:0,apresentadas:0,viraramLei:0,aprovadasPlenario:0};
+  deputados.forEach(d=>{
+    Object.assign(d, !mandato ? d._carreira : ((d.porLegislatura||{})[mandato]||zero));
+    // votos registrados e divergência (Etapa B) existem só para a legislatura atual
+    const atual=!mandato||mandato===LEG_ATUAL();
+    d.votos=atual?d._votos:null;
+    d.divergencia=atual?d._div:null;
+  });
+}
+function montarFiltros(){
+  const sUF=document.getElementById('selUF'), sM=document.getElementById('selMandato');
+  sUF.innerHTML='<option value="">Todos</option>'+Object.keys(UF_REG).sort()
+    .map(u=>`<option value="${u}">${u}</option>`).join('');
+  // Mandatos oferecidos: os que têm período de exercício no histórico da Câmara. Antes
+  // de 2003 o histórico não registra exercício; esses anos seguem na carreira inteira.
+  const comExercicio=new Set(deputados.flatMap(d=>Object.keys(d.mandatos||{})));
+  const opcoes=LEGISLATURAS.filter(l=>comExercicio.has(String(l.id))).reverse();
+  // na demonstração não há histórico nem recorte por mandato: o seletor some
+  document.getElementById('campoMandato').style.display=demo?'none':'';
+  sM.innerHTML='<option value="">Todos, carreira inteira</option>'+opcoes.map(l=>
+    `<option value="${l.id}">${rotuloLeg(l.id)}${String(l.id)===LEG_ATUAL()?' (atual)':''}</option>`).join('');
+  sUF.onchange=()=>{
+    filtro.uf=sUF.value;
+    if(filtro.uf) filtro.reg=UF_REG[filtro.uf];     // o estado implica a região
+    sincronizarRegiao(); desenhar();
+  };
+  sM.onchange=()=>{ mandato=sM.value; aplicarMandato(); sincronizarRegiao(); desenhar(); };
+  const sR=document.getElementById('selReg');
+  sR.onchange=()=>{ filtro.reg=sR.value; sincronizarRegiao(); desenhar(); };
+  document.getElementById('limpar').onclick=()=>{
+    filtro.reg=''; filtro.uf=''; filtro.faixas.clear();
+    if(mandato){ mandato=''; aplicarMandato(); }
+    document.querySelectorAll('.faixa').forEach(x=>x.classList.remove('off'));
+    sincronizarRegiao(); desenhar();
+  };
+}
+function sincronizarRegiao(){
+  const sUF=document.getElementById('selUF'), sM=document.getElementById('selMandato'),
+        sR=document.getElementById('selReg');
+  if(filtro.uf&&UF_REG[filtro.uf]!==filtro.reg){ filtro.uf=''; }   // região mudou: solta o estado
+  sR.value=filtro.reg; sR.classList.toggle('ativo',!!filtro.reg);
+  sUF.value=filtro.uf; sUF.classList.toggle('ativo',!!filtro.uf);
+  sM.value=mandato; sM.classList.toggle('ativo',!!mandato);
+}
+// "Limpar filtros" só aparece quando há algum filtro ligado
+function atualizarLimpar(){
+  document.getElementById('limpar').hidden=
+    !(filtro.reg||filtro.uf||mandato||filtro.faixas.size);
 }
 
 function textos(){
@@ -1065,7 +1478,10 @@ function textos(){
       ' Os limites entre as cinco faixas foram definidos por este site, não pela pesquisa. '+
       'A altura mede autoria de propostas, e só isso. Boa parte do trabalho legislativo não '+
       'aparece aqui: relatar projeto de outro deputado, emendar texto em comissão, negociar '+
-      'acordo de bancada. Um ponto baixo não significa deputado ausente ou inativo.';
+      'acordo de bancada. Um ponto baixo não significa deputado ausente ou inativo.'+
+      (demo ? '' : ' O filtro de mandato mostra só quem estava no cargo no período (histórico '+
+      'de exercício da Câmara, que começa em 2003, ou proposição apresentada nele) e conta só as '+
+      'proposições apresentadas nesse mandato.');
 }
 
 function leituraTexto(){
@@ -1125,7 +1541,7 @@ function retrato(d,px){
 // ---------- gráfico ----------
 let comprimida=true;
 let medida='apresentadas';
-const filtro={reg:'',faixas:new Set()};
+const filtro={reg:'',uf:'',faixas:new Set()};
 const valorY=d=>medida==='apresentadas'?(d.apresentadas||0):(d.viraramLei??0);
 // Apoio cruzado por autoria só tem amostra em 15 dos 513 deputados: votação nominal
 // de texto-base é rara. Como tamanho de bolinha ele diria "sem dado" em 97% dos casos.
@@ -1136,6 +1552,7 @@ const NS='http://www.w3.org/2000/svg';
 const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
 
 function desenhar(){
+  atualizarLimpar();
   const W=tela.clientWidth,H=tela.clientHeight;
   if(!W||!H){                       // aba Ranking ativa: o scatter está oculto
     plenarioDesenhar(); contaDesenhar(); mapaDesenhar(); votosDesenhar(); rankDesenhar();
@@ -1143,7 +1560,9 @@ function desenhar(){
   }
   const m={t:20,r:48,b:58,l:48};
   const pw=W-m.l-m.r, ph=H-m.t-m.b;
-  const max=Math.max(...deputados.map(valorY),1);
+  // com um mandato escolhido, quem não estava no cargo nele nem entra no gráfico
+  const doMandato=deputados.filter(estaNoMandato);
+  const max=Math.max(...doMandato.map(valorY),1);
 
   const svg=el('svg',{width:W,height:H});
   const y=v=>comprimida
@@ -1177,13 +1596,13 @@ function desenhar(){
   svg.appendChild(ey);
 
   let n=0;
-  deputados.forEach(d=>{
+  doMandato.forEach(d=>{
     const total=valorY(d);
     const cx=d.x==null?W-m.r+28:m.l+d.x*pw;
     const rBase=raioDe(d);
     const c=el('circle',{cx,cy:y(total),r:rBase,fill:corDoScore(d.score),
       opacity:.6,class:'pt'});
-    const ok=(!filtro.reg||d.regiao===filtro.reg)&&(!filtro.faixas.size||filtro.faixas.has(d.ideologia));
+    const ok=passa(d);
     if(!ok)c.classList.add('apagado'); else n++;
     if(ok){
       c.addEventListener('mouseenter',e=>{
@@ -1208,8 +1627,9 @@ function desenhar(){
 
   tela.querySelector('svg')?.remove();
   tela.insertBefore(svg,dica);
+  const tot=doMandato.length, noMand=mandato?` no mandato ${rotuloLeg(mandato)}`:'';
   document.getElementById('quantos').textContent =
-    n===deputados.length ? `${deputados.length} deputados` : `${n} de ${deputados.length}`;
+    n===tot ? `${tot} deputados${noMand}` : `${n} de ${tot}${noMand}`;
 
   plenarioDesenhar();
   contaDesenhar();
@@ -1225,11 +1645,6 @@ document.querySelectorAll('.faixa').forEach(b=>b.onclick=()=>{
   filtro.faixas.has(k)?filtro.faixas.delete(k):filtro.faixas.add(k);
   document.querySelectorAll('.faixa').forEach(x=>
     x.classList.toggle('off',filtro.faixas.size>0&&!filtro.faixas.has(x.dataset.f)));
-  desenhar();
-});
-document.querySelectorAll('[data-reg]').forEach(b=>b.onclick=()=>{
-  filtro.reg=b.dataset.reg;
-  document.querySelectorAll('[data-reg]').forEach(x=>x.classList.toggle('on',x===b));
   desenhar();
 });
 pLog.onclick=()=>{comprimida=true;pLog.classList.add('on');pLin.classList.remove('on');desenhar()};
@@ -1275,9 +1690,7 @@ function plenarioDesenhar(){
     const p=pts[i]; if(!p)return;
     const c=el('circle',{cx:p.x.toFixed(1),cy:p.y.toFixed(1),r:raio,
       fill:corDoScore(d.score),class:'assento'});
-    const ok=(!filtro.reg||d.regiao===filtro.reg)&&
-             (!filtro.faixas.size||filtro.faixas.has(d.ideologia));
-    if(!ok)c.classList.add('apagado');
+    if(!passa(d))c.classList.add('apagado');   // a composição é a de hoje: 513 cadeiras
     const t=el('title',{}); t.textContent=`${d.nome} (${d.partido} de ${d.uf})`;
     c.appendChild(t);
     svg.appendChild(c);
@@ -1285,7 +1698,7 @@ function plenarioDesenhar(){
 }
 
 function contaDesenhar(){
-  const vis=deputados.filter(d=>!filtro.reg||d.regiao===filtro.reg);
+  const vis=deputados.filter(d=>passa(d,{semFaixa:true}));
   const tot=vis.length||1;
   const linhas=Object.keys(CORES).map(k=>{
     const n=vis.filter(d=>d.ideologia===k).length;
@@ -1316,7 +1729,7 @@ let mapaProporcional=false;
 function mapaDesenhar(){
   const ordem=['N','NE','CO','SE','S'];
   const porReg={};
-  ordem.forEach(r=>porReg[r]=deputados.filter(d=>d.regiao===r));
+  ordem.forEach(r=>porReg[r]=deputados.filter(d=>d.regiao===r&&estaNoMandato(d)));
   const maior=Math.max(...ordem.map(r=>porReg[r].length),1);
 
   document.getElementById('regs').innerHTML=ordem.map(r=>{
@@ -1342,8 +1755,7 @@ function mapaDesenhar(){
   document.querySelectorAll('.reg').forEach(b=>b.onclick=()=>{
     const r=b.dataset.r;
     filtro.reg = filtro.reg===r ? '' : r;
-    document.querySelectorAll('[data-reg]').forEach(x=>
-      x.classList.toggle('on',x.dataset.reg===filtro.reg));
+    sincronizarRegiao();
     desenhar();
   });
 
@@ -1566,7 +1978,8 @@ const COLS=[
   {k:'apresentadas',   t:'Apresentadas',    ord:true},
   {k:'viraramLei',     t:'Viraram lei',     ord:true},
   {k:'taxa',           t:'Conversão',       ord:true},
-  {k:'abs',            t:'Abstenções',      ord:true}
+  {k:'abs',            t:'Abstenções',      ord:true},
+  {k:'div',            t:'Diferente do partido', ord:true}
   // Sem coluna de apoio cruzado por deputado: só 15 dos 513 têm amostra (CLAUDE.md).
   // Ele existe por votação, no bloco "Como a Câmara se dividiu".
 ];
@@ -1588,6 +2001,7 @@ const valorCol=(d,k)=>
   k==='taxa'?taxaDe(d):
   k==='abs'?absDe(d):
   k==='registros'?registrosDe(d):
+  k==='div'?taxaDiv(d):
   k==='votosRecebidos'?(votoRelativo?quocientesDe(d):d.votosRecebidos):d[k];
 
 function celaVoto(d,nf){
@@ -1609,9 +2023,7 @@ function rankDesenhar(){
     `<th class="${c.esq?'esq':''} ${ordCol===c.k?'ord':''}" ${c.ord?`data-k="${c.k}"`:''}>${c.t}${
       ordCol===c.k?`<span class="seta">${ordDesc?'▼':'▲'}</span>`:''}</th>`).join('');
 
-  const lista=deputados.filter(d=>
-    (!filtro.reg||d.regiao===filtro.reg)&&
-    (!filtro.faixas.size||filtro.faixas.has(d.ideologia)));
+  const lista=deputados.filter(d=>passa(d));
 
   lista.sort((a,b)=>{
     if(ordCol==='nome') return ordDesc?b.nome.localeCompare(a.nome):a.nome.localeCompare(b.nome);
@@ -1639,6 +2051,8 @@ function rankDesenhar(){
         :`${(t*100).toFixed(1)}%<span class="mini"><i style="width:${
            Math.min(100,t*100*3).toFixed(0)}%"></i></span>`}</td>
       <td class="num">${a==null?'<span class="sem">—</span>':(a*100).toFixed(1)+'%'}</td>
+      <td class="num">${taxaDiv(d)==null?`<span class="sem" title="${(d.divergencia&&d.divergencia.nota)||''}">—</span>`
+        :pct1(taxaDiv(d))}</td>
     </tr>`;
   }).join('');
 
@@ -1663,9 +2077,20 @@ function rankDesenhar(){
     'voto individual, em que o voto do deputado aparece. Não é taxa de presença: quem assumiu no '+
     'meio do mandato, esteve de licença ou em missão oficial tem menos registros sem ter faltado, '+
     'e o dado aberto não distingue esses casos. Conversão é a parcela das propostas apresentadas '+
-    'que virou lei. '+
+    'que virou lei. Diferente do partido é a parcela dos votos Sim ou Não, nas votações nominais '+
+    'do Plenário desde 2023, em que o deputado votou ao contrário da maioria dos colegas do '+
+    'próprio partido naquele dia; abstenção e obstrução não contam, e partido com menos de seis '+
+    'deputados votando não tem maioria para comparar. Não é medida de lealdade nem de mérito: '+
+    'divergir pode ser convicção, compromisso com a base ou acordo, e seguir a maioria também. '+
     (demo ? '<strong>Votação e votos registrados são números de demonstração.</strong>'
-          : '<strong>A coluna Votação ainda está vazia</strong>, à espera dos dados abertos do TSE.');
+          : 'Votação: resultado oficial do TSE na eleição de 2022; quociente eleitoral pela regra '+
+            'do Código Eleitoral (votos válidos do estado ÷ vagas, art. 106). O voto é ligado ao '+
+            'deputado só quando o nome dele na Câmara é idêntico ao nome de urna; '+
+            `${deputados.filter(d=>d.votosRecebidos==null).length} deputados usaram outro nome `+
+            'na urna e aparecem com —, sem votação atribuída por aproximação.')+
+    (mandato ? ` Com o mandato ${rotuloLeg(mandato)} escolhido, apresentadas, viraram lei e `+
+               'conversão contam só as propostas apresentadas nele; votos registrados só existem '+
+               'a partir de 2023.' : '');
 }
 
 // ---------- busca ----------
@@ -1682,7 +2107,8 @@ campo.addEventListener('input',()=>{
     ? atuais.map((d,i)=>`<div class="achado" data-i="${i}">
         ${retrato(d,30)}
         <div class="achado-txt"><b><span class="pastilha"
-          style="background:${corDoScore(d.score)}"></span>${d.nome}</b></div>
+          style="background:${corDoScore(d.score)}"></span>${d.nome}</b>${FRASES[d.id]&&!demo
+          ?`<i class="achado-fr">${FRASES[d.id]}</i>`:''}</div>
         <span>${d.partido} de ${d.uf}</span></div>`).join('')
     : '<div class="nada">Nenhum deputado com esse nome.</div>';
   lista.classList.add('on');
@@ -1726,14 +2152,25 @@ function abrir(d){
   document.getElementById('fEspTxt').textContent =
     d.score==null ? '' : `Posição no espectro: ${d.score.toFixed(1)} de 10.`;
 
+  const exec=!demo&&FRASES[d.id];
+  document.getElementById('fExec').textContent=exec||'';
+  document.getElementById('fExecFonte').textContent=exec&&exec.includes('sobretudo')
+    ? 'Temas pela classificação deste site, a partir da ementa oficial.' : '';
+  // Os números abaixo são da carreira inteira na Câmara (a API devolve todos os mandatos).
+  // Com a frase da legislatura acima, o rótulo evita que os dois pareçam contraditórios.
+  fFrase.classList.toggle('carreira',!!exec&&!mandato);
+  // Com um mandato escolhido no filtro, os números abaixo são só daquele mandato.
+  const pre=mandato?`No mandato ${rotuloLeg(mandato)}, apresentou`
+           :exec?'Somando mandatos anteriores, apresentou':'Apresentou';
   const apres=d.apresentadas||0, virou=d.viraramLei;
   if(virou==null||!apres){
-    fFrase.innerHTML=`Apresentou <b>${apres}</b> proposições.`;
+    fFrase.innerHTML=`${pre} <b>${apres}</b> proposições.`;
     fBarra.style.width='0';
     fBarraLeg.textContent='Ainda não há dado sobre quantas viraram lei.';
   }else{
     const pct=virou/apres;
-    fFrase.innerHTML=`Apresentou <b>${apres}</b> proposições. <b>${virou}</b> viraram lei.`;
+    fFrase.innerHTML=`${pre} <b>${apres}</b> ${apres===1?'proposição':'proposições'}. `+
+      `<b>${virou}</b> ${virou===1?'virou':'viraram'} lei.`;
     fBarra.style.width=Math.min(100,pct*100)+'%';
     fBarraLeg.textContent=`Isso é ${(pct*100).toFixed(1)}% do que propôs.`;
   }
@@ -1746,6 +2183,15 @@ function abrir(d){
         // poucas respostas — o motivo vem de ideologia.json via scoreNota.
         : 'O partido deste deputado não recebeu posição no espectro'+
           (d.scoreNota ? ` (${d.scoreNota}).` : '.'));
+
+  document.getElementById('fMandatos').textContent = demo ? '' : textoMandatos(d);
+  document.getElementById('fEleicao').textContent = demo ? '' : textoEleicao(d);
+
+  // Página 2: todas as PEC e PL de autoria, por tema. Na demonstração os ids são
+  // sintéticos e não existe temas/{id}.json, então o link some.
+  const lkTemas=document.getElementById('fTemas');
+  lkTemas.hidden=demo;
+  lkTemas.href=`deputado.html?id=${encodeURIComponent(d.id)}`;
 
   const box=document.getElementById('fPartic');
   if(!d.votos||!d.votos.chamadas){
@@ -1763,6 +2209,7 @@ function abrir(d){
       <div class="partic-tit">Votos registrados</div>
       <p class="partic-fr">Tem voto registrado em <b>${v.chamadas}</b> votações finais de
          texto-base desta legislatura${outros>0?`, ${outros} delas em obstrução ou presidindo a sessão`:''}.</p>
+      ${textoDivergencia(d)?`<p class="partic-fr">${textoDivergencia(d)}</p>`:''}
       <div class="partic-barra">
         ${seg(v.sim,'pb-sim','Sim')}${seg(v.nao,'pb-nao','Não')}${seg(v.abstencao,'pb-abs','Abstenção')}
       </div>
@@ -1842,7 +2289,103 @@ document.querySelectorAll('.aba').forEach(b=>b.onclick=()=>{
 vAbs.onclick=()=>{votoRelativo=false;vAbs.classList.add('on');vRel.classList.remove('on');rankDesenhar()};
 vRel.onclick=()=>{votoRelativo=true;vRel.classList.add('on');vAbs.classList.remove('on');rankDesenhar()};
 
-window.addEventListener('load',carregar);
+// ---------- Esta semana na Câmara (semana.json, gerado por semana.py) ----------
+const MES=['jan.','fev.','mar.','abr.','maio','jun.','jul.','ago.','set.','out.','nov.','dez.'];
+const DIA=['dom.','seg.','ter.','qua.','qui.','sex.','sáb.'];
+const escS=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MESL=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function dataLonga(iso){ const [a,m,d]=iso.slice(0,10).split('-'); return `${+d} de ${MESL[+m-1]}`; }
+function periodo(de,ate){
+  const [,m1,d1]=de.split('-'), [,m2,d2]=ate.split('-');
+  return m1===m2 ? `De ${+d1} a ${+d2} de ${MESL[+m2-1]}` : `De ${dataLonga(de)} a ${dataLonga(ate)}`;
+}
+function dataCurta(iso){ if(!iso)return ''; const [a,m,d]=iso.slice(0,10).split('-'); return `${+d} ${MES[+m-1]}`; }
+function semItem(x,linhaExtra){
+  const aut=(x.autores||[]).map(a=>`<a href="deputado.html?id=${a.id}">${escS(a.nome)}</a> (${escS(a.partido)}-${escS(a.uf)})`);
+  return `<div class="sem-it">
+    <div class="sem-l1"><a href="https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${x.id}"
+      target="_blank" rel="noopener">${x.t} ${x.n}/${x.a}</a><span>${dataCurta(x.data)}</span></div>
+    ${aut.length?`<div class="sem-aut">${aut.slice(0,3).join(', ')}${aut.length>3?` e mais ${aut.length-3}`:''}</div>`:''}
+    <div class="sem-em">${escS(corta(x.e||'Sem ementa no registro da Câmara.',150))}</div>
+    ${semCategorias(x)}
+    ${linhaExtra?`<div class="sem-and">${linhaExtra}</div>`:''}
+  </div>`;
+}
+// Categoria pela classificação deste site (temas.py). O termo que a definiu fica no
+// title e no rótulo de acessibilidade: rótulo errado é visível e corrigível.
+function semCategorias(x){
+  if(!x.temas) return '';                              // semana.json antigo, sem o campo
+  if(!x.temas.length) return '<div class="sem-cat"><span class="nula">sem categoria</span></div>';
+  const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+  return `<div class="sem-cat">${x.temas.map(([nome,termo,fonte])=>{
+    const porque=`Nesta categoria pelo termo “${termo}”, na ${fonte==='k'?'indexação da Câmara':'ementa'}`;
+    return `<span title="${escS(porque)}" aria-label="${escS(cap(nome)+'. '+porque)}">${escS(cap(nome))}</span>`;
+  }).join('')}</div>`;
+}
+// Três itens à vista por lista; o resto (até o que semana.json traz) abre num clique.
+// Lista curta é o que deixa a página legível para quem chega sem saber o que procurar.
+const SEM_VISIVEIS=3;
+function semLista(g,extra){
+  const html=g.itens.map((x,i)=>{
+    const h=semItem(x,extra&&extra(x));
+    return i<SEM_VISIVEIS?h:h.replace('<div class="sem-it">','<div class="sem-it" data-extra hidden>');
+  }).join('');
+  const ocultos=Math.max(0,g.itens.length-SEM_VISIVEIS);
+  const resto=g.total-g.itens.length;
+  return html
+    +(ocultos?`<button class="sem-mais-btn" type="button" onclick="semExpandir(this)">Mostrar mais ${ocultos}</button>`:'')
+    +(resto>0?`<div class="sem-mais" ${ocultos?'hidden data-extra':''}>e mais ${resto} no período</div>`:'');
+}
+function semExpandir(b){
+  b.parentElement.querySelectorAll('[data-extra]').forEach(e=>e.hidden=false);
+  b.remove();
+}
+function semPauta(p){
+  if(!p) return '<p class="sem-obs">A pauta entra com a rodada diária automática.</p>';
+  if(!p.eventos.length) return '<p class="sem-obs">Nenhuma sessão do Plenário marcada para os próximos 7 dias.</p>';
+  return p.eventos.slice(0,3).map(e=>{
+    const dt=new Date(e.dataHoraInicio), h=e.dataHoraInicio.slice(11,16).replace(':','h');
+    const itens=(e.itens||[]).filter(i=>i.titulo||i.proposicao?.id);
+    return `<div class="sem-it"><div class="sem-l1"><b>${escS(e.tipo||'Sessão')}</b>
+      <span>${DIA[dt.getDay()]} ${dataCurta(e.dataHoraInicio)}, ${h}</span></div>
+      ${itens.length?itens.slice(0,6).map(i=>`<div class="sem-em">${escS(i.titulo||
+        `${i.proposicao.siglaTipo} ${i.proposicao.numero}/${i.proposicao.ano}`)}${i.regime?`, regime ${escS(i.regime.toLowerCase())}`:''}</div>`).join('')
+        +(itens.length>6?`<div class="sem-mais">e mais ${itens.length-6} itens</div>`:'')
+        :'<div class="sem-and">Pauta ainda não publicada.</div>'}</div>`;
+  }).join('');
+}
+async function carregarSemana(){
+  let s;
+  try{
+    const r=await fetch('semana.json',{cache:'no-store'});
+    if(!r.ok) return;
+    s=await r.json();
+  }catch(e){ return; }
+  const box=document.getElementById('semana');
+  const temas=(s.novas.temas||[]).map(([t,n])=>`${t} (${n})`).join(', ');
+  box.innerHTML=`
+    <div class="semana-cab"><div class="sec-cab"><p class="kicker">Últimos 7 dias</p>
+      <h2 id="semanaTit">Esta semana na Câmara</h2></div>
+      <p>${periodo(s.de,s.ate)}. Atualizado em ${dataLonga(s.geradoEm)}, às ${+s.geradoEm.slice(11,13)}h${s.geradoEm.slice(14,16)}.</p></div>
+    <div class="sem-grade">
+      <div class="sem-col"><h3>Viraram lei <span>${s.viraramLei.total}</span></h3>
+        ${s.viraramLei.total?semLista(s.viraramLei,null):'<p class="sem-obs">Nenhuma nesta semana.</p>'}</div>
+      <div class="sem-col"><h3>Na pauta do Plenário</h3>${semPauta(s.pauta)}</div>
+      <div class="sem-col"><h3>Andaram <span>${s.andaram.total}</span></h3>
+        ${s.andaram.total?semLista(s.andaram,x=>`${escS(x.andamento)}${x.situacao?`. Situação agora: ${escS(x.situacao)}`:''}`)
+          :'<p class="sem-obs">Nenhum andamento registrado.</p>'}</div>
+      <div class="sem-col"><h3>Novas <span>${s.novas.total}</span></h3>
+        ${temas?`<p class="sem-obs">Temas mais frequentes: ${escS(temas)}.</p>`:''}
+        ${semLista(s.novas,null)}</div>
+    </div>
+    <p class="semana-pe">${escS(s.universo)} Datas oficiais da Câmara: apresentação e último andamento
+      registrado. Uma proposição que andou mais de uma vez na semana aparece com o andamento mais recente.
+      Categorias pela classificação deste site, a partir da ementa oficial (ou da indexação da Câmara,
+      quando a ementa não diz o assunto): passe o mouse sobre uma categoria para ver o termo que a definiu.</p>`;
+  box.hidden=false;
+}
+
+window.addEventListener('load',()=>{carregarFrases().then(carregar);carregarSemana();});
 let tResize;
 window.addEventListener('resize',()=>{
   clearTimeout(tResize);
