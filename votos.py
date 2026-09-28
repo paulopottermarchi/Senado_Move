@@ -1,0 +1,334 @@
+"""
+Câmara Aberta — Etapa B (votos individuais, via arquivos anuais em bulk).
+
+Uso:
+    python votos.py              # usa o que já está em cache/bulk/
+    python votos.py --atualizar  # baixa de novo os arquivos de votação (o do ano
+                                 # corrente muda todo dia)
+
+Rodar DEPOIS de coleta.py: lê deputados.json, acrescenta `votos` a cada deputado
+e grava proposicoes.json. Se coleta.py regravar deputados.json, rode este de novo.
+
+Nenhuma chamada à API. Fontes (dadosabertos.camara.leg.br/arquivos, cache em disco):
+  votacoes-{ano}             votação, órgão, descrição, `aprovacao`, placar oficial
+  votacoesVotos-{ano}        voto de cada deputado, com o partido NA DATA DO VOTO
+  votacoesProposicoes-{ano}  votação → proposição (número, ementa)
+  proposicoesAutores-{ano}   autor da proposição — ano da PROPOSIÇÃO, não da votação
+
+Só entram votações NOMINAIS (com voto individual registrado) e de TEXTO-BASE: a
+mesma allowlist da Etapa A (coleta.e_texto_base), e por proposição só a votação
+final (coleta.votacao_texto_base) — ex.: da PEC, o 2º turno.
+"""
+
+import argparse
+import csv
+import json
+import os
+import sys
+from collections import Counter, defaultdict
+from datetime import datetime
+
+import coleta  # a allowlist, o status e as faixas são os da Etapa A — nunca duplicar
+
+ANOS = range(2023, 2027)  # legislatura atual
+BULK = coleta.CACHE / "bulk"
+URL = "https://dadosabertos.camara.leg.br/arquivos/{tipo}/csv/{tipo}-{ano}.csv"
+PROPOSICOES = coleta.BASE / "proposicoes.json"
+FAIXAS = coleta.FAIXAS
+
+# Valores de `voto` no CSV. Obstrução e "Artigo 17" (quem preside a sessão não
+# vota) são presença registrada, mas não são voto: ficam fora de sim/não/abstenção
+# e dos denominadores.
+SIM, NAO, ABST, OBST, ART17 = "Sim", "Não", "Abstenção", "Obstrução", "Artigo 17"
+VOTANTE = (SIM, NAO, ABST)
+
+
+# ---------------------------------------------------------------- arquivos
+
+def arquivo(tipo, ano, atualizar=False):
+    caminho = BULK / f"{tipo}-{ano}.csv"
+    if caminho.exists() and not atualizar:
+        return caminho
+    print(f"   baixando {caminho.name}", flush=True)
+    BULK.mkdir(parents=True, exist_ok=True)
+    tmp = caminho.with_suffix(".tmp")
+    with coleta.sessao.get(URL.format(tipo=tipo, ano=ano), stream=True, timeout=300,
+                           headers={"Accept": "*/*"}) as r:
+        r.raise_for_status()
+        with open(tmp, "wb") as f:
+            for bloco in r.iter_content(1 << 20):
+                f.write(bloco)
+    os.replace(tmp, caminho)  # atômico: download interrompido não vira cache
+    return caminho
+
+
+def linhas(tipo, anos, atualizar=False):
+    for ano in anos:
+        with open(arquivo(tipo, ano, atualizar), encoding="utf-8-sig", newline="") as f:
+            yield from csv.DictReader(f, delimiter=";")
+
+
+def gravar_json(caminho, obj):
+    tmp = caminho.with_suffix(".tmp")
+    tmp.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.replace(tmp, caminho)
+
+
+def instante(texto):
+    return datetime.fromisoformat(texto) if texto else None
+
+
+# ---------------------------------------------------------------- regras
+
+def autor_principal(linhas_autores):
+    """Primeiro proponente (ordemAssinatura mais baixa com proponente 1).
+    Assinatura de apoiamento (proponente 0) não é autoria."""
+    prop = [a for a in linhas_autores if a["proponente"] == "1"]
+    return min(prop, key=lambda a: int(a["ordemAssinatura"] or 999999), default=None)
+
+
+def partido_na_data(historico, quando):
+    """Partido do deputado no registro de voto mais próximo de `quando`.
+    `historico`: [(instante, sigla)] de todos os votos dele na legislatura."""
+    if not historico or quando is None:
+        return None
+    return min(historico, key=lambda h: abs((h[0] - quando).total_seconds()))[1]
+
+
+def media(valores):
+    return round(sum(valores) / len(valores), 2) if valores else None
+
+
+def calcular_votacao(v, votos_da_votacao, ideologia):
+    """Placar, adesão por faixa e médias de uma votação nominal.
+    Normaliza sempre pela bancada presente: nunca voto absoluto (a Câmara tem
+    maioria de centro-direita, e em números absolutos tudo pareceria 'da direita')."""
+    placar = Counter(r["voto"] for r in votos_da_votacao)
+    sim_f, vot_f = Counter(), Counter()
+    scores_sim, scores_nao = [], []
+    sem_score = Counter()
+    for r in votos_da_votacao:
+        if r["voto"] not in VOTANTE:
+            continue
+        sigla = r["deputado_siglaPartido"]
+        score = (ideologia.get(sigla) or {}).get("score")
+        if score is None:
+            sem_score[sigla] += 1  # fora das médias e do denominador
+            continue
+        faixa = coleta.classificar(score)
+        vot_f[faixa] += 1
+        if r["voto"] == SIM:
+            sim_f[faixa] += 1
+            scores_sim.append(score)
+        elif r["voto"] == NAO:
+            scores_nao.append(score)
+    return {
+        "sim": placar[SIM], "nao": placar[NAO], "abstencao": placar[ABST],
+        "obstrucao": placar[OBST],
+        "margem": abs(placar[SIM] - placar[NAO]),
+        "scoreMedioSim": media(scores_sim),
+        "scoreMedioNao": media(scores_nao),
+        # parcela que votou SIM dentro de cada faixa; denominador = quem votou
+        # (sim, não ou abstenção) naquela faixa. Faixa sem votante → null.
+        "adesaoPorFaixa": {f: (round(sim_f[f] / vot_f[f], 3) if vot_f[f] else None)
+                           for f in FAIXAS},
+        "votantesPorFaixa": {f: vot_f[f] for f in FAIXAS},
+        "excluidosSemScore": sum(sem_score.values()),
+        # por partido, para o site declarar o viés (a União sozinha pesa ~11%)
+        "excluidosPorPartido": dict(sem_score.most_common()),
+        "_placar": placar,
+    }
+
+
+# ---------------------------------------------------------------- pipeline
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    ap.add_argument("--atualizar", action="store_true",
+                    help="baixar de novo os arquivos de votação da legislatura")
+    args = ap.parse_args()
+    sys.stdout.reconfigure(encoding="utf-8")
+
+    try:
+        deputados = json.loads(coleta.SAIDA.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        sys.exit(f"{coleta.SAIDA.name} não existe — rode coleta.py antes.")
+    ideologia = coleta.carregar_ideologia()
+
+    print("Lendo votações da legislatura (cache/bulk/)…", flush=True)
+    votacoes = {r["id"]: r for r in linhas("votacoes", ANOS, args.atualizar)}
+    votos = defaultdict(list)
+    historico = defaultdict(list)  # deputado → [(instante, partido)] para o autor
+    for r in linhas("votacoesVotos", ANOS, args.atualizar):
+        votos[r["idVotacao"]].append(r)
+        historico[r["deputado_id"]].append((instante(r["dataHoraVoto"]),
+                                            r["deputado_siglaPartido"]))
+    rel = defaultdict(list)
+    for r in linhas("votacoesProposicoes", ANOS, args.atualizar):
+        rel[r["idVotacao"]].append(r)
+
+    # Por proposição (prefixo do id da votação = proposição onde foi registrada),
+    # a votação final do texto-base — a mesma regra da Etapa A. Só entra se nominal:
+    # votação simbólica não tem voto individual.
+    grupos = defaultdict(list)
+    for v in votacoes.values():
+        grupos[v["id"].split("-")[0]].append(v)
+    texto_base = [v for v in votacoes.values() if coleta.e_texto_base(v)]
+    finais = [f for g in grupos.values() if (f := coleta.votacao_texto_base(g))]
+    selecionadas = [v for v in finais if v["id"] in votos]
+
+    # Proposição de cada votação: a do prefixo, se estiver na relação.
+    def proposicao_de(v):
+        linhas_rel = rel.get(v["id"], [])
+        prefixo = v["id"].split("-")[0]
+        return next((r for r in linhas_rel if r["proposicao_id"] == prefixo),
+                    linhas_rel[0] if linhas_rel else None)
+
+    # Uma votação final por proposição, mesmo se registrada sob prefixos diferentes.
+    por_prop = {}
+    for v in selecionadas:
+        p = proposicao_de(v)
+        chave = p["proposicao_id"] if p else v["id"].split("-")[0]
+        if chave not in por_prop or v["dataHoraRegistro"] > por_prop[chave][0]["dataHoraRegistro"]:
+            por_prop[chave] = (v, p)
+
+    # Autores: proposicoesAutores é indexado pelo ano da proposição.
+    anos_prop = sorted({int(p["proposicao_ano"]) for _, p in por_prop.values() if p})
+    ids_prop = set(por_prop)
+    autores = defaultdict(list)
+    print(f"Lendo autores ({len(anos_prop)} anos de proposicoesAutores)…", flush=True)
+    for r in linhas("proposicoesAutores", anos_prop):
+        if r["idProposicao"] in ids_prop:
+            autores[r["idProposicao"]].append(r)
+
+    # ------------------------------------------------ por votação
+    saida, violacoes = [], []
+    sem_score_total = Counter()
+    motivos_autor = Counter()
+    for id_prop, (v, p) in por_prop.items():
+        c = calcular_votacao(v, votos[v["id"]], ideologia)
+        placar = c.pop("_placar")
+        sem_score_total.update(c["excluidosPorPartido"])
+
+        # Sanidade: o placar contado voto a voto tem de bater com o oficial.
+        if (str(placar[SIM]), str(placar[NAO])) != (v["votosSim"], v["votosNao"]):
+            violacoes.append(f"{v['id']}: contado {placar[SIM]}×{placar[NAO]}, "
+                             f"oficial {v['votosSim']}×{v['votosNao']}")
+        desconhecidos = set(placar) - {SIM, NAO, ABST, OBST, ART17}
+        if desconhecidos:
+            violacoes.append(f"{v['id']}: valores de voto desconhecidos {desconhecidos}")
+
+        # Resultado SÓ de `aprovacao`. Nunca de sim > não: PEC exige 308 e PLP 257.
+        aprovacao = int(v["aprovacao"]) if v["aprovacao"] in ("0", "1") else None
+        resultado = coleta.status_da_votacao({"aprovacao": aprovacao})
+
+        # Autor e o score do partido dele NA DATA DA VOTAÇÃO (mesma base temporal
+        # dos votantes). Autor não deputado ou sem voto na legislatura → null.
+        a = autor_principal(autores.get(id_prop, []))
+        autor_id = int(a["idDeputadoAutor"]) if a and a["idDeputadoAutor"] else None
+        autor_partido = partido_na_data(historico.get(str(autor_id)),
+                                        instante(v["dataHoraRegistro"])) if autor_id else None
+        autor_score = (ideologia.get(autor_partido) or {}).get("score") if autor_partido else None
+        if a is None:
+            motivo = "autor não encontrado em proposicoesAutores"
+        elif autor_id is None:
+            motivo = f"autor não é deputado ({a['tipoAutor']})"
+        elif autor_partido is None:
+            motivo = "autor sem voto registrado na legislatura"
+        elif autor_score is None:
+            motivo = f"partido do autor sem score ({autor_partido})"
+        else:
+            motivo = None
+        motivos_autor[motivo or "com score"] += 1
+
+        ementa = (p or {}).get("proposicao_ementa")
+        saida.append({
+            "idVotacao": v["id"],
+            "idProposicao": int(id_prop),
+            "numero": (p or {}).get("proposicao_titulo"),
+            "titulo": coleta.titulo_curto(ementa),
+            "resumo": None,  # passo 8 (LLM) — ainda não
+            "ementa": ementa,
+            "data": v["data"],
+            "autorId": autor_id,
+            "autorNome": a["nomeAutor"] if a else None,
+            "autorPartido": autor_partido,
+            "autorScore": autor_score,
+            "autorNota": motivo,
+            **{k: c[k] for k in ("sim", "nao", "abstencao", "obstrucao", "margem")},
+            "nominal": True,
+            "aprovacao": aprovacao,
+            "resultado": resultado,
+            "scoreMedioSim": c["scoreMedioSim"],
+            "scoreMedioNao": c["scoreMedioNao"],
+            "apoioCruzado": (round(abs(autor_score - c["scoreMedioSim"]), 2)
+                             if autor_score is not None and c["scoreMedioSim"] is not None
+                             else None),
+            "adesaoPorFaixa": c["adesaoPorFaixa"],
+            "votantesPorFaixa": c["votantesPorFaixa"],
+            "excluidosSemScore": c["excluidosSemScore"],
+            "excluidosPorPartido": c["excluidosPorPartido"],
+            "descricaoVotacao": v["descricao"],
+            "urlCamara": "https://www.camara.leg.br/proposicoesWeb/"
+                         f"fichadetramitacao?idProposicao={id_prop}",
+        })
+
+    if violacoes:
+        print(f"\nCHECAGEM DE SANIDADE FALHOU — {len(violacoes)} problema(s). Nada foi gravado.")
+        for x in violacoes:
+            print("  -", x)
+        sys.exit(2)
+
+    # ------------------------------------------------ por deputado
+    # Só sobre as votações selecionadas, e só o que está registrado. Ausência NÃO
+    # se calcula por subtração: lista de votos não identifica quem faltou, e quem
+    # assumiu no meio do mandato nem podia votar antes.
+    ids_sel = [v["id"] for v, _ in por_prop.values()]
+    por_dep = defaultdict(Counter)
+    for idv in ids_sel:
+        for r in votos[idv]:
+            por_dep[int(r["deputado_id"])][r["voto"]] += 1
+    for d in deputados:
+        c = por_dep.get(d["id"], Counter())
+        d["votos"] = {"chamadas": sum(c.values()), "sim": c[SIM], "nao": c[NAO],
+                      "abstencao": c[ABST]}
+
+    saida.sort(key=lambda x: x["data"], reverse=True)
+    gravar_json(PROPOSICOES, saida)
+    gravar_json(coleta.SAIDA, deputados)
+
+    # ------------------------------------------------ relatório
+    print(f"\nVotações na legislatura: {len(votacoes)} · de texto-base (allowlist): "
+          f"{len(texto_base)} · nominais: {sum(v['id'] in votos for v in texto_base)}")
+    print(f"Finais por proposição: {len(finais)} · nominais: {len(selecionadas)} · "
+          f"gravadas: {len(saida)} (turnos anteriores e votações simbólicas ficam fora)")
+    print("Checagem OK: placar voto a voto = placar oficial em todas.")
+    print(f"Resultado (de `aprovacao`): {dict(Counter(x['resultado'] for x in saida))}")
+    divergem = [x for x in saida if (x["sim"] > x["nao"]) != (x["aprovacao"] == 1)]
+    print(f"Sim > Não mas não aprovada (ou o inverso): {len(divergem)}")
+    for x in divergem:
+        print(f"   {x['numero']} {x['sim']}×{x['nao']} → {x['resultado']}")
+    votantes = sum(x["sim"] + x["nao"] + x["abstencao"] for x in saida)
+    excl = sum(sem_score_total.values())
+    print(f"Votos excluídos das médias por falta de score: {excl} de {votantes} "
+          f"({excl / votantes:.1%}); só a UNIÃO: {sem_score_total['UNIÃO']} "
+          f"({sem_score_total['UNIÃO'] / votantes:.1%}) · {dict(sem_score_total.most_common())}")
+    print(f"Autor: {dict(motivos_autor.most_common())}")
+    com = [d for d in deputados if d["votos"]["chamadas"]]
+    print(f"\nDeputados com ao menos um voto registrado nessas votações: {len(com)} de "
+          f"{len(deputados)}")
+    print(f"{PROPOSICOES.name} ({len(saida)} votações) e {coleta.SAIDA.name} (+ votos) gravados.")
+
+    disputadas = sorted(saida, key=lambda x: x["margem"])[:5]
+    consensuais = sorted(saida, key=lambda x: -x["margem"])[:5]
+    for nome, lista in (("Mais disputadas", disputadas), ("Mais consensuais", consensuais)):
+        print(f"\n{nome}:")
+        for x in lista:
+            fmt = lambda s: "—" if s is None else f"{s:.2f}"
+            print(f"   {x['numero']:<16} {x['sim']:>3}×{x['nao']:<3} margem {x['margem']:>3} · "
+                  f"SIM {fmt(x['scoreMedioSim'])} / NÃO {fmt(x['scoreMedioNao'])} · "
+                  f"{x['titulo'][:60]}")
+
+
+if __name__ == "__main__":
+    main()

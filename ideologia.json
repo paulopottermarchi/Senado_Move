@@ -1,0 +1,95 @@
+{
+  "_fonte": "Brazilian Legislative Survey, wave 9 (2021). Power & Zucco, Harvard Dataverse.",
+  "_doi": "10.7910/DVN/WM9IZ8",
+  "_escala": "1 = esquerda, 10 = direita",
+  "_metodo": "Media simples das respostas validas da wave 2021 (valores fora de 1-10 descartados como missing). NAO e a estimativa reescalonada publicada por Power & Zucco: eles corrigem o uso idiossincratico da escala por respondente. Ver secao de metodologia.",
+  "_gerado_de": "BLS9_full.csv",
+  "PL": {
+    "score": 7.41,
+    "respostas": 112
+  },
+  "PT": {
+    "score": 2.37,
+    "respostas": 113
+  },
+  "UNIÃO": {
+    "score": null,
+    "nota": "fusão DEM+PSL em 2022, posterior ao survey"
+  },
+  "PP": {
+    "score": 7.49,
+    "respostas": 113
+  },
+  "PSD": {
+    "score": 6.56,
+    "respostas": 109
+  },
+  "REPUBLICANOS": {
+    "score": 7.69,
+    "respostas": 113
+  },
+  "MDB": {
+    "score": 5.91,
+    "respostas": 113
+  },
+  "PODE": {
+    "score": 7.02,
+    "respostas": 65
+  },
+  "PSDB": {
+    "score": 5.97,
+    "respostas": 113
+  },
+  "PSB": {
+    "score": 3.54,
+    "respostas": 111
+  },
+  "PDT": {
+    "score": 3.84,
+    "respostas": 113
+  },
+  "PCdoB": {
+    "score": null,
+    "nota": "apenas 10 respostas validas na wave 2021, amostra insuficiente"
+  },
+  "PSOL": {
+    "score": 1.58,
+    "respostas": 113
+  },
+  "PV": {
+    "score": null,
+    "nota": "apenas 1 respostas validas na wave 2021, amostra insuficiente"
+  },
+  "NOVO": {
+    "score": 8.46,
+    "respostas": 69
+  },
+  "SOLIDARIEDADE": {
+    "score": 6.0,
+    "respostas": 27
+  },
+  "AVANTE": {
+    "score": null,
+    "nota": "não consta do questionário"
+  },
+  "REDE": {
+    "score": null,
+    "nota": "apenas 1 respostas validas na wave 2021, amostra insuficiente"
+  },
+  "PRD": {
+    "score": null,
+    "nota": "fusão PTB+Patriota em 2023, posterior ao survey"
+  },
+  "CIDADANIA": {
+    "score": 5.31,
+    "respostas": 65
+  },
+  "DC": {
+    "score": null,
+    "nota": "não consta do questionário"
+  },
+  "MISSÃO": {
+    "score": null,
+    "nota": "não consta do questionário"
+  }
+}

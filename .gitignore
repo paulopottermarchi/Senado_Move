@@ -1,0 +1,8 @@
+# respostas cruas da API e arquivos em bulk (~670 MB) — regeneráveis com coleta.py e votos.py
+cache/
+*.tmp
+*.log
+__pycache__/
+# configuração local do Claude Code (servidor de preview) e briefing interno
+.claude/
+CLAUDE.md
