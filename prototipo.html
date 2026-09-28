@@ -133,6 +133,7 @@ h1{font-family:var(--serif);font-size:clamp(34px,5.4vw,52px);font-weight:500;
            text-decoration:none;border:1px solid var(--tinta);border-radius:2px;padding:6px 12px}
 .ver-temas:hover{background:var(--tinta);color:#fff}
 .ver-temas[hidden]{display:none}
+.ver-leis{margin-top:14px}
 
 .secao{font-family:var(--serif);font-size:17px;font-weight:600;
        margin:24px 0 3px;padding-top:18px;border-top:1px solid var(--linha)}
@@ -671,8 +672,15 @@ html{scroll-behavior:smooth}
 .limpar{font:inherit;font-size:13px;color:var(--tinta);background:none;border:none;cursor:pointer;
         padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
 .limpar[hidden]{display:none}
-.filtros .seg-mini{margin-left:auto}
-.quantos{font-size:13px}
+.quantos{font-size:13px;margin-left:auto}
+/* filtros comuns às duas vistas, entre as abas e o conteúdo */
+.filtros-comuns{display:flex;flex-direction:column;gap:10px;margin:-6px 0 18px;padding:14px 16px;
+                background:#fafaf9;border:1px solid var(--linha2);border-radius:var(--raio-p)}
+.filtros-comuns .linha-ctl.filtros{padding-top:0;border-top:none}
+.linha-ctl.espectro .faixas{margin:0;padding:0;border:none;gap:8px 14px}
+.linha-ctl.espectro .faixa{font-size:12.5px;padding:3px 10px 3px 8px;border:1px solid var(--linha);
+                           border-radius:999px;background:var(--papel)}
+.linha-ctl.espectro .faixa:hover{border-color:#c9ccd1}
 
 /* gráfico */
 .faixas{gap:12px 18px}
@@ -738,6 +746,7 @@ html{scroll-behavior:smooth}
       <a href="#deputados">Deputados</a>
       <a href="#semana">Esta semana</a>
       <a href="#votacoes">Votações</a>
+      <a href="leis.html">Leis votadas</a>
       <a href="#regioes">Regiões</a>
       <a href="#sobre">Sobre os dados</a>
     </nav>
@@ -816,17 +825,8 @@ html{scroll-behavior:smooth}
       <button class="aba" data-vista="vRanking">Ranking</button>
     </div>
 
-    <div class="vista on" id="vGrafico">
-    <p class="leitura" id="leitura"></p>
-
-    <div class="controles">
-      <div class="linha-ctl">
-        <div class="seg" role="group" aria-label="O que a altura do gráfico mostra">
-          <button class="pino on" id="yApres">Proposições apresentadas</button>
-          <button class="pino" id="yLei">Que viraram lei</button>
-        </div>
-        <span class="quantos" id="quantos"></span>
-      </div>
+    <!-- Filtros comuns ao Gráfico e ao Ranking: o mesmo estado, as duas vistas. -->
+    <div class="filtros-comuns" role="group" aria-label="Filtrar deputados">
       <div class="linha-ctl filtros">
         <label class="campo"><span>Região</span>
           <select class="sel" id="selReg">
@@ -839,18 +839,35 @@ html{scroll-behavior:smooth}
         <label class="campo" id="campoMandato"><span>Mandato</span>
           <select class="sel" id="selMandato"><option value="">Todos, carreira inteira</option></select></label>
         <button class="limpar" id="limpar" hidden>Limpar filtros</button>
+      </div>
+      <div class="linha-ctl espectro">
+        <span class="campo"><span>Espectro</span></span>
+        <!-- legenda das cores e filtro por faixa ao mesmo tempo (clique liga/desliga) -->
+        <div class="faixas" id="faixas"></div>
+      </div>
+    </div>
+
+    <div class="vista on" id="vGrafico">
+    <p class="leitura" id="leitura"></p>
+
+    <div class="controles">
+      <div class="linha-ctl">
+        <div class="seg" role="group" aria-label="O que a altura do gráfico mostra">
+          <button class="pino on" id="yApres">Proposições apresentadas</button>
+          <button class="pino" id="yLei">Que viraram lei</button>
+        </div>
         <div class="seg seg-mini" role="group" aria-label="Escala do eixo vertical">
           <span class="rotulo">Escala</span>
           <button class="pino on" id="pLog" title="Aproxima os valores pequenos dos grandes">Comprimida</button>
           <button class="pino" id="pLin" title="Distâncias proporcionais aos números">Proporcional</button>
         </div>
+        <span class="quantos" id="quantos"></span>
       </div>
     </div>
 
     <div class="corpo">
       <div>
         <div class="tela" id="tela"><div class="dica" id="dica"></div></div>
-        <div class="faixas" id="faixas"></div>
       </div>
 
       <aside class="lado">
@@ -870,8 +887,8 @@ html{scroll-behavior:smooth}
 
     <div class="vista" id="vRanking">
       <div class="rank-topo">
-        <p class="leitura" style="margin:0">Os 513 deputados em tabela. Clique no título de uma
-           coluna para reordenar, e numa linha para abrir a ficha.</p>
+        <p class="leitura" style="margin:0" id="rankLeitura">Os 513 deputados em tabela. Clique no
+           título de uma coluna para reordenar, e numa linha para abrir a ficha.</p>
         <div class="bloco">
           <span class="rotulo">Votação
             <button class="saibamais" data-pop="popQuoc">o que é quociente</button></span>
@@ -919,6 +936,7 @@ html{scroll-behavior:smooth}
       <span>Apoio cruzado <button class="saibamais" data-pop="popCruz">o que é</button></span>
     </div>
     <div id="votosLista"></div>
+    <a class="ver-temas ver-leis" href="leis.html">Ver todas as leis votadas, e quem votou diferente do próprio partido</a>
     <p class="votos-pe" id="votosPe"></p>
   </section>
 
@@ -1315,8 +1333,12 @@ async function carregar(){
       apoioCruzado:p.apoioCruzado??null,
       aprovacao:p.aprovacao??null,        // resultado SÓ deste campo, nunca de sim>não
       excluidos:p.excluidosSemScore||0, excluidosPorPartido:p.excluidosPorPartido||{},
+      // quem votou diferente da maioria do próprio partido: [id, nome, partido, uf, voto, coesão]
+      divIds:(p.divergentes||[]).map(x=>x[0]),
       consulta:null}));
     votosDemo=false;
+    DIV_LEIS=new Map();
+    votacoes.forEach(v=>v.divIds.forEach(id=>DIV_LEIS.set(id,(DIV_LEIS.get(id)||0)+1)));
   }catch(e){ votacoes=[]; votosDemo=true; }
   document.querySelector('.votos').classList.toggle('real',!votosDemo);
 
@@ -1342,7 +1364,7 @@ async function carregar(){
 // votações nominais do Plenário. Frequência, não motivo — e nunca "fiel"/"traidor".
 // A versão por faixa do espectro existe no JSON mas não é exibida: juntava partidos de
 // lados opostos e punha a bancada inteira do NOVO como "divergente" (CLAUDE.md).
-let MEDIANA_DIV=null;
+let MEDIANA_DIV=null, DIV_LEIS=new Map();   // id → nº das 164 leis em que divergiu
 const taxaDiv=d=>{const p=d.divergencia&&d.divergencia.partido;
   return p&&p.comparaveis?p.diferentes/p.comparaveis:null;};
 const pct1=x=>(x*100).toFixed(1).replace('.',',')+'%';
@@ -1351,11 +1373,18 @@ function textoDivergencia(d){
   if(t==null) return d.divergencia&&d.divergencia.nota
     ? `Votos diferentes da maioria do próprio partido: sem número (${d.divergencia.nota}).` : '';
   const p=d.divergencia.partido;
-  return `Votou diferente da maioria do próprio partido (o partido em que estava na data de cada `+
-    `voto) em ${pct1(t)} das ${nfBR(p.comparaveis)} votações nominais do Plenário em que havia `+
-    `maioria para comparar`+
-    (MEDIANA_DIV!=null?` (na Câmara, a mediana é ${pct1(MEDIANA_DIV)})`:'')+'. '+
-    'Divergir pode ser convicção, compromisso com a base ou acordo; o número mede quantas vezes, não por quê.';
+  // O enquadramento vem antes do número: lido rápido, "votou contra o partido" vira
+  // "traidor", e isso raramente é verdade.
+  return 'Votar diferente do próprio partido pode ser convicção, pauta do estado ou questão '+
+    'liberada pela bancada. Nesta legislatura, fez isso em '+
+    `${pct1(t)} das ${nfBR(p.comparaveis)} votações nominais do Plenário em que o partido votou `+
+    `unido (70% ou mais dos colegas no mesmo lado)`+
+    (MEDIANA_DIV!=null?`; na Câmara, a mediana é ${pct1(MEDIANA_DIV)}`:'')+'.';
+}
+function linkLeisDivergentes(d){
+  const n=DIV_LEIS.get(d.id)||0;
+  return n?`<a class="ver-temas" href="leis.html?dep=${encodeURIComponent(d.id)}">Ver as ${n} `+
+    `${n===1?'lei':'leis'} em que votou diferente do partido</a>`:'';
 }
 
 // ---------- ficha: mandatos e eleição ----------
@@ -2024,6 +2053,10 @@ function rankDesenhar(){
       ordCol===c.k?`<span class="seta">${ordDesc?'▼':'▲'}</span>`:''}</th>`).join('');
 
   const lista=deputados.filter(d=>passa(d));
+  document.getElementById('rankLeitura').textContent=
+    (lista.length===deputados.length?`Os ${deputados.length} deputados em tabela`
+      :`${lista.length} de ${deputados.length} deputados, pelos filtros acima`)+
+    '. Clique no título de uma coluna para reordenar, e numa linha para abrir a ficha.';
 
   lista.sort((a,b)=>{
     if(ordCol==='nome') return ordDesc?b.nome.localeCompare(a.nome):a.nome.localeCompare(b.nome);
@@ -2077,11 +2110,12 @@ function rankDesenhar(){
     'voto individual, em que o voto do deputado aparece. Não é taxa de presença: quem assumiu no '+
     'meio do mandato, esteve de licença ou em missão oficial tem menos registros sem ter faltado, '+
     'e o dado aberto não distingue esses casos. Conversão é a parcela das propostas apresentadas '+
-    'que virou lei. Diferente do partido é a parcela dos votos Sim ou Não, nas votações nominais '+
-    'do Plenário desde 2023, em que o deputado votou ao contrário da maioria dos colegas do '+
-    'próprio partido naquele dia; abstenção e obstrução não contam, e partido com menos de seis '+
-    'deputados votando não tem maioria para comparar. Não é medida de lealdade nem de mérito: '+
-    'divergir pode ser convicção, compromisso com a base ou acordo, e seguir a maioria também. '+
+    'que virou lei. Diferente do partido: votar diferente do próprio partido não é medida de '+
+    'lealdade nem de mérito — pode ser convicção, pauta do estado ou questão liberada pela bancada. '+
+    'A coluna mostra a parcela dos votos Sim ou Não, nas votações nominais do Plenário desde 2023, '+
+    'em que o deputado votou ao contrário dos colegas do próprio partido naquele dia, contando só '+
+    'quando o partido votou unido (70% ou mais no mesmo lado); abstenção e obstrução não contam, e '+
+    'partido com menos de seis deputados votando não tem maioria para comparar. '+
     (demo ? '<strong>Votação e votos registrados são números de demonstração.</strong>'
           : 'Votação: resultado oficial do TSE na eleição de 2022; quociente eleitoral pela regra '+
             'do Código Eleitoral (votos válidos do estado ÷ vagas, art. 106). O voto é ligado ao '+
@@ -2210,6 +2244,7 @@ function abrir(d){
       <p class="partic-fr">Tem voto registrado em <b>${v.chamadas}</b> votações finais de
          texto-base desta legislatura${outros>0?`, ${outros} delas em obstrução ou presidindo a sessão`:''}.</p>
       ${textoDivergencia(d)?`<p class="partic-fr">${textoDivergencia(d)}</p>`:''}
+      ${linkLeisDivergentes(d)}
       <div class="partic-barra">
         ${seg(v.sim,'pb-sim','Sim')}${seg(v.nao,'pb-nao','Não')}${seg(v.abstencao,'pb-abs','Abstenção')}
       </div>

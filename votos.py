@@ -29,6 +29,7 @@ from collections import Counter, defaultdict
 from datetime import datetime
 
 import coleta  # a allowlist, o status e as faixas são os da Etapa A — nunca duplicar
+from temas import CATEGORIAS, CURTO, classificar  # a mesma classificação da página por tema
 
 ANOS = range(2023, 2027)  # legislatura atual
 BULK = coleta.CACHE / "bulk"
@@ -70,9 +71,15 @@ def linhas(tipo, anos, atualizar=False):
             yield from csv.DictReader(f, delimiter=";")
 
 
-def gravar_json(caminho, obj):
+def gravar_json(caminho, obj, um_por_linha=False):
+    """um_por_linha: uma entrada da lista por linha, compacta. Com a lista de quem
+    divergiu em cada lei, o formato indentado passava de 300 kB para quase 1 MB; assim
+    o arquivo fica pequeno e o diff diário no git continua legível, votação por votação."""
     tmp = caminho.with_suffix(".tmp")
-    tmp.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
+    texto = ("[\n" + ",\n".join(json.dumps(x, ensure_ascii=False, separators=(",", ":"))
+                                for x in obj) + "\n]\n") if um_por_linha \
+        else json.dumps(obj, ensure_ascii=False, indent=2)
+    tmp.write_text(texto, encoding="utf-8")
     os.replace(tmp, caminho)
 
 
@@ -146,9 +153,15 @@ def calcular_votacao(v, votos_da_votacao, ideologia):
 
 MIN_GRUPO = 5         # votantes Sim/Não do grupo, sem contar o próprio deputado
 MIN_COMPARAVEIS = 50  # abaixo disso o número não é publicado
+# Só há posição a contrariar quando o grupo votou junto: pelo menos 70% dos OUTROS
+# membros no mesmo lado. Partido rachado 55/45 não tem "maioria" — ninguém diverge.
+# Medido: mediana da medida por partido cai de 6,6% (maioria simples) para 3,5%.
+# Na faixa, o limite NÃO resolve o artefato: o NOVO segue no topo (58–60%), porque o
+# REPUBLICANOS vota coeso com mais de 70% da faixa "direita".
+MAIORIA_MINIMA = 0.70
 
 
-def divergencia(ids_votacoes, votos, ideologia):
+def divergencia(ids_votacoes, votos, ideologia, listar=()):
     """Quantas vezes cada deputado votou diferente da maioria do próprio grupo, em
     votações nominais do Plenário. Dois grupos: a faixa do espectro (pelo partido na
     data do voto) e o próprio partido.
@@ -167,9 +180,16 @@ def divergencia(ids_votacoes, votos, ideologia):
     - só Sim e Não; abstenção, obstrução e "Artigo 17" não são divergência;
     - a maioria é dos OUTROS membros do grupo (sem o voto do próprio deputado, que
       senão puxaria a maioria para si);
-    - empate, ou menos de MIN_GRUPO outros votantes Sim/Não no grupo: não conta;
+    - menos de MIN_GRUPO outros votantes Sim/Não no grupo, ou grupo sem maioria de
+      MAIORIA_MINIMA (partido dividido): não conta;
     - sem posição no espectro (partido sem score), não há faixa — o partido ainda conta.
+
+    `listar`: ids de votação (as 164 finais de texto-base) para as quais também se
+    devolve QUEM votou diferente da maioria do próprio partido — a lista de nomes da
+    página das leis. Mesma regra da estatística, para as duas nunca discordarem.
     """
+    listar = set(listar)
+    por_votacao = defaultdict(list)
     acum = defaultdict(lambda: {"faixa": [0, 0], "partido": [0, 0]})  # [comparáveis, diferentes]
     for idv in ids_votacoes:
         linhas = [r for r in votos[idv] if r["voto"] in (SIM, NAO)]
@@ -191,11 +211,19 @@ def divergencia(ids_votacoes, votos, ideologia):
                 c = grupos[g][k]
                 sim = c[SIM] - (r["voto"] == SIM)
                 nao = c[NAO] - (r["voto"] == NAO)
-                if sim + nao < MIN_GRUPO or sim == nao:
+                if sim + nao < MIN_GRUPO or max(sim, nao) < MAIORIA_MINIMA * (sim + nao):
                     continue
                 maioria = SIM if sim > nao else NAO
                 acum[dep][g][0] += 1
                 acum[dep][g][1] += r["voto"] != maioria
+                if g == "partido" and idv in listar and r["voto"] != maioria:
+                    # Compacto (3.573 entradas): [id, nome, partido, uf, voto, coesão].
+                    # A maioria é sempre o outro lado (só Sim/Não entram); coesão = parcela
+                    # dos colegas de partido que votou com a maioria.
+                    por_votacao[idv].append([dep, r["deputado_nome"], k, r["deputado_siglaUf"],
+                                             r["voto"], round(max(sim, nao) / (sim + nao), 2)])
+    for lista in por_votacao.values():
+        lista.sort(key=lambda x: (x[2], x[1]))
     saida = {}
     for dep, a in acum.items():
         res = {}
@@ -208,7 +236,7 @@ def divergencia(ids_votacoes, votos, ideologia):
             f"partido com menos de {MIN_GRUPO + 1} deputados votando: não há maioria para comparar"
             if n == 0 else f"menos de {MIN_COMPARAVEIS} votos comparáveis")
         saida[dep] = res
-    return saida
+    return saida, por_votacao
 
 
 # ---------------------------------------------------------------- pipeline
@@ -366,13 +394,19 @@ def main():
 
     # Divergência: todas as votações nominais do Plenário, não só as 164 de texto-base.
     plen = [i for i in votos if (votacoes.get(i) or {}).get("siglaOrgao") == "PLEN"]
-    div = divergencia(plen, votos, ideologia)
+    div, divergentes = divergencia(plen, votos, ideologia, listar=ids_sel)
     for d in deputados:
         d["divergencia"] = div.get(d["id"]) or {"faixa": None, "partido": None,
                                                 "nota": "sem voto Sim/Não no Plenário"}
+    # Página das leis: em cada uma das 164, quem votou diferente da maioria do próprio
+    # partido (mesma regra da estatística) e a categoria, pela classificação de temas.py.
+    for x in saida:
+        x["divergentes"] = divergentes.get(x["idVotacao"], [])
+        x["temas"] = [[CURTO[CATEGORIAS[i]], termo, fonte]
+                      for i, termo, fonte in classificar(x["ementa"] or "", "")]
 
     saida.sort(key=lambda x: x["data"], reverse=True)
-    gravar_json(PROPOSICOES, saida)
+    gravar_json(PROPOSICOES, saida, um_por_linha=True)
     gravar_json(coleta.SAIDA, deputados)
 
     # ------------------------------------------------ relatório

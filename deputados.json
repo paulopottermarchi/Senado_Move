@@ -106,12 +106,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 841,
-        "diferentes": 57
+        "comparaveis": 714,
+        "diferentes": 31
       },
       "partido": {
-        "comparaveis": 837,
-        "diferentes": 56
+        "comparaveis": 743,
+        "diferentes": 32
       },
       "nota": null
     }
@@ -210,12 +210,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1040,
-        "diferentes": 34
+        "comparaveis": 992,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 1039,
-        "diferentes": 32
+        "comparaveis": 1003,
+        "diferentes": 12
       },
       "nota": null
     }
@@ -326,12 +326,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 858,
-        "diferentes": 165
+        "comparaveis": 427,
+        "diferentes": 22
       },
       "partido": {
-        "comparaveis": 867,
-        "diferentes": 44
+        "comparaveis": 778,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -443,12 +443,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 659,
-        "diferentes": 37
+        "comparaveis": 559,
+        "diferentes": 14
       },
       "partido": {
-        "comparaveis": 648,
-        "diferentes": 24
+        "comparaveis": 554,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -560,8 +560,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 932,
-        "diferentes": 539
+        "comparaveis": 893,
+        "diferentes": 516
       },
       "partido": null,
       "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
@@ -674,12 +674,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 998,
-        "diferentes": 307
+        "comparaveis": 551,
+        "diferentes": 24
       },
       "partido": {
-        "comparaveis": 1005,
-        "diferentes": 28
+        "comparaveis": 882,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -819,12 +819,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 582,
-        "diferentes": 71
+        "comparaveis": 498,
+        "diferentes": 44
       },
       "partido": {
-        "comparaveis": 572,
-        "diferentes": 34
+        "comparaveis": 484,
+        "diferentes": 17
       },
       "nota": null
     }
@@ -994,12 +994,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 60,
+        "comparaveis": 59,
         "diferentes": 1
       },
       "partido": {
-        "comparaveis": 60,
-        "diferentes": 2
+        "comparaveis": 59,
+        "diferentes": 1
       },
       "nota": null
     }
@@ -1167,12 +1167,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 838,
-        "diferentes": 195
+        "comparaveis": 449,
+        "diferentes": 28
       },
       "partido": {
-        "comparaveis": 843,
-        "diferentes": 262
+        "comparaveis": 755,
+        "diferentes": 193
       },
       "nota": null
     }
@@ -1303,12 +1303,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 958,
-        "diferentes": 87
+        "comparaveis": 875,
+        "diferentes": 51
       },
       "partido": {
-        "comparaveis": 957,
-        "diferentes": 63
+        "comparaveis": 915,
+        "diferentes": 44
       },
       "nota": null
     }
@@ -1447,12 +1447,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 628,
-        "diferentes": 194
+        "comparaveis": 322,
+        "diferentes": 18
       },
       "partido": {
-        "comparaveis": 630,
-        "diferentes": 23
+        "comparaveis": 558,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -1564,12 +1564,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 950,
-        "diferentes": 12
+        "comparaveis": 943,
+        "diferentes": 6
       },
       "partido": {
-        "comparaveis": 948,
-        "diferentes": 7
+        "comparaveis": 944,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -1681,12 +1681,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 786,
-        "diferentes": 240
+        "comparaveis": 431,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 793,
-        "diferentes": 26
+        "comparaveis": 697,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -1851,12 +1851,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 989,
-        "diferentes": 192
+        "comparaveis": 518,
+        "diferentes": 40
       },
       "partido": {
-        "comparaveis": 995,
-        "diferentes": 75
+        "comparaveis": 904,
+        "diferentes": 39
       },
       "nota": null
     }
@@ -1962,12 +1962,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 930,
-        "diferentes": 22
+        "comparaveis": 886,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 930,
-        "diferentes": 23
+        "comparaveis": 900,
+        "diferentes": 7
       },
       "nota": null
     }
@@ -2105,12 +2105,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 937,
-        "diferentes": 238
+        "comparaveis": 793,
+        "diferentes": 163
       },
       "partido": {
-        "comparaveis": 936,
-        "diferentes": 239
+        "comparaveis": 812,
+        "diferentes": 165
       },
       "nota": null
     }
@@ -2222,12 +2222,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 982,
-        "diferentes": 19
+        "comparaveis": 973,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 980,
-        "diferentes": 15
+        "comparaveis": 977,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -2352,8 +2352,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 473,
-        "diferentes": 50
+        "comparaveis": 410,
+        "diferentes": 31
       },
       "partido": null,
       "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
@@ -2453,12 +2453,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 837,
-        "diferentes": 94
+        "comparaveis": 726,
+        "diferentes": 45
       },
       "partido": {
-        "comparaveis": 834,
-        "diferentes": 86
+        "comparaveis": 739,
+        "diferentes": 45
       },
       "nota": null
     }
@@ -2605,8 +2605,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 468,
-        "diferentes": 60
+        "comparaveis": 361,
+        "diferentes": 32
       },
       "nota": null
     }
@@ -2705,12 +2705,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 876,
-        "diferentes": 19
+        "comparaveis": 867,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 877,
-        "diferentes": 22
+        "comparaveis": 872,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -2819,12 +2819,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1068,
-        "diferentes": 13
+        "comparaveis": 1057,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 1067,
-        "diferentes": 13
+        "comparaveis": 1062,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -2924,8 +2924,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 959,
-        "diferentes": 463
+        "comparaveis": 703,
+        "diferentes": 252
       },
       "nota": null
     }
@@ -3090,7 +3090,7 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 945,
+        "comparaveis": 940,
         "diferentes": 5
       },
       "nota": null
@@ -3217,8 +3217,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 103,
-        "diferentes": 8
+        "comparaveis": 100,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -3334,12 +3334,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 89,
-        "diferentes": 1
+        "comparaveis": 87,
+        "diferentes": 0
       },
       "partido": {
-        "comparaveis": 117,
-        "diferentes": 1
+        "comparaveis": 112,
+        "diferentes": 0
       },
       "nota": null
     }
@@ -3468,12 +3468,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 357,
-        "diferentes": 56
+        "comparaveis": 237,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 357,
-        "diferentes": 26
+        "comparaveis": 330,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -3602,12 +3602,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 865,
-        "diferentes": 50
+        "comparaveis": 825,
+        "diferentes": 39
       },
       "partido": {
-        "comparaveis": 865,
-        "diferentes": 51
+        "comparaveis": 842,
+        "diferentes": 42
       },
       "nota": null
     }
@@ -3710,12 +3710,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 686,
-        "diferentes": 199
+        "comparaveis": 390,
+        "diferentes": 25
       },
       "partido": {
-        "comparaveis": 689,
-        "diferentes": 22
+        "comparaveis": 615,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -3841,12 +3841,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1066,
-        "diferentes": 52
+        "comparaveis": 993,
+        "diferentes": 20
       },
       "partido": {
-        "comparaveis": 1066,
-        "diferentes": 35
+        "comparaveis": 1025,
+        "diferentes": 22
       },
       "nota": null
     }
@@ -3952,8 +3952,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 763,
-        "diferentes": 198
+        "comparaveis": 656,
+        "diferentes": 152
       },
       "partido": null,
       "nota": "menos de 50 votos comparáveis"
@@ -4053,12 +4053,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 930,
-        "diferentes": 224
+        "comparaveis": 534,
+        "diferentes": 69
       },
       "partido": {
-        "comparaveis": 940,
-        "diferentes": 285
+        "comparaveis": 852,
+        "diferentes": 223
       },
       "nota": null
     }
@@ -4157,12 +4157,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 977,
-        "diferentes": 11
+        "comparaveis": 971,
+        "diferentes": 9
       },
       "partido": {
-        "comparaveis": 976,
-        "diferentes": 10
+        "comparaveis": 974,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -4261,12 +4261,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 985,
-        "diferentes": 11
+        "comparaveis": 977,
+        "diferentes": 8
       },
       "partido": {
-        "comparaveis": 986,
-        "diferentes": 12
+        "comparaveis": 980,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -4384,12 +4384,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 305,
-        "diferentes": 96
+        "comparaveis": 169,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 305,
-        "diferentes": 8
+        "comparaveis": 257,
+        "diferentes": 0
       },
       "nota": null
     }
@@ -4492,12 +4492,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 784,
-        "diferentes": 187
+        "comparaveis": 410,
+        "diferentes": 42
       },
       "partido": {
-        "comparaveis": 792,
-        "diferentes": 57
+        "comparaveis": 725,
+        "diferentes": 24
       },
       "nota": null
     }
@@ -4609,12 +4609,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 663,
-        "diferentes": 99
+        "comparaveis": 332,
+        "diferentes": 9
       },
       "partido": {
-        "comparaveis": 671,
-        "diferentes": 53
+        "comparaveis": 617,
+        "diferentes": 32
       },
       "nota": null
     }
@@ -4769,12 +4769,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 952,
-        "diferentes": 25
+        "comparaveis": 865,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 950,
-        "diferentes": 26
+        "comparaveis": 901,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -4923,12 +4923,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 93,
-        "diferentes": 19
+        "comparaveis": 50,
+        "diferentes": 2
       },
       "partido": {
-        "comparaveis": 95,
-        "diferentes": 3
+        "comparaveis": 88,
+        "diferentes": 2
       },
       "nota": null
     }
@@ -5045,8 +5045,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 512,
-        "diferentes": 106
+        "comparaveis": 463,
+        "diferentes": 88
       },
       "nota": null
     }
@@ -5145,12 +5145,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 818,
-        "diferentes": 43
+        "comparaveis": 685,
+        "diferentes": 20
       },
       "partido": {
-        "comparaveis": 815,
-        "diferentes": 46
+        "comparaveis": 704,
+        "diferentes": 19
       },
       "nota": null
     }
@@ -5268,12 +5268,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 849,
-        "diferentes": 24
+        "comparaveis": 813,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 849,
-        "diferentes": 22
+        "comparaveis": 820,
+        "diferentes": 12
       },
       "nota": null
     }
@@ -5372,12 +5372,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1053,
-        "diferentes": 34
+        "comparaveis": 1013,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 1053,
-        "diferentes": 34
+        "comparaveis": 1035,
+        "diferentes": 27
       },
       "nota": null
     }
@@ -5515,12 +5515,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 393,
-        "diferentes": 105
+        "comparaveis": 222,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 396,
-        "diferentes": 13
+        "comparaveis": 362,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -5619,12 +5619,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 980,
-        "diferentes": 332
+        "comparaveis": 514,
+        "diferentes": 76
       },
       "partido": {
-        "comparaveis": 984,
-        "diferentes": 365
+        "comparaveis": 896,
+        "diferentes": 327
       },
       "nota": null
     }
@@ -5697,12 +5697,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 951,
-        "diferentes": 52
+        "comparaveis": 792,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 948,
-        "diferentes": 52
+        "comparaveis": 818,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -5808,8 +5808,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 960,
-        "diferentes": 459
+        "comparaveis": 814,
+        "diferentes": 353
       },
       "partido": null,
       "nota": "menos de 50 votos comparáveis"
@@ -5988,12 +5988,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 990,
-        "diferentes": 12
+        "comparaveis": 979,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 988,
-        "diferentes": 7
+        "comparaveis": 984,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -6172,8 +6172,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 759,
-        "diferentes": 90
+        "comparaveis": 642,
+        "diferentes": 50
       },
       "partido": null,
       "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
@@ -6316,11 +6316,11 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 100,
-        "diferentes": 15
+        "comparaveis": 57,
+        "diferentes": 0
       },
       "partido": {
-        "comparaveis": 100,
+        "comparaveis": 93,
         "diferentes": 1
       },
       "nota": null
@@ -6460,8 +6460,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 657,
-        "diferentes": 45
+        "comparaveis": 475,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -6646,12 +6646,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 767,
-        "diferentes": 254
+        "comparaveis": 429,
+        "diferentes": 58
       },
       "partido": {
-        "comparaveis": 769,
-        "diferentes": 51
+        "comparaveis": 694,
+        "diferentes": 27
       },
       "nota": null
     }
@@ -6750,12 +6750,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 927,
-        "diferentes": 266
+        "comparaveis": 509,
+        "diferentes": 21
       },
       "partido": {
-        "comparaveis": 936,
-        "diferentes": 27
+        "comparaveis": 835,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -6893,12 +6893,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 994,
-        "diferentes": 55
+        "comparaveis": 949,
+        "diferentes": 40
       },
       "partido": {
-        "comparaveis": 994,
-        "diferentes": 55
+        "comparaveis": 967,
+        "diferentes": 43
       },
       "nota": null
     }
@@ -7036,8 +7036,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 825,
-        "diferentes": 80
+        "comparaveis": 692,
+        "diferentes": 48
       },
       "partido": null,
       "nota": "menos de 50 votos comparáveis"
@@ -7164,8 +7164,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 103,
-        "diferentes": 3
+        "comparaveis": 100,
+        "diferentes": 1
       },
       "nota": null
     }
@@ -7290,12 +7290,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 649,
-        "diferentes": 26
+        "comparaveis": 555,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 647,
-        "diferentes": 33
+        "comparaveis": 582,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -7394,12 +7394,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 960,
-        "diferentes": 84
+        "comparaveis": 877,
+        "diferentes": 44
       },
       "partido": {
-        "comparaveis": 981,
-        "diferentes": 49
+        "comparaveis": 919,
+        "diferentes": 29
       },
       "nota": null
     }
@@ -7498,12 +7498,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1101,
-        "diferentes": 329
+        "comparaveis": 605,
+        "diferentes": 22
       },
       "partido": {
-        "comparaveis": 1109,
-        "diferentes": 39
+        "comparaveis": 974,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -7666,12 +7666,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 908,
-        "diferentes": 7
+        "comparaveis": 900,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 907,
-        "diferentes": 5
+        "comparaveis": 904,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -7784,8 +7784,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 1045,
-        "diferentes": 50
+        "comparaveis": 727,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -7897,12 +7897,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 814,
-        "diferentes": 113
+        "comparaveis": 684,
+        "diferentes": 58
       },
       "partido": {
-        "comparaveis": 804,
-        "diferentes": 109
+        "comparaveis": 691,
+        "diferentes": 66
       },
       "nota": null
     }
@@ -8021,12 +8021,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 150,
-        "diferentes": 41
+        "comparaveis": 92,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 150,
-        "diferentes": 11
+        "comparaveis": 139,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -8125,12 +8125,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1052,
-        "diferentes": 95
+        "comparaveis": 892,
+        "diferentes": 48
       },
       "partido": {
-        "comparaveis": 1013,
-        "diferentes": 39
+        "comparaveis": 851,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -8242,12 +8242,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 904,
-        "diferentes": 215
+        "comparaveis": 477,
+        "diferentes": 56
       },
       "partido": {
-        "comparaveis": 910,
-        "diferentes": 74
+        "comparaveis": 819,
+        "diferentes": 36
       },
       "nota": null
     }
@@ -8359,12 +8359,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 982,
-        "diferentes": 195
+        "comparaveis": 509,
+        "diferentes": 25
       },
       "partido": {
-        "comparaveis": 987,
-        "diferentes": 50
+        "comparaveis": 894,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -8502,12 +8502,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1027,
-        "diferentes": 8
+        "comparaveis": 1018,
+        "diferentes": 6
       },
       "partido": {
-        "comparaveis": 1028,
-        "diferentes": 14
+        "comparaveis": 1022,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -8607,8 +8607,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 567,
-        "diferentes": 23
+        "comparaveis": 484,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -8707,12 +8707,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1026,
-        "diferentes": 347
+        "comparaveis": 559,
+        "diferentes": 76
       },
       "partido": {
-        "comparaveis": 1030,
-        "diferentes": 75
+        "comparaveis": 966,
+        "diferentes": 57
       },
       "nota": null
     }
@@ -8811,12 +8811,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 973,
-        "diferentes": 261
+        "comparaveis": 510,
+        "diferentes": 92
       },
       "partido": {
-        "comparaveis": 979,
-        "diferentes": 111
+        "comparaveis": 886,
+        "diferentes": 65
       },
       "nota": null
     }
@@ -8915,12 +8915,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 949,
-        "diferentes": 25
+        "comparaveis": 940,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 949,
-        "diferentes": 29
+        "comparaveis": 944,
+        "diferentes": 24
       },
       "nota": null
     }
@@ -9032,12 +9032,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 811,
-        "diferentes": 144
+        "comparaveis": 432,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 819,
-        "diferentes": 69
+        "comparaveis": 739,
+        "diferentes": 34
       },
       "nota": null
     }
@@ -9136,12 +9136,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 958,
-        "diferentes": 217
+        "comparaveis": 487,
+        "diferentes": 54
       },
       "partido": {
-        "comparaveis": 968,
-        "diferentes": 86
+        "comparaveis": 877,
+        "diferentes": 35
       },
       "nota": null
     }
@@ -9273,12 +9273,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 928,
-        "diferentes": 170
+        "comparaveis": 485,
+        "diferentes": 20
       },
       "partido": {
-        "comparaveis": 938,
-        "diferentes": 62
+        "comparaveis": 854,
+        "diferentes": 29
       },
       "nota": null
     }
@@ -9398,8 +9398,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 499,
-        "diferentes": 159
+        "comparaveis": 337,
+        "diferentes": 54
       },
       "nota": null
     }
@@ -9523,12 +9523,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 402,
-        "diferentes": 50
+        "comparaveis": 349,
+        "diferentes": 30
       },
       "partido": {
-        "comparaveis": 399,
-        "diferentes": 47
+        "comparaveis": 365,
+        "diferentes": 34
       },
       "nota": null
     }
@@ -9673,12 +9673,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 274,
-        "diferentes": 7
+        "comparaveis": 259,
+        "diferentes": 3
       },
       "partido": {
-        "comparaveis": 273,
-        "diferentes": 8
+        "comparaveis": 267,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -9804,8 +9804,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 982,
-        "diferentes": 79
+        "comparaveis": 684,
+        "diferentes": 22
       },
       "nota": null
     }
@@ -9921,12 +9921,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 864,
-        "diferentes": 236
+        "comparaveis": 428,
+        "diferentes": 67
       },
       "partido": {
-        "comparaveis": 867,
-        "diferentes": 80
+        "comparaveis": 782,
+        "diferentes": 37
       },
       "nota": null
     }
@@ -10090,12 +10090,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 934,
-        "diferentes": 234
+        "comparaveis": 596,
+        "diferentes": 86
       },
       "partido": {
-        "comparaveis": 932,
-        "diferentes": 210
+        "comparaveis": 806,
+        "diferentes": 166
       },
       "nota": null
     }
@@ -10214,12 +10214,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 999,
-        "diferentes": 9
+        "comparaveis": 988,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 999,
-        "diferentes": 10
+        "comparaveis": 994,
+        "diferentes": 7
       },
       "nota": null
     }
@@ -10370,12 +10370,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 977,
-        "diferentes": 10
+        "comparaveis": 969,
+        "diferentes": 8
       },
       "partido": {
-        "comparaveis": 978,
-        "diferentes": 14
+        "comparaveis": 973,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -10474,12 +10474,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 728,
-        "diferentes": 2
+        "comparaveis": 721,
+        "diferentes": 1
       },
       "partido": {
-        "comparaveis": 728,
-        "diferentes": 4
+        "comparaveis": 724,
+        "diferentes": 1
       },
       "nota": null
     }
@@ -10591,12 +10591,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 837,
-        "diferentes": 261
+        "comparaveis": 441,
+        "diferentes": 106
       },
       "partido": {
-        "comparaveis": 844,
-        "diferentes": 126
+        "comparaveis": 755,
+        "diferentes": 78
       },
       "nota": null
     }
@@ -10695,12 +10695,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 894,
-        "diferentes": 308
+        "comparaveis": 499,
+        "diferentes": 59
       },
       "partido": {
-        "comparaveis": 896,
-        "diferentes": 56
+        "comparaveis": 794,
+        "diferentes": 23
       },
       "nota": null
     }
@@ -10799,12 +10799,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 838,
-        "diferentes": 134
+        "comparaveis": 830,
+        "diferentes": 127
       },
       "partido": {
-        "comparaveis": 834,
-        "diferentes": 7
+        "comparaveis": 826,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -10933,12 +10933,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 750,
-        "diferentes": 76
+        "comparaveis": 629,
+        "diferentes": 30
       },
       "partido": {
-        "comparaveis": 750,
-        "diferentes": 71
+        "comparaveis": 642,
+        "diferentes": 30
       },
       "nota": null
     }
@@ -11072,12 +11072,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 717,
-        "diferentes": 308
+        "comparaveis": 363,
+        "diferentes": 114
       },
       "partido": {
-        "comparaveis": 722,
-        "diferentes": 149
+        "comparaveis": 640,
+        "diferentes": 110
       },
       "nota": null
     }
@@ -11242,12 +11242,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 836,
-        "diferentes": 42
+        "comparaveis": 798,
+        "diferentes": 32
       },
       "partido": {
-        "comparaveis": 836,
-        "diferentes": 43
+        "comparaveis": 809,
+        "diferentes": 34
       },
       "nota": null
     }
@@ -11383,12 +11383,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 53,
-        "diferentes": 3
+        "comparaveis": 52,
+        "diferentes": 2
       },
       "partido": {
-        "comparaveis": 173,
-        "diferentes": 12
+        "comparaveis": 129,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -11500,12 +11500,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 918,
-        "diferentes": 266
+        "comparaveis": 509,
+        "diferentes": 36
       },
       "partido": {
-        "comparaveis": 924,
-        "diferentes": 67
+        "comparaveis": 821,
+        "diferentes": 37
       },
       "nota": null
     }
@@ -11629,12 +11629,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 895,
-        "diferentes": 331
+        "comparaveis": 472,
+        "diferentes": 60
       },
       "partido": {
-        "comparaveis": 898,
-        "diferentes": 54
+        "comparaveis": 808,
+        "diferentes": 29
       },
       "nota": null
     }
@@ -11785,12 +11785,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1083,
-        "diferentes": 167
+        "comparaveis": 1072,
+        "diferentes": 161
       },
       "partido": {
-        "comparaveis": 1071,
-        "diferentes": 15
+        "comparaveis": 1064,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -11902,12 +11902,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 838,
-        "diferentes": 207
+        "comparaveis": 436,
+        "diferentes": 52
       },
       "partido": {
-        "comparaveis": 841,
-        "diferentes": 63
+        "comparaveis": 761,
+        "diferentes": 23
       },
       "nota": null
     }
@@ -12010,12 +12010,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 901,
-        "diferentes": 218
+        "comparaveis": 483,
+        "diferentes": 58
       },
       "partido": {
-        "comparaveis": 908,
-        "diferentes": 453
+        "comparaveis": 813,
+        "diferentes": 373
       },
       "nota": null
     }
@@ -12186,12 +12186,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 909,
-        "diferentes": 270
+        "comparaveis": 514,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 915,
-        "diferentes": 28
+        "comparaveis": 812,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -12350,12 +12350,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 974,
-        "diferentes": 57
+        "comparaveis": 817,
+        "diferentes": 21
       },
       "partido": {
-        "comparaveis": 969,
-        "diferentes": 57
+        "comparaveis": 842,
+        "diferentes": 25
       },
       "nota": null
     }
@@ -12455,8 +12455,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 103,
-        "diferentes": 2
+        "comparaveis": 100,
+        "diferentes": 0
       },
       "nota": null
     }
@@ -12555,12 +12555,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 923,
-        "diferentes": 247
+        "comparaveis": 788,
+        "diferentes": 166
       },
       "partido": {
-        "comparaveis": 921,
-        "diferentes": 243
+        "comparaveis": 814,
+        "diferentes": 173
       },
       "nota": null
     }
@@ -12658,13 +12658,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 56,
-        "diferentes": 6
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 966,
-        "diferentes": 447
+        "comparaveis": 704,
+        "diferentes": 234
       },
       "nota": null
     }
@@ -12776,12 +12773,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 893,
-        "diferentes": 194
+        "comparaveis": 464,
+        "diferentes": 28
       },
       "partido": {
-        "comparaveis": 903,
-        "diferentes": 43
+        "comparaveis": 826,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -12880,12 +12877,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 844,
-        "diferentes": 138
+        "comparaveis": 455,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 850,
-        "diferentes": 43
+        "comparaveis": 779,
+        "diferentes": 19
       },
       "nota": null
     }
@@ -12984,12 +12981,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 979,
-        "diferentes": 206
+        "comparaveis": 516,
+        "diferentes": 34
       },
       "partido": {
-        "comparaveis": 990,
-        "diferentes": 56
+        "comparaveis": 897,
+        "diferentes": 21
       },
       "nota": null
     }
@@ -13089,8 +13086,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 985,
-        "diferentes": 401
+        "comparaveis": 705,
+        "diferentes": 183
       },
       "nota": null
     }
@@ -13239,12 +13236,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 799,
-        "diferentes": 179
+        "comparaveis": 434,
+        "diferentes": 52
       },
       "partido": {
-        "comparaveis": 809,
-        "diferentes": 372
+        "comparaveis": 725,
+        "diferentes": 300
       },
       "nota": null
     }
@@ -13344,8 +13341,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 995,
-        "diferentes": 280
+        "comparaveis": 700,
+        "diferentes": 111
       },
       "nota": null
     }
@@ -13457,12 +13454,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1005,
-        "diferentes": 229
+        "comparaveis": 554,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 1013,
-        "diferentes": 85
+        "comparaveis": 909,
+        "diferentes": 38
       },
       "nota": null
     }
@@ -13600,12 +13597,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 989,
-        "diferentes": 154
+        "comparaveis": 803,
+        "diferentes": 106
       },
       "partido": {
-        "comparaveis": 970,
-        "diferentes": 189
+        "comparaveis": 815,
+        "diferentes": 151
       },
       "nota": null
     }
@@ -13705,8 +13702,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 801,
-        "diferentes": 18
+        "comparaveis": 795,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -13806,8 +13803,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 841,
-        "diferentes": 28
+        "comparaveis": 594,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -13979,8 +13976,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 841,
-        "diferentes": 56
+        "comparaveis": 593,
+        "diferentes": 30
       },
       "nota": null
     }
@@ -14079,12 +14076,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 743,
-        "diferentes": 10
+        "comparaveis": 737,
+        "diferentes": 8
       },
       "partido": {
-        "comparaveis": 742,
-        "diferentes": 12
+        "comparaveis": 739,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -14182,13 +14179,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 55,
-        "diferentes": 4
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 888,
-        "diferentes": 88
+        "comparaveis": 607,
+        "diferentes": 30
       },
       "nota": null
     }
@@ -14287,12 +14281,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1053,
-        "diferentes": 157
+        "comparaveis": 568,
+        "diferentes": 26
       },
       "partido": {
-        "comparaveis": 1061,
-        "diferentes": 167
+        "comparaveis": 961,
+        "diferentes": 126
       },
       "nota": null
     }
@@ -14461,8 +14455,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 904,
-        "diferentes": 5
+        "comparaveis": 896,
+        "diferentes": 2
       },
       "nota": null
     }
@@ -14561,12 +14555,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 789,
-        "diferentes": 292
+        "comparaveis": 446,
+        "diferentes": 97
       },
       "partido": {
-        "comparaveis": 797,
-        "diferentes": 102
+        "comparaveis": 716,
+        "diferentes": 89
       },
       "nota": null
     }
@@ -14678,12 +14672,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 870,
-        "diferentes": 229
+        "comparaveis": 457,
+        "diferentes": 79
       },
       "partido": {
-        "comparaveis": 878,
-        "diferentes": 98
+        "comparaveis": 800,
+        "diferentes": 58
       },
       "nota": null
     }
@@ -14795,12 +14789,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 935,
-        "diferentes": 341
+        "comparaveis": 802,
+        "diferentes": 256
       },
       "partido": {
-        "comparaveis": 925,
-        "diferentes": 282
+        "comparaveis": 833,
+        "diferentes": 223
       },
       "nota": null
     }
@@ -14915,13 +14909,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 53,
-        "diferentes": 12
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 842,
-        "diferentes": 163
+        "comparaveis": 577,
+        "diferentes": 125
       },
       "nota": null
     }
@@ -15020,12 +15011,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 882,
-        "diferentes": 227
+        "comparaveis": 475,
+        "diferentes": 60
       },
       "partido": {
-        "comparaveis": 890,
-        "diferentes": 71
+        "comparaveis": 809,
+        "diferentes": 31
       },
       "nota": null
     }
@@ -15168,8 +15159,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 780,
-        "diferentes": 80
+        "comparaveis": 547,
+        "diferentes": 36
       },
       "nota": null
     }
@@ -15323,12 +15314,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 450,
-        "diferentes": 108
+        "comparaveis": 232,
+        "diferentes": 25
       },
       "partido": {
-        "comparaveis": 451,
-        "diferentes": 151
+        "comparaveis": 397,
+        "diferentes": 128
       },
       "nota": null
     }
@@ -15452,8 +15443,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 608,
-        "diferentes": 175
+        "comparaveis": 437,
+        "diferentes": 89
       },
       "nota": null
     }
@@ -15552,12 +15543,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 993,
-        "diferentes": 38
+        "comparaveis": 946,
+        "diferentes": 25
       },
       "partido": {
-        "comparaveis": 1047,
-        "diferentes": 41
+        "comparaveis": 1011,
+        "diferentes": 26
       },
       "nota": null
     }
@@ -15656,12 +15647,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 812,
-        "diferentes": 5
+        "comparaveis": 804,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 812,
-        "diferentes": 8
+        "comparaveis": 808,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -15761,8 +15752,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 597,
-        "diferentes": 100
+        "comparaveis": 525,
+        "diferentes": 84
       },
       "nota": null
     }
@@ -15861,12 +15852,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 957,
-        "diferentes": 299
+        "comparaveis": 545,
+        "diferentes": 59
       },
       "partido": {
-        "comparaveis": 958,
-        "diferentes": 47
+        "comparaveis": 851,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -15988,12 +15979,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 636,
-        "diferentes": 226
+        "comparaveis": 313,
+        "diferentes": 36
       },
       "partido": {
-        "comparaveis": 636,
-        "diferentes": 89
+        "comparaveis": 536,
+        "diferentes": 59
       },
       "nota": null
     }
@@ -16092,12 +16083,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 899,
-        "diferentes": 223
+        "comparaveis": 467,
+        "diferentes": 53
       },
       "partido": {
-        "comparaveis": 906,
-        "diferentes": 63
+        "comparaveis": 820,
+        "diferentes": 23
       },
       "nota": null
     }
@@ -16196,12 +16187,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 750,
-        "diferentes": 143
+        "comparaveis": 415,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 780,
-        "diferentes": 122
+        "comparaveis": 700,
+        "diferentes": 84
       },
       "nota": null
     }
@@ -16326,12 +16317,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 694,
-        "diferentes": 134
+        "comparaveis": 379,
+        "diferentes": 16
       },
       "partido": {
-        "comparaveis": 698,
-        "diferentes": 36
+        "comparaveis": 632,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -16430,12 +16421,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1027,
-        "diferentes": 226
+        "comparaveis": 569,
+        "diferentes": 64
       },
       "partido": {
-        "comparaveis": 1039,
-        "diferentes": 431
+        "comparaveis": 942,
+        "diferentes": 349
       },
       "nota": null
     }
@@ -16548,8 +16539,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 993,
-        "diferentes": 83
+        "comparaveis": 699,
+        "diferentes": 25
       },
       "nota": null
     }
@@ -16656,8 +16647,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 1064,
-        "diferentes": 98
+        "comparaveis": 740,
+        "diferentes": 52
       },
       "nota": null
     }
@@ -16763,12 +16754,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1104,
-        "diferentes": 610
+        "comparaveis": 935,
+        "diferentes": 494
       },
       "partido": {
-        "comparaveis": 1105,
-        "diferentes": 628
+        "comparaveis": 983,
+        "diferentes": 536
       },
       "nota": null
     }
@@ -16867,12 +16858,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1010,
-        "diferentes": 275
+        "comparaveis": 521,
+        "diferentes": 89
       },
       "partido": {
-        "comparaveis": 1018,
-        "diferentes": 104
+        "comparaveis": 928,
+        "diferentes": 53
       },
       "nota": null
     }
@@ -16971,12 +16962,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1002,
-        "diferentes": 17
+        "comparaveis": 991,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 1003,
-        "diferentes": 23
+        "comparaveis": 997,
+        "diferentes": 17
       },
       "nota": null
     }
@@ -17083,12 +17074,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 540,
-        "diferentes": 68
+        "comparaveis": 284,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 544,
-        "diferentes": 100
+        "comparaveis": 495,
+        "diferentes": 81
       },
       "nota": null
     }
@@ -17226,12 +17217,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 657,
-        "diferentes": 183
+        "comparaveis": 383,
+        "diferentes": 32
       },
       "partido": {
-        "comparaveis": 661,
-        "diferentes": 59
+        "comparaveis": 589,
+        "diferentes": 34
       },
       "nota": null
     }
@@ -17330,12 +17321,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 973,
-        "diferentes": 294
+        "comparaveis": 559,
+        "diferentes": 49
       },
       "partido": {
-        "comparaveis": 975,
-        "diferentes": 41
+        "comparaveis": 880,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -17460,12 +17451,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 853,
-        "diferentes": 146
+        "comparaveis": 819,
+        "diferentes": 133
       },
       "partido": {
-        "comparaveis": 892,
-        "diferentes": 152
+        "comparaveis": 868,
+        "diferentes": 143
       },
       "nota": null
     }
@@ -17638,12 +17629,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 993,
-        "diferentes": 225
+        "comparaveis": 542,
+        "diferentes": 18
       },
       "partido": {
-        "comparaveis": 1001,
-        "diferentes": 131
+        "comparaveis": 894,
+        "diferentes": 91
       },
       "nota": null
     }
@@ -17742,12 +17733,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1020,
-        "diferentes": 16
+        "comparaveis": 1009,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 1019,
-        "diferentes": 13
+        "comparaveis": 1014,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -17885,12 +17876,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 924,
-        "diferentes": 241
+        "comparaveis": 508,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 932,
-        "diferentes": 38
+        "comparaveis": 828,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -17989,12 +17980,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 938,
-        "diferentes": 13
+        "comparaveis": 926,
+        "diferentes": 6
       },
       "partido": {
-        "comparaveis": 936,
-        "diferentes": 9
+        "comparaveis": 932,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -18140,12 +18131,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 584,
-        "diferentes": 201
+        "comparaveis": 320,
+        "diferentes": 40
       },
       "partido": {
-        "comparaveis": 589,
-        "diferentes": 37
+        "comparaveis": 532,
+        "diferentes": 21
       },
       "nota": null
     }
@@ -18283,12 +18274,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 871,
-        "diferentes": 133
+        "comparaveis": 463,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 881,
-        "diferentes": 49
+        "comparaveis": 799,
+        "diferentes": 20
       },
       "nota": null
     }
@@ -18387,12 +18378,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 853,
-        "diferentes": 55
+        "comparaveis": 792,
+        "diferentes": 34
       },
       "partido": {
-        "comparaveis": 851,
-        "diferentes": 61
+        "comparaveis": 810,
+        "diferentes": 44
       },
       "nota": null
     }
@@ -18508,11 +18499,11 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 275,
-        "diferentes": 56
+        "comparaveis": 172,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 280,
+        "comparaveis": 257,
         "diferentes": 1
       },
       "nota": null
@@ -18616,12 +18607,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 199,
-        "diferentes": 23
+        "comparaveis": 114,
+        "diferentes": 2
       },
       "partido": {
-        "comparaveis": 199,
-        "diferentes": 10
+        "comparaveis": 184,
+        "diferentes": 3
       },
       "nota": null
     }
@@ -18776,12 +18767,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 231,
-        "diferentes": 91
+        "comparaveis": 157,
+        "diferentes": 44
       },
       "partido": {
-        "comparaveis": 231,
-        "diferentes": 43
+        "comparaveis": 209,
+        "diferentes": 37
       },
       "nota": null
     }
@@ -18881,8 +18872,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 883,
-        "diferentes": 369
+        "comparaveis": 655,
+        "diferentes": 180
       },
       "nota": null
     }
@@ -18981,12 +18972,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1022,
-        "diferentes": 20
+        "comparaveis": 1013,
+        "diferentes": 14
       },
       "partido": {
-        "comparaveis": 1020,
-        "diferentes": 17
+        "comparaveis": 1017,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -19196,12 +19187,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 806,
-        "diferentes": 218
+        "comparaveis": 459,
+        "diferentes": 40
       },
       "partido": {
-        "comparaveis": 812,
-        "diferentes": 109
+        "comparaveis": 737,
+        "diferentes": 77
       },
       "nota": null
     }
@@ -19320,12 +19311,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 862,
-        "diferentes": 187
+        "comparaveis": 452,
+        "diferentes": 38
       },
       "partido": {
-        "comparaveis": 868,
-        "diferentes": 57
+        "comparaveis": 782,
+        "diferentes": 22
       },
       "nota": null
     }
@@ -19437,12 +19428,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 989,
-        "diferentes": 218
+        "comparaveis": 552,
+        "diferentes": 41
       },
       "partido": {
-        "comparaveis": 996,
-        "diferentes": 267
+        "comparaveis": 899,
+        "diferentes": 198
       },
       "nota": null
     }
@@ -19541,12 +19532,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 841,
-        "diferentes": 276
+        "comparaveis": 474,
+        "diferentes": 58
       },
       "partido": {
-        "comparaveis": 844,
-        "diferentes": 65
+        "comparaveis": 794,
+        "diferentes": 51
       },
       "nota": null
     }
@@ -19666,8 +19657,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 972,
-        "diferentes": 278
+        "comparaveis": 721,
+        "diferentes": 120
       },
       "nota": null
     }
@@ -19766,12 +19757,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 658,
-        "diferentes": 53
+        "comparaveis": 550,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 658,
-        "diferentes": 42
+        "comparaveis": 590,
+        "diferentes": 27
       },
       "nota": null
     }
@@ -19877,12 +19868,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 947,
-        "diferentes": 140
+        "comparaveis": 863,
+        "diferentes": 104
       },
       "partido": {
-        "comparaveis": 959,
-        "diferentes": 144
+        "comparaveis": 904,
+        "diferentes": 119
       },
       "nota": null
     }
@@ -19981,12 +19972,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 716,
-        "diferentes": 79
+        "comparaveis": 599,
+        "diferentes": 44
       },
       "partido": {
-        "comparaveis": 710,
-        "diferentes": 70
+        "comparaveis": 624,
+        "diferentes": 41
       },
       "nota": null
     }
@@ -20085,12 +20076,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 895,
-        "diferentes": 109
+        "comparaveis": 819,
+        "diferentes": 80
       },
       "partido": {
-        "comparaveis": 891,
-        "diferentes": 123
+        "comparaveis": 847,
+        "diferentes": 100
       },
       "nota": null
     }
@@ -20214,12 +20205,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 424,
-        "diferentes": 32
+        "comparaveis": 382,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 446,
-        "diferentes": 20
+        "comparaveis": 426,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -20370,12 +20361,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 894,
-        "diferentes": 275
+        "comparaveis": 486,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 901,
-        "diferentes": 35
+        "comparaveis": 794,
+        "diferentes": 24
       },
       "nota": null
     }
@@ -20479,8 +20470,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 819,
-        "diferentes": 228
+        "comparaveis": 571,
+        "diferentes": 77
       },
       "nota": null
     }
@@ -20645,12 +20636,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 519,
-        "diferentes": 58
+        "comparaveis": 440,
+        "diferentes": 46
       },
       "partido": {
-        "comparaveis": 513,
-        "diferentes": 56
+        "comparaveis": 460,
+        "diferentes": 46
       },
       "nota": null
     }
@@ -20766,12 +20757,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 811,
-        "diferentes": 168
+        "comparaveis": 439,
+        "diferentes": 35
       },
       "partido": {
-        "comparaveis": 815,
-        "diferentes": 89
+        "comparaveis": 748,
+        "diferentes": 66
       },
       "nota": null
     }
@@ -20897,8 +20888,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 323,
-        "diferentes": 13
+        "comparaveis": 230,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -21010,12 +21001,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 803,
-        "diferentes": 87
+        "comparaveis": 659,
+        "diferentes": 48
       },
       "partido": {
-        "comparaveis": 799,
-        "diferentes": 71
+        "comparaveis": 706,
+        "diferentes": 49
       },
       "nota": null
     }
@@ -21127,12 +21118,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 706,
-        "diferentes": 110
+        "comparaveis": 387,
+        "diferentes": 6
       },
       "partido": {
-        "comparaveis": 708,
-        "diferentes": 28
+        "comparaveis": 643,
+        "diferentes": 12
       },
       "nota": null
     }
@@ -21232,8 +21223,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 463,
-        "diferentes": 8
+        "comparaveis": 460,
+        "diferentes": 7
       },
       "nota": null
     }
@@ -21332,12 +21323,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 932,
-        "diferentes": 59
+        "comparaveis": 850,
+        "diferentes": 24
       },
       "partido": {
-        "comparaveis": 932,
-        "diferentes": 40
+        "comparaveis": 873,
+        "diferentes": 23
       },
       "nota": null
     }
@@ -21436,12 +21427,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 798,
-        "diferentes": 116
+        "comparaveis": 790,
+        "diferentes": 113
       },
       "partido": {
-        "comparaveis": 797,
-        "diferentes": 4
+        "comparaveis": 791,
+        "diferentes": 3
       },
       "nota": null
     }
@@ -21579,12 +21570,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1076,
-        "diferentes": 40
+        "comparaveis": 1066,
+        "diferentes": 36
       },
       "partido": {
-        "comparaveis": 1076,
-        "diferentes": 45
+        "comparaveis": 1071,
+        "diferentes": 40
       },
       "nota": null
     }
@@ -21730,12 +21721,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 911,
-        "diferentes": 173
+        "comparaveis": 475,
+        "diferentes": 22
       },
       "partido": {
-        "comparaveis": 918,
-        "diferentes": 37
+        "comparaveis": 833,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -21859,12 +21850,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 510,
-        "diferentes": 44
+        "comparaveis": 481,
+        "diferentes": 30
       },
       "partido": {
-        "comparaveis": 510,
-        "diferentes": 44
+        "comparaveis": 493,
+        "diferentes": 33
       },
       "nota": null
     }
@@ -22004,12 +21995,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 588,
-        "diferentes": 44
+        "comparaveis": 508,
+        "diferentes": 27
       },
       "partido": {
-        "comparaveis": 585,
-        "diferentes": 40
+        "comparaveis": 528,
+        "diferentes": 30
       },
       "nota": null
     }
@@ -22134,12 +22125,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 909,
-        "diferentes": 281
+        "comparaveis": 496,
+        "diferentes": 120
       },
       "partido": {
-        "comparaveis": 916,
-        "diferentes": 525
+        "comparaveis": 815,
+        "diferentes": 439
       },
       "nota": null
     }
@@ -22272,8 +22263,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 131,
-        "diferentes": 44
+        "comparaveis": 109,
+        "diferentes": 29
       },
       "nota": null
     }
@@ -22376,12 +22367,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 737,
-        "diferentes": 273
+        "comparaveis": 380,
+        "diferentes": 56
       },
       "partido": {
-        "comparaveis": 739,
-        "diferentes": 28
+        "comparaveis": 691,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -22531,12 +22522,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 442,
-        "diferentes": 127
+        "comparaveis": 254,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 445,
-        "diferentes": 22
+        "comparaveis": 411,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -22649,8 +22640,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 1001,
-        "diferentes": 326
+        "comparaveis": 718,
+        "diferentes": 139
       },
       "nota": null
     }
@@ -22749,12 +22740,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 985,
-        "diferentes": 282
+        "comparaveis": 828,
+        "diferentes": 206
       },
       "partido": {
-        "comparaveis": 984,
-        "diferentes": 273
+        "comparaveis": 855,
+        "diferentes": 209
       },
       "nota": null
     }
@@ -22858,8 +22849,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 741,
-        "diferentes": 40
+        "comparaveis": 505,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -22984,12 +22975,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 820,
-        "diferentes": 259
+        "comparaveis": 427,
+        "diferentes": 29
       },
       "partido": {
-        "comparaveis": 864,
-        "diferentes": 58
+        "comparaveis": 759,
+        "diferentes": 40
       },
       "nota": null
     }
@@ -23095,13 +23086,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 54,
-        "diferentes": 24
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 714,
-        "diferentes": 81
+        "comparaveis": 501,
+        "diferentes": 64
       },
       "nota": null
     }
@@ -23238,12 +23226,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 833,
-        "diferentes": 62
+        "comparaveis": 764,
+        "diferentes": 36
       },
       "partido": {
-        "comparaveis": 836,
-        "diferentes": 51
+        "comparaveis": 784,
+        "diferentes": 38
       },
       "nota": null
     }
@@ -23354,13 +23342,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 57,
-        "diferentes": 9
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 979,
-        "diferentes": 352
+        "comparaveis": 701,
+        "diferentes": 159
       },
       "nota": null
     }
@@ -23498,12 +23483,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 976,
-        "diferentes": 94
+        "comparaveis": 889,
+        "diferentes": 56
       },
       "partido": {
-        "comparaveis": 973,
-        "diferentes": 64
+        "comparaveis": 924,
+        "diferentes": 47
       },
       "nota": null
     }
@@ -23622,12 +23607,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 869,
-        "diferentes": 139
+        "comparaveis": 860,
+        "diferentes": 133
       },
       "partido": {
-        "comparaveis": 865,
-        "diferentes": 17
+        "comparaveis": 860,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -23729,13 +23714,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 56,
-        "diferentes": 12
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 889,
-        "diferentes": 48
+        "comparaveis": 623,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -23911,8 +23893,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 831,
-        "diferentes": 26
+        "comparaveis": 592,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -24011,12 +23993,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 908,
-        "diferentes": 3
+        "comparaveis": 900,
+        "diferentes": 2
       },
       "partido": {
-        "comparaveis": 909,
-        "diferentes": 8
+        "comparaveis": 904,
+        "diferentes": 3
       },
       "nota": null
     }
@@ -24149,12 +24131,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 885,
-        "diferentes": 185
+        "comparaveis": 605,
+        "diferentes": 34
       },
       "partido": {
-        "comparaveis": 891,
-        "diferentes": 35
+        "comparaveis": 843,
+        "diferentes": 23
       },
       "nota": null
     }
@@ -24266,12 +24248,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 702,
-        "diferentes": 112
+        "comparaveis": 369,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 712,
-        "diferentes": 96
+        "comparaveis": 645,
+        "diferentes": 69
       },
       "nota": null
     }
@@ -24383,12 +24365,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 635,
-        "diferentes": 148
+        "comparaveis": 350,
+        "diferentes": 30
       },
       "partido": {
-        "comparaveis": 639,
-        "diferentes": 46
+        "comparaveis": 582,
+        "diferentes": 21
       },
       "nota": null
     }
@@ -24487,12 +24469,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 950,
-        "diferentes": 191
+        "comparaveis": 496,
+        "diferentes": 32
       },
       "partido": {
-        "comparaveis": 959,
-        "diferentes": 47
+        "comparaveis": 879,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -24630,12 +24612,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 825,
-        "diferentes": 67
+        "comparaveis": 757,
+        "diferentes": 42
       },
       "partido": {
-        "comparaveis": 823,
-        "diferentes": 55
+        "comparaveis": 784,
+        "diferentes": 42
       },
       "nota": null
     }
@@ -24768,12 +24750,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1011,
-        "diferentes": 24
+        "comparaveis": 1000,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 1009,
-        "diferentes": 20
+        "comparaveis": 1005,
+        "diferentes": 19
       },
       "nota": null
     }
@@ -24872,12 +24854,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 941,
-        "diferentes": 14
+        "comparaveis": 930,
+        "diferentes": 8
       },
       "partido": {
-        "comparaveis": 939,
-        "diferentes": 9
+        "comparaveis": 935,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -24976,12 +24958,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 992,
-        "diferentes": 185
+        "comparaveis": 949,
+        "diferentes": 164
       },
       "partido": {
-        "comparaveis": 991,
-        "diferentes": 186
+        "comparaveis": 962,
+        "diferentes": 177
       },
       "nota": null
     }
@@ -25202,12 +25184,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 980,
-        "diferentes": 32
+        "comparaveis": 941,
+        "diferentes": 21
       },
       "partido": {
-        "comparaveis": 980,
-        "diferentes": 32
+        "comparaveis": 954,
+        "diferentes": 23
       },
       "nota": null
     }
@@ -25306,12 +25288,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 985,
-        "diferentes": 30
+        "comparaveis": 942,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 1043,
-        "diferentes": 35
+        "comparaveis": 1010,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -25410,12 +25392,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1056,
-        "diferentes": 384
+        "comparaveis": 578,
+        "diferentes": 82
       },
       "partido": {
-        "comparaveis": 1060,
-        "diferentes": 74
+        "comparaveis": 950,
+        "diferentes": 41
       },
       "nota": null
     }
@@ -25527,12 +25509,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 912,
-        "diferentes": 224
+        "comparaveis": 483,
+        "diferentes": 60
       },
       "partido": {
-        "comparaveis": 919,
-        "diferentes": 91
+        "comparaveis": 831,
+        "diferentes": 50
       },
       "nota": null
     }
@@ -25631,12 +25613,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 949,
-        "diferentes": 167
+        "comparaveis": 490,
+        "diferentes": 14
       },
       "partido": {
-        "comparaveis": 958,
-        "diferentes": 42
+        "comparaveis": 870,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -25780,12 +25762,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 791,
-        "diferentes": 368
+        "comparaveis": 670,
+        "diferentes": 275
       },
       "partido": {
-        "comparaveis": 782,
-        "diferentes": 332
+        "comparaveis": 692,
+        "diferentes": 281
       },
       "nota": null
     }
@@ -25889,8 +25871,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 703,
-        "diferentes": 52
+        "comparaveis": 476,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -26059,12 +26041,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 944,
-        "diferentes": 110
+        "comparaveis": 790,
+        "diferentes": 64
       },
       "partido": {
-        "comparaveis": 954,
-        "diferentes": 101
+        "comparaveis": 805,
+        "diferentes": 64
       },
       "nota": null
     }
@@ -26176,12 +26158,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 983,
-        "diferentes": 61
+        "comparaveis": 897,
+        "diferentes": 25
       },
       "partido": {
-        "comparaveis": 1037,
-        "diferentes": 36
+        "comparaveis": 974,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -26300,12 +26282,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 828,
-        "diferentes": 13
+        "comparaveis": 797,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 828,
-        "diferentes": 14
+        "comparaveis": 805,
+        "diferentes": 7
       },
       "nota": null
     }
@@ -26443,12 +26425,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 303,
-        "diferentes": 50
+        "comparaveis": 200,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 302,
-        "diferentes": 42
+        "comparaveis": 258,
+        "diferentes": 22
       },
       "nota": null
     }
@@ -26684,12 +26666,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1034,
-        "diferentes": 397
+        "comparaveis": 563,
+        "diferentes": 107
       },
       "partido": {
-        "comparaveis": 1038,
-        "diferentes": 93
+        "comparaveis": 966,
+        "diferentes": 74
       },
       "nota": null
     }
@@ -26801,8 +26783,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 998,
-        "diferentes": 598
+        "comparaveis": 956,
+        "diferentes": 573
       },
       "partido": null,
       "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
@@ -26906,12 +26888,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 799,
-        "diferentes": 214
+        "comparaveis": 440,
+        "diferentes": 60
       },
       "partido": {
-        "comparaveis": 805,
-        "diferentes": 71
+        "comparaveis": 730,
+        "diferentes": 32
       },
       "nota": null
     }
@@ -27049,12 +27031,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 924,
-        "diferentes": 203
+        "comparaveis": 486,
+        "diferentes": 40
       },
       "partido": {
-        "comparaveis": 927,
-        "diferentes": 66
+        "comparaveis": 838,
+        "diferentes": 20
       },
       "nota": null
     }
@@ -27217,12 +27199,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 793,
-        "diferentes": 159
+        "comparaveis": 782,
+        "diferentes": 153
       },
       "partido": {
-        "comparaveis": 791,
-        "diferentes": 19
+        "comparaveis": 786,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -27338,12 +27320,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 583,
-        "diferentes": 183
+        "comparaveis": 326,
+        "diferentes": 37
       },
       "partido": {
-        "comparaveis": 586,
-        "diferentes": 64
+        "comparaveis": 551,
+        "diferentes": 51
       },
       "nota": null
     }
@@ -27459,12 +27441,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 434,
-        "diferentes": 6
+        "comparaveis": 429,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 434,
-        "diferentes": 7
+        "comparaveis": 431,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -27581,8 +27563,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 539,
-        "diferentes": 156
+        "comparaveis": 468,
+        "diferentes": 140
       },
       "nota": null
     }
@@ -27706,12 +27688,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 114,
-        "diferentes": 25
+        "comparaveis": 65,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 115,
-        "diferentes": 51
+        "comparaveis": 98,
+        "diferentes": 36
       },
       "nota": null
     }
@@ -27810,12 +27792,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 959,
-        "diferentes": 97
+        "comparaveis": 864,
+        "diferentes": 50
       },
       "partido": {
-        "comparaveis": 961,
-        "diferentes": 81
+        "comparaveis": 906,
+        "diferentes": 65
       },
       "nota": null
     }
@@ -27914,12 +27896,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 916,
-        "diferentes": 251
+        "comparaveis": 460,
+        "diferentes": 75
       },
       "partido": {
-        "comparaveis": 923,
-        "diferentes": 81
+        "comparaveis": 847,
+        "diferentes": 45
       },
       "nota": null
     }
@@ -28031,12 +28013,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 963,
-        "diferentes": 34
+        "comparaveis": 898,
+        "diferentes": 6
       },
       "partido": {
-        "comparaveis": 963,
-        "diferentes": 21
+        "comparaveis": 929,
+        "diferentes": 7
       },
       "nota": null
     }
@@ -28155,12 +28137,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1010,
-        "diferentes": 104
+        "comparaveis": 842,
+        "diferentes": 53
       },
       "partido": {
-        "comparaveis": 1002,
-        "diferentes": 97
+        "comparaveis": 868,
+        "diferentes": 55
       },
       "nota": null
     }
@@ -28285,12 +28267,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 638,
-        "diferentes": 67
+        "comparaveis": 587,
+        "diferentes": 42
       },
       "partido": {
-        "comparaveis": 637,
-        "diferentes": 42
+        "comparaveis": 607,
+        "diferentes": 34
       },
       "nota": null
     }
@@ -28415,12 +28397,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 994,
-        "diferentes": 10
+        "comparaveis": 984,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 995,
-        "diferentes": 13
+        "comparaveis": 989,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -28519,12 +28501,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 684,
-        "diferentes": 63
+        "comparaveis": 572,
+        "diferentes": 29
       },
       "partido": {
-        "comparaveis": 680,
-        "diferentes": 45
+        "comparaveis": 621,
+        "diferentes": 31
       },
       "nota": null
     }
@@ -28636,12 +28618,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 766,
-        "diferentes": 144
+        "comparaveis": 428,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 770,
-        "diferentes": 31
+        "comparaveis": 707,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -28740,12 +28722,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 837,
-        "diferentes": 50
+        "comparaveis": 711,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 883,
-        "diferentes": 44
+        "comparaveis": 783,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -28857,12 +28839,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 749,
-        "diferentes": 53
+        "comparaveis": 637,
+        "diferentes": 26
       },
       "partido": {
-        "comparaveis": 749,
-        "diferentes": 58
+        "comparaveis": 662,
+        "diferentes": 32
       },
       "nota": null
     }
@@ -29013,12 +28995,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 543,
-        "diferentes": 72
+        "comparaveis": 434,
+        "diferentes": 43
       },
       "partido": {
-        "comparaveis": 542,
-        "diferentes": 70
+        "comparaveis": 434,
+        "diferentes": 39
       },
       "nota": null
     }
@@ -29189,12 +29171,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 720,
-        "diferentes": 210
+        "comparaveis": 369,
+        "diferentes": 33
       },
       "partido": {
-        "comparaveis": 724,
-        "diferentes": 119
+        "comparaveis": 639,
+        "diferentes": 84
       },
       "nota": null
     }
@@ -29332,12 +29314,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 342,
-        "diferentes": 6
+        "comparaveis": 329,
+        "diferentes": 1
       },
       "partido": {
-        "comparaveis": 342,
-        "diferentes": 6
+        "comparaveis": 330,
+        "diferentes": 1
       },
       "nota": null
     }
@@ -29440,12 +29422,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 861,
-        "diferentes": 152
+        "comparaveis": 491,
+        "diferentes": 14
       },
       "partido": {
-        "comparaveis": 870,
-        "diferentes": 262
+        "comparaveis": 776,
+        "diferentes": 219
       },
       "nota": null
     }
@@ -29561,12 +29543,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 574,
-        "diferentes": 41
+        "comparaveis": 526,
+        "diferentes": 25
       },
       "partido": {
-        "comparaveis": 573,
-        "diferentes": 38
+        "comparaveis": 550,
+        "diferentes": 29
       },
       "nota": null
     }
@@ -29678,12 +29660,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 890,
-        "diferentes": 289
+        "comparaveis": 482,
+        "diferentes": 44
       },
       "partido": {
-        "comparaveis": 934,
-        "diferentes": 49
+        "comparaveis": 831,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -29910,12 +29892,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 881,
-        "diferentes": 208
+        "comparaveis": 487,
+        "diferentes": 59
       },
       "partido": {
-        "comparaveis": 890,
-        "diferentes": 233
+        "comparaveis": 805,
+        "diferentes": 189
       },
       "nota": null
     }
@@ -30027,12 +30009,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 330,
-        "diferentes": 24
+        "comparaveis": 279,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 329,
-        "diferentes": 19
+        "comparaveis": 296,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -30203,12 +30185,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1000,
-        "diferentes": 8
+        "comparaveis": 989,
+        "diferentes": 3
       },
       "partido": {
-        "comparaveis": 999,
-        "diferentes": 6
+        "comparaveis": 994,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -30307,12 +30289,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 872,
-        "diferentes": 63
+        "comparaveis": 743,
+        "diferentes": 39
       },
       "partido": {
-        "comparaveis": 867,
-        "diferentes": 58
+        "comparaveis": 776,
+        "diferentes": 42
       },
       "nota": null
     }
@@ -30411,12 +30393,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1061,
-        "diferentes": 10
+        "comparaveis": 1049,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 1060,
-        "diferentes": 9
+        "comparaveis": 1055,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -30515,12 +30497,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 565,
-        "diferentes": 13
+        "comparaveis": 541,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 647,
-        "diferentes": 17
+        "comparaveis": 632,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -30693,8 +30675,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 955,
-        "diferentes": 5
+        "comparaveis": 949,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -30797,12 +30779,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 810,
-        "diferentes": 13
+        "comparaveis": 770,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 810,
-        "diferentes": 14
+        "comparaveis": 788,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -30970,12 +30952,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 926,
-        "diferentes": 158
+        "comparaveis": 495,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 928,
-        "diferentes": 59
+        "comparaveis": 843,
+        "diferentes": 25
       },
       "nota": null
     }
@@ -31100,12 +31082,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 872,
-        "diferentes": 18
+        "comparaveis": 865,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 872,
-        "diferentes": 18
+        "comparaveis": 868,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -31260,12 +31242,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 599,
-        "diferentes": 226
+        "comparaveis": 320,
+        "diferentes": 67
       },
       "partido": {
-        "comparaveis": 601,
-        "diferentes": 342
+        "comparaveis": 531,
+        "diferentes": 312
       },
       "nota": null
     }
@@ -31364,12 +31346,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 377,
-        "diferentes": 26
+        "comparaveis": 313,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 377,
-        "diferentes": 25
+        "comparaveis": 318,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -31501,12 +31483,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 876,
-        "diferentes": 18
+        "comparaveis": 867,
+        "diferentes": 16
       },
       "partido": {
-        "comparaveis": 875,
-        "diferentes": 20
+        "comparaveis": 869,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -31644,12 +31626,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 905,
-        "diferentes": 267
+        "comparaveis": 512,
+        "diferentes": 18
       },
       "partido": {
-        "comparaveis": 912,
-        "diferentes": 66
+        "comparaveis": 790,
+        "diferentes": 49
       },
       "nota": null
     }
@@ -31774,12 +31756,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 968,
-        "diferentes": 187
+        "comparaveis": 501,
+        "diferentes": 36
       },
       "partido": {
-        "comparaveis": 976,
-        "diferentes": 102
+        "comparaveis": 882,
+        "diferentes": 58
       },
       "nota": null
     }
@@ -31891,12 +31873,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1013,
-        "diferentes": 79
+        "comparaveis": 931,
+        "diferentes": 43
       },
       "partido": {
-        "comparaveis": 1009,
-        "diferentes": 51
+        "comparaveis": 951,
+        "diferentes": 35
       },
       "nota": null
     }
@@ -32106,12 +32088,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1031,
-        "diferentes": 19
+        "comparaveis": 983,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 1030,
-        "diferentes": 20
+        "comparaveis": 996,
+        "diferentes": 12
       },
       "nota": null
     }
@@ -32227,12 +32209,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 843,
-        "diferentes": 69
+        "comparaveis": 678,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 848,
-        "diferentes": 64
+        "comparaveis": 804,
+        "diferentes": 42
       },
       "nota": null
     }
@@ -32357,12 +32339,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 906,
-        "diferentes": 13
+        "comparaveis": 896,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 905,
-        "diferentes": 10
+        "comparaveis": 900,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -32513,12 +32495,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 758,
-        "diferentes": 13
+        "comparaveis": 750,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 756,
-        "diferentes": 12
+        "comparaveis": 752,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -32777,12 +32759,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 837,
-        "diferentes": 176
+        "comparaveis": 445,
+        "diferentes": 38
       },
       "partido": {
-        "comparaveis": 844,
-        "diferentes": 55
+        "comparaveis": 771,
+        "diferentes": 31
       },
       "nota": null
     }
@@ -32894,12 +32876,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 269,
-        "diferentes": 63
+        "comparaveis": 163,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 660,
-        "diferentes": 47
+        "comparaveis": 512,
+        "diferentes": 29
       },
       "nota": null
     }
@@ -33064,12 +33046,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 559,
-        "diferentes": 22
+        "comparaveis": 467,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 557,
-        "diferentes": 27
+        "comparaveis": 494,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -33248,8 +33230,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 822,
-        "diferentes": 45
+        "comparaveis": 589,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -33365,12 +33347,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 920,
-        "diferentes": 19
+        "comparaveis": 910,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 920,
-        "diferentes": 18
+        "comparaveis": 914,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -33469,12 +33451,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1091,
-        "diferentes": 61
+        "comparaveis": 1001,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 1088,
-        "diferentes": 39
+        "comparaveis": 1034,
+        "diferentes": 20
       },
       "nota": null
     }
@@ -33602,12 +33584,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 530,
-        "diferentes": 68
+        "comparaveis": 283,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 534,
-        "diferentes": 98
+        "comparaveis": 485,
+        "diferentes": 80
       },
       "nota": null
     }
@@ -33719,12 +33701,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 807,
-        "diferentes": 201
+        "comparaveis": 437,
+        "diferentes": 20
       },
       "partido": {
-        "comparaveis": 851,
-        "diferentes": 97
+        "comparaveis": 760,
+        "diferentes": 62
       },
       "nota": null
     }
@@ -33844,12 +33826,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 659,
-        "diferentes": 54
+        "comparaveis": 547,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 660,
-        "diferentes": 53
+        "comparaveis": 576,
+        "diferentes": 22
       },
       "nota": null
     }
@@ -33948,12 +33930,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 797,
-        "diferentes": 242
+        "comparaveis": 437,
+        "diferentes": 86
       },
       "partido": {
-        "comparaveis": 802,
-        "diferentes": 95
+        "comparaveis": 727,
+        "diferentes": 49
       },
       "nota": null
     }
@@ -34052,12 +34034,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 908,
-        "diferentes": 24
+        "comparaveis": 901,
+        "diferentes": 21
       },
       "partido": {
-        "comparaveis": 908,
-        "diferentes": 26
+        "comparaveis": 904,
+        "diferentes": 22
       },
       "nota": null
     }
@@ -34160,12 +34142,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 749,
-        "diferentes": 220
+        "comparaveis": 392,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 756,
-        "diferentes": 17
+        "comparaveis": 677,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -34336,12 +34318,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 801,
-        "diferentes": 263
+        "comparaveis": 433,
+        "diferentes": 43
       },
       "partido": {
-        "comparaveis": 804,
-        "diferentes": 51
+        "comparaveis": 722,
+        "diferentes": 29
       },
       "nota": null
     }
@@ -34469,12 +34451,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 762,
-        "diferentes": 25
+        "comparaveis": 728,
+        "diferentes": 18
       },
       "partido": {
-        "comparaveis": 761,
-        "diferentes": 27
+        "comparaveis": 742,
+        "diferentes": 23
       },
       "nota": null
     }
@@ -34644,12 +34626,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 763,
-        "diferentes": 240
+        "comparaveis": 406,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 771,
-        "diferentes": 27
+        "comparaveis": 674,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -34769,12 +34751,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 58,
-        "diferentes": 2
+        "comparaveis": 53,
+        "diferentes": 1
       },
       "partido": {
-        "comparaveis": 983,
-        "diferentes": 41
+        "comparaveis": 687,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -34890,12 +34872,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 827,
-        "diferentes": 239
+        "comparaveis": 432,
+        "diferentes": 80
       },
       "partido": {
-        "comparaveis": 833,
-        "diferentes": 92
+        "comparaveis": 762,
+        "diferentes": 55
       },
       "nota": null
     }
@@ -35007,12 +34989,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 923,
-        "diferentes": 247
+        "comparaveis": 503,
+        "diferentes": 31
       },
       "partido": {
-        "comparaveis": 927,
-        "diferentes": 83
+        "comparaveis": 833,
+        "diferentes": 48
       },
       "nota": null
     }
@@ -35132,12 +35114,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 598,
-        "diferentes": 206
+        "comparaveis": 316,
+        "diferentes": 30
       },
       "partido": {
-        "comparaveis": 598,
-        "diferentes": 302
+        "comparaveis": 546,
+        "diferentes": 273
       },
       "nota": null
     }
@@ -35253,12 +35235,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 426,
-        "diferentes": 49
+        "comparaveis": 320,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 429,
-        "diferentes": 97
+        "comparaveis": 378,
+        "diferentes": 74
       },
       "nota": null
     }
@@ -35392,8 +35374,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 382,
-        "diferentes": 26
+        "comparaveis": 250,
+        "diferentes": 17
       },
       "nota": null
     }
@@ -35492,12 +35474,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 873,
-        "diferentes": 42
+        "comparaveis": 756,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 867,
-        "diferentes": 32
+        "comparaveis": 786,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -35596,12 +35578,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 920,
-        "diferentes": 15
+        "comparaveis": 912,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 920,
-        "diferentes": 16
+        "comparaveis": 916,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -35714,8 +35696,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 797,
-        "diferentes": 443
+        "comparaveis": 568,
+        "diferentes": 255
       },
       "nota": null
     }
@@ -35827,12 +35809,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 641,
-        "diferentes": 53
+        "comparaveis": 610,
+        "diferentes": 47
       },
       "partido": {
-        "comparaveis": 641,
-        "diferentes": 53
+        "comparaveis": 626,
+        "diferentes": 49
       },
       "nota": null
     }
@@ -36004,12 +35986,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 941,
-        "diferentes": 369
+        "comparaveis": 500,
+        "diferentes": 91
       },
       "partido": {
-        "comparaveis": 945,
-        "diferentes": 90
+        "comparaveis": 837,
+        "diferentes": 49
       },
       "nota": null
     }
@@ -36149,10 +36131,7 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 52,
-        "diferentes": 11
-      },
+      "faixa": null,
       "partido": {
         "comparaveis": 53,
         "diferentes": 1
@@ -36254,12 +36233,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 762,
-        "diferentes": 67
+        "comparaveis": 657,
+        "diferentes": 33
       },
       "partido": {
-        "comparaveis": 751,
-        "diferentes": 44
+        "comparaveis": 629,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -36396,12 +36375,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 72,
-        "diferentes": 21
+        "comparaveis": 50,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 71,
-        "diferentes": 7
+        "comparaveis": 62,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -36565,12 +36544,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 918,
-        "diferentes": 22
+        "comparaveis": 912,
+        "diferentes": 18
       },
       "partido": {
-        "comparaveis": 917,
-        "diferentes": 21
+        "comparaveis": 914,
+        "diferentes": 19
       },
       "nota": null
     }
@@ -36683,8 +36662,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 777,
-        "diferentes": 45
+        "comparaveis": 539,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -36816,12 +36795,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 917,
-        "diferentes": 68
+        "comparaveis": 838,
+        "diferentes": 38
       },
       "partido": {
-        "comparaveis": 920,
-        "diferentes": 48
+        "comparaveis": 860,
+        "diferentes": 30
       },
       "nota": null
     }
@@ -36992,12 +36971,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 843,
-        "diferentes": 171
+        "comparaveis": 448,
+        "diferentes": 22
       },
       "partido": {
-        "comparaveis": 849,
-        "diferentes": 47
+        "comparaveis": 782,
+        "diferentes": 20
       },
       "nota": null
     }
@@ -37116,12 +37095,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 991,
-        "diferentes": 15
+        "comparaveis": 979,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 991,
-        "diferentes": 15
+        "comparaveis": 985,
+        "diferentes": 12
       },
       "nota": null
     }
@@ -37220,12 +37199,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1022,
-        "diferentes": 61
+        "comparaveis": 936,
+        "diferentes": 21
       },
       "partido": {
-        "comparaveis": 1023,
-        "diferentes": 30
+        "comparaveis": 957,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -37337,12 +37316,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1059,
-        "diferentes": 447
+        "comparaveis": 890,
+        "diferentes": 330
       },
       "partido": {
-        "comparaveis": 1044,
-        "diferentes": 410
+        "comparaveis": 953,
+        "diferentes": 346
       },
       "nota": null
     }
@@ -37441,12 +37420,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 426,
-        "diferentes": 149
+        "comparaveis": 219,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 506,
-        "diferentes": 20
+        "comparaveis": 449,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -37583,8 +37562,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 351,
-        "diferentes": 74
+        "comparaveis": 253,
+        "diferentes": 58
       },
       "nota": null
     }
@@ -37709,12 +37688,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 935,
-        "diferentes": 69
+        "comparaveis": 858,
+        "diferentes": 30
       },
       "partido": {
-        "comparaveis": 936,
-        "diferentes": 44
+        "comparaveis": 884,
+        "diferentes": 26
       },
       "nota": null
     }
@@ -37839,12 +37818,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 674,
-        "diferentes": 174
+        "comparaveis": 555,
+        "diferentes": 113
       },
       "partido": {
-        "comparaveis": 676,
-        "diferentes": 177
+        "comparaveis": 587,
+        "diferentes": 120
       },
       "nota": null
     }
@@ -37987,8 +37966,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 386,
-        "diferentes": 15
+        "comparaveis": 328,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -38107,12 +38086,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 603,
-        "diferentes": 127
+        "comparaveis": 347,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 637,
-        "diferentes": 114
+        "comparaveis": 557,
+        "diferentes": 77
       },
       "nota": null
     }
@@ -38263,8 +38242,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 975,
-        "diferentes": 66
+        "comparaveis": 688,
+        "diferentes": 24
       },
       "nota": null
     }
@@ -38440,12 +38419,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 791,
-        "diferentes": 258
+        "comparaveis": 424,
+        "diferentes": 52
       },
       "partido": {
-        "comparaveis": 792,
-        "diferentes": 89
+        "comparaveis": 748,
+        "diferentes": 78
       },
       "nota": null
     }
@@ -38557,12 +38536,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 889,
-        "diferentes": 135
+        "comparaveis": 461,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 895,
-        "diferentes": 112
+        "comparaveis": 818,
+        "diferentes": 75
       },
       "nota": null
     }
@@ -38713,12 +38692,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1072,
-        "diferentes": 9
+        "comparaveis": 1061,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 1071,
-        "diferentes": 6
+        "comparaveis": 1066,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -38856,12 +38835,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 823,
-        "diferentes": 281
+        "comparaveis": 438,
+        "diferentes": 43
       },
       "partido": {
-        "comparaveis": 877,
-        "diferentes": 42
+        "comparaveis": 787,
+        "diferentes": 24
       },
       "nota": null
     }
@@ -38960,12 +38939,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 830,
-        "diferentes": 245
+        "comparaveis": 454,
+        "diferentes": 28
       },
       "partido": {
-        "comparaveis": 832,
-        "diferentes": 37
+        "comparaveis": 743,
+        "diferentes": 20
       },
       "nota": null
     }
@@ -39077,12 +39056,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 986,
-        "diferentes": 419
+        "comparaveis": 726,
+        "diferentes": 299
       },
       "partido": {
-        "comparaveis": 518,
-        "diferentes": 39
+        "comparaveis": 463,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -39224,12 +39203,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 808,
-        "diferentes": 240
+        "comparaveis": 428,
+        "diferentes": 27
       },
       "partido": {
-        "comparaveis": 812,
-        "diferentes": 71
+        "comparaveis": 728,
+        "diferentes": 34
       },
       "nota": null
     }
@@ -39341,12 +39320,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 857,
-        "diferentes": 273
+        "comparaveis": 440,
+        "diferentes": 111
       },
       "partido": {
-        "comparaveis": 864,
-        "diferentes": 125
+        "comparaveis": 785,
+        "diferentes": 79
       },
       "nota": null
     }
@@ -39517,12 +39496,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 886,
-        "diferentes": 102
+        "comparaveis": 879,
+        "diferentes": 99
       },
       "partido": {
-        "comparaveis": 873,
-        "diferentes": 9
+        "comparaveis": 866,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -39651,12 +39630,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 858,
-        "diferentes": 11
+        "comparaveis": 849,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 859,
-        "diferentes": 14
+        "comparaveis": 855,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -39755,12 +39734,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 872,
-        "diferentes": 256
+        "comparaveis": 487,
+        "diferentes": 30
       },
       "partido": {
-        "comparaveis": 880,
-        "diferentes": 41
+        "comparaveis": 780,
+        "diferentes": 27
       },
       "nota": null
     }
@@ -39910,12 +39889,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 176,
-        "diferentes": 41
+        "comparaveis": 97,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 179,
-        "diferentes": 9
+        "comparaveis": 163,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -40029,8 +40008,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 792,
-        "diferentes": 41
+        "comparaveis": 547,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -40142,8 +40121,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 994,
-        "diferentes": 600
+        "comparaveis": 953,
+        "diferentes": 576
       },
       "partido": null,
       "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
@@ -40281,12 +40260,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 777,
-        "diferentes": 152
+        "comparaveis": 408,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 781,
-        "diferentes": 58
+        "comparaveis": 707,
+        "diferentes": 32
       },
       "nota": null
     }
@@ -40385,12 +40364,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 959,
-        "diferentes": 57
+        "comparaveis": 912,
+        "diferentes": 43
       },
       "partido": {
-        "comparaveis": 958,
-        "diferentes": 58
+        "comparaveis": 926,
+        "diferentes": 46
       },
       "nota": null
     }
@@ -40502,12 +40481,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 815,
-        "diferentes": 191
+        "comparaveis": 418,
+        "diferentes": 44
       },
       "partido": {
-        "comparaveis": 820,
-        "diferentes": 60
+        "comparaveis": 748,
+        "diferentes": 24
       },
       "nota": null
     }
@@ -40611,13 +40590,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 53,
-        "diferentes": 4
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 53,
-        "diferentes": 4
+        "comparaveis": 51,
+        "diferentes": 2
       },
       "nota": null
     }
@@ -40739,12 +40715,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 797,
-        "diferentes": 238
+        "comparaveis": 467,
+        "diferentes": 40
       },
       "partido": {
-        "comparaveis": 803,
-        "diferentes": 49
+        "comparaveis": 717,
+        "diferentes": 38
       },
       "nota": null
     }
@@ -40869,12 +40845,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 919,
-        "diferentes": 237
+        "comparaveis": 475,
+        "diferentes": 64
       },
       "partido": {
-        "comparaveis": 926,
-        "diferentes": 86
+        "comparaveis": 834,
+        "diferentes": 43
       },
       "nota": null
     }
@@ -41024,12 +41000,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 805,
-        "diferentes": 63
+        "comparaveis": 695,
+        "diferentes": 30
       },
       "partido": {
-        "comparaveis": 803,
-        "diferentes": 74
+        "comparaveis": 719,
+        "diferentes": 36
       },
       "nota": null
     }
@@ -41132,12 +41108,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 811,
-        "diferentes": 82
+        "comparaveis": 732,
+        "diferentes": 48
       },
       "partido": {
-        "comparaveis": 777,
-        "diferentes": 53
+        "comparaveis": 734,
+        "diferentes": 35
       },
       "nota": null
     }
@@ -41262,8 +41238,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 918,
-        "diferentes": 5
+        "comparaveis": 910,
+        "diferentes": 3
       },
       "nota": null
     }
@@ -41418,12 +41394,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 904,
-        "diferentes": 17
+        "comparaveis": 857,
+        "diferentes": 9
       },
       "partido": {
-        "comparaveis": 903,
-        "diferentes": 19
+        "comparaveis": 872,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -41561,12 +41537,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 968,
-        "diferentes": 32
+        "comparaveis": 960,
+        "diferentes": 30
       },
       "partido": {
-        "comparaveis": 968,
-        "diferentes": 33
+        "comparaveis": 964,
+        "diferentes": 30
       },
       "nota": null
     }
@@ -41678,12 +41654,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 905,
-        "diferentes": 283
+        "comparaveis": 498,
+        "diferentes": 34
       },
       "partido": {
-        "comparaveis": 906,
-        "diferentes": 23
+        "comparaveis": 819,
+        "diferentes": 7
       },
       "nota": null
     }
@@ -41897,12 +41873,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 640,
-        "diferentes": 23
+        "comparaveis": 608,
+        "diferentes": 16
       },
       "partido": {
-        "comparaveis": 639,
-        "diferentes": 23
+        "comparaveis": 618,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -42001,12 +41977,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 946,
-        "diferentes": 245
+        "comparaveis": 499,
+        "diferentes": 71
       },
       "partido": {
-        "comparaveis": 954,
-        "diferentes": 84
+        "comparaveis": 869,
+        "diferentes": 38
       },
       "nota": null
     }
@@ -42144,8 +42120,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 521,
-        "diferentes": 117
+        "comparaveis": 373,
+        "diferentes": 59
       },
       "nota": null
     }
@@ -42244,12 +42220,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 890,
-        "diferentes": 57
+        "comparaveis": 811,
+        "diferentes": 21
       },
       "partido": {
-        "comparaveis": 884,
-        "diferentes": 26
+        "comparaveis": 843,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -42348,11 +42324,11 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 949,
-        "diferentes": 181
+        "comparaveis": 793,
+        "diferentes": 143
       },
       "partido": {
-        "comparaveis": 67,
+        "comparaveis": 66,
         "diferentes": 9
       },
       "nota": null
@@ -42521,12 +42497,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 811,
-        "diferentes": 14
+        "comparaveis": 804,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 812,
-        "diferentes": 18
+        "comparaveis": 808,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -42642,12 +42618,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 989,
-        "diferentes": 57
+        "comparaveis": 942,
+        "diferentes": 45
       },
       "partido": {
-        "comparaveis": 988,
-        "diferentes": 57
+        "comparaveis": 959,
+        "diferentes": 50
       },
       "nota": null
     }
@@ -42822,12 +42798,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 776,
-        "diferentes": 215
+        "comparaveis": 391,
+        "diferentes": 54
       },
       "partido": {
-        "comparaveis": 782,
-        "diferentes": 61
+        "comparaveis": 716,
+        "diferentes": 28
       },
       "nota": null
     }
@@ -43007,12 +42983,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 744,
-        "diferentes": 33
+        "comparaveis": 686,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 745,
-        "diferentes": 17
+        "comparaveis": 727,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -43137,12 +43113,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 880,
-        "diferentes": 283
+        "comparaveis": 501,
+        "diferentes": 56
       },
       "partido": {
-        "comparaveis": 887,
-        "diferentes": 58
+        "comparaveis": 788,
+        "diferentes": 43
       },
       "nota": null
     }
@@ -43360,12 +43336,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 637,
-        "diferentes": 61
+        "comparaveis": 548,
+        "diferentes": 26
       },
       "partido": {
-        "comparaveis": 638,
-        "diferentes": 62
+        "comparaveis": 573,
+        "diferentes": 33
       },
       "nota": null
     }
@@ -43506,12 +43482,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 815,
-        "diferentes": 234
+        "comparaveis": 441,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 860,
-        "diferentes": 57
+        "comparaveis": 754,
+        "diferentes": 27
       },
       "nota": null
     }
@@ -43610,12 +43586,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 800,
-        "diferentes": 94
+        "comparaveis": 421,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 808,
-        "diferentes": 114
+        "comparaveis": 733,
+        "diferentes": 86
       },
       "nota": null
     }
@@ -43722,8 +43698,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 898,
-        "diferentes": 271
+        "comparaveis": 642,
+        "diferentes": 97
       },
       "nota": null
     }
@@ -43822,12 +43798,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 894,
-        "diferentes": 188
+        "comparaveis": 477,
+        "diferentes": 31
       },
       "partido": {
-        "comparaveis": 899,
-        "diferentes": 47
+        "comparaveis": 815,
+        "diferentes": 17
       },
       "nota": null
     }
@@ -43926,12 +43902,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1024,
-        "diferentes": 286
+        "comparaveis": 546,
+        "diferentes": 103
       },
       "partido": {
-        "comparaveis": 1031,
-        "diferentes": 540
+        "comparaveis": 976,
+        "diferentes": 514
       },
       "nota": null
     }
@@ -44030,12 +44006,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 641,
-        "diferentes": 167
+        "comparaveis": 355,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 648,
-        "diferentes": 45
+        "comparaveis": 569,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -44163,12 +44139,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 950,
-        "diferentes": 33
+        "comparaveis": 860,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 1003,
-        "diferentes": 39
+        "comparaveis": 952,
+        "diferentes": 23
       },
       "nota": null
     }
@@ -44267,12 +44243,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 988,
-        "diferentes": 58
+        "comparaveis": 902,
+        "diferentes": 24
       },
       "partido": {
-        "comparaveis": 1017,
-        "diferentes": 26
+        "comparaveis": 973,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -44372,8 +44348,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 924,
-        "diferentes": 120
+        "comparaveis": 619,
+        "diferentes": 79
       },
       "nota": null
     }
@@ -44520,13 +44496,10 @@
       "abstencao": 5
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 52,
-        "diferentes": 6
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 898,
-        "diferentes": 315
+        "comparaveis": 673,
+        "diferentes": 171
       },
       "nota": null
     }
@@ -44675,12 +44648,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1108,
-        "diferentes": 18
+        "comparaveis": 1096,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 1106,
-        "diferentes": 16
+        "comparaveis": 1102,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -44783,12 +44756,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 701,
-        "diferentes": 206
+        "comparaveis": 376,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 705,
-        "diferentes": 14
+        "comparaveis": 612,
+        "diferentes": 1
       },
       "nota": null
     }
@@ -44887,12 +44860,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 982,
-        "diferentes": 496
+        "comparaveis": 943,
+        "diferentes": 475
       },
       "partido": {
-        "comparaveis": 1037,
-        "diferentes": 511
+        "comparaveis": 1006,
+        "diferentes": 497
       },
       "nota": null
     }
@@ -44991,12 +44964,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 831,
-        "diferentes": 9
+        "comparaveis": 820,
+        "diferentes": 3
       },
       "partido": {
-        "comparaveis": 830,
-        "diferentes": 7
+        "comparaveis": 825,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -45121,12 +45094,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 923,
-        "diferentes": 158
+        "comparaveis": 495,
+        "diferentes": 20
       },
       "partido": {
-        "comparaveis": 931,
-        "diferentes": 48
+        "comparaveis": 854,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -45259,12 +45232,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 101,
-        "diferentes": 3
+        "comparaveis": 96,
+        "diferentes": 2
       },
       "partido": {
-        "comparaveis": 100,
-        "diferentes": 3
+        "comparaveis": 98,
+        "diferentes": 2
       },
       "nota": null
     }
@@ -45389,12 +45362,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 843,
-        "diferentes": 255
+        "comparaveis": 461,
+        "diferentes": 40
       },
       "partido": {
-        "comparaveis": 846,
-        "diferentes": 63
+        "comparaveis": 758,
+        "diferentes": 27
       },
       "nota": null
     }
@@ -45523,12 +45496,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 310,
-        "diferentes": 53
+        "comparaveis": 132,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 312,
-        "diferentes": 20
+        "comparaveis": 287,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -45662,8 +45635,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 877,
-        "diferentes": 39
+        "comparaveis": 613,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -45763,8 +45736,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 987,
-        "diferentes": 45
+        "comparaveis": 691,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -45876,12 +45849,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 888,
-        "diferentes": 28
+        "comparaveis": 879,
+        "diferentes": 27
       },
       "partido": {
-        "comparaveis": 889,
-        "diferentes": 33
+        "comparaveis": 884,
+        "diferentes": 28
       },
       "nota": null
     }
@@ -45993,12 +45966,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 337,
-        "diferentes": 40
+        "comparaveis": 185,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 339,
-        "diferentes": 17
+        "comparaveis": 314,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -46101,12 +46074,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 848,
-        "diferentes": 288
+        "comparaveis": 465,
+        "diferentes": 51
       },
       "partido": {
-        "comparaveis": 853,
-        "diferentes": 20
+        "comparaveis": 802,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -46205,12 +46178,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 520,
-        "diferentes": 138
+        "comparaveis": 302,
+        "diferentes": 16
       },
       "partido": {
-        "comparaveis": 819,
-        "diferentes": 20
+        "comparaveis": 735,
+        "diferentes": 12
       },
       "nota": null
     }
@@ -46339,12 +46312,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 526,
-        "diferentes": 60
+        "comparaveis": 441,
+        "diferentes": 33
       },
       "partido": {
-        "comparaveis": 525,
-        "diferentes": 63
+        "comparaveis": 472,
+        "diferentes": 43
       },
       "nota": null
     }
@@ -46455,13 +46428,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 75,
-        "diferentes": 18
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 893,
-        "diferentes": 429
+        "comparaveis": 650,
+        "diferentes": 226
       },
       "nota": null
     }
@@ -46560,12 +46530,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 957,
-        "diferentes": 262
+        "comparaveis": 487,
+        "diferentes": 76
       },
       "partido": {
-        "comparaveis": 965,
-        "diferentes": 85
+        "comparaveis": 874,
+        "diferentes": 36
       },
       "nota": null
     }
@@ -46690,12 +46660,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1026,
-        "diferentes": 15
+        "comparaveis": 1016,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 1025,
-        "diferentes": 14
+        "comparaveis": 1021,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -46943,12 +46913,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 870,
-        "diferentes": 109
+        "comparaveis": 711,
+        "diferentes": 55
       },
       "partido": {
-        "comparaveis": 869,
-        "diferentes": 102
+        "comparaveis": 752,
+        "diferentes": 55
       },
       "nota": null
     }
@@ -47078,7 +47048,7 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 813,
+        "comparaveis": 810,
         "diferentes": 19
       },
       "nota": null
@@ -47290,12 +47260,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 849,
-        "diferentes": 362
+        "comparaveis": 647,
+        "diferentes": 262
       },
       "partido": {
-        "comparaveis": 850,
-        "diferentes": 325
+        "comparaveis": 764,
+        "diferentes": 272
       },
       "nota": null
     }
@@ -47407,12 +47377,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 702,
-        "diferentes": 152
+        "comparaveis": 602,
+        "diferentes": 107
       },
       "partido": {
-        "comparaveis": 702,
-        "diferentes": 143
+        "comparaveis": 631,
+        "diferentes": 110
       },
       "nota": null
     }
@@ -47550,12 +47520,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1032,
-        "diferentes": 6
+        "comparaveis": 1023,
+        "diferentes": 2
       },
       "partido": {
-        "comparaveis": 1030,
-        "diferentes": 3
+        "comparaveis": 1027,
+        "diferentes": 2
       },
       "nota": null
     }
@@ -47655,8 +47625,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 919,
-        "diferentes": 396
+        "comparaveis": 673,
+        "diferentes": 193
       },
       "nota": null
     }
@@ -47794,12 +47764,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 830,
-        "diferentes": 173
+        "comparaveis": 444,
+        "diferentes": 34
       },
       "partido": {
-        "comparaveis": 838,
-        "diferentes": 56
+        "comparaveis": 756,
+        "diferentes": 25
       },
       "nota": null
     }
@@ -47915,12 +47885,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 688,
-        "diferentes": 100
+        "comparaveis": 368,
+        "diferentes": 14
       },
       "partido": {
-        "comparaveis": 696,
-        "diferentes": 73
+        "comparaveis": 630,
+        "diferentes": 48
       },
       "nota": null
     }
@@ -48019,12 +47989,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1035,
-        "diferentes": 152
+        "comparaveis": 1024,
+        "diferentes": 145
       },
       "partido": {
-        "comparaveis": 1026,
-        "diferentes": 6
+        "comparaveis": 1020,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -48137,8 +48107,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 604,
-        "diferentes": 95
+        "comparaveis": 551,
+        "diferentes": 81
       },
       "nota": null
     }
@@ -48284,12 +48254,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 894,
-        "diferentes": 13
+        "comparaveis": 886,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 895,
-        "diferentes": 19
+        "comparaveis": 889,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -48444,8 +48414,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 405,
-        "diferentes": 76
+        "comparaveis": 334,
+        "diferentes": 53
       },
       "partido": null,
       "nota": "menos de 50 votos comparáveis"
@@ -48597,12 +48567,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 792,
-        "diferentes": 66
+        "comparaveis": 669,
+        "diferentes": 32
       },
       "partido": {
-        "comparaveis": 779,
-        "diferentes": 30
+        "comparaveis": 667,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -48701,12 +48671,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 968,
-        "diferentes": 197
+        "comparaveis": 809,
+        "diferentes": 123
       },
       "partido": {
-        "comparaveis": 940,
-        "diferentes": 128
+        "comparaveis": 812,
+        "diferentes": 83
       },
       "nota": null
     }
@@ -48832,8 +48802,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 786,
-        "diferentes": 75
+        "comparaveis": 541,
+        "diferentes": 32
       },
       "nota": null
     }
@@ -48975,12 +48945,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 772,
-        "diferentes": 78
+        "comparaveis": 710,
+        "diferentes": 50
       },
       "partido": {
-        "comparaveis": 773,
-        "diferentes": 56
+        "comparaveis": 727,
+        "diferentes": 42
       },
       "nota": null
     }
@@ -49125,12 +49095,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 898,
-        "diferentes": 165
+        "comparaveis": 462,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 905,
-        "diferentes": 39
+        "comparaveis": 822,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -49242,12 +49212,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1013,
-        "diferentes": 15
+        "comparaveis": 1003,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 1012,
-        "diferentes": 14
+        "comparaveis": 1008,
+        "diferentes": 12
       },
       "nota": null
     }
@@ -49454,12 +49424,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 923,
-        "diferentes": 233
+        "comparaveis": 520,
+        "diferentes": 31
       },
       "partido": {
-        "comparaveis": 971,
-        "diferentes": 105
+        "comparaveis": 878,
+        "diferentes": 63
       },
       "nota": null
     }
@@ -49635,12 +49605,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 953,
-        "diferentes": 304
+        "comparaveis": 537,
+        "diferentes": 48
       },
       "partido": {
-        "comparaveis": 957,
-        "diferentes": 42
+        "comparaveis": 860,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -49808,12 +49778,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 491,
-        "diferentes": 8
+        "comparaveis": 489,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 492,
-        "diferentes": 8
+        "comparaveis": 490,
+        "diferentes": 7
       },
       "nota": null
     }
@@ -50177,13 +50147,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 55,
-        "diferentes": 19
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 55,
-        "diferentes": 6
+        "comparaveis": 50,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -50289,12 +50256,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 952,
-        "diferentes": 68
+        "comparaveis": 874,
+        "diferentes": 31
       },
       "partido": {
-        "comparaveis": 953,
-        "diferentes": 44
+        "comparaveis": 893,
+        "diferentes": 27
       },
       "nota": null
     }
@@ -50407,8 +50374,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 771,
-        "diferentes": 42
+        "comparaveis": 563,
+        "diferentes": 20
       },
       "nota": null
     }
@@ -50520,12 +50487,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 638,
-        "diferentes": 129
+        "comparaveis": 424,
+        "diferentes": 52
       },
       "partido": {
-        "comparaveis": 642,
-        "diferentes": 200
+        "comparaveis": 579,
+        "diferentes": 156
       },
       "nota": null
     }
@@ -50743,12 +50710,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 585,
-        "diferentes": 210
+        "comparaveis": 313,
+        "diferentes": 59
       },
       "partido": {
-        "comparaveis": 589,
-        "diferentes": 76
+        "comparaveis": 529,
+        "diferentes": 55
       },
       "nota": null
     }
@@ -50894,12 +50861,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 913,
+        "comparaveis": 905,
         "diferentes": 13
       },
       "partido": {
-        "comparaveis": 914,
-        "diferentes": 18
+        "comparaveis": 909,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -51011,12 +50978,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 923,
-        "diferentes": 167
+        "comparaveis": 518,
+        "diferentes": 29
       },
       "partido": {
-        "comparaveis": 930,
-        "diferentes": 305
+        "comparaveis": 837,
+        "diferentes": 233
       },
       "nota": null
     }
@@ -51115,12 +51082,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1019,
-        "diferentes": 551
+        "comparaveis": 866,
+        "diferentes": 439
       },
       "partido": {
-        "comparaveis": 1018,
-        "diferentes": 553
+        "comparaveis": 889,
+        "diferentes": 457
       },
       "nota": null
     }
@@ -51232,12 +51199,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 423,
-        "diferentes": 68
+        "comparaveis": 285,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 425,
-        "diferentes": 20
+        "comparaveis": 396,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -51395,12 +51362,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 911,
-        "diferentes": 108
+        "comparaveis": 843,
+        "diferentes": 74
       },
       "partido": {
-        "comparaveis": 911,
-        "diferentes": 89
+        "comparaveis": 867,
+        "diferentes": 69
       },
       "nota": null
     }
@@ -51538,12 +51505,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 821,
-        "diferentes": 165
+        "comparaveis": 425,
+        "diferentes": 26
       },
       "partido": {
-        "comparaveis": 826,
-        "diferentes": 45
+        "comparaveis": 753,
+        "diferentes": 17
       },
       "nota": null
     }
@@ -51645,13 +51612,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 80,
-        "diferentes": 28
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 81,
-        "diferentes": 5
+        "comparaveis": 74,
+        "diferentes": 1
       },
       "nota": null
     }
@@ -51751,8 +51715,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 103,
-        "diferentes": 2
+        "comparaveis": 100,
+        "diferentes": 0
       },
       "nota": null
     }
@@ -51864,12 +51828,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 809,
-        "diferentes": 152
+        "comparaveis": 425,
+        "diferentes": 16
       },
       "partido": {
-        "comparaveis": 816,
-        "diferentes": 50
+        "comparaveis": 742,
+        "diferentes": 28
       },
       "nota": null
     }
@@ -51968,12 +51932,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 989,
-        "diferentes": 154
+        "comparaveis": 979,
+        "diferentes": 148
       },
       "partido": {
-        "comparaveis": 980,
-        "diferentes": 3
+        "comparaveis": 972,
+        "diferentes": 2
       },
       "nota": null
     }
@@ -52112,8 +52076,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 327,
-        "diferentes": 11
+        "comparaveis": 322,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -52212,12 +52176,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 870,
-        "diferentes": 88
+        "comparaveis": 735,
+        "diferentes": 56
       },
       "partido": {
-        "comparaveis": 866,
-        "diferentes": 87
+        "comparaveis": 766,
+        "diferentes": 59
       },
       "nota": null
     }
@@ -52316,12 +52280,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 271,
-        "diferentes": 66
+        "comparaveis": 163,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 271,
-        "diferentes": 57
+        "comparaveis": 258,
+        "diferentes": 53
       },
       "nota": null
     }
@@ -52420,12 +52384,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 803,
-        "diferentes": 65
+        "comparaveis": 674,
+        "diferentes": 38
       },
       "partido": {
-        "comparaveis": 801,
-        "diferentes": 69
+        "comparaveis": 696,
+        "diferentes": 39
       },
       "nota": null
     }
@@ -52525,8 +52489,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 935,
-        "diferentes": 169
+        "comparaveis": 689,
+        "diferentes": 61
       },
       "nota": null
     }
@@ -52638,12 +52602,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 765,
-        "diferentes": 263
+        "comparaveis": 427,
+        "diferentes": 67
       },
       "partido": {
-        "comparaveis": 768,
-        "diferentes": 36
+        "comparaveis": 722,
+        "diferentes": 21
       },
       "nota": null
     }
@@ -52769,12 +52733,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1060,
-        "diferentes": 210
+        "comparaveis": 573,
+        "diferentes": 24
       },
       "partido": {
-        "comparaveis": 1065,
-        "diferentes": 239
+        "comparaveis": 960,
+        "diferentes": 182
       },
       "nota": null
     }
@@ -52877,12 +52841,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 78,
-        "diferentes": 6
+        "comparaveis": 74,
+        "diferentes": 2
       },
       "partido": {
-        "comparaveis": 78,
-        "diferentes": 6
+        "comparaveis": 74,
+        "diferentes": 2
       },
       "nota": null
     }
@@ -53046,12 +53010,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 687,
-        "diferentes": 11
+        "comparaveis": 680,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 686,
-        "diferentes": 10
+        "comparaveis": 682,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -53150,12 +53114,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 983,
-        "diferentes": 15
+        "comparaveis": 972,
+        "diferentes": 9
       },
       "partido": {
-        "comparaveis": 981,
-        "diferentes": 12
+        "comparaveis": 978,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -53254,12 +53218,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 656,
-        "diferentes": 32
+        "comparaveis": 563,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 655,
-        "diferentes": 27
+        "comparaveis": 593,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -53405,8 +53369,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 923,
-        "diferentes": 9
+        "comparaveis": 916,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -53509,12 +53473,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 432,
-        "diferentes": 155
+        "comparaveis": 217,
+        "diferentes": 26
       },
       "partido": {
-        "comparaveis": 431,
-        "diferentes": 39
+        "comparaveis": 365,
+        "diferentes": 23
       },
       "nota": null
     }
@@ -53624,13 +53588,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 54,
-        "diferentes": 1
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 487,
-        "diferentes": 27
+        "comparaveis": 347,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -53729,12 +53690,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1094,
-        "diferentes": 47
+        "comparaveis": 1044,
+        "diferentes": 34
       },
       "partido": {
-        "comparaveis": 1094,
-        "diferentes": 47
+        "comparaveis": 1062,
+        "diferentes": 35
       },
       "nota": null
     }
@@ -53919,12 +53880,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 360,
-        "diferentes": 122
+        "comparaveis": 181,
+        "diferentes": 3
       },
       "partido": {
-        "comparaveis": 362,
-        "diferentes": 8
+        "comparaveis": 308,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -54048,12 +54009,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 643,
-        "diferentes": 134
+        "comparaveis": 314,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 648,
-        "diferentes": 80
+        "comparaveis": 596,
+        "diferentes": 59
       },
       "nota": null
     }
@@ -54152,12 +54113,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 907,
-        "diferentes": 63
+        "comparaveis": 760,
+        "diferentes": 33
       },
       "partido": {
-        "comparaveis": 904,
-        "diferentes": 70
+        "comparaveis": 783,
+        "diferentes": 34
       },
       "nota": null
     }
@@ -54256,12 +54217,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 667,
-        "diferentes": 354
+        "comparaveis": 528,
+        "diferentes": 278
       },
       "partido": {
-        "comparaveis": 279,
-        "diferentes": 40
+        "comparaveis": 251,
+        "diferentes": 29
       },
       "nota": null
     }
@@ -54378,12 +54339,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 702,
-        "diferentes": 24
+        "comparaveis": 643,
+        "diferentes": 6
       },
       "partido": {
-        "comparaveis": 701,
-        "diferentes": 12
+        "comparaveis": 668,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -54482,12 +54443,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 759,
-        "diferentes": 135
+        "comparaveis": 392,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 766,
-        "diferentes": 34
+        "comparaveis": 708,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -54586,12 +54547,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1082,
-        "diferentes": 290
+        "comparaveis": 1033,
+        "diferentes": 262
       },
       "partido": {
-        "comparaveis": 1081,
-        "diferentes": 292
+        "comparaveis": 1049,
+        "diferentes": 275
       },
       "nota": null
     }
@@ -54690,12 +54651,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 899,
-        "diferentes": 145
+        "comparaveis": 462,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 906,
-        "diferentes": 57
+        "comparaveis": 827,
+        "diferentes": 28
       },
       "nota": null
     }
@@ -54794,12 +54755,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1058,
-        "diferentes": 288
+        "comparaveis": 580,
+        "diferentes": 22
       },
       "partido": {
-        "comparaveis": 1059,
-        "diferentes": 302
+        "comparaveis": 919,
+        "diferentes": 261
       },
       "nota": null
     }
@@ -54898,12 +54859,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 990,
-        "diferentes": 259
+        "comparaveis": 512,
+        "diferentes": 72
       },
       "partido": {
-        "comparaveis": 998,
-        "diferentes": 88
+        "comparaveis": 910,
+        "diferentes": 39
       },
       "nota": null
     }
@@ -55002,12 +54963,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 487,
-        "diferentes": 79
+        "comparaveis": 226,
+        "diferentes": 6
       },
       "partido": {
-        "comparaveis": 489,
-        "diferentes": 21
+        "comparaveis": 450,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -55159,8 +55120,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 918,
-        "diferentes": 42
+        "comparaveis": 643,
+        "diferentes": 17
       },
       "nota": null
     }
@@ -55259,12 +55220,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1017,
-        "diferentes": 348
+        "comparaveis": 555,
+        "diferentes": 64
       },
       "partido": {
-        "comparaveis": 1023,
-        "diferentes": 36
+        "comparaveis": 950,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -55376,12 +55337,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 308,
-        "diferentes": 21
+        "comparaveis": 283,
+        "diferentes": 8
       },
       "partido": {
-        "comparaveis": 308,
-        "diferentes": 9
+        "comparaveis": 291,
+        "diferentes": 4
       },
       "nota": null
     }
@@ -55479,13 +55440,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 52,
-        "diferentes": 5
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 906,
-        "diferentes": 419
+        "comparaveis": 656,
+        "diferentes": 211
       },
       "nota": null
     }
@@ -55584,12 +55542,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 913,
-        "diferentes": 14
+        "comparaveis": 867,
+        "diferentes": 8
       },
       "partido": {
-        "comparaveis": 912,
-        "diferentes": 15
+        "comparaveis": 883,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -55701,12 +55659,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 978,
-        "diferentes": 8
+        "comparaveis": 969,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 978,
-        "diferentes": 9
+        "comparaveis": 973,
+        "diferentes": 6
       },
       "nota": null
     }
@@ -55818,12 +55776,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 921,
-        "diferentes": 186
+        "comparaveis": 482,
+        "diferentes": 32
       },
       "partido": {
-        "comparaveis": 926,
-        "diferentes": 108
+        "comparaveis": 844,
+        "diferentes": 76
       },
       "nota": null
     }
@@ -55964,7 +55922,7 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 98,
+        "comparaveis": 91,
         "diferentes": 0
       },
       "partido": {
@@ -56067,13 +56025,10 @@
       "abstencao": 2
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 58,
-        "diferentes": 13
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 922,
-        "diferentes": 420
+        "comparaveis": 674,
+        "diferentes": 212
       },
       "nota": null
     }
@@ -56172,12 +56127,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 966,
-        "diferentes": 126
+        "comparaveis": 509,
+        "diferentes": 4
       },
       "partido": {
-        "comparaveis": 975,
-        "diferentes": 134
+        "comparaveis": 876,
+        "diferentes": 99
       },
       "nota": null
     }
@@ -56334,12 +56289,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 775,
-        "diferentes": 7
+        "comparaveis": 769,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 774,
-        "diferentes": 6
+        "comparaveis": 772,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -56480,12 +56435,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1005,
-        "diferentes": 10
+        "comparaveis": 994,
+        "diferentes": 5
       },
       "partido": {
-        "comparaveis": 1003,
-        "diferentes": 7
+        "comparaveis": 998,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -56601,12 +56556,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 930,
-        "diferentes": 16
+        "comparaveis": 920,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 931,
-        "diferentes": 18
+        "comparaveis": 926,
+        "diferentes": 14
       },
       "nota": null
     }
@@ -56739,12 +56694,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 720,
-        "diferentes": 272
+        "comparaveis": 383,
+        "diferentes": 79
       },
       "partido": {
-        "comparaveis": 721,
-        "diferentes": 79
+        "comparaveis": 681,
+        "diferentes": 66
       },
       "nota": null
     }
@@ -56856,12 +56811,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 840,
-        "diferentes": 142
+        "comparaveis": 832,
+        "diferentes": 138
       },
       "partido": {
-        "comparaveis": 838,
-        "diferentes": 22
+        "comparaveis": 834,
+        "diferentes": 20
       },
       "nota": null
     }
@@ -56960,12 +56915,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 897,
-        "diferentes": 49
+        "comparaveis": 778,
+        "diferentes": 14
       },
       "partido": {
-        "comparaveis": 955,
-        "diferentes": 87
+        "comparaveis": 902,
+        "diferentes": 69
       },
       "nota": null
     }
@@ -57077,12 +57032,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 936,
-        "diferentes": 239
+        "comparaveis": 489,
+        "diferentes": 67
       },
       "partido": {
-        "comparaveis": 945,
-        "diferentes": 78
+        "comparaveis": 862,
+        "diferentes": 39
       },
       "nota": null
     }
@@ -57239,13 +57194,10 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 71,
-        "diferentes": 17
-      },
+      "faixa": null,
       "partido": {
-        "comparaveis": 71,
-        "diferentes": 6
+        "comparaveis": 69,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -57455,12 +57407,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1101,
-        "diferentes": 362
+        "comparaveis": 601,
+        "diferentes": 159
       },
       "partido": {
-        "comparaveis": 1111,
-        "diferentes": 635
+        "comparaveis": 1000,
+        "diferentes": 570
       },
       "nota": null
     }
@@ -57559,12 +57511,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 960,
-        "diferentes": 243
+        "comparaveis": 492,
+        "diferentes": 62
       },
       "partido": {
-        "comparaveis": 970,
-        "diferentes": 71
+        "comparaveis": 880,
+        "diferentes": 25
       },
       "nota": null
     }
@@ -57663,12 +57615,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 974,
-        "diferentes": 279
+        "comparaveis": 539,
+        "diferentes": 70
       },
       "partido": {
-        "comparaveis": 979,
-        "diferentes": 218
+        "comparaveis": 912,
+        "diferentes": 194
       },
       "nota": null
     }
@@ -57775,12 +57727,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 61,
-        "diferentes": 4
+        "comparaveis": 54,
+        "diferentes": 3
       },
       "partido": {
-        "comparaveis": 543,
-        "diferentes": 50
+        "comparaveis": 409,
+        "diferentes": 20
       },
       "nota": null
     }
@@ -57879,12 +57831,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 690,
-        "diferentes": 221
+        "comparaveis": 378,
+        "diferentes": 40
       },
       "partido": {
-        "comparaveis": 693,
-        "diferentes": 57
+        "comparaveis": 629,
+        "diferentes": 34
       },
       "nota": null
     }
@@ -58062,12 +58014,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 162,
-        "diferentes": 70
+        "comparaveis": 97,
+        "diferentes": 26
       },
       "partido": {
-        "comparaveis": 163,
-        "diferentes": 25
+        "comparaveis": 142,
+        "diferentes": 15
       },
       "nota": null
     }
@@ -58192,12 +58144,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 816,
-        "diferentes": 77
+        "comparaveis": 700,
+        "diferentes": 43
       },
       "partido": {
-        "comparaveis": 815,
-        "diferentes": 87
+        "comparaveis": 731,
+        "diferentes": 43
       },
       "nota": null
     }
@@ -58309,12 +58261,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 859,
-        "diferentes": 309
+        "comparaveis": 474,
+        "diferentes": 102
       },
       "partido": {
-        "comparaveis": 864,
-        "diferentes": 140
+        "comparaveis": 771,
+        "diferentes": 102
       },
       "nota": null
     }
@@ -58489,12 +58441,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 635,
-        "diferentes": 24
+        "comparaveis": 606,
+        "diferentes": 17
       },
       "partido": {
-        "comparaveis": 635,
-        "diferentes": 24
+        "comparaveis": 614,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -58606,12 +58558,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 906,
-        "diferentes": 209
+        "comparaveis": 470,
+        "diferentes": 17
       },
       "partido": {
-        "comparaveis": 908,
-        "diferentes": 216
+        "comparaveis": 794,
+        "diferentes": 152
       },
       "nota": null
     }
@@ -58735,12 +58687,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 145,
-        "diferentes": 14
+        "comparaveis": 139,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 145,
-        "diferentes": 14
+        "comparaveis": 141,
+        "diferentes": 12
       },
       "nota": null
     }
@@ -58840,8 +58792,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 844,
-        "diferentes": 194
+        "comparaveis": 589,
+        "diferentes": 56
       },
       "nota": null
     }
@@ -58940,12 +58892,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 746,
-        "diferentes": 128
+        "comparaveis": 628,
+        "diferentes": 72
       },
       "partido": {
-        "comparaveis": 743,
-        "diferentes": 126
+        "comparaveis": 663,
+        "diferentes": 80
       },
       "nota": null
     }
@@ -59044,12 +58996,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 879,
-        "diferentes": 348
+        "comparaveis": 452,
+        "diferentes": 97
       },
       "partido": {
-        "comparaveis": 885,
-        "diferentes": 157
+        "comparaveis": 774,
+        "diferentes": 126
       },
       "nota": null
     }
@@ -59156,7 +59108,7 @@
         "diferentes": 4
       },
       "partido": {
-        "comparaveis": 58,
+        "comparaveis": 57,
         "diferentes": 0
       },
       "nota": null
@@ -59282,12 +59234,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 723,
-        "diferentes": 139
+        "comparaveis": 407,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 730,
-        "diferentes": 63
+        "comparaveis": 657,
+        "diferentes": 38
       },
       "nota": null
     }
@@ -59412,12 +59364,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 484,
-        "diferentes": 96
+        "comparaveis": 257,
+        "diferentes": 14
       },
       "partido": {
-        "comparaveis": 489,
-        "diferentes": 34
+        "comparaveis": 451,
+        "diferentes": 19
       },
       "nota": null
     }
@@ -59567,12 +59519,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 708,
-        "diferentes": 179
+        "comparaveis": 420,
+        "diferentes": 23
       },
       "partido": {
-        "comparaveis": 714,
-        "diferentes": 66
+        "comparaveis": 646,
+        "diferentes": 37
       },
       "nota": null
     }
@@ -59691,12 +59643,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 948,
-        "diferentes": 169
+        "comparaveis": 870,
+        "diferentes": 135
       },
       "partido": {
-        "comparaveis": 947,
-        "diferentes": 163
+        "comparaveis": 899,
+        "diferentes": 137
       },
       "nota": null
     }
@@ -59795,12 +59747,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 939,
-        "diferentes": 20
+        "comparaveis": 929,
+        "diferentes": 16
       },
       "partido": {
-        "comparaveis": 940,
-        "diferentes": 23
+        "comparaveis": 935,
+        "diferentes": 19
       },
       "nota": null
     }
@@ -59912,12 +59864,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 723,
-        "diferentes": 116
+        "comparaveis": 713,
+        "diferentes": 110
       },
       "partido": {
-        "comparaveis": 722,
-        "diferentes": 14
+        "comparaveis": 713,
+        "diferentes": 12
       },
       "nota": null
     }
@@ -60016,12 +59968,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1012,
-        "diferentes": 163
+        "comparaveis": 1001,
+        "diferentes": 156
       },
       "partido": {
-        "comparaveis": 1008,
-        "diferentes": 13
+        "comparaveis": 1000,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -60124,12 +60076,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 817,
-        "diferentes": 208
+        "comparaveis": 448,
+        "diferentes": 27
       },
       "partido": {
-        "comparaveis": 823,
-        "diferentes": 96
+        "comparaveis": 730,
+        "diferentes": 51
       },
       "nota": null
     }
@@ -60228,12 +60180,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 881,
-        "diferentes": 310
+        "comparaveis": 814,
+        "diferentes": 275
       },
       "partido": {
-        "comparaveis": 922,
-        "diferentes": 321
+        "comparaveis": 889,
+        "diferentes": 302
       },
       "nota": null
     }
@@ -60345,12 +60297,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 301,
-        "diferentes": 88
+        "comparaveis": 174,
+        "diferentes": 9
       },
       "partido": {
-        "comparaveis": 301,
-        "diferentes": 8
+        "comparaveis": 284,
+        "diferentes": 5
       },
       "nota": null
     }
@@ -60449,12 +60401,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 786,
-        "diferentes": 183
+        "comparaveis": 438,
+        "diferentes": 19
       },
       "partido": {
-        "comparaveis": 794,
-        "diferentes": 85
+        "comparaveis": 708,
+        "diferentes": 48
       },
       "nota": null
     }
@@ -60592,12 +60544,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 866,
-        "diferentes": 281
+        "comparaveis": 468,
+        "diferentes": 52
       },
       "partido": {
-        "comparaveis": 864,
-        "diferentes": 348
+        "comparaveis": 772,
+        "diferentes": 314
       },
       "nota": null
     }
@@ -60722,12 +60674,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 947,
-        "diferentes": 297
+        "comparaveis": 515,
+        "diferentes": 22
       },
       "partido": {
-        "comparaveis": 954,
-        "diferentes": 31
+        "comparaveis": 835,
+        "diferentes": 20
       },
       "nota": null
     }
@@ -60845,10 +60797,7 @@
       "abstencao": 0
     },
     "divergencia": {
-      "faixa": {
-        "comparaveis": 52,
-        "diferentes": 27
-      },
+      "faixa": null,
       "partido": {
         "comparaveis": 52,
         "diferentes": 17
@@ -61087,12 +61036,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 886,
-        "diferentes": 12
+        "comparaveis": 878,
+        "diferentes": 8
       },
       "partido": {
-        "comparaveis": 886,
-        "diferentes": 13
+        "comparaveis": 881,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -61256,12 +61205,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 921,
-        "diferentes": 14
+        "comparaveis": 913,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 920,
-        "diferentes": 14
+        "comparaveis": 917,
+        "diferentes": 11
       },
       "nota": null
     }
@@ -61373,12 +61322,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 628,
-        "diferentes": 137
+        "comparaveis": 343,
+        "diferentes": 17
       },
       "partido": {
-        "comparaveis": 632,
-        "diferentes": 97
+        "comparaveis": 546,
+        "diferentes": 58
       },
       "nota": null
     }
@@ -61507,12 +61456,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 789,
-        "diferentes": 200
+        "comparaveis": 446,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 796,
-        "diferentes": 49
+        "comparaveis": 707,
+        "diferentes": 22
       },
       "nota": null
     }
@@ -61650,12 +61599,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 729,
-        "diferentes": 48
+        "comparaveis": 674,
+        "diferentes": 32
       },
       "partido": {
-        "comparaveis": 729,
-        "diferentes": 49
+        "comparaveis": 705,
+        "diferentes": 38
       },
       "nota": null
     }
@@ -61805,12 +61754,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 755,
-        "diferentes": 120
+        "comparaveis": 420,
+        "diferentes": 13
       },
       "partido": {
-        "comparaveis": 760,
-        "diferentes": 120
+        "comparaveis": 682,
+        "diferentes": 90
       },
       "nota": null
     }
@@ -61942,12 +61891,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 888,
-        "diferentes": 139
+        "comparaveis": 717,
+        "diferentes": 61
       },
       "partido": {
-        "comparaveis": 875,
-        "diferentes": 104
+        "comparaveis": 746,
+        "diferentes": 52
       },
       "nota": null
     }
@@ -62047,8 +61996,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 614,
-        "diferentes": 22
+        "comparaveis": 504,
+        "diferentes": 7
       },
       "nota": null
     }
@@ -62186,12 +62135,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 857,
-        "diferentes": 17
+        "comparaveis": 848,
+        "diferentes": 11
       },
       "partido": {
-        "comparaveis": 855,
-        "diferentes": 15
+        "comparaveis": 851,
+        "diferentes": 13
       },
       "nota": null
     }
@@ -62329,8 +62278,8 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 820,
-        "diferentes": 172
+        "comparaveis": 698,
+        "diferentes": 125
       },
       "partido": null,
       "nota": "menos de 50 votos comparáveis"
@@ -62492,12 +62441,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 604,
-        "diferentes": 95
+        "comparaveis": 332,
+        "diferentes": 8
       },
       "partido": {
-        "comparaveis": 610,
-        "diferentes": 52
+        "comparaveis": 554,
+        "diferentes": 35
       },
       "nota": null
     }
@@ -62596,12 +62545,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 922,
-        "diferentes": 10
+        "comparaveis": 914,
+        "diferentes": 7
       },
       "partido": {
-        "comparaveis": 921,
-        "diferentes": 10
+        "comparaveis": 918,
+        "diferentes": 8
       },
       "nota": null
     }
@@ -62705,8 +62654,8 @@
     "divergencia": {
       "faixa": null,
       "partido": {
-        "comparaveis": 637,
-        "diferentes": 24
+        "comparaveis": 448,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -62813,12 +62762,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 637,
-        "diferentes": 31
+        "comparaveis": 522,
+        "diferentes": 12
       },
       "partido": {
-        "comparaveis": 636,
-        "diferentes": 34
+        "comparaveis": 552,
+        "diferentes": 16
       },
       "nota": null
     }
@@ -62921,12 +62870,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 498,
-        "diferentes": 191
+        "comparaveis": 243,
+        "diferentes": 17
       },
       "partido": {
-        "comparaveis": 500,
-        "diferentes": 33
+        "comparaveis": 410,
+        "diferentes": 19
       },
       "nota": null
     }
@@ -63025,12 +62974,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 926,
-        "diferentes": 305
+        "comparaveis": 495,
+        "diferentes": 54
       },
       "partido": {
-        "comparaveis": 976,
-        "diferentes": 67
+        "comparaveis": 869,
+        "diferentes": 32
       },
       "nota": null
     }
@@ -63146,12 +63095,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 795,
-        "diferentes": 13
+        "comparaveis": 785,
+        "diferentes": 9
       },
       "partido": {
-        "comparaveis": 794,
-        "diferentes": 11
+        "comparaveis": 790,
+        "diferentes": 9
       },
       "nota": null
     }
@@ -63301,12 +63250,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 778,
-        "diferentes": 51
+        "comparaveis": 646,
+        "diferentes": 24
       },
       "partido": {
-        "comparaveis": 65,
-        "diferentes": 5
+        "comparaveis": 61,
+        "diferentes": 3
       },
       "nota": null
     }
@@ -63405,12 +63354,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 912,
-        "diferentes": 249
+        "comparaveis": 475,
+        "diferentes": 81
       },
       "partido": {
-        "comparaveis": 920,
-        "diferentes": 95
+        "comparaveis": 845,
+        "diferentes": 52
       },
       "nota": null
     }
@@ -63522,12 +63471,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 429,
-        "diferentes": 56
+        "comparaveis": 267,
+        "diferentes": 15
       },
       "partido": {
-        "comparaveis": 433,
-        "diferentes": 61
+        "comparaveis": 388,
+        "diferentes": 37
       },
       "nota": null
     }
@@ -63665,12 +63614,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 890,
-        "diferentes": 14
+        "comparaveis": 883,
+        "diferentes": 10
       },
       "partido": {
-        "comparaveis": 888,
-        "diferentes": 11
+        "comparaveis": 885,
+        "diferentes": 10
       },
       "nota": null
     }
@@ -63769,12 +63718,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 857,
-        "diferentes": 268
+        "comparaveis": 461,
+        "diferentes": 24
       },
       "partido": {
-        "comparaveis": 863,
-        "diferentes": 32
+        "comparaveis": 760,
+        "diferentes": 18
       },
       "nota": null
     }
@@ -63873,12 +63822,12 @@
     },
     "divergencia": {
       "faixa": {
-        "comparaveis": 1054,
-        "diferentes": 296
+        "comparaveis": 666,
+        "diferentes": 169
       },
       "partido": {
-        "comparaveis": 1059,
-        "diferentes": 190
+        "comparaveis": 984,
+        "diferentes": 155
       },
       "nota": null
     }

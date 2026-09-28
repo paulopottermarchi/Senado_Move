@@ -87,7 +87,7 @@ jobs:
       - name: Montar o site
         run: |
           mkdir -p _site
-          cp index.html prototipo.html deputado.html deputados.json proposicoes.json \
+          cp index.html prototipo.html deputado.html leis.html deputados.json proposicoes.json \
              semana.json legislaturas.json LICENSE .nojekyll _site/
           cp -r temas _site/
 

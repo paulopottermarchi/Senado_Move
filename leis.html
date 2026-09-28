@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Leis votadas | Câmara Aberta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#16181b; --tinta2:#4a4e55; --tinta3:#80858d;
+  --linha:#e4e5e8; --linha2:#f0f1f3; --fundo:#f6f6f4; --papel:#fff;
+  --raio:14px; --raio-p:8px;
+  --sombra:0 1px 2px rgba(16,18,22,.04),0 6px 24px rgba(16,18,22,.05);
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);font-size:15px;line-height:1.55;
+     -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+a{color:inherit}
+
+/* barra fixa — igual à página principal */
+.topo{position:sticky;top:0;z-index:80;background:rgba(246,246,244,.86);
+      backdrop-filter:saturate(160%) blur(12px);-webkit-backdrop-filter:saturate(160%) blur(12px);
+      border-bottom:1px solid var(--linha)}
+.topo-in{max-width:1080px;margin:0 auto;padding:0 22px;height:56px;display:flex;align-items:center;
+         justify-content:space-between;gap:20px}
+.marca{font-family:var(--serif);font-size:19px;font-weight:600;text-decoration:none;white-space:nowrap}
+.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-size:13.5px;color:var(--tinta2);text-decoration:none;padding:7px 11px;border-radius:999px;white-space:nowrap}
+.nav a:hover{background:var(--linha2);color:var(--tinta)}
+.nav a.aqui{background:var(--tinta);color:#fff}
+
+/* abertura */
+.capa{padding:52px 0 8px}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta3);margin-bottom:10px}
+h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,46px);font-weight:500;line-height:1.08;
+   letter-spacing:-.015em;max-width:20ch}
+.chamada{font-size:clamp(15.5px,1.8vw,17.5px);color:var(--tinta2);margin-top:14px;max-width:62ch}
+
+/* o enquadramento vem ANTES de qualquer número */
+.aviso{margin-top:24px;background:var(--papel);border:1px solid var(--linha);border-left:3px solid var(--tinta);
+       border-radius:var(--raio-p);padding:16px 20px;max-width:78ch}
+.aviso b{font-weight:600}
+.aviso p{font-size:14px;line-height:1.65;color:var(--tinta2)}
+.aviso p+p{margin-top:8px}
+
+/* controles */
+.painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
+        padding:22px 26px;margin-top:26px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.campo{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--tinta3)}
+.texto,.sel{font:inherit;font-size:13.5px;border:1px solid var(--linha);border-radius:999px;background:var(--papel);
+            color:var(--tinta);padding:7px 14px}
+.texto{width:260px;max-width:100%}
+.sel{max-width:250px;text-overflow:ellipsis}
+.texto:focus,.sel:focus{outline:none;border-color:var(--tinta2);box-shadow:0 0 0 4px rgba(22,24,27,.06)}
+.sel{appearance:none;-webkit-appearance:none;padding-right:30px;cursor:pointer;
+     background:var(--papel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2380858d' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center}
+.chk{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--tinta2);cursor:pointer}
+.chk input{width:16px;height:16px;accent-color:var(--tinta)}
+.seg{display:inline-flex;gap:2px;background:var(--linha2);border-radius:999px;padding:3px}
+.seg button{font:inherit;font-size:13px;border:none;background:transparent;color:var(--tinta2);
+            border-radius:999px;padding:6px 13px;cursor:pointer}
+.seg button.on{background:var(--papel);color:var(--tinta);font-weight:500;box-shadow:0 1px 2px rgba(16,18,22,.12)}
+.linha2{margin-top:12px;padding-top:12px;border-top:1px solid var(--linha2)}
+.contagem{font-size:13px;color:var(--tinta3);margin-left:auto}
+.limpar{font:inherit;font-size:13px;background:none;border:none;text-decoration:underline;
+        text-underline-offset:3px;cursor:pointer;color:var(--tinta)}
+.limpar[hidden]{display:none}
+.resumo-dep{margin-top:14px;font-size:14.5px;line-height:1.55}
+.resumo-dep[hidden]{display:none}
+
+/* lista */
+.lei{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);padding:22px 26px;margin-top:14px}
+.lei-cab{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
+.lei-num{font-size:13px;color:var(--tinta3)}
+.lei-num a{color:var(--tinta);font-weight:600;text-decoration:none;border-bottom:1px dotted var(--tinta3)}
+.lei-res{font-size:13px;color:var(--tinta2)}
+.lei-res b{color:var(--tinta);font-weight:600}
+.ementa{font-family:var(--serif);font-size:18px;line-height:1.45;margin-top:8px;max-width:72ch}
+.cats{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.cats span{font-size:11px;color:var(--tinta2);border:1px solid var(--linha);border-radius:999px;padding:0 8px;cursor:help}
+.corpo-lei{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:22px;margin-top:14px;align-items:start}
+.placar{font-size:14px;line-height:1.6}
+.placar b{font-weight:600}
+.med{font-size:13px;color:var(--tinta2);margin-top:4px}
+.ades{display:flex;gap:4px;align-items:flex-end;height:44px;position:relative}
+.ades div{flex:1;height:100%;background:var(--linha2);border-radius:2px;position:relative}
+.ades i{position:absolute;bottom:0;left:0;right:0;border-radius:2px;display:block}
+.ades .meia{position:absolute;left:0;right:0;top:50%;height:1px;background:#c9ccd0;z-index:1}
+.ades-leg{font-size:11px;color:var(--tinta3);margin-top:5px;text-align:center}
+
+.div{margin-top:16px;padding-top:14px;border-top:1px solid var(--linha2)}
+.div summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px;font-size:14px;font-weight:500}
+.div summary::-webkit-details-marker{display:none}
+.div summary::before{content:"";width:7px;height:7px;border-right:1.6px solid currentColor;
+  border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform .15s;flex-shrink:0}
+.div[open] summary::before{transform:rotate(45deg)}
+.div summary em{font-style:normal;font-weight:400;color:var(--tinta3);font-size:13px}
+.nenhum{font-size:13.5px;color:var(--tinta3);margin-top:14px;padding-top:14px;border-top:1px solid var(--linha2)}
+.grupo{margin-top:14px}
+.grupo h4{font-size:13px;font-weight:600;color:var(--tinta)}
+.grupo h4 span{font-weight:400;color:var(--tinta3)}
+.pessoas{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:8px}
+.pessoa{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--linha2);
+        border-radius:var(--raio-p);text-decoration:none;color:inherit;min-width:0}
+a.pessoa:hover{border-color:#c9ccd1}
+.pessoa.destaque{border-color:var(--tinta);background:#fafaf8}
+.pessoa-txt{min-width:0}
+.pessoa b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+          font-size:13.5px;font-weight:500;line-height:1.25}
+.pessoa small{font-size:12px;color:var(--tinta3)}
+.voto{font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;margin-left:auto;flex-shrink:0}
+.v-sim{background:#e2efe6;color:#1d5c37}
+.v-nao{background:#f5e0e0;color:#862929}
+
+.av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;background:var(--linha2);overflow:hidden}
+.av-cx .av-ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+               font-weight:600;color:var(--tinta3);font-size:12px}
+.av-cx img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;z-index:1}
+.av-cx img.falhou{display:none}
+
+.mais{display:block;margin:22px auto 0;font:inherit;font-size:14px;background:var(--papel);border:1px solid var(--linha);
+      border-radius:999px;padding:10px 22px;cursor:pointer}
+.mais:hover{border-color:#c9ccd1}
+.mais[hidden]{display:none}
+.vazio{margin-top:18px;font-size:14.5px;color:var(--tinta2)}
+
+.rodape-site{margin-top:56px;border-top:1px solid var(--linha);background:var(--papel);padding:36px 0 44px}
+.rodape-site h2{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:8px}
+.rodape-site p{font-size:13.5px;line-height:1.7;color:var(--tinta2);max-width:78ch}
+.rodape-site p+p{margin-top:10px}
+
+@media(max-width:760px){
+  .corpo-lei{grid-template-columns:1fr}
+  .lei,.painel{padding:18px}
+  .contagem{margin-left:0;width:100%}
+}
+@media(max-width:520px){ .topo .marca{display:none} .texto{width:100%} }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="prototipo.html">Câmara Aberta</a>
+    <nav class="nav" aria-label="Seções do site">
+      <a href="prototipo.html#deputados">Deputados</a>
+      <a href="prototipo.html#semana">Esta semana</a>
+      <a class="aqui" href="leis.html" aria-current="page">Leis votadas</a>
+      <a href="prototipo.html#sobre">Sobre os dados</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="capa">
+    <p class="kicker">Leis votadas · 2023 a 2026</p>
+    <h1>O que a Câmara votou, e quem votou diferente do próprio partido</h1>
+    <p class="chamada" id="chamada">As votações finais de texto-base com voto registrado de cada
+       deputado, da mais recente para a mais antiga.</p>
+
+    <div class="aviso" role="note">
+      <p><b>Votar diferente do próprio partido não é traição nem incoerência por definição.</b>
+         Pode ser convicção pessoal, compromisso com o estado ou a região, ou uma questão que a
+         bancada liberou para cada um votar como quiser. Esta página mostra quem fez isso, não por quê.</p>
+      <p>Só conta quando o partido votou unido: pelo menos 70% dos colegas no mesmo lado. Se o
+         partido rachou, não havia posição a contrariar e ninguém aparece. Entram apenas os votos
+         Sim e Não; abstenção e obstrução ficam de fora. O partido é o que o deputado tinha no dia do voto.</p>
+    </div>
+  </div>
+
+  <section class="painel" aria-label="Filtros">
+    <div class="ctl">
+      <label class="campo"><span>Buscar</span>
+        <input class="texto" id="fTexto" type="search" placeholder="Número ou assunto" autocomplete="off"></label>
+      <label class="campo"><span>Deputado</span>
+        <input class="texto" id="fDep" type="search" list="listaDep" placeholder="Nome de quem divergiu" autocomplete="off"></label>
+      <datalist id="listaDep"></datalist>
+      <label class="campo"><span>Tema</span><select class="sel" id="fTema"><option value="">Todos</option></select></label>
+      <label class="campo"><span>Tipo</span><select class="sel" id="fTipo"><option value="">Todos</option></select></label>
+    </div>
+    <div class="ctl linha2">
+      <label class="chk"><input type="checkbox" id="fSoDiv"> Só leis com voto diferente do partido</label>
+      <div class="seg" role="group" aria-label="Ordem">
+        <button class="on" data-o="data">Mais recentes</button>
+        <button data-o="margem">Mais disputadas</button>
+        <button data-o="div">Mais votos diferentes</button>
+      </div>
+      <button class="limpar" id="limpar" hidden>Limpar filtros</button>
+      <span class="contagem" id="contagem"></span>
+    </div>
+    <p class="resumo-dep" id="resumoDep" hidden></p>
+  </section>
+
+  <div id="lista"></div>
+  <button class="mais" id="mais" hidden>Mostrar mais</button>
+</main>
+
+<footer class="rodape-site">
+  <div class="wrap">
+    <h2>De onde vêm estes dados</h2>
+    <p>Votações e votos de cada deputado: arquivos anuais dos <a href="https://dadosabertos.camara.leg.br"
+       target="_blank" rel="noopener">Dados Abertos da Câmara dos Deputados</a>. Entra, de cada proposição,
+       a votação final do texto-base, e só se foi nominal (com o voto de cada deputado registrado); votação
+       simbólica não mostra quem votou o quê. O resultado vem do registro oficial de aprovação, nunca da
+       comparação entre sim e não: emenda à Constituição precisa de 308 votos.</p>
+    <p>Parcela de cada faixa que votou a favor: posição no espectro pela média das respostas da pesquisa
+       Brazilian Legislative Survey (Power e Zucco, 2021), calculada por este site; os limites entre as
+       faixas são escolha deste site. Deputados de partidos sem posição, como a União Brasil, ficam fora
+       dessas barras. Categorias pela classificação deste site, a partir da ementa oficial.</p>
+  </div>
+</footer>
+
+<script>
+const CORES={'esquerda':'#d85a30','centro-esquerda':'#b88f5a','centro':'#888780',
+             'centro-direita':'#4a7a9f','direita':'#0c447c'};
+const NOMES={'esquerda':'Esquerda','centro-esquerda':'Centro-esquerda','centro':'Centro',
+             'centro-direita':'Centro-direita','direita':'Direita'};
+const FAIXAS=Object.keys(CORES);
+const QUORUM={PEC:308,PLP:257};
+const PASSO=15;
+const nf=new Intl.NumberFormat('pt-BR');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const cap=s=>s?s.charAt(0).toUpperCase()+s.slice(1):s;
+const dataBR=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)}`:'';
+
+let LEIS=[], ATUAIS=new Set(), limite=PASSO, ordem='data';
+const f={texto:'',dep:'',tema:'',tipo:'',soDiv:false};
+
+function iniciais(nome){
+  const p=String(nome).trim().split(/\s+/).filter(w=>w.length>2);
+  return ((p[0]||nome||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase();
+}
+// Foto servida pela Câmara (mesmo endereço do registro de voto); sem foto, as iniciais.
+function retrato(id,nome,px){
+  return `<span class="av-cx" style="width:${px}px;height:${px}px" aria-hidden="true"><span class="av-ini">${esc(iniciais(nome))}</span>`+
+    `<img src="https://www.camara.leg.br/internet/deputado/bandep/${id}.jpg" alt="" loading="lazy" onerror="this.classList.add('falhou')"></span>`;
+}
+
+// Divergentes gravados compactos por votos.py: [id, nome, partido, uf, voto, coesão].
+const pessoa=([id,nome,partido,uf,voto,coesao])=>({id,nome,partido,uf,voto,coesao});
+
+async function carregar(){
+  const [rp,rr]=await Promise.all([fetch('proposicoes.json',{cache:'no-store'}),
+                                   fetch('temas/resumo.json',{cache:'no-store'}).catch(()=>null)]);
+  LEIS=(await rp.json()).map(p=>({...p, tipo:(p.numero||'').split(' ')[0], div:(p.divergentes||[]).map(pessoa),
+                                  _num:norm(p.numero), _ementa:norm(p.ementa)}));
+  // quem tem página por tema: deputados em exercício (temas/resumo.json traz as frases por id)
+  try{ if(rr&&rr.ok) ATUAIS=new Set(Object.keys((await rr.json()).frases||{}).map(Number)); }catch(e){}
+
+  const temas=[...new Set(LEIS.flatMap(l=>(l.temas||[]).map(t=>t[0])))].sort((a,b)=>a.localeCompare(b));
+  fTema.innerHTML='<option value="">Todos</option>'+temas.map(t=>`<option value="${esc(t)}">${esc(cap(t))}</option>`).join('');
+  const tipos=[...new Set(LEIS.map(l=>l.tipo))].sort();
+  fTipo.innerHTML='<option value="">Todos</option>'+tipos.map(t=>`<option>${esc(t)}</option>`).join('');
+  const nomes=new Map(); LEIS.forEach(l=>l.div.forEach(p=>nomes.set(p.id,`${p.nome} (${p.partido}-${p.uf})`)));
+  listaDep.innerHTML=[...nomes.values()].sort((a,b)=>a.localeCompare(b)).map(n=>`<option value="${esc(n)}">`).join('');
+
+  const total=LEIS.reduce((s,l)=>s+l.div.length,0);
+  chamada.textContent=`As ${LEIS.length} votações finais de texto-base com voto registrado de cada deputado, `+
+    `de 2023 a 2026. Em ${LEIS.filter(l=>l.div.length).length} delas alguém votou diferente da maioria do `+
+    `próprio partido — ${nf.format(total)} votos ao todo.`;
+
+  // ?dep=ID vem da ficha do deputado na página principal
+  const q=new URLSearchParams(location.search);
+  if(q.get('dep')){ const id=+q.get('dep'); if(nomes.has(id)){ fDep.value=nomes.get(id); f.dep=nomes.get(id); f.soDiv=true; fSoDiv.checked=true; }
+                    else { f.depSemDiv=id; } }
+  desenhar();
+}
+
+// deputado escolhido: id pelo texto "Nome (PARTIDO-UF)" ou por nome parcial
+function depEscolhido(){
+  if(!f.dep) return null;
+  const alvo=norm(f.dep);
+  for(const l of LEIS) for(const p of l.div) if(norm(`${p.nome} (${p.partido}-${p.uf})`)===alvo) return p.id;
+  const ids=new Set(); LEIS.forEach(l=>l.div.forEach(p=>{ if(norm(p.nome).includes(alvo)) ids.add(p.id); }));
+  return ids.size===1?[...ids][0]:(ids.size?-1:0);
+}
+
+// Busca: número ("PEC 45", "4278") dentro do número; palavra só pelo começo, para
+// "PEC" não achar "especial" e "lei" não achar "leilão" no meio.
+function casaBusca(l,t){
+  if(!t) return true;
+  if(l._num.includes(t)) return true;
+  const re=new RegExp('(^|[^a-z0-9])'+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+  return re.test(l._ementa);
+}
+function filtradas(){
+  const t=norm(f.texto), dep=depEscolhido();
+  let L=LEIS.filter(l=>casaBusca(l,t)
+    &&(!f.tema||(l.temas||[]).some(x=>x[0]===f.tema))
+    &&(!f.tipo||l.tipo===f.tipo)
+    &&(!f.soDiv||l.div.length)
+    &&(!dep||dep<0||l.div.some(p=>p.id===dep)));
+  const k={data:(a,b)=>b.data.localeCompare(a.data), margem:(a,b)=>a.margem-b.margem,
+           div:(a,b)=>b.div.length-a.div.length};
+  return [...L].sort(k[ordem]);
+}
+
+function barraAdesao(a){
+  if(!a) return '';
+  const cols=FAIXAS.map(fx=>a[fx]==null
+    ? `<div title="${NOMES[fx]}: sem votante com posição"></div>`
+    : `<div title="${NOMES[fx]}: ${Math.round(a[fx]*100)}% votou a favor"><i style="height:${(a[fx]*100).toFixed(1)}%;background:${CORES[fx]}"></i></div>`).join('');
+  return `<div class="ades">${cols}<span class="meia"></span></div><div class="ades-leg">parcela de cada faixa que votou a favor, da esquerda à direita</div>`;
+}
+
+function blocoDivergentes(l,dep){
+  if(!l.div.length) return `<p class="nenhum">Ninguém votou diferente da maioria do próprio partido nesta votação, entre os partidos que votaram unidos.</p>`;
+  const porPartido=new Map();
+  l.div.forEach(p=>{ if(!porPartido.has(p.partido)) porPartido.set(p.partido,[]); porPartido.get(p.partido).push(p); });
+  const grupos=[...porPartido].sort((a,b)=>b[1].length-a[1].length).map(([partido,ps])=>{
+    const maioria=ps[0].voto==='Sim'?'Não':'Sim';
+    const coesao=Math.round(Math.max(...ps.map(p=>p.coesao))*100);
+    return `<div class="grupo"><h4>${esc(partido)} <span>· ${ps.length} ${ps.length===1?'deputado':'deputados'} ·
+      o partido votou ${coesao}% ${maioria}</span></h4><div class="pessoas">${ps.map(p=>{
+        const tag=ATUAIS.has(p.id)?'a':'div', href=ATUAIS.has(p.id)?` href="deputado.html?id=${p.id}"`:'';
+        return `<${tag} class="pessoa${p.id===dep?' destaque':''}"${href}>${retrato(p.id,p.nome,34)}
+          <span class="pessoa-txt"><b>${esc(p.nome)}</b><small>${esc(p.partido)}-${esc(p.uf)}</small></span>
+          <span class="voto ${p.voto==='Sim'?'v-sim':'v-nao'}">votou ${p.voto}</span></${tag}>`;
+      }).join('')}</div></div>`;
+  }).join('');
+  const aberto=dep||l.div.length<=8?' open':'';
+  return `<details class="div"${aberto}><summary>${l.div.length} ${l.div.length===1?'deputado votou':'deputados votaram'}
+    diferente da maioria do próprio partido <em>· ver nomes</em></summary>${grupos}</details>`;
+}
+
+function cartao(l,dep){
+  const res=l.aprovacao==null?'':l.aprovacao?'aprovada':(QUORUM[l.tipo]&&l.sim>l.nao?`rejeitada, faltou quórum de ${QUORUM[l.tipo]}`:'rejeitada');
+  const med=(l.scoreMedioSim!=null||l.scoreMedioNao!=null)
+    ?`<p class="med">Posição média de quem votou sim: <b>${l.scoreMedioSim==null?'—':l.scoreMedioSim.toFixed(1)}</b> · de quem votou não: <b>${l.scoreMedioNao==null?'—':l.scoreMedioNao.toFixed(1)}</b> (de 1, esquerda, a 10, direita)</p>`:'';
+  const cats=(l.temas||[]).length?`<div class="cats">${l.temas.map(([n,t,o])=>
+    `<span title="Nesta categoria pelo termo “${esc(t)}”, na ementa">${esc(cap(n))}</span>`).join('')}</div>`:'';
+  return `<article class="lei">
+    <div class="lei-cab"><span class="lei-num"><a href="${esc(l.urlCamara)}" target="_blank" rel="noopener">${esc(l.numero)}</a> · votada em ${dataBR(l.data)}</span>
+      <span class="lei-res"><b>${nf.format(l.sim)}</b> a favor, <b>${nf.format(l.nao)}</b> contra${res?` — ${res}`:''}</span></div>
+    <p class="ementa">${esc(l.ementa||l.titulo||'Sem ementa no registro da Câmara.')}</p>${cats}
+    <div class="corpo-lei"><div><p class="placar">Diferença de <b>${nf.format(l.margem)}</b> votos${l.abstencao?`, ${l.abstencao} abstenções`:''}.</p>${med}</div>
+      <div>${barraAdesao(l.adesaoPorFaixa)}</div></div>
+    ${blocoDivergentes(l,dep)}
+  </article>`;
+}
+
+function desenhar(){
+  const dep=depEscolhido(), L=filtradas();
+  lista.innerHTML=L.length?L.slice(0,limite).map(l=>cartao(l,dep)).join('')
+    :'<p class="vazio">Nenhuma votação com esses filtros.</p>';
+  mais.hidden=L.length<=limite;
+  mais.textContent=`Mostrar mais ${Math.min(PASSO,L.length-limite)} de ${L.length-limite}`;
+  contagem.textContent=`${L.length} de ${LEIS.length} votações`;
+  limpar.hidden=!(f.texto||f.dep||f.tema||f.tipo||f.soDiv||ordem!=='data');
+  // resumo do deputado escolhido
+  if(dep>0){
+    const p=LEIS.flatMap(l=>l.div).find(x=>x.id===dep);
+    const n=LEIS.filter(l=>l.div.some(x=>x.id===dep)).length;
+    resumoDep.hidden=false;
+    resumoDep.innerHTML=`<b>${esc(p.nome)}</b> (${esc(p.partido)}-${esc(p.uf)}) votou diferente da maioria do próprio partido em
+      <b>${n}</b> das ${LEIS.length} votações finais desta página. A proporção sobre todas as votações nominais
+      do Plenário está na ficha do deputado.`;
+  }else if(f.depSemDiv){
+    resumoDep.hidden=false;
+    resumoDep.textContent='Este deputado não votou diferente da maioria do próprio partido em nenhuma das votações desta página.';
+  }else if(dep===-1){
+    resumoDep.hidden=false; resumoDep.textContent='Mais de um deputado com esse nome: escolha na lista.';
+  }else resumoDep.hidden=true;
+}
+
+const reset=()=>{limite=PASSO; f.depSemDiv=null; desenhar();};
+fTexto.oninput=()=>{f.texto=fTexto.value.trim(); reset();};
+fDep.oninput=()=>{f.dep=fDep.value.trim(); reset();};
+fTema.onchange=()=>{f.tema=fTema.value; reset();};
+fTipo.onchange=()=>{f.tipo=fTipo.value; reset();};
+fSoDiv.onchange=()=>{f.soDiv=fSoDiv.checked; reset();};
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{
+  ordem=b.dataset.o; document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b)); reset();});
+mais.onclick=()=>{limite+=PASSO; desenhar();};
+limpar.onclick=()=>{
+  Object.assign(f,{texto:'',dep:'',tema:'',tipo:'',soDiv:false,depSemDiv:null});
+  fTexto.value=fDep.value=''; fTema.value=fTipo.value=''; fSoDiv.checked=false; ordem='data';
+  document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x.dataset.o==='data'));
+  history.replaceState(null,'','leis.html'); reset();
+};
+carregar().catch(e=>{ lista.innerHTML='<p class="vazio">Não foi possível carregar proposicoes.json. Abra o site por um servidor (não direto do disco).</p>'; });
+</script>
+</body>
+</html>
