@@ -590,6 +590,17 @@ table.rank tbody tr:hover td{background:#f8f9fa}
 .sem-mais{font-size:12px;color:var(--tinta3);padding-top:8px}
 .semana-pe{font-size:11.5px;color:var(--tinta3);margin-top:14px;line-height:1.6;max-width:80ch}
 @media(max-width:760px){.sem-grade{grid-template-columns:1fr}}
+/* categoria de cada proposição: tinta neutra — tema não tem ideologia (CLAUDE.md) */
+.sem-cat{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.sem-cat span{font-size:10.5px;line-height:1.5;color:var(--tinta2);border:1px solid var(--linha);
+              border-radius:2px;padding:0 6px;cursor:help}
+.sem-cat span.nula{border-style:dashed;color:var(--tinta3);cursor:default}
+
+/* ---------- filtros de estado e mandato ---------- */
+.sel{font:inherit;font-size:12.5px;padding:4px 8px;border:1px solid var(--linha);border-radius:2px;
+     background:var(--papel);color:var(--tinta);cursor:pointer;max-width:100%}
+.sel:focus-visible{outline:2px solid var(--tinta);outline-offset:1px}
+.sel.ativo{border-color:var(--tinta);font-weight:600}
 </style>
 </head>
 <body>
@@ -659,6 +670,12 @@ table.rank tbody tr:hover td{background:#f8f9fa}
         <button class="pino" data-reg="CO">Centro-Oeste</button>
         <button class="pino" data-reg="SE">Sudeste</button>
         <button class="pino" data-reg="S">Sul</button>
+      </div>
+      <div class="bloco" id="blocoFiltros2">
+        <label class="rotulo" for="selUF">Estado</label>
+        <select class="sel" id="selUF"><option value="">Todos</option></select>
+        <label class="rotulo" for="selMandato" style="margin-left:10px">Mandato</label>
+        <select class="sel" id="selMandato"><option value="">Todos, carreira inteira</option></select>
       </div>
       <div class="bloco">
         <span class="rotulo">Eixo vertical</span>
@@ -777,6 +794,8 @@ table.rank tbody tr:hover td{background:#f8f9fa}
     <p class="origem" id="fDiverge"></p>
     <p class="origem" id="fEspTxt"></p>
     <p class="origem" id="fOrigem"></p>
+    <p class="origem" id="fMandatos"></p>
+    <p class="origem" id="fEleicao"></p>
     <a class="ver-temas" id="fTemas" href="#" hidden>Ver as proposições por tema</a>
 
     <div class="partic" id="fPartic"></div>
@@ -826,15 +845,16 @@ table.rank tbody tr:hover td{background:#f8f9fa}
      custa, em média, uma vaga ali.</p>
 
   <div class="conta-passo">
-    <div><b>22,8 mi</b><span>votos válidos em SP</span></div>
+    <div><b>23,4 mi</b><span>votos válidos em SP</span></div>
     <div><i>÷</i></div>
     <div><b>70</b><span>vagas de SP</span></div>
     <div><i>=</i></div>
-    <div><b>326 mil</b><span>quociente</span></div>
+    <div><b>333,9 mil</b><span>quociente</span></div>
   </div>
+  <p class="fraco">Eleição de 2022, resultado do TSE: 23.375.585 votos válidos em São Paulo.</p>
 
   <p>É por isso que comparar votação entre estados engana. Em Roraima, que tem 8 vagas e um
-     eleitorado bem menor, o quociente fica perto de 36 mil. Um deputado eleito lá com 40 mil
+     eleitorado bem menor, o quociente foi de 36,5 mil. Um deputado eleito lá com 40 mil
      votos teve desempenho melhor, na régua do próprio estado, que um eleito em São Paulo com
      200 mil.</p>
 
@@ -943,8 +963,9 @@ const REGIOES={N:['AC','AP','AM','PA','RO','RR','TO'],
 const UF_REG={}; for(const r in REGIOES) REGIOES[r].forEach(u=>UF_REG[u]=r);
 
 
-// votos válidos por UF para deputado federal, ordem de grandeza da eleição de 2022.
-// Fonte a integrar: dados abertos do TSE.
+// SÓ PARA A DEMONSTRAÇÃO: ordem de grandeza da eleição de 2022, para gerar votos
+// sintéticos. Com dados reais, votos, válidos e quociente vêm do TSE via
+// deputados.json (eleicao.py) e estas constantes não são usadas.
 const VALIDOS_UF={SP:22800000,MG:10600000,RJ:8300000,BA:7200000,RS:6300000,PR:6100000,
  PE:4600000,CE:4600000,PA:3900000,SC:4200000,MA:3400000,GO:3400000,AM:2000000,ES:2300000,
  PB:2300000,MT:1900000,RN:1900000,AL:1700000,PI:1700000,DF:1700000,MS:1500000,SE:1200000,
@@ -1069,13 +1090,25 @@ async function carregar(){
       apoioCruzado:d.apoioCruzado ?? null,
       votacoesNominais:d.votacoesNominais ?? null,
       votos:d.votos ?? null,
+      // Eleição de 2022: resultado do TSE (eleicao.py). Sem par exato, fica null —
+      // nunca cai nos VALIDOS_UF aproximados, que são só da demonstração.
       votosRecebidos:d.votosRecebidos ?? null,
-      quocienteUF:d.quocienteUF ?? (VALIDOS_UF[d.uf]&&VAGAS_UF[d.uf]
-                  ? Math.round(VALIDOS_UF[d.uf]/VAGAS_UF[d.uf]) : null),
-      validosUF:d.validosUF ?? VALIDOS_UF[d.uf] ?? null,
+      quocienteUF:d.quocienteUF ?? null,
+      validosUF:d.validosUF ?? null,
+      vagasUF:d.vagasUF ?? null,
+      situacaoEleicao:d.situacaoEleicao ?? null,
+      eleicaoNota:d.eleicaoNota ?? null,
+      condicaoPosse:d.condicaoPosse ?? null,
+      // Filtro de mandato: números por legislatura e períodos em exercício
+      porLegislatura:d.porLegislatura || null,
+      mandatos:d.mandatos || null,
       topLeis:(d.topLeis||d.topProposicoes||[])
     }));
     demo=false;
+    try{
+      const rl=await fetch('legislaturas.json',{cache:'no-store'});
+      if(rl.ok) LEGISLATURAS=await rl.json();
+    }catch(e){}
   }catch(e){ deputados=montarDemo(); demo=true; }
 
   // Gráfico 2: proposicoes.json (votos.py). Independente do deputados.json — se
@@ -1101,9 +1134,105 @@ async function carregar(){
   document.querySelector('.votos').classList.toggle('real',!votosDemo);
 
   semScoreNenhum = deputados.length>0 && deputados.every(d=>d.score==null);
+  // números da carreira guardados à parte: o filtro de mandato troca os ativos
+  deputados.forEach(d=>{
+    d._carreira={pecs:d.pecs,leis:d.leis,apresentadas:d.apresentadas,
+                 viraramLei:d.viraramLei,aprovadasPlenario:d.aprovadasPlenario};
+    d._votos=d.votos;
+  });
+  montarFiltros();
   posicionar();
   textos();
   desenhar();
+}
+
+// ---------- ficha: mandatos e eleição ----------
+const nfBR=n=>new Intl.NumberFormat('pt-BR').format(n);
+const dataBRc=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)}`:'';
+function textoMandatos(d){
+  const ms=d.mandatos||{};
+  if(mandato){
+    const per=ms[mandato];
+    if(!per) return `No mandato ${rotuloLeg(mandato)}, o histórico da Câmara não registra período `+
+      'em exercício; ele aparece aqui por ter apresentado proposição nesse período.';
+    return `Em exercício no mandato ${rotuloLeg(mandato)}: `+per.map(p=>
+      `de ${dataBRc(p.de)} ${p.ate?`a ${dataBRc(p.ate)}`:'até hoje'}`).join('; ')+'.';
+  }
+  const lista=Object.keys(ms).sort((a,b)=>b-a).map(rotuloLeg);
+  const posse=d.condicaoPosse==='Suplente'?' Tomou posse neste mandato como suplente.':'';
+  return lista.length
+    ? `Mandatos com exercício registrado na Câmara: ${lista.join(', ')} (histórico desde 2003).${posse}`
+    : '';
+}
+function textoEleicao(d){
+  const q=d.quocienteUF;
+  const regra=q?` O quociente eleitoral de ${d.uf} foi ${nfBR(q)} votos (${nfBR(d.validosUF)} `+
+    `válidos ÷ ${d.vagasUF} vagas).`:'';
+  if(d.votosRecebidos==null)
+    return `Eleição de 2022: o nome usado na Câmara não coincide com o nome de urna no `+
+      `resultado do TSE, então a votação não é mostrada — o site não atribui votos por `+
+      `nome parecido.${regra}`;
+  const x=q?(d.votosRecebidos/q).toFixed(2).replace('.',','):null;
+  const st=(d.situacaoEleicao||'').toLowerCase();
+  // eleicaoNota: posse como titular sem constar como eleito na totalização de 2022
+  const sit=!st?'':d.eleicaoNota
+    ? ` Na totalização do TSE de 26/12/2022 constava como ${st}; tomou posse como titular depois.`
+    : ` Situação na totalização do TSE: ${st}.`;
+  return `Eleição de 2022: ${nfBR(d.votosRecebidos)} votos`+(x?`, ${x}× o quociente eleitoral de ${d.uf}`:'')+
+    `.${regra}${sit} Fonte: TSE.`;
+}
+
+// ---------- filtros de estado e de mandato ----------
+let LEGISLATURAS=[], mandato='';
+const LEG_ATUAL=()=>LEGISLATURAS.length?String(LEGISLATURAS[LEGISLATURAS.length-1].id):null;
+const rotuloLeg=id=>{
+  const l=LEGISLATURAS.find(x=>String(x.id)===String(id));
+  return l?`${l.inicio.slice(0,4)}–${l.fim.slice(0,4)}`:`legislatura ${id}`;
+};
+// Estava no cargo naquele mandato: histórico da Câmara com período em exercício, OU
+// proposição apresentada nele (só quem está em exercício apresenta). O histórico de
+// exercício só tem registros a partir de 2003; a autoria cobre parte do que falta.
+const estaNoMandato=d=>!mandato||!!(d.mandatos&&d.mandatos[mandato])
+                      ||!!(d.porLegislatura&&d.porLegislatura[mandato]);
+function passa(d,{semFaixa=false}={}){
+  return estaNoMandato(d)&&(!filtro.reg||d.regiao===filtro.reg)&&(!filtro.uf||d.uf===filtro.uf)
+    &&(semFaixa||!filtro.faixas.size||filtro.faixas.has(d.ideologia));
+}
+// Troca os números ativos de cada deputado pelos do mandato escolhido. O resto do
+// código (gráfico, ranking, ficha) lê os mesmos campos de sempre.
+function aplicarMandato(){
+  const zero={pecs:0,leis:0,apresentadas:0,viraramLei:0,aprovadasPlenario:0};
+  deputados.forEach(d=>{
+    Object.assign(d, !mandato ? d._carreira : ((d.porLegislatura||{})[mandato]||zero));
+    // votos registrados (Etapa B) existem só para a legislatura atual
+    d.votos=(!mandato||mandato===LEG_ATUAL())?d._votos:null;
+  });
+}
+function montarFiltros(){
+  const sUF=document.getElementById('selUF'), sM=document.getElementById('selMandato');
+  sUF.innerHTML='<option value="">Todos</option>'+Object.keys(UF_REG).sort()
+    .map(u=>`<option value="${u}">${u}</option>`).join('');
+  // Mandatos oferecidos: os que têm período de exercício no histórico da Câmara. Antes
+  // de 2003 o histórico não registra exercício; esses anos seguem na carreira inteira.
+  const comExercicio=new Set(deputados.flatMap(d=>Object.keys(d.mandatos||{})));
+  const opcoes=LEGISLATURAS.filter(l=>comExercicio.has(String(l.id))).reverse();
+  // na demonstração não há histórico nem recorte por mandato: só o seletor de estado fica
+  [sM, document.querySelector('label[for="selMandato"]')].forEach(e=>e.style.display=demo?'none':'');
+  sM.innerHTML='<option value="">Todos, carreira inteira</option>'+opcoes.map(l=>
+    `<option value="${l.id}">${rotuloLeg(l.id)}${String(l.id)===LEG_ATUAL()?' (atual)':''}</option>`).join('');
+  sUF.onchange=()=>{
+    filtro.uf=sUF.value;
+    if(filtro.uf) filtro.reg=UF_REG[filtro.uf];     // o estado implica a região
+    sincronizarRegiao(); desenhar();
+  };
+  sM.onchange=()=>{ mandato=sM.value; aplicarMandato(); sincronizarRegiao(); desenhar(); };
+}
+function sincronizarRegiao(){
+  document.querySelectorAll('[data-reg]').forEach(x=>x.classList.toggle('on',x.dataset.reg===filtro.reg));
+  const sUF=document.getElementById('selUF'), sM=document.getElementById('selMandato');
+  if(filtro.uf&&UF_REG[filtro.uf]!==filtro.reg){ filtro.uf=''; }   // região mudou: solta o estado
+  sUF.value=filtro.uf; sUF.classList.toggle('ativo',!!filtro.uf);
+  sM.classList.toggle('ativo',!!mandato);
 }
 
 function textos(){
@@ -1121,7 +1250,10 @@ function textos(){
       ' Os limites entre as cinco faixas foram definidos por este site, não pela pesquisa. '+
       'A altura mede autoria de propostas, e só isso. Boa parte do trabalho legislativo não '+
       'aparece aqui: relatar projeto de outro deputado, emendar texto em comissão, negociar '+
-      'acordo de bancada. Um ponto baixo não significa deputado ausente ou inativo.';
+      'acordo de bancada. Um ponto baixo não significa deputado ausente ou inativo.'+
+      (demo ? '' : ' O filtro de mandato mostra só quem estava no cargo no período (histórico '+
+      'de exercício da Câmara, que começa em 2003, ou proposição apresentada nele) e conta só as '+
+      'proposições apresentadas nesse mandato.');
 }
 
 function leituraTexto(){
@@ -1181,7 +1313,7 @@ function retrato(d,px){
 // ---------- gráfico ----------
 let comprimida=true;
 let medida='apresentadas';
-const filtro={reg:'',faixas:new Set()};
+const filtro={reg:'',uf:'',faixas:new Set()};
 const valorY=d=>medida==='apresentadas'?(d.apresentadas||0):(d.viraramLei??0);
 // Apoio cruzado por autoria só tem amostra em 15 dos 513 deputados: votação nominal
 // de texto-base é rara. Como tamanho de bolinha ele diria "sem dado" em 97% dos casos.
@@ -1199,7 +1331,9 @@ function desenhar(){
   }
   const m={t:20,r:48,b:58,l:48};
   const pw=W-m.l-m.r, ph=H-m.t-m.b;
-  const max=Math.max(...deputados.map(valorY),1);
+  // com um mandato escolhido, quem não estava no cargo nele nem entra no gráfico
+  const doMandato=deputados.filter(estaNoMandato);
+  const max=Math.max(...doMandato.map(valorY),1);
 
   const svg=el('svg',{width:W,height:H});
   const y=v=>comprimida
@@ -1233,13 +1367,13 @@ function desenhar(){
   svg.appendChild(ey);
 
   let n=0;
-  deputados.forEach(d=>{
+  doMandato.forEach(d=>{
     const total=valorY(d);
     const cx=d.x==null?W-m.r+28:m.l+d.x*pw;
     const rBase=raioDe(d);
     const c=el('circle',{cx,cy:y(total),r:rBase,fill:corDoScore(d.score),
       opacity:.6,class:'pt'});
-    const ok=(!filtro.reg||d.regiao===filtro.reg)&&(!filtro.faixas.size||filtro.faixas.has(d.ideologia));
+    const ok=passa(d);
     if(!ok)c.classList.add('apagado'); else n++;
     if(ok){
       c.addEventListener('mouseenter',e=>{
@@ -1264,8 +1398,9 @@ function desenhar(){
 
   tela.querySelector('svg')?.remove();
   tela.insertBefore(svg,dica);
+  const tot=doMandato.length, noMand=mandato?` no mandato ${rotuloLeg(mandato)}`:'';
   document.getElementById('quantos').textContent =
-    n===deputados.length ? `${deputados.length} deputados` : `${n} de ${deputados.length}`;
+    n===tot ? `${tot} deputados${noMand}` : `${n} de ${tot}${noMand}`;
 
   plenarioDesenhar();
   contaDesenhar();
@@ -1285,7 +1420,7 @@ document.querySelectorAll('.faixa').forEach(b=>b.onclick=()=>{
 });
 document.querySelectorAll('[data-reg]').forEach(b=>b.onclick=()=>{
   filtro.reg=b.dataset.reg;
-  document.querySelectorAll('[data-reg]').forEach(x=>x.classList.toggle('on',x===b));
+  sincronizarRegiao();
   desenhar();
 });
 pLog.onclick=()=>{comprimida=true;pLog.classList.add('on');pLin.classList.remove('on');desenhar()};
@@ -1331,9 +1466,7 @@ function plenarioDesenhar(){
     const p=pts[i]; if(!p)return;
     const c=el('circle',{cx:p.x.toFixed(1),cy:p.y.toFixed(1),r:raio,
       fill:corDoScore(d.score),class:'assento'});
-    const ok=(!filtro.reg||d.regiao===filtro.reg)&&
-             (!filtro.faixas.size||filtro.faixas.has(d.ideologia));
-    if(!ok)c.classList.add('apagado');
+    if(!passa(d))c.classList.add('apagado');   // a composição é a de hoje: 513 cadeiras
     const t=el('title',{}); t.textContent=`${d.nome} (${d.partido} de ${d.uf})`;
     c.appendChild(t);
     svg.appendChild(c);
@@ -1341,7 +1474,7 @@ function plenarioDesenhar(){
 }
 
 function contaDesenhar(){
-  const vis=deputados.filter(d=>!filtro.reg||d.regiao===filtro.reg);
+  const vis=deputados.filter(d=>passa(d,{semFaixa:true}));
   const tot=vis.length||1;
   const linhas=Object.keys(CORES).map(k=>{
     const n=vis.filter(d=>d.ideologia===k).length;
@@ -1372,7 +1505,7 @@ let mapaProporcional=false;
 function mapaDesenhar(){
   const ordem=['N','NE','CO','SE','S'];
   const porReg={};
-  ordem.forEach(r=>porReg[r]=deputados.filter(d=>d.regiao===r));
+  ordem.forEach(r=>porReg[r]=deputados.filter(d=>d.regiao===r&&estaNoMandato(d)));
   const maior=Math.max(...ordem.map(r=>porReg[r].length),1);
 
   document.getElementById('regs').innerHTML=ordem.map(r=>{
@@ -1398,8 +1531,7 @@ function mapaDesenhar(){
   document.querySelectorAll('.reg').forEach(b=>b.onclick=()=>{
     const r=b.dataset.r;
     filtro.reg = filtro.reg===r ? '' : r;
-    document.querySelectorAll('[data-reg]').forEach(x=>
-      x.classList.toggle('on',x.dataset.reg===filtro.reg));
+    sincronizarRegiao();
     desenhar();
   });
 
@@ -1665,9 +1797,7 @@ function rankDesenhar(){
     `<th class="${c.esq?'esq':''} ${ordCol===c.k?'ord':''}" ${c.ord?`data-k="${c.k}"`:''}>${c.t}${
       ordCol===c.k?`<span class="seta">${ordDesc?'▼':'▲'}</span>`:''}</th>`).join('');
 
-  const lista=deputados.filter(d=>
-    (!filtro.reg||d.regiao===filtro.reg)&&
-    (!filtro.faixas.size||filtro.faixas.has(d.ideologia)));
+  const lista=deputados.filter(d=>passa(d));
 
   lista.sort((a,b)=>{
     if(ordCol==='nome') return ordDesc?b.nome.localeCompare(a.nome):a.nome.localeCompare(b.nome);
@@ -1721,7 +1851,14 @@ function rankDesenhar(){
     'e o dado aberto não distingue esses casos. Conversão é a parcela das propostas apresentadas '+
     'que virou lei. '+
     (demo ? '<strong>Votação e votos registrados são números de demonstração.</strong>'
-          : '<strong>A coluna Votação ainda está vazia</strong>, à espera dos dados abertos do TSE.');
+          : 'Votação: resultado oficial do TSE na eleição de 2022; quociente eleitoral pela regra '+
+            'do Código Eleitoral (votos válidos do estado ÷ vagas, art. 106). O voto é ligado ao '+
+            'deputado só quando o nome dele na Câmara é idêntico ao nome de urna; '+
+            `${deputados.filter(d=>d.votosRecebidos==null).length} deputados usaram outro nome `+
+            'na urna e aparecem com —, sem votação atribuída por aproximação.')+
+    (mandato ? ` Com o mandato ${rotuloLeg(mandato)} escolhido, apresentadas, viraram lei e `+
+               'conversão contam só as propostas apresentadas nele; votos registrados só existem '+
+               'a partir de 2023.' : '');
 }
 
 // ---------- busca ----------
@@ -1789,8 +1926,10 @@ function abrir(d){
     ? 'Temas pela classificação deste site, a partir da ementa oficial.' : '';
   // Os números abaixo são da carreira inteira na Câmara (a API devolve todos os mandatos).
   // Com a frase da legislatura acima, o rótulo evita que os dois pareçam contraditórios.
-  fFrase.classList.toggle('carreira',!!exec);
-  const pre=exec?'Somando mandatos anteriores, apresentou':'Apresentou';
+  fFrase.classList.toggle('carreira',!!exec&&!mandato);
+  // Com um mandato escolhido no filtro, os números abaixo são só daquele mandato.
+  const pre=mandato?`No mandato ${rotuloLeg(mandato)}, apresentou`
+           :exec?'Somando mandatos anteriores, apresentou':'Apresentou';
   const apres=d.apresentadas||0, virou=d.viraramLei;
   if(virou==null||!apres){
     fFrase.innerHTML=`${pre} <b>${apres}</b> proposições.`;
@@ -1798,7 +1937,8 @@ function abrir(d){
     fBarraLeg.textContent='Ainda não há dado sobre quantas viraram lei.';
   }else{
     const pct=virou/apres;
-    fFrase.innerHTML=`${pre} <b>${apres}</b> proposições. <b>${virou}</b> viraram lei.`;
+    fFrase.innerHTML=`${pre} <b>${apres}</b> ${apres===1?'proposição':'proposições'}. `+
+      `<b>${virou}</b> ${virou===1?'virou':'viraram'} lei.`;
     fBarra.style.width=Math.min(100,pct*100)+'%';
     fBarraLeg.textContent=`Isso é ${(pct*100).toFixed(1)}% do que propôs.`;
   }
@@ -1811,6 +1951,9 @@ function abrir(d){
         // poucas respostas — o motivo vem de ideologia.json via scoreNota.
         : 'O partido deste deputado não recebeu posição no espectro'+
           (d.scoreNota ? ` (${d.scoreNota}).` : '.'));
+
+  document.getElementById('fMandatos').textContent = demo ? '' : textoMandatos(d);
+  document.getElementById('fEleicao').textContent = demo ? '' : textoEleicao(d);
 
   // Página 2: todas as PEC e PL de autoria, por tema. Na demonstração os ids são
   // sintéticos e não existe temas/{id}.json, então o link some.
@@ -1931,8 +2074,20 @@ function semItem(x,linhaExtra){
       target="_blank" rel="noopener">${x.t} ${x.n}/${x.a}</a><span>${dataCurta(x.data)}</span></div>
     ${aut.length?`<div class="sem-aut">${aut.slice(0,3).join(', ')}${aut.length>3?` e mais ${aut.length-3}`:''}</div>`:''}
     <div class="sem-em">${escS(corta(x.e||'Sem ementa no registro da Câmara.',150))}</div>
+    ${semCategorias(x)}
     ${linhaExtra?`<div class="sem-and">${linhaExtra}</div>`:''}
   </div>`;
+}
+// Categoria pela classificação deste site (temas.py). O termo que a definiu fica no
+// title e no rótulo de acessibilidade: rótulo errado é visível e corrigível.
+function semCategorias(x){
+  if(!x.temas) return '';                              // semana.json antigo, sem o campo
+  if(!x.temas.length) return '<div class="sem-cat"><span class="nula">sem categoria</span></div>';
+  const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+  return `<div class="sem-cat">${x.temas.map(([nome,termo,fonte])=>{
+    const porque=`Nesta categoria pelo termo “${termo}”, na ${fonte==='k'?'indexação da Câmara':'ementa'}`;
+    return `<span title="${escS(porque)}" aria-label="${escS(cap(nome)+'. '+porque)}">${escS(cap(nome))}</span>`;
+  }).join('')}</div>`;
 }
 function semLista(g,extra,max){
   const it=g.itens.slice(0,max).map(x=>semItem(x,extra&&extra(x))).join('');
@@ -1978,7 +2133,8 @@ async function carregarSemana(){
     </div>
     <p class="semana-pe">${escS(s.universo)} Datas oficiais da Câmara: apresentação e último andamento
       registrado. Uma proposição que andou mais de uma vez na semana aparece com o andamento mais recente.
-      Temas das novas pela classificação deste site.</p>`;
+      Categorias pela classificação deste site, a partir da ementa oficial (ou da indexação da Câmara,
+      quando a ementa não diz o assunto): passe o mouse sobre uma categoria para ver o termo que a definiu.</p>`;
   box.hidden=false;
 }
 

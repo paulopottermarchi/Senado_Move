@@ -28,6 +28,9 @@ Passos:
    de novo: é isso que atualiza situação, "virou lei" e votações.
 4. PAUTA do Plenário dos próximos 7 dias (/orgaos/{id}/eventos e
    /eventos/{id}/pauta) → cache/pauta.json.
+5. HISTÓRICO de exercício de todos os deputados em exercício
+   (/deputados/{id}/historico): licenças, retornos e posses de suplente mudam a
+   qualquer hora, e o filtro de mandato do site depende disso (~513 requisições).
 
 cache/ultima_atualizacao.json só é gravado no fim, se tudo deu certo. Uma rodada
 que falha no meio deixa o cache coerente (cada arquivo é gravado de forma atômica)
@@ -44,6 +47,7 @@ import argparse
 import json
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 
 import coleta
@@ -140,6 +144,12 @@ def rebaixar_tramitadas(ini, fim):
     return len(tramitaram), rebaixadas, dentro_janela, mudou_situacao
 
 
+def atualizar_historicos(ids):
+    with ThreadPoolExecutor(coleta.WORKERS) as ex:
+        list(ex.map(lambda i: coleta.historico_do_deputado(i, atualizar=True), ids))
+    return len(ids)
+
+
 def baixar_pauta(hoje):
     orgaos = get(f"{API}/orgaos", {"sigla": "PLEN"})
     plen = next((o["id"] for o in (orgaos or {}).get("dados", []) if o.get("sigla") == "PLEN"), None)
@@ -202,6 +212,8 @@ def main():
 
     n_ev, n_it = baixar_pauta(hoje)
     print(f"Pauta do Plenário, próximos 7 dias: {n_ev} evento(s), {n_it} item(ns)")
+
+    print(f"Históricos de exercício rebaixados: {atualizar_historicos(sorted(em_exercicio))}")
 
     gravar_cache(ESTADO, {"ate": hoje.isoformat(),
                           "em": datetime.now(BRASILIA).isoformat(timespec="minutes")[:16]})

@@ -22,7 +22,8 @@ import re
 import sys
 import threading
 import time
-from collections import Counter
+import unicodedata
+from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -66,6 +67,8 @@ BASE = Path(__file__).resolve().parent
 CACHE = BASE / "cache"
 SAIDA = BASE / "deputados.json"
 IDEOLOGIA = BASE / "ideologia.json"
+ELEICAO = BASE / "eleicao2022.json"          # gerado por eleicao.py (TSE), estático
+LEGISLATURAS = BASE / "legislaturas.json"    # datas dos mandatos, para o filtro do site
 FAIXAS = ("esquerda", "centro-esquerda", "centro", "centro-direita", "direita")
 
 
@@ -168,6 +171,94 @@ def proposicoes_do_deputado(id_dep):
                               "itens": 100, "ordem": "ASC", "ordenarPor": "id"})
         gravar_cache(caminho, lista)
     return lista
+
+
+def legislaturas():
+    """[{id, inicio, fim}] de /legislaturas, em ordem crescente (cache)."""
+    caminho = CACHE / "legislaturas.json"
+    lista = ler_cache(caminho)
+    if lista is None:
+        lista = get_paginado(f"{API}/legislaturas", {"itens": 100, "ordem": "ASC",
+                                                     "ordenarPor": "id"})
+        gravar_cache(caminho, lista)
+    return sorted(({"id": l["id"], "inicio": l["dataInicio"], "fim": l["dataFim"]}
+                   for l in lista), key=lambda l: l["id"])
+
+
+def legislatura_de(data, legs):
+    d = (data or "")[:10]
+    return next((l["id"] for l in legs if l["inicio"] <= d <= l["fim"]), None)
+
+
+def historico_do_deputado(id_dep, atualizar=False):
+    """Mudanças de situação do deputado (posse, licença, fim de mandato…), cache por
+    deputado. atualiza.py pede atualizar=True: licenças e retornos mudam a qualquer hora."""
+    caminho = CACHE / "historico" / f"{id_dep}.json"
+    h = None if atualizar else ler_cache(caminho)
+    if h is None:
+        r = get(f"{API}/deputados/{id_dep}/historico")
+        h = r["dados"] if r else []
+        gravar_cache(caminho, h)
+    return h
+
+
+def mandatos_de(historico, legs):
+    """Períodos em exercício por legislatura: {"57": [{"de", "ate"}]}. Um período começa
+    num registro com situação "Exercício" e termina no próximo com outra situação
+    (licença, afastamento, fim de mandato). Registro sem situação ("Nome no início da
+    legislatura") é anotação, não mudança. Período aberto numa legislatura já encerrada
+    fecha na data de fim dela; na atual fica "ate": null."""
+    fim_leg = {l["id"]: l["fim"] for l in legs}
+    hoje = time.strftime("%Y-%m-%d")
+    por_leg = defaultdict(list)
+    for h in sorted((h for h in historico if h.get("situacao")), key=lambda h: h["dataHora"]):
+        por_leg[h["idLegislatura"]].append(h)
+    saida = {}
+    for leg, eventos in sorted(por_leg.items()):
+        periodos, aberto = [], None
+        for h in eventos:
+            if h["situacao"] == "Exercício":
+                aberto = aberto or h["dataHora"][:10]
+            elif aberto:
+                periodos.append({"de": aberto, "ate": h["dataHora"][:10]})
+                aberto = None
+        if aberto:
+            fim = fim_leg.get(leg)
+            periodos.append({"de": aberto, "ate": fim if fim and fim < hoje else None})
+        if periodos:
+            saida[str(leg)] = periodos
+    return saida
+
+
+def nome_eleitoral(historico, leg):
+    """Nome de urna na legislatura `leg` (o registro mais recente que o traga)."""
+    nomes = [h for h in historico if h.get("idLegislatura") == leg and h.get("nomeEleitoral")]
+    return max(nomes, key=lambda h: h["dataHora"])["nomeEleitoral"] if nomes else None
+
+
+def condicao_posse(historico, leg):
+    """Titular, Suplente ou Efetivado na posse da legislatura `leg` (1º registro que a traga)."""
+    x = [h for h in historico if h.get("idLegislatura") == leg and h.get("condicaoEleitoral")]
+    return min(x, key=lambda h: h["dataHora"])["condicaoEleitoral"] if x else None
+
+
+def nome_civil(id_dep):
+    """Nome civil (/deputados/{id}), só como chave do cruzamento com o TSE. A resposta
+    traz também o CPF: ele NÃO é gravado no cache nem sai em JSON algum."""
+    caminho = CACHE / "deputado" / f"{id_dep}.json"
+    c = ler_cache(caminho)
+    if c is None:
+        r = get(f"{API}/deputados/{id_dep}")
+        c = {"nomeCivil": ((r or {}).get("dados") or {}).get("nomeCivil")}
+        gravar_cache(caminho, c)
+    return c["nomeCivil"]
+
+
+def nome_chave(nome):
+    """Nome normalizado para cruzar com o TSE: sem acento, maiúsculo, espaços únicos.
+    Cruzamento só por igualdade exata dessa chave — nunca aproximado."""
+    sem = unicodedata.normalize("NFKD", nome or "").encode("ascii", "ignore").decode()
+    return " ".join(sem.upper().replace(".", " ").split())
 
 
 def dados_da_proposicao(id_prop, id_dep):
@@ -296,16 +387,22 @@ def titulo_curto(ementa, limite=110):
     return e[:limite].rsplit(" ", 1)[0].rstrip(",;:") + "…"
 
 
-def processar_deputado(dep):
+def processar_deputado(dep, legs):
     id_dep = dep["id"]
     brutas = proposicoes_do_deputado(id_dep)
     with ThreadPoolExecutor(WORKERS) as ex:
         dados = list(ex.map(lambda p: dados_da_proposicao(p["id"], id_dep), brutas))
+    historico = historico_do_deputado(id_dep)
+    atual = legs[-1]["id"]
 
     pecs = leis = vir = aprovadas = nominais = 0
     so_apoiamento = 0
     itens = []
     violacoes = []
+    # Os mesmos números, recortados pela legislatura da DATA DE APRESENTAÇÃO — para o
+    # filtro de mandato do site. "viraramLei" de 2019–2023 = das apresentadas naquele
+    # mandato, quantas são lei hoje.
+    por_leg = defaultdict(Counter)
     for p, d in zip(brutas, dados):
         if not e_autor(d["autores"], id_dep):
             so_apoiamento += 1
@@ -322,6 +419,10 @@ def processar_deputado(dep):
         status = status_da_votacao(vb)
         aprovadas += status == "aprovada"
         nominais += pl is not None
+        c = por_leg[str(legislatura_de(p.get("dataApresentacao"), legs))]
+        c["pecs" if p["siglaTipo"] == "PEC" else "leis"] += 1
+        c["viraramLei"] += lei
+        c["aprovadasPlenario"] += status == "aprovada"
         numero = f"{p['siglaTipo']} {p['numero']}/{p['ano']}"
         # Sanidade: rejeitar o texto-base e virar lei é contradição — sinal de
         # que a votação escolhida não é a que representa a proposição.
@@ -373,6 +474,23 @@ def processar_deputado(dep):
         "apoioCruzado": None,  # Etapa B
         "votacoesNominais": nominais,
         "_apoiamentoPEC": so_apoiamento,  # assinaturas sem autoria — descartadas
+        # Filtro de mandato: números por legislatura ("None" = data fora de todas —
+        # a checagem em main() aborta se aparecer) e períodos em exercício.
+        "porLegislatura": {leg: {"pecs": c["pecs"], "leis": c["leis"],
+                                 "apresentadas": c["pecs"] + c["leis"],
+                                 "viraramLei": c["viraramLei"],
+                                 "aprovadasPlenario": c["aprovadasPlenario"]}
+                           for leg, c in sorted(por_leg.items())},
+        "mandatos": mandatos_de(historico, legs),
+        "nomeEleitoral": nome_eleitoral(historico, atual),
+        "condicaoPosse": condicao_posse(historico, atual),
+        # Eleição de 2022 — preenchidos por aplicar_eleicao()
+        "votosRecebidos": None,
+        "situacaoEleicao": None,
+        "quocienteUF": None,
+        "validosUF": None,
+        "vagasUF": None,
+        "eleicaoNota": None,
         "topLeis": itens[:3],
     }
 
@@ -454,6 +572,60 @@ def resumo_ideologia(res, tabela):
     print(f"   {'sem-classificacao':<16} {len(res) - len(com):>3}")
 
 
+# ---------------------------------------------------------------- eleição 2022
+
+def carregar_eleicao():
+    try:
+        return json.loads(ELEICAO.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        print(f"AVISO: {ELEICAO.name} não encontrado — rode eleicao.py. Votos e quociente "
+              "ficam null.")
+        return {}
+
+
+def aplicar_eleicao(r, eleicao, civil):
+    """Votos de 2022 e quociente eleitoral da UF do deputado.
+
+    Cruzamento SÓ por igualdade exata do nome normalizado com o nome de urna do TSE, na
+    mesma UF (nomes repetidos na UF já saíram da tabela em eleicao.py): nome parlamentar, depois o
+    nomeEleitoral do histórico, depois o nome civil. O "nomeEleitoral" da Câmara NÃO é o
+    nome de urna ("Gleisi Hoffmann" × "GLEISI"). Casar por nome parecido foi testado e
+    descartado: ligou "Marcos Soares" a "MARCOS RIBEIRO". Sem par exato, fica null com o
+    motivo."""
+    uf = (eleicao.get("ufs") or {}).get(r["uf"])
+    if uf:
+        r["quocienteUF"], r["validosUF"], r["vagasUF"] = uf["quociente"], uf["validos"], uf["vagas"]
+    cands = (eleicao.get("candidatos") or {}).get(r["uf"], {})
+    chaves = (nome_chave(r["nome"]), nome_chave(r.get("nomeEleitoral")), nome_chave(civil))
+    cand = next((cands[k] for k in chaves if k and k in cands), None)
+    if not eleicao:
+        r["eleicaoNota"] = f"{ELEICAO.name} ausente"
+    elif cand is None:
+        r["eleicaoNota"] = ("nome na Câmara diferente do nome de urna; sem par exato no "
+                            "resultado do TSE")
+    else:
+        r["votosRecebidos"], r["situacaoEleicao"] = cand["votos"], cand["situacao"]
+        eleito = cand["situacao"].startswith("Eleito")
+        # A situação é a da totalização de 26/12/2022. Quem tomou posse como titular sem
+        # constar como eleito nela entrou por retotalização posterior.
+        r["eleicaoNota"] = ("tomou posse como titular; na totalização de 26/12/2022 "
+                            f"constava como {cand['situacao'].lower()}"
+                            if r.get("condicaoPosse") == "Titular" and not eleito else None)
+
+
+def resumo_eleicao(res):
+    com = [d for d in res if d["votosRecebidos"] is not None]
+    print(f"\nEleição 2022 ({ELEICAO.name}): {len(com)} deputados com votos · "
+          f"{len(res) - len(com)} sem")
+    print(f"   situação no TSE: {dict(Counter(d['situacaoEleicao'] for d in com))}")
+    for d in com:
+        if d["eleicaoNota"]:
+            print(f"   atenção: {d['nome']} ({d['uf']}) · {d['eleicaoNota']}")
+    sem = [f"{d['nome']} ({d['uf']})" for d in res if d["votosRecebidos"] is None]
+    if sem:
+        print(f"   sem par exato ({len(sem)}): {', '.join(sem)}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--limite", type=int, default=10,
@@ -463,35 +635,51 @@ def main():
 
     t0 = time.monotonic()
     ideologia = carregar_ideologia()
+    eleicao = carregar_eleicao()
+    legs = legislaturas()
     deputados = lista_deputados()[:args.limite]
     resultado = []
     violacoes = []
     for n, dep in enumerate(deputados, 1):
         print(f"[{n}/{len(deputados)}] {dep['nome']} ({dep['siglaPartido']}-{dep['siglaUf']})",
               end="", flush=True)
-        v, r = processar_deputado(dep)
+        v, r = processar_deputado(dep, legs)
         aplicar_ideologia(r, ideologia)
+        aplicar_eleicao(r, eleicao, nome_civil(r["id"]))
         resultado.append(r)
         violacoes += v
+        # Sanidade do recorte por mandato: somado, tem de dar o total; e toda proposição
+        # cai numa legislatura conhecida.
+        soma = sum(c["apresentadas"] for c in r["porLegislatura"].values())
+        if soma != r["apresentadas"] or "None" in r["porLegislatura"]:
+            violacoes.append({"deputado": r["nome"], "numero": "—", "idProposicao": "—",
+                              "votacao": "—", "descricao": f"porLegislatura soma {soma} para "
+                              f"{r['apresentadas']} apresentadas; chaves {list(r['porLegislatura'])}"})
         print(f" — {r['apresentadas']} proposições, {r['viraramLei']} viraram lei"
               f" · {contador_req} req · {time.monotonic() - t0:.0f}s", flush=True)
 
     if violacoes:
-        print(f"\nCHECAGEM DE SANIDADE FALHOU — {len(violacoes)} proposição(ões) com status "
-              f"'rejeitada' e situação '{SITUACAO_LEI}'.\n{SAIDA.name} NÃO foi gravado "
-              "(o cache foi preservado).\n")
+        print(f"\nCHECAGEM DE SANIDADE FALHOU — {len(violacoes)} problema(s): status "
+              f"'rejeitada' com situação '{SITUACAO_LEI}', ou recorte por mandato que não "
+              f"fecha.\n{SAIDA.name} NÃO foi gravado (o cache foi preservado).\n")
         for v in violacoes:
             print(f"- {v['numero']} ({v['deputado']}) · idProposicao {v['idProposicao']}"
                   f" · votação {v['votacao']}\n    {v['descricao']}")
         sys.exit(2)
 
     SAIDA.write_text(json.dumps(resultado, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\nChecagem de sanidade OK: nenhuma proposição 'rejeitada' virou lei.")
+    # Datas das legislaturas que aparecem nos dados — rótulos do filtro de mandato.
+    usadas = {int(k) for d in resultado for k in (*d["mandatos"], *d["porLegislatura"])}
+    LEGISLATURAS.write_text(json.dumps([l for l in legs if l["id"] in usadas],
+                                       ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"\nChecagem de sanidade OK: nenhuma proposição 'rejeitada' virou lei; recorte "
+          f"por mandato fecha com o total em todos.")
     print(f"{SAIDA.name} gravado · {len(resultado)} deputados · "
           f"{contador_req} requisições nesta execução · {time.monotonic() - t0:.0f}s\n")
     tabela(resultado)
     print("\nRelatorias: — = sem fonte validada na API (ver RELATORIAS em coleta.py).")
     resumo_ideologia(resultado, ideologia)
+    resumo_eleicao(resultado)
 
 
 if __name__ == "__main__":

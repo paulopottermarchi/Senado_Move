@@ -72,9 +72,15 @@ def main():
 
     def item(p, det, autores, data):
         st = det.get("statusProposicao") or {}
+        ementa = (det.get("ementa") or p.get("ementa") or "").strip()
         return {
             "id": p["id"], "t": p["siglaTipo"], "n": p["numero"], "a": p["ano"],
-            "e": (det.get("ementa") or p.get("ementa") or "").strip(),
+            "e": ementa,
+            # Categorias pela classificação do site (temas.classificar, a mesma da página
+            # do deputado), cada uma com o termo que a disparou e a origem: "e" ementa,
+            # "k" indexação. Lista vazia = sem categoria, e a página diz isso.
+            "temas": [[CURTO[CATEGORIAS[i]], termo, fonte]
+                      for i, termo, fonte in classificar(ementa, det.get("keywords") or "")],
             "autores": [autor(i) for i in sorted(set(autores)) if i in em_exercicio],
             "data": data,
             "andamento": st.get("descricaoTramitacao") or "",
@@ -90,9 +96,7 @@ def main():
         ultimo = (st.get("dataHora") or "")[:10]
         if janela[0] <= apres <= janela[1]:
             novas.append(item(p, det, autores, apres))
-            for i, _, _ in classificar(det.get("ementa") or p.get("ementa") or "",
-                                       det.get("keywords") or ""):
-                temas_novas[i] += 1
+            temas_novas.update(nome for nome, _, _ in novas[-1]["temas"])
         if janela[0] <= ultimo <= janela[1]:
             if virou_lei(det):
                 leis.append(item(p, det, autores, ultimo))
@@ -119,7 +123,7 @@ def main():
         "viraramLei": {"total": len(leis), "itens": leis[:MAX_ITENS]},
         "andaram": {"total": len(andaram), "itens": andaram[:MAX_ITENS]},
         "novas": {"total": len(novas),
-                  "temas": [[CURTO[CATEGORIAS[i]], k] for i, k in temas_novas.most_common(3)],
+                  "temas": [[nome, k] for nome, k in temas_novas.most_common(3)],
                   "itens": novas[:MAX_ITENS]},
         "pauta": pauta,
     }
