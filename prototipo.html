@@ -10,8 +10,10 @@
 <style>
 :root{
   --esq:#d85a30; --cesq:#b88f5a; --cen:#888780; --cdir:#4a7a9f; --dir:#0c447c; --sem:#c8cace;
-  --tinta:#000; --tinta2:#4a4d52; --tinta3:#8b8f96;
-  --linha:#e0e2e5; --linha2:#eff0f2; --fundo:#f4f5f6; --papel:#fff;
+  --tinta:#16181b; --tinta2:#4a4e55; --tinta3:#80858d;
+  --linha:#e4e5e8; --linha2:#f0f1f3; --fundo:#f6f6f4; --papel:#fff;
+  --raio:14px; --raio-p:8px;
+  --sombra:0 1px 2px rgba(16,18,22,.04),0 6px 24px rgba(16,18,22,.05);
   --serif:'Newsreader',Georgia,'Times New Roman',serif;
   --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
@@ -510,41 +512,6 @@ table.rank tbody tr:hover td{background:#f8f9fa}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
-
-.av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
-       background:var(--linha2);overflow:hidden;vertical-align:middle}
-.av-cx .av-ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-               font-weight:600;color:var(--tinta3);letter-spacing:-.02em;line-height:1}
-.av-cx img.av{position:absolute;inset:0;width:100%;height:100%;z-index:1;
-              object-fit:cover;object-position:center 22%;display:block;border:none}
-.av-cx img.av.falhou{display:none}
-
-.dep-cel{display:flex;align-items:center;gap:10px}
-.dep-txt{min-width:0;overflow:hidden}
-.dep-txt b{display:flex;align-items:center;gap:6px;font-weight:500;
-           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-.ficha-topo .retrato{display:flex;gap:15px;align-items:center}
-.ficha-topo .retrato>span{flex-shrink:0}
-
-.achado{align-items:center}
-.achado-txt{min-width:0;flex:1}
-
-
-.ades{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:11px;
-      padding-top:10px;border-top:1px solid var(--linha2)}
-.ades-c{text-align:center}
-.ades-tr{height:30px;background:var(--linha2);border-radius:2px;position:relative;
-         overflow:hidden}
-.ades-tr i{position:absolute;bottom:0;left:0;right:0;border-radius:2px;display:block}
-.ades-tr .meio{position:absolute;left:0;right:0;top:50%;height:1px;background:#c9ccd0}
-.ades-pc{font-size:11.5px;font-weight:600;margin-top:4px;line-height:1.1}
-.ades-nm{font-size:9.5px;color:var(--tinta3);line-height:1.15;margin-top:1px}
-.ades-tit{font-size:11px;color:var(--tinta3);margin-top:11px;padding-top:9px;
-          border-top:1px solid var(--linha2)}
-.ades-nenhum{font-size:11.5px;color:var(--tinta3);margin-top:10px;padding-top:9px;
-             border-top:1px solid var(--linha2);font-style:italic}
-
 @media(max-width:720px){
   table.rank{min-width:620px}
   table.rank col.c-vot{width:118px}
@@ -601,22 +568,209 @@ table.rank tbody tr:hover td{background:#f8f9fa}
      background:var(--papel);color:var(--tinta);cursor:pointer;max-width:100%}
 .sel:focus-visible{outline:2px solid var(--tinta);outline-offset:1px}
 .sel.ativo{border-color:var(--tinta);font-weight:600}
+
+/* =====================================================================
+   REDESENHO — minimalista e orientado a quem chega pela primeira vez.
+   Sem dependências: só estas regras, que sobrepõem as de cima.
+   ===================================================================== */
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+[id]{scroll-margin-top:76px}            /* âncoras não ficam sob a barra fixa */
+
+/* barra fixa com as seções */
+.topo{position:sticky;top:0;z-index:80;background:rgba(246,246,244,.86);
+      backdrop-filter:saturate(160%) blur(12px);-webkit-backdrop-filter:saturate(160%) blur(12px);
+      border-bottom:1px solid var(--linha)}
+.topo-in{max-width:1080px;margin:0 auto;padding:0 22px;height:56px;display:flex;
+         align-items:center;justify-content:space-between;gap:20px}
+.marca{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--tinta);
+       text-decoration:none;letter-spacing:-.01em;white-space:nowrap}
+.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-size:13.5px;color:var(--tinta2);text-decoration:none;padding:7px 11px;
+       border-radius:999px;white-space:nowrap;transition:background .15s,color .15s}
+.nav a:hover{background:var(--linha2);color:var(--tinta)}
+.nav a:focus-visible,.marca:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+
+/* abertura */
+.capa{padding:64px 0 12px}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+        color:var(--tinta3);margin-bottom:10px}
+.capa h1{font-size:clamp(32px,5vw,50px);line-height:1.08;max-width:17ch}
+.chamada{font-family:var(--sans);font-size:clamp(16px,1.9vw,18px);color:var(--tinta2);
+         margin-top:14px;max-width:52ch;line-height:1.55}
+.busca{margin-top:30px;max-width:520px}
+.busca-ico{position:absolute;left:16px;top:50%;width:18px;height:18px;transform:translateY(-50%);
+           color:var(--tinta3);pointer-events:none;z-index:1}
+.busca input{font-size:16px;padding:15px 18px 15px 46px;border:1px solid var(--linha);
+             border-radius:var(--raio);box-shadow:var(--sombra);transition:border-color .15s,box-shadow .15s}
+.busca input:focus{border-color:var(--tinta2);box-shadow:0 0 0 4px rgba(22,24,27,.06)}
+.achados{border:1px solid var(--linha);border-radius:var(--raio-p);top:calc(100% + 8px);
+         box-shadow:0 16px 40px rgba(16,18,22,.12)}
+
+.passos{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+        margin-top:30px;counter-reset:passo}
+.passos a{display:block;height:100%;background:var(--papel);border:1px solid var(--linha);
+          border-radius:var(--raio);padding:18px 20px;text-decoration:none;color:inherit;
+          transition:border-color .15s,transform .15s,box-shadow .15s;counter-increment:passo}
+.passos a:hover{border-color:#c9ccd1;box-shadow:var(--sombra);transform:translateY(-1px)}
+.passos a:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+.passos b{display:block;font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:4px}
+.passos b::before{content:counter(passo);display:inline-grid;place-items:center;width:22px;height:22px;
+                  margin-right:9px;border-radius:50%;background:var(--tinta);color:#fff;
+                  font-family:var(--sans);font-size:12px;font-weight:600;vertical-align:2px}
+.passos span{font-size:13.5px;color:var(--tinta2);line-height:1.5;display:block}
+
+.glossario{margin-top:22px}
+.glossario summary,.nota summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;
+  gap:8px;font-size:13.5px;color:var(--tinta2);padding:6px 0;user-select:none}
+.glossario summary::-webkit-details-marker,.nota summary::-webkit-details-marker{display:none}
+.glossario summary::before,.nota summary::before{content:"";width:7px;height:7px;flex-shrink:0;
+  border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;
+  transform:rotate(-45deg);transition:transform .15s;margin-right:2px}
+.glossario[open] summary::before,.nota[open] summary::before{transform:rotate(45deg)}
+.glossario summary:hover,.nota summary:hover{color:var(--tinta)}
+.glossario .termos{border-top:none;margin-top:10px;padding:20px 22px;background:var(--papel);
+                   border:1px solid var(--linha);border-radius:var(--raio)}
+
+/* seções em cartão */
+.painel,.semana,.votos,.mapa{border-radius:var(--raio);box-shadow:var(--sombra);
+                              border:1px solid var(--linha);padding:28px 30px 22px;margin-top:28px}
+.sec-cab{margin-bottom:14px}
+.sec-cab .kicker{margin-bottom:6px}
+.sec-cab h2,.semana-cab h2,.votos-cab h2,.mapa-cab h2{font-family:var(--serif);
+  font-size:clamp(21px,2.6vw,25px);font-weight:600;line-height:1.2;letter-spacing:-.005em}
+.votos-cab,.mapa-cab{align-items:flex-end;margin-bottom:6px}
+.votos-cab .sec-cab,.mapa-cab .sec-cab{margin-bottom:0}
+.leitura{font-size:14.5px;line-height:1.55;max-width:66ch;color:var(--tinta2)}
+
+/* abas */
+.abas{gap:4px;margin-bottom:20px}
+.aba{font-size:14.5px;padding:10px 14px}
+
+/* botões: grupos segmentados, em pílula */
+.seg{display:inline-flex;align-items:center;gap:2px;background:var(--linha2);border-radius:999px;padding:3px}
+.seg .pino{border:none;background:transparent;border-radius:999px;padding:6px 14px;font-size:13px;
+           color:var(--tinta2)}
+.seg .pino:hover{color:var(--tinta);background:rgba(255,255,255,.6)}
+.seg .pino.on{background:var(--papel);color:var(--tinta);font-weight:500;
+              box-shadow:0 1px 2px rgba(16,18,22,.12)}
+.seg .rotulo{padding:0 4px 0 10px;margin:0}
+.seg-mini .pino{padding:5px 11px;font-size:12px}
+.pino{border-radius:999px}
+
+/* controles: "o que mostrar" em cima, "filtrar" embaixo */
+.controles{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin:4px 0 16px}
+.linha-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.linha-ctl.filtros{padding-top:12px;border-top:1px solid var(--linha2)}
+.campo{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--tinta3)}
+.sel{border-radius:999px;padding:6px 30px 6px 12px;font-size:13px;appearance:none;-webkit-appearance:none;
+     background:var(--papel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2380858d' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center}
+.sel.ativo{border-color:var(--tinta);color:var(--tinta)}
+.limpar{font:inherit;font-size:13px;color:var(--tinta);background:none;border:none;cursor:pointer;
+        padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
+.limpar[hidden]{display:none}
+.filtros .seg-mini{margin-left:auto}
+.quantos{font-size:13px}
+
+/* gráfico */
+.faixas{gap:12px 18px}
+.lado{padding-left:26px}
+.nota{margin-top:16px;padding-top:12px;border-top:1px solid var(--linha2)}
+.nota .rodape,.nota .rank-pe{margin-top:6px;padding-top:0;border-top:none;font-size:13px;
+                             line-height:1.65;color:var(--tinta2);max-width:78ch}
+
+/* semana: listas curtas */
+.semana-cab p{font-size:13px}
+.sem-it{padding:12px 0}
+.sem-mais-btn{font:inherit;font-size:13px;color:var(--tinta);background:var(--linha2);border:none;
+              border-radius:999px;padding:7px 14px;margin-top:10px;cursor:pointer}
+.sem-mais-btn:hover{background:#e6e7ea}
+.sem-mais-btn:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+.sem-cat span{border-radius:999px;padding:0 8px;background:var(--papel)}
+
+/* votações e regiões */
+.vt{border-radius:var(--raio-p)}
+.votos-pe,.mapa-pe{font-size:13px;line-height:1.65;color:var(--tinta2);max-width:80ch}
+.pilha{border-radius:6px;height:26px}
+
+/* ficha */
+.veu{background:rgba(16,18,22,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.ficha{border-radius:18px;padding:32px;box-shadow:0 30px 80px rgba(16,18,22,.25)}
+.grade{border-radius:var(--raio-p)}
+.origem{font-size:12.5px;line-height:1.6}
+.ver-temas{border-radius:999px;padding:8px 16px}
+
+/* rodapé do site */
+.rodape-site{margin-top:56px;border-top:1px solid var(--linha);background:var(--papel);
+             padding:40px 0 48px}
+.rodape-site .marca{display:block;margin-bottom:14px}
+.rodape-site h2{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:8px}
+.rodape-site p{font-size:13.5px;line-height:1.7;color:var(--tinta2);max-width:78ch}
+.rodape-site p+p{margin-top:10px}
+.rodape-site a{color:var(--tinta)}
+
+@media(max-width:820px){
+  .passos{grid-template-columns:1fr}
+  .topo-in{height:52px}
+  .nav a{padding:6px 9px;font-size:13px}
+}
+@media(max-width:720px){
+  .capa{padding:40px 0 4px}
+  .painel,.semana,.votos,.mapa{padding:22px 18px 18px;border-radius:12px}
+  .lado{padding-left:0}
+  .filtros .seg-mini{margin-left:0}
+  .ficha{padding:22px;border-radius:14px}
+}
+@media(max-width:520px){
+  .marca{font-size:17px}
+  .topo .marca{display:none}           /* no celular a barra fica só com as seções */
+}
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="#inicio">Câmara Aberta</a>
+    <nav class="nav" aria-label="Seções da página">
+      <a href="#deputados">Deputados</a>
+      <a href="#semana">Esta semana</a>
+      <a href="#votacoes">Votações</a>
+      <a href="#regioes">Regiões</a>
+      <a href="#sobre">Sobre os dados</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap" id="inicio">
 
   <div class="capa">
-    <h1>Câmara Aberta</h1>
-    <p class="chamada">Quem propôs o quê na Câmara dos Deputados, e o que de fato virou lei.</p>
+    <p class="kicker">Câmara dos Deputados · dados oficiais</p>
+    <h1>O que cada deputado propôs, e o que virou lei</h1>
+    <p class="chamada">Dados da Câmara e do TSE, organizados para qualquer pessoa entender.
+       Procure o seu deputado ou explore os 513.</p>
 
     <div class="busca">
+      <svg class="busca-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"
+        fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l5 5" stroke="currentColor"
+        stroke-width="1.8" stroke-linecap="round"/></svg>
       <input id="busca" type="search" autocomplete="off" spellcheck="false"
-             placeholder="Busque um deputado pelo nome" aria-label="Busque um deputado pelo nome">
+             placeholder="Nome do deputado ou partido" aria-label="Busque um deputado pelo nome ou partido">
       <div class="achados" id="achados"></div>
     </div>
 
+    <ol class="passos">
+      <li><a href="#deputados"><b>Compare os 513</b>
+        <span>Quem propõe muito e quem consegue aprovar, da esquerda à direita.</span></a></li>
+      <li><a href="#semana"><b>Veja a semana</b>
+        <span>O que foi apresentado, andou ou virou lei nos últimos 7 dias.</span></a></li>
+      <li><a href="#votacoes"><b>Entenda as votações</b>
+        <span>Quais votos dividiram a Câmara e quais passaram com apoio de todos.</span></a></li>
+    </ol>
+
+    <details class="glossario">
+      <summary>O que significam PL, PEC, espectro e quociente?</summary>
     <dl class="termos">
       <div class="termo">
         <dt>PL</dt>
@@ -648,11 +802,14 @@ table.rank tbody tr:hover td{background:#f8f9fa}
             chega lá.</dd>
       </div>
     </dl>
+    </details>
   </div>
 
-  <section class="semana" id="semana" hidden aria-labelledby="semanaTit"></section>
-
-  <div class="painel">
+  <section class="painel" id="deputados" aria-labelledby="depTit">
+    <div class="sec-cab">
+      <p class="kicker">Deputados</p>
+      <h2 id="depTit">Onde cada um está no espectro, e quanto propôs</h2>
+    </div>
     <div class="abas">
       <button class="aba on" data-vista="vGrafico">Gráfico</button>
       <button class="aba" data-vista="vRanking">Ranking</button>
@@ -662,32 +819,31 @@ table.rank tbody tr:hover td{background:#f8f9fa}
     <p class="leitura" id="leitura"></p>
 
     <div class="controles">
-      <div class="bloco">
-        <span class="rotulo">Região</span>
-        <button class="pino on" data-reg="">Todas</button>
-        <button class="pino" data-reg="N">Norte</button>
-        <button class="pino" data-reg="NE">Nordeste</button>
-        <button class="pino" data-reg="CO">Centro-Oeste</button>
-        <button class="pino" data-reg="SE">Sudeste</button>
-        <button class="pino" data-reg="S">Sul</button>
+      <div class="linha-ctl">
+        <div class="seg" role="group" aria-label="O que a altura do gráfico mostra">
+          <button class="pino on" id="yApres">Proposições apresentadas</button>
+          <button class="pino" id="yLei">Que viraram lei</button>
+        </div>
+        <span class="quantos" id="quantos"></span>
       </div>
-      <div class="bloco" id="blocoFiltros2">
-        <label class="rotulo" for="selUF">Estado</label>
-        <select class="sel" id="selUF"><option value="">Todos</option></select>
-        <label class="rotulo" for="selMandato" style="margin-left:10px">Mandato</label>
-        <select class="sel" id="selMandato"><option value="">Todos, carreira inteira</option></select>
+      <div class="linha-ctl filtros">
+        <label class="campo"><span>Região</span>
+          <select class="sel" id="selReg">
+            <option value="">Todas</option><option value="N">Norte</option>
+            <option value="NE">Nordeste</option><option value="CO">Centro-Oeste</option>
+            <option value="SE">Sudeste</option><option value="S">Sul</option>
+          </select></label>
+        <label class="campo"><span>Estado</span>
+          <select class="sel" id="selUF"><option value="">Todos</option></select></label>
+        <label class="campo" id="campoMandato"><span>Mandato</span>
+          <select class="sel" id="selMandato"><option value="">Todos, carreira inteira</option></select></label>
+        <button class="limpar" id="limpar" hidden>Limpar filtros</button>
+        <div class="seg seg-mini" role="group" aria-label="Escala do eixo vertical">
+          <span class="rotulo">Escala</span>
+          <button class="pino on" id="pLog" title="Aproxima os valores pequenos dos grandes">Comprimida</button>
+          <button class="pino" id="pLin" title="Distâncias proporcionais aos números">Proporcional</button>
+        </div>
       </div>
-      <div class="bloco">
-        <span class="rotulo">Eixo vertical</span>
-        <button class="pino on" id="yApres">Apresentadas</button>
-        <button class="pino" id="yLei">Viraram lei</button>
-      </div>
-      <div class="bloco">
-        <span class="rotulo">Escala</span>
-        <button class="pino on" id="pLog">Comprimida</button>
-        <button class="pino" id="pLin">Proporcional</button>
-      </div>
-      <span class="quantos" id="quantos"></span>
     </div>
 
     <div class="corpo">
@@ -705,7 +861,10 @@ table.rank tbody tr:hover td{background:#f8f9fa}
         <table class="conta"><tbody id="conta"></tbody></table>
       </aside>
     </div>
-    <p class="rodape" id="rodape"></p>
+    <details class="nota">
+      <summary>Como ler este gráfico e de onde vêm os dados</summary>
+      <p class="rodape" id="rodape"></p>
+    </details>
     </div>
 
     <div class="vista" id="vRanking">
@@ -729,27 +888,22 @@ table.rank tbody tr:hover td{background:#f8f9fa}
           <tbody id="rankCorpo"></tbody>
         </table>
       </div>
-      <p class="rank-pe" id="rankPe"></p>
+      <details class="nota">
+        <summary>Como ler esta tabela</summary>
+        <p class="rank-pe" id="rankPe"></p>
+      </details>
     </div>
-  </div>
+  </section>
 
-  <div class="mapa">
-    <div class="mapa-cab">
-      <h2>Espectro por região</h2>
-      <div class="bloco">
-        <button class="pino on" id="mTam">Tamanho da bancada</button>
-        <button class="pino" id="mProp">Proporção interna</button>
-      </div>
-    </div>
-    <p class="leitura" id="mapaLeitura"></p>
-    <div class="regs" id="regs"></div>
-    <p class="mapa-pe" id="mapaPe"></p>
-  </div>
+  <section class="semana" id="semana" hidden aria-labelledby="semanaTit"></section>
 
-  <div class="votos">
+  <section class="votos" id="votacoes" aria-labelledby="votosTit">
     <div class="votos-cab">
-      <h2>Como a Câmara se dividiu</h2>
-      <div class="bloco">
+      <div class="sec-cab">
+        <p class="kicker">Votações de 2023 a 2026</p>
+        <h2 id="votosTit">Como a Câmara se dividiu</h2>
+      </div>
+      <div class="seg" role="group" aria-label="Quais votações mostrar">
         <button class="pino on" id="vDisp">Mais disputadas</button>
         <button class="pino" id="vCons">Mais consensuais</button>
       </div>
@@ -764,10 +918,40 @@ table.rank tbody tr:hover td{background:#f8f9fa}
     </div>
     <div id="votosLista"></div>
     <p class="votos-pe" id="votosPe"></p>
-  </div>
+  </section>
 
-  <div style="height:48px"></div>
+  <section class="mapa" id="regioes" aria-labelledby="mapaTit">
+    <div class="mapa-cab">
+      <div class="sec-cab">
+        <p class="kicker">Regiões</p>
+        <h2 id="mapaTit">O espectro em cada região</h2>
+      </div>
+      <div class="seg" role="group" aria-label="Largura das barras">
+        <button class="pino on" id="mTam">Tamanho da bancada</button>
+        <button class="pino" id="mProp">Proporção interna</button>
+      </div>
+    </div>
+    <p class="leitura" id="mapaLeitura"></p>
+    <div class="regs" id="regs"></div>
+    <p class="mapa-pe" id="mapaPe"></p>
+  </section>
 </div>
+
+<footer class="rodape-site" id="sobre">
+  <div class="wrap">
+    <p class="marca">Câmara Aberta</p>
+    <h2>Sobre os dados</h2>
+    <p>Deputados, proposições e votações: <a href="https://dadosabertos.camara.leg.br"
+       target="_blank" rel="noopener">Dados Abertos da Câmara dos Deputados</a>, atualizados
+       todos os dias. Votação de 2022 e quociente eleitoral: <a href="https://resultados.tse.jus.br"
+       target="_blank" rel="noopener">Tribunal Superior Eleitoral</a>. Posição no espectro: média
+       das respostas da pesquisa Brazilian Legislative Survey, de Power e Zucco (2021), calculada
+       por este site; os limites entre as faixas são escolha deste site, não da pesquisa.</p>
+    <p>O site não preenche lacunas por conta própria: quando um dado não existe ou não pôde ser
+       ligado com segurança, aparece “—” e a explicação ao lado. Código e dados abertos no
+       <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">GitHub</a>.</p>
+  </div>
+</footer>
 
 <div class="veu" id="veu">
   <div class="ficha" role="dialog" aria-modal="true" aria-labelledby="fNome">
@@ -1216,8 +1400,8 @@ function montarFiltros(){
   // de 2003 o histórico não registra exercício; esses anos seguem na carreira inteira.
   const comExercicio=new Set(deputados.flatMap(d=>Object.keys(d.mandatos||{})));
   const opcoes=LEGISLATURAS.filter(l=>comExercicio.has(String(l.id))).reverse();
-  // na demonstração não há histórico nem recorte por mandato: só o seletor de estado fica
-  [sM, document.querySelector('label[for="selMandato"]')].forEach(e=>e.style.display=demo?'none':'');
+  // na demonstração não há histórico nem recorte por mandato: o seletor some
+  document.getElementById('campoMandato').style.display=demo?'none':'';
   sM.innerHTML='<option value="">Todos, carreira inteira</option>'+opcoes.map(l=>
     `<option value="${l.id}">${rotuloLeg(l.id)}${String(l.id)===LEG_ATUAL()?' (atual)':''}</option>`).join('');
   sUF.onchange=()=>{
@@ -1226,13 +1410,27 @@ function montarFiltros(){
     sincronizarRegiao(); desenhar();
   };
   sM.onchange=()=>{ mandato=sM.value; aplicarMandato(); sincronizarRegiao(); desenhar(); };
+  const sR=document.getElementById('selReg');
+  sR.onchange=()=>{ filtro.reg=sR.value; sincronizarRegiao(); desenhar(); };
+  document.getElementById('limpar').onclick=()=>{
+    filtro.reg=''; filtro.uf=''; filtro.faixas.clear();
+    if(mandato){ mandato=''; aplicarMandato(); }
+    document.querySelectorAll('.faixa').forEach(x=>x.classList.remove('off'));
+    sincronizarRegiao(); desenhar();
+  };
 }
 function sincronizarRegiao(){
-  document.querySelectorAll('[data-reg]').forEach(x=>x.classList.toggle('on',x.dataset.reg===filtro.reg));
-  const sUF=document.getElementById('selUF'), sM=document.getElementById('selMandato');
+  const sUF=document.getElementById('selUF'), sM=document.getElementById('selMandato'),
+        sR=document.getElementById('selReg');
   if(filtro.uf&&UF_REG[filtro.uf]!==filtro.reg){ filtro.uf=''; }   // região mudou: solta o estado
+  sR.value=filtro.reg; sR.classList.toggle('ativo',!!filtro.reg);
   sUF.value=filtro.uf; sUF.classList.toggle('ativo',!!filtro.uf);
-  sM.classList.toggle('ativo',!!mandato);
+  sM.value=mandato; sM.classList.toggle('ativo',!!mandato);
+}
+// "Limpar filtros" só aparece quando há algum filtro ligado
+function atualizarLimpar(){
+  document.getElementById('limpar').hidden=
+    !(filtro.reg||filtro.uf||mandato||filtro.faixas.size);
 }
 
 function textos(){
@@ -1324,6 +1522,7 @@ const NS='http://www.w3.org/2000/svg';
 const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
 
 function desenhar(){
+  atualizarLimpar();
   const W=tela.clientWidth,H=tela.clientHeight;
   if(!W||!H){                       // aba Ranking ativa: o scatter está oculto
     plenarioDesenhar(); contaDesenhar(); mapaDesenhar(); votosDesenhar(); rankDesenhar();
@@ -1416,11 +1615,6 @@ document.querySelectorAll('.faixa').forEach(b=>b.onclick=()=>{
   filtro.faixas.has(k)?filtro.faixas.delete(k):filtro.faixas.add(k);
   document.querySelectorAll('.faixa').forEach(x=>
     x.classList.toggle('off',filtro.faixas.size>0&&!filtro.faixas.has(x.dataset.f)));
-  desenhar();
-});
-document.querySelectorAll('[data-reg]').forEach(b=>b.onclick=()=>{
-  filtro.reg=b.dataset.reg;
-  sincronizarRegiao();
   desenhar();
 });
 pLog.onclick=()=>{comprimida=true;pLog.classList.add('on');pLin.classList.remove('on');desenhar()};
@@ -2089,10 +2283,23 @@ function semCategorias(x){
     return `<span title="${escS(porque)}" aria-label="${escS(cap(nome)+'. '+porque)}">${escS(cap(nome))}</span>`;
   }).join('')}</div>`;
 }
-function semLista(g,extra,max){
-  const it=g.itens.slice(0,max).map(x=>semItem(x,extra&&extra(x))).join('');
-  const resto=g.total-Math.min(max,g.itens.length);
-  return it+(resto>0?`<div class="sem-mais">e mais ${resto}</div>`:'');
+// Três itens à vista por lista; o resto (até o que semana.json traz) abre num clique.
+// Lista curta é o que deixa a página legível para quem chega sem saber o que procurar.
+const SEM_VISIVEIS=3;
+function semLista(g,extra){
+  const html=g.itens.map((x,i)=>{
+    const h=semItem(x,extra&&extra(x));
+    return i<SEM_VISIVEIS?h:h.replace('<div class="sem-it">','<div class="sem-it" data-extra hidden>');
+  }).join('');
+  const ocultos=Math.max(0,g.itens.length-SEM_VISIVEIS);
+  const resto=g.total-g.itens.length;
+  return html
+    +(ocultos?`<button class="sem-mais-btn" type="button" onclick="semExpandir(this)">Mostrar mais ${ocultos}</button>`:'')
+    +(resto>0?`<div class="sem-mais" ${ocultos?'hidden data-extra':''}>e mais ${resto} no período</div>`:'');
+}
+function semExpandir(b){
+  b.parentElement.querySelectorAll('[data-extra]').forEach(e=>e.hidden=false);
+  b.remove();
 }
 function semPauta(p){
   if(!p) return '<p class="sem-obs">A pauta entra com a rodada diária automática.</p>';
@@ -2118,18 +2325,19 @@ async function carregarSemana(){
   const box=document.getElementById('semana');
   const temas=(s.novas.temas||[]).map(([t,n])=>`${t} (${n})`).join(', ');
   box.innerHTML=`
-    <div class="semana-cab"><h2 id="semanaTit">Esta semana na Câmara</h2>
+    <div class="semana-cab"><div class="sec-cab"><p class="kicker">Últimos 7 dias</p>
+      <h2 id="semanaTit">Esta semana na Câmara</h2></div>
       <p>${periodo(s.de,s.ate)}. Atualizado em ${dataLonga(s.geradoEm)}, às ${+s.geradoEm.slice(11,13)}h${s.geradoEm.slice(14,16)}.</p></div>
     <div class="sem-grade">
       <div class="sem-col"><h3>Viraram lei <span>${s.viraramLei.total}</span></h3>
-        ${s.viraramLei.total?semLista(s.viraramLei,null,5):'<p class="sem-obs">Nenhuma nesta semana.</p>'}</div>
+        ${s.viraramLei.total?semLista(s.viraramLei,null):'<p class="sem-obs">Nenhuma nesta semana.</p>'}</div>
       <div class="sem-col"><h3>Na pauta do Plenário</h3>${semPauta(s.pauta)}</div>
       <div class="sem-col"><h3>Andaram <span>${s.andaram.total}</span></h3>
-        ${s.andaram.total?semLista(s.andaram,x=>`${escS(x.andamento)}${x.situacao?`. Situação agora: ${escS(x.situacao)}`:''}`,5)
+        ${s.andaram.total?semLista(s.andaram,x=>`${escS(x.andamento)}${x.situacao?`. Situação agora: ${escS(x.situacao)}`:''}`)
           :'<p class="sem-obs">Nenhum andamento registrado.</p>'}</div>
       <div class="sem-col"><h3>Novas <span>${s.novas.total}</span></h3>
         ${temas?`<p class="sem-obs">Temas mais frequentes: ${escS(temas)}.</p>`:''}
-        ${semLista(s.novas,null,4)}</div>
+        ${semLista(s.novas,null)}</div>
     </div>
     <p class="semana-pe">${escS(s.universo)} Datas oficiais da Câmara: apresentação e último andamento
       registrado. Uma proposição que andou mais de uma vez na semana aparece com o andamento mais recente.
