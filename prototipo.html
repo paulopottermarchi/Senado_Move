@@ -127,6 +127,10 @@ h1{font-family:var(--serif);font-size:clamp(34px,5.4vw,52px);font-weight:500;
 .cel span{font-size:11.5px;color:var(--tinta3)}
 
 .origem{font-size:11.5px;color:var(--tinta3);margin-top:12px;line-height:1.55}
+.ver-temas{display:inline-block;margin-top:16px;font-size:13px;font-weight:500;color:var(--tinta);
+           text-decoration:none;border:1px solid var(--tinta);border-radius:2px;padding:6px 12px}
+.ver-temas:hover{background:var(--tinta);color:#fff}
+.ver-temas[hidden]{display:none}
 
 .secao{font-family:var(--serif);font-size:17px;font-weight:600;
        margin:24px 0 3px;padding-top:18px;border-top:1px solid var(--linha)}
@@ -551,6 +555,41 @@ table.rank tbody tr:hover td{background:#f8f9fa}
   table.rank th{padding:0 7px 8px}
   .rank-topo{flex-direction:column;align-items:stretch;gap:10px}
 }
+
+/* ---------- camada executiva: frase-resumo ---------- */
+.achado-fr{display:block;font-style:normal;font-size:12px;line-height:1.4;color:var(--tinta2);
+           margin-top:2px;white-space:normal}
+.resumo-exec{font-family:var(--serif);font-size:18.5px;line-height:1.45;margin:0 0 4px}
+.resumo-fonte{font-size:11.5px;color:var(--tinta3);margin-bottom:16px}
+.frase.carreira{font-size:15px;color:var(--tinta2)}
+
+/* ---------- Esta semana na Câmara ---------- */
+.semana{background:var(--papel);border:1px solid var(--linha);border-radius:4px;
+        margin-top:30px;padding:20px 22px 18px}
+.semana[hidden]{display:none}
+.semana-cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.semana-cab h2{font-family:var(--serif);font-size:20px;font-weight:600}
+.semana-cab p{font-size:12.5px;color:var(--tinta3)}
+.sem-grade{display:grid;grid-template-columns:1fr 1fr;gap:0 34px;margin-top:6px}
+.sem-col{padding-top:14px;margin-top:10px;border-top:1px solid var(--linha)}
+.sem-col h3{font-family:var(--serif);font-size:16.5px;font-weight:600;display:flex;
+            justify-content:space-between;align-items:baseline;gap:10px}
+.sem-col h3 span{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--tinta2)}
+.sem-obs{font-size:12.5px;color:var(--tinta2);margin:4px 0 2px}
+.sem-it{padding:9px 0;border-bottom:1px solid var(--linha2)}
+.sem-it:last-child{border-bottom:none}
+.sem-l1{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.sem-l1 a{font-weight:600;font-size:13.5px;color:var(--tinta);text-decoration:none}
+.sem-l1 a:hover{text-decoration:underline}
+.sem-l1 b{font-weight:600;font-size:13.5px}
+.sem-l1 span{font-size:11.5px;color:var(--tinta3);white-space:nowrap}
+.sem-aut{font-size:12px;color:var(--tinta2)}
+.sem-aut a{color:inherit}
+.sem-em{font-size:13px;line-height:1.45;margin-top:2px}
+.sem-and{font-size:12px;color:var(--tinta3);margin-top:2px}
+.sem-mais{font-size:12px;color:var(--tinta3);padding-top:8px}
+.semana-pe{font-size:11.5px;color:var(--tinta3);margin-top:14px;line-height:1.6;max-width:80ch}
+@media(max-width:760px){.sem-grade{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -599,6 +638,8 @@ table.rank tbody tr:hover td{background:#f8f9fa}
       </div>
     </dl>
   </div>
+
+  <section class="semana" id="semana" hidden aria-labelledby="semanaTit"></section>
 
   <div class="painel">
     <div class="abas">
@@ -721,6 +762,8 @@ table.rank tbody tr:hover td{background:#f8f9fa}
       <button class="sair" onclick="sair()" aria-label="Fechar">&times;</button>
     </div>
 
+    <p class="resumo-exec" id="fExec"></p>
+    <p class="resumo-fonte" id="fExecFonte"></p>
     <p class="frase" id="fFrase"></p>
     <div class="trilho"><i id="fBarra" style="width:0"></i></div>
     <div class="trilho-leg" id="fBarraLeg"></div>
@@ -734,6 +777,7 @@ table.rank tbody tr:hover td{background:#f8f9fa}
     <p class="origem" id="fDiverge"></p>
     <p class="origem" id="fEspTxt"></p>
     <p class="origem" id="fOrigem"></p>
+    <a class="ver-temas" id="fTemas" href="#" hidden>Ver as proposições por tema</a>
 
     <div class="partic" id="fPartic"></div>
 
@@ -992,6 +1036,18 @@ function posicionar(){
     const b=ideX(d.score);
     d.x = b==null ? null : Math.max(0,Math.min(1,b+(rnd()-0.5)*0.055));
   });
+}
+
+// Camada executiva: frase por deputado, gerada por temas.py (modelo fixo, sem LLM).
+// Arquivo à parte (~90 kB) para não depender da página por tema. Sem ele, nada some:
+// a busca e a ficha só não mostram a frase.
+let FRASES={}, INICIO_LEG=null;
+async function carregarFrases(){
+  try{
+    const r=await fetch('temas/resumo.json',{cache:'no-store'});
+    if(!r.ok) return;
+    const j=await r.json(); FRASES=j.frases||{}; INICIO_LEG=j.inicioLegislatura||null;
+  }catch(e){}
 }
 
 async function carregar(){
@@ -1682,7 +1738,8 @@ campo.addEventListener('input',()=>{
     ? atuais.map((d,i)=>`<div class="achado" data-i="${i}">
         ${retrato(d,30)}
         <div class="achado-txt"><b><span class="pastilha"
-          style="background:${corDoScore(d.score)}"></span>${d.nome}</b></div>
+          style="background:${corDoScore(d.score)}"></span>${d.nome}</b>${FRASES[d.id]&&!demo
+          ?`<i class="achado-fr">${FRASES[d.id]}</i>`:''}</div>
         <span>${d.partido} de ${d.uf}</span></div>`).join('')
     : '<div class="nada">Nenhum deputado com esse nome.</div>';
   lista.classList.add('on');
@@ -1726,14 +1783,22 @@ function abrir(d){
   document.getElementById('fEspTxt').textContent =
     d.score==null ? '' : `Posição no espectro: ${d.score.toFixed(1)} de 10.`;
 
+  const exec=!demo&&FRASES[d.id];
+  document.getElementById('fExec').textContent=exec||'';
+  document.getElementById('fExecFonte').textContent=exec&&exec.includes('sobretudo')
+    ? 'Temas pela classificação deste site, a partir da ementa oficial.' : '';
+  // Os números abaixo são da carreira inteira na Câmara (a API devolve todos os mandatos).
+  // Com a frase da legislatura acima, o rótulo evita que os dois pareçam contraditórios.
+  fFrase.classList.toggle('carreira',!!exec);
+  const pre=exec?'Somando mandatos anteriores, apresentou':'Apresentou';
   const apres=d.apresentadas||0, virou=d.viraramLei;
   if(virou==null||!apres){
-    fFrase.innerHTML=`Apresentou <b>${apres}</b> proposições.`;
+    fFrase.innerHTML=`${pre} <b>${apres}</b> proposições.`;
     fBarra.style.width='0';
     fBarraLeg.textContent='Ainda não há dado sobre quantas viraram lei.';
   }else{
     const pct=virou/apres;
-    fFrase.innerHTML=`Apresentou <b>${apres}</b> proposições. <b>${virou}</b> viraram lei.`;
+    fFrase.innerHTML=`${pre} <b>${apres}</b> proposições. <b>${virou}</b> viraram lei.`;
     fBarra.style.width=Math.min(100,pct*100)+'%';
     fBarraLeg.textContent=`Isso é ${(pct*100).toFixed(1)}% do que propôs.`;
   }
@@ -1746,6 +1811,12 @@ function abrir(d){
         // poucas respostas — o motivo vem de ideologia.json via scoreNota.
         : 'O partido deste deputado não recebeu posição no espectro'+
           (d.scoreNota ? ` (${d.scoreNota}).` : '.'));
+
+  // Página 2: todas as PEC e PL de autoria, por tema. Na demonstração os ids são
+  // sintéticos e não existe temas/{id}.json, então o link some.
+  const lkTemas=document.getElementById('fTemas');
+  lkTemas.hidden=demo;
+  lkTemas.href=`deputado.html?id=${encodeURIComponent(d.id)}`;
 
   const box=document.getElementById('fPartic');
   if(!d.votos||!d.votos.chamadas){
@@ -1842,7 +1913,76 @@ document.querySelectorAll('.aba').forEach(b=>b.onclick=()=>{
 vAbs.onclick=()=>{votoRelativo=false;vAbs.classList.add('on');vRel.classList.remove('on');rankDesenhar()};
 vRel.onclick=()=>{votoRelativo=true;vRel.classList.add('on');vAbs.classList.remove('on');rankDesenhar()};
 
-window.addEventListener('load',carregar);
+// ---------- Esta semana na Câmara (semana.json, gerado por semana.py) ----------
+const MES=['jan.','fev.','mar.','abr.','maio','jun.','jul.','ago.','set.','out.','nov.','dez.'];
+const DIA=['dom.','seg.','ter.','qua.','qui.','sex.','sáb.'];
+const escS=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MESL=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function dataLonga(iso){ const [a,m,d]=iso.slice(0,10).split('-'); return `${+d} de ${MESL[+m-1]}`; }
+function periodo(de,ate){
+  const [,m1,d1]=de.split('-'), [,m2,d2]=ate.split('-');
+  return m1===m2 ? `De ${+d1} a ${+d2} de ${MESL[+m2-1]}` : `De ${dataLonga(de)} a ${dataLonga(ate)}`;
+}
+function dataCurta(iso){ if(!iso)return ''; const [a,m,d]=iso.slice(0,10).split('-'); return `${+d} ${MES[+m-1]}`; }
+function semItem(x,linhaExtra){
+  const aut=(x.autores||[]).map(a=>`<a href="deputado.html?id=${a.id}">${escS(a.nome)}</a> (${escS(a.partido)}-${escS(a.uf)})`);
+  return `<div class="sem-it">
+    <div class="sem-l1"><a href="https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${x.id}"
+      target="_blank" rel="noopener">${x.t} ${x.n}/${x.a}</a><span>${dataCurta(x.data)}</span></div>
+    ${aut.length?`<div class="sem-aut">${aut.slice(0,3).join(', ')}${aut.length>3?` e mais ${aut.length-3}`:''}</div>`:''}
+    <div class="sem-em">${escS(corta(x.e||'Sem ementa no registro da Câmara.',150))}</div>
+    ${linhaExtra?`<div class="sem-and">${linhaExtra}</div>`:''}
+  </div>`;
+}
+function semLista(g,extra,max){
+  const it=g.itens.slice(0,max).map(x=>semItem(x,extra&&extra(x))).join('');
+  const resto=g.total-Math.min(max,g.itens.length);
+  return it+(resto>0?`<div class="sem-mais">e mais ${resto}</div>`:'');
+}
+function semPauta(p){
+  if(!p) return '<p class="sem-obs">A pauta entra com a rodada diária automática.</p>';
+  if(!p.eventos.length) return '<p class="sem-obs">Nenhuma sessão do Plenário marcada para os próximos 7 dias.</p>';
+  return p.eventos.slice(0,3).map(e=>{
+    const dt=new Date(e.dataHoraInicio), h=e.dataHoraInicio.slice(11,16).replace(':','h');
+    const itens=(e.itens||[]).filter(i=>i.titulo||i.proposicao?.id);
+    return `<div class="sem-it"><div class="sem-l1"><b>${escS(e.tipo||'Sessão')}</b>
+      <span>${DIA[dt.getDay()]} ${dataCurta(e.dataHoraInicio)}, ${h}</span></div>
+      ${itens.length?itens.slice(0,6).map(i=>`<div class="sem-em">${escS(i.titulo||
+        `${i.proposicao.siglaTipo} ${i.proposicao.numero}/${i.proposicao.ano}`)}${i.regime?`, regime ${escS(i.regime.toLowerCase())}`:''}</div>`).join('')
+        +(itens.length>6?`<div class="sem-mais">e mais ${itens.length-6} itens</div>`:'')
+        :'<div class="sem-and">Pauta ainda não publicada.</div>'}</div>`;
+  }).join('');
+}
+async function carregarSemana(){
+  let s;
+  try{
+    const r=await fetch('semana.json',{cache:'no-store'});
+    if(!r.ok) return;
+    s=await r.json();
+  }catch(e){ return; }
+  const box=document.getElementById('semana');
+  const temas=(s.novas.temas||[]).map(([t,n])=>`${t} (${n})`).join(', ');
+  box.innerHTML=`
+    <div class="semana-cab"><h2 id="semanaTit">Esta semana na Câmara</h2>
+      <p>${periodo(s.de,s.ate)}. Atualizado em ${dataLonga(s.geradoEm)}, às ${+s.geradoEm.slice(11,13)}h${s.geradoEm.slice(14,16)}.</p></div>
+    <div class="sem-grade">
+      <div class="sem-col"><h3>Viraram lei <span>${s.viraramLei.total}</span></h3>
+        ${s.viraramLei.total?semLista(s.viraramLei,null,5):'<p class="sem-obs">Nenhuma nesta semana.</p>'}</div>
+      <div class="sem-col"><h3>Na pauta do Plenário</h3>${semPauta(s.pauta)}</div>
+      <div class="sem-col"><h3>Andaram <span>${s.andaram.total}</span></h3>
+        ${s.andaram.total?semLista(s.andaram,x=>`${escS(x.andamento)}${x.situacao?`. Situação agora: ${escS(x.situacao)}`:''}`,5)
+          :'<p class="sem-obs">Nenhum andamento registrado.</p>'}</div>
+      <div class="sem-col"><h3>Novas <span>${s.novas.total}</span></h3>
+        ${temas?`<p class="sem-obs">Temas mais frequentes: ${escS(temas)}.</p>`:''}
+        ${semLista(s.novas,null,4)}</div>
+    </div>
+    <p class="semana-pe">${escS(s.universo)} Datas oficiais da Câmara: apresentação e último andamento
+      registrado. Uma proposição que andou mais de uma vez na semana aparece com o andamento mais recente.
+      Temas das novas pela classificação deste site.</p>`;
+  box.hidden=false;
+}
+
+window.addEventListener('load',()=>{carregarFrases().then(carregar);carregarSemana();});
 let tResize;
 window.addEventListener('resize',()=>{
   clearTimeout(tResize);

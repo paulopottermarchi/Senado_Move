@@ -3,8 +3,8 @@ Câmara Aberta — Etapa B (votos individuais, via arquivos anuais em bulk).
 
 Uso:
     python votos.py              # usa o que já está em cache/bulk/
-    python votos.py --atualizar  # baixa de novo os arquivos de votação (o do ano
-                                 # corrente muda todo dia)
+    python votos.py --atualizar  # baixa de novo os arquivos do ANO CORRENTE (votações
+                                 # e autores); os anos fechados não mudam
 
 Rodar DEPOIS de coleta.py: lê deputados.json, acrescenta `votos` a cada deputado
 e grava proposicoes.json. Se coleta.py regravar deputados.json, rode este de novo.
@@ -47,7 +47,9 @@ VOTANTE = (SIM, NAO, ABST)
 
 def arquivo(tipo, ano, atualizar=False):
     caminho = BULK / f"{tipo}-{ano}.csv"
-    if caminho.exists() and not atualizar:
+    # --atualizar só rebaixa o ano corrente: é o único arquivo que a Câmara ainda
+    # altera. Rebaixar a legislatura inteira todo dia custaria ~200 MB por rodada.
+    if caminho.exists() and not (atualizar and ano == datetime.now().year):
         return caminho
     print(f"   baixando {caminho.name}", flush=True)
     BULK.mkdir(parents=True, exist_ok=True)
@@ -145,7 +147,7 @@ def calcular_votacao(v, votos_da_votacao, ideologia):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--atualizar", action="store_true",
-                    help="baixar de novo os arquivos de votação da legislatura")
+                    help="baixar de novo os arquivos em lote do ano corrente")
     args = ap.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -197,7 +199,7 @@ def main():
     ids_prop = set(por_prop)
     autores = defaultdict(list)
     print(f"Lendo autores ({len(anos_prop)} anos de proposicoesAutores)…", flush=True)
-    for r in linhas("proposicoesAutores", anos_prop):
+    for r in linhas("proposicoesAutores", anos_prop, args.atualizar):
         if r["idProposicao"] in ids_prop:
             autores[r["idProposicao"]].append(r)
 
