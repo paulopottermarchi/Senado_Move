@@ -393,6 +393,7 @@ table.rank col.c-apr{width:104px}
 table.rank col.c-lei{width:98px}
 table.rank col.c-con{width:118px}
 table.rank col.c-abs{width:96px}
+table.rank col.c-div{width:112px}
 
 table.rank th{font-size:11.5px;font-weight:500;color:var(--tinta3);text-align:right;
               padding:0 10px 9px;border-bottom:1px solid var(--linha);
@@ -883,6 +884,7 @@ html{scroll-behavior:smooth}
           <colgroup>
             <col class="c-pos"><col class="c-dep"><col class="c-vot"><col class="c-pre">
             <col class="c-apr"><col class="c-lei"><col class="c-con"><col class="c-abs">
+            <col class="c-div">
           </colgroup>
           <thead><tr id="rankCab"></tr></thead>
           <tbody id="rankCorpo"></tbody>
@@ -1274,6 +1276,7 @@ async function carregar(){
       apoioCruzado:d.apoioCruzado ?? null,
       votacoesNominais:d.votacoesNominais ?? null,
       votos:d.votos ?? null,
+      divergencia:d.divergencia ?? null,
       // Eleição de 2022: resultado do TSE (eleicao.py). Sem par exato, fica null —
       // nunca cai nos VALIDOS_UF aproximados, que são só da demonstração.
       votosRecebidos:d.votosRecebidos ?? null,
@@ -1323,11 +1326,36 @@ async function carregar(){
     d._carreira={pecs:d.pecs,leis:d.leis,apresentadas:d.apresentadas,
                  viraramLei:d.viraramLei,aprovadasPlenario:d.aprovadasPlenario};
     d._votos=d.votos;
+    d._div=d.divergencia;
   });
+  // referência para a ficha: a mediana da Câmara, não um ranking
+  const taxas=deputados.map(taxaDiv).filter(x=>x!=null).sort((a,b)=>a-b);
+  MEDIANA_DIV=taxas.length?taxas[Math.floor(taxas.length/2)]:null;
   montarFiltros();
   posicionar();
   textos();
   desenhar();
+}
+
+// ---------- divergência do próprio partido (votos.py) ----------
+// Mede quantas vezes o deputado votou diferente da maioria do próprio partido, nas
+// votações nominais do Plenário. Frequência, não motivo — e nunca "fiel"/"traidor".
+// A versão por faixa do espectro existe no JSON mas não é exibida: juntava partidos de
+// lados opostos e punha a bancada inteira do NOVO como "divergente" (CLAUDE.md).
+let MEDIANA_DIV=null;
+const taxaDiv=d=>{const p=d.divergencia&&d.divergencia.partido;
+  return p&&p.comparaveis?p.diferentes/p.comparaveis:null;};
+const pct1=x=>(x*100).toFixed(1).replace('.',',')+'%';
+function textoDivergencia(d){
+  const t=taxaDiv(d);
+  if(t==null) return d.divergencia&&d.divergencia.nota
+    ? `Votos diferentes da maioria do próprio partido: sem número (${d.divergencia.nota}).` : '';
+  const p=d.divergencia.partido;
+  return `Votou diferente da maioria do próprio partido (o partido em que estava na data de cada `+
+    `voto) em ${pct1(t)} das ${nfBR(p.comparaveis)} votações nominais do Plenário em que havia `+
+    `maioria para comparar`+
+    (MEDIANA_DIV!=null?` (na Câmara, a mediana é ${pct1(MEDIANA_DIV)})`:'')+'. '+
+    'Divergir pode ser convicção, compromisso com a base ou acordo; o número mede quantas vezes, não por quê.';
 }
 
 // ---------- ficha: mandatos e eleição ----------
@@ -1388,8 +1416,10 @@ function aplicarMandato(){
   const zero={pecs:0,leis:0,apresentadas:0,viraramLei:0,aprovadasPlenario:0};
   deputados.forEach(d=>{
     Object.assign(d, !mandato ? d._carreira : ((d.porLegislatura||{})[mandato]||zero));
-    // votos registrados (Etapa B) existem só para a legislatura atual
-    d.votos=(!mandato||mandato===LEG_ATUAL())?d._votos:null;
+    // votos registrados e divergência (Etapa B) existem só para a legislatura atual
+    const atual=!mandato||mandato===LEG_ATUAL();
+    d.votos=atual?d._votos:null;
+    d.divergencia=atual?d._div:null;
   });
 }
 function montarFiltros(){
@@ -1948,7 +1978,8 @@ const COLS=[
   {k:'apresentadas',   t:'Apresentadas',    ord:true},
   {k:'viraramLei',     t:'Viraram lei',     ord:true},
   {k:'taxa',           t:'Conversão',       ord:true},
-  {k:'abs',            t:'Abstenções',      ord:true}
+  {k:'abs',            t:'Abstenções',      ord:true},
+  {k:'div',            t:'Diferente do partido', ord:true}
   // Sem coluna de apoio cruzado por deputado: só 15 dos 513 têm amostra (CLAUDE.md).
   // Ele existe por votação, no bloco "Como a Câmara se dividiu".
 ];
@@ -1970,6 +2001,7 @@ const valorCol=(d,k)=>
   k==='taxa'?taxaDe(d):
   k==='abs'?absDe(d):
   k==='registros'?registrosDe(d):
+  k==='div'?taxaDiv(d):
   k==='votosRecebidos'?(votoRelativo?quocientesDe(d):d.votosRecebidos):d[k];
 
 function celaVoto(d,nf){
@@ -2019,6 +2051,8 @@ function rankDesenhar(){
         :`${(t*100).toFixed(1)}%<span class="mini"><i style="width:${
            Math.min(100,t*100*3).toFixed(0)}%"></i></span>`}</td>
       <td class="num">${a==null?'<span class="sem">—</span>':(a*100).toFixed(1)+'%'}</td>
+      <td class="num">${taxaDiv(d)==null?`<span class="sem" title="${(d.divergencia&&d.divergencia.nota)||''}">—</span>`
+        :pct1(taxaDiv(d))}</td>
     </tr>`;
   }).join('');
 
@@ -2043,7 +2077,11 @@ function rankDesenhar(){
     'voto individual, em que o voto do deputado aparece. Não é taxa de presença: quem assumiu no '+
     'meio do mandato, esteve de licença ou em missão oficial tem menos registros sem ter faltado, '+
     'e o dado aberto não distingue esses casos. Conversão é a parcela das propostas apresentadas '+
-    'que virou lei. '+
+    'que virou lei. Diferente do partido é a parcela dos votos Sim ou Não, nas votações nominais '+
+    'do Plenário desde 2023, em que o deputado votou ao contrário da maioria dos colegas do '+
+    'próprio partido naquele dia; abstenção e obstrução não contam, e partido com menos de seis '+
+    'deputados votando não tem maioria para comparar. Não é medida de lealdade nem de mérito: '+
+    'divergir pode ser convicção, compromisso com a base ou acordo, e seguir a maioria também. '+
     (demo ? '<strong>Votação e votos registrados são números de demonstração.</strong>'
           : 'Votação: resultado oficial do TSE na eleição de 2022; quociente eleitoral pela regra '+
             'do Código Eleitoral (votos válidos do estado ÷ vagas, art. 106). O voto é ligado ao '+
@@ -2171,6 +2209,7 @@ function abrir(d){
       <div class="partic-tit">Votos registrados</div>
       <p class="partic-fr">Tem voto registrado em <b>${v.chamadas}</b> votações finais de
          texto-base desta legislatura${outros>0?`, ${outros} delas em obstrução ou presidindo a sessão`:''}.</p>
+      ${textoDivergencia(d)?`<p class="partic-fr">${textoDivergencia(d)}</p>`:''}
       <div class="partic-barra">
         ${seg(v.sim,'pb-sim','Sim')}${seg(v.nao,'pb-nao','Não')}${seg(v.abstencao,'pb-abs','Abstenção')}
       </div>

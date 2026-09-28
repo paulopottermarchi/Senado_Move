@@ -103,6 +103,17 @@
       "sim": 120,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 841,
+        "diferentes": 57
+      },
+      "partido": {
+        "comparaveis": 837,
+        "diferentes": 56
+      },
+      "nota": null
     }
   },
   {
@@ -196,6 +207,17 @@
       "sim": 153,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1040,
+        "diferentes": 34
+      },
+      "partido": {
+        "comparaveis": 1039,
+        "diferentes": 32
+      },
+      "nota": null
     }
   },
   {
@@ -301,6 +323,17 @@
       "sim": 83,
       "nao": 53,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 858,
+        "diferentes": 165
+      },
+      "partido": {
+        "comparaveis": 867,
+        "diferentes": 44
+      },
+      "nota": null
     }
   },
   {
@@ -407,6 +440,17 @@
       "sim": 109,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 659,
+        "diferentes": 37
+      },
+      "partido": {
+        "comparaveis": 648,
+        "diferentes": 24
+      },
+      "nota": null
     }
   },
   {
@@ -513,6 +557,14 @@
       "sim": 60,
       "nao": 84,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 932,
+        "diferentes": 539
+      },
+      "partido": null,
+      "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
     }
   },
   {
@@ -619,6 +671,17 @@
       "sim": 151,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 998,
+        "diferentes": 307
+      },
+      "partido": {
+        "comparaveis": 1005,
+        "diferentes": 28
+      },
+      "nota": null
     }
   },
   {
@@ -753,6 +816,17 @@
       "sim": 97,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 582,
+        "diferentes": 71
+      },
+      "partido": {
+        "comparaveis": 572,
+        "diferentes": 34
+      },
+      "nota": null
     }
   },
   {
@@ -917,6 +991,17 @@
       "sim": 8,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 60,
+        "diferentes": 1
+      },
+      "partido": {
+        "comparaveis": 60,
+        "diferentes": 2
+      },
+      "nota": null
     }
   },
   {
@@ -1079,6 +1164,17 @@
       "sim": 97,
       "nao": 37,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 838,
+        "diferentes": 195
+      },
+      "partido": {
+        "comparaveis": 843,
+        "diferentes": 262
+      },
+      "nota": null
     }
   },
   {
@@ -1204,6 +1300,17 @@
       "sim": 132,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 958,
+        "diferentes": 87
+      },
+      "partido": {
+        "comparaveis": 957,
+        "diferentes": 63
+      },
+      "nota": null
     }
   },
   {
@@ -1337,6 +1444,17 @@
       "sim": 102,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 628,
+        "diferentes": 194
+      },
+      "partido": {
+        "comparaveis": 630,
+        "diferentes": 23
+      },
+      "nota": null
     }
   },
   {
@@ -1443,6 +1561,17 @@
       "sim": 121,
       "nao": 24,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 950,
+        "diferentes": 12
+      },
+      "partido": {
+        "comparaveis": 948,
+        "diferentes": 7
+      },
+      "nota": null
     }
   },
   {
@@ -1549,6 +1678,17 @@
       "sim": 121,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 786,
+        "diferentes": 240
+      },
+      "partido": {
+        "comparaveis": 793,
+        "diferentes": 26
+      },
+      "nota": null
     }
   },
   {
@@ -1708,6 +1848,17 @@
       "sim": 104,
       "nao": 50,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 989,
+        "diferentes": 192
+      },
+      "partido": {
+        "comparaveis": 995,
+        "diferentes": 75
+      },
+      "nota": null
     }
   },
   {
@@ -1808,6 +1959,17 @@
       "sim": 139,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 930,
+        "diferentes": 22
+      },
+      "partido": {
+        "comparaveis": 930,
+        "diferentes": 23
+      },
+      "nota": null
     }
   },
   {
@@ -1940,6 +2102,17 @@
       "sim": 112,
       "nao": 31,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 937,
+        "diferentes": 238
+      },
+      "partido": {
+        "comparaveis": 936,
+        "diferentes": 239
+      },
+      "nota": null
     }
   },
   {
@@ -2046,6 +2219,17 @@
       "sim": 132,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 982,
+        "diferentes": 19
+      },
+      "partido": {
+        "comparaveis": 980,
+        "diferentes": 15
+      },
+      "nota": null
     }
   },
   {
@@ -2165,6 +2349,14 @@
       "sim": 77,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 473,
+        "diferentes": 50
+      },
+      "partido": null,
+      "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
     }
   },
   {
@@ -2258,6 +2450,17 @@
       "sim": 110,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 837,
+        "diferentes": 94
+      },
+      "partido": {
+        "comparaveis": 834,
+        "diferentes": 86
+      },
+      "nota": null
     }
   },
   {
@@ -2398,6 +2601,14 @@
       "sim": 60,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 468,
+        "diferentes": 60
+      },
+      "nota": null
     }
   },
   {
@@ -2491,6 +2702,17 @@
       "sim": 111,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 876,
+        "diferentes": 19
+      },
+      "partido": {
+        "comparaveis": 877,
+        "diferentes": 22
+      },
+      "nota": null
     }
   },
   {
@@ -2594,6 +2816,17 @@
       "sim": 137,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1068,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 1067,
+        "diferentes": 13
+      },
+      "nota": null
     }
   },
   {
@@ -2687,6 +2920,14 @@
       "sim": 79,
       "nao": 62,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 959,
+        "diferentes": 463
+      },
+      "nota": null
     }
   },
   {
@@ -2845,6 +3086,14 @@
       "sim": 134,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 945,
+        "diferentes": 5
+      },
+      "nota": null
     }
   },
   {
@@ -2964,6 +3213,14 @@
       "sim": 83,
       "nao": 13,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 103,
+        "diferentes": 8
+      },
+      "nota": null
     }
   },
   {
@@ -3074,6 +3331,17 @@
       "sim": 23,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 89,
+        "diferentes": 1
+      },
+      "partido": {
+        "comparaveis": 117,
+        "diferentes": 1
+      },
+      "nota": null
     }
   },
   {
@@ -3197,6 +3465,17 @@
       "sim": 44,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 357,
+        "diferentes": 56
+      },
+      "partido": {
+        "comparaveis": 357,
+        "diferentes": 26
+      },
+      "nota": null
     }
   },
   {
@@ -3320,6 +3599,17 @@
       "sim": 130,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 865,
+        "diferentes": 50
+      },
+      "partido": {
+        "comparaveis": 865,
+        "diferentes": 51
+      },
+      "nota": null
     }
   },
   {
@@ -3417,6 +3707,17 @@
       "sim": 103,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 686,
+        "diferentes": 199
+      },
+      "partido": {
+        "comparaveis": 689,
+        "diferentes": 22
+      },
+      "nota": null
     }
   },
   {
@@ -3537,6 +3838,17 @@
       "sim": 157,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1066,
+        "diferentes": 52
+      },
+      "partido": {
+        "comparaveis": 1066,
+        "diferentes": 35
+      },
+      "nota": null
     }
   },
   {
@@ -3637,6 +3949,14 @@
       "sim": 93,
       "nao": 26,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 763,
+        "diferentes": 198
+      },
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -3730,6 +4050,17 @@
       "sim": 101,
       "nao": 37,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 930,
+        "diferentes": 224
+      },
+      "partido": {
+        "comparaveis": 940,
+        "diferentes": 285
+      },
+      "nota": null
     }
   },
   {
@@ -3823,6 +4154,17 @@
       "sim": 133,
       "nao": 20,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 977,
+        "diferentes": 11
+      },
+      "partido": {
+        "comparaveis": 976,
+        "diferentes": 10
+      },
+      "nota": null
     }
   },
   {
@@ -3916,6 +4258,17 @@
       "sim": 127,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 985,
+        "diferentes": 11
+      },
+      "partido": {
+        "comparaveis": 986,
+        "diferentes": 12
+      },
+      "nota": null
     }
   },
   {
@@ -4028,6 +4381,17 @@
       "sim": 50,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 305,
+        "diferentes": 96
+      },
+      "partido": {
+        "comparaveis": 305,
+        "diferentes": 8
+      },
+      "nota": null
     }
   },
   {
@@ -4125,6 +4489,17 @@
       "sim": 72,
       "nao": 57,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 784,
+        "diferentes": 187
+      },
+      "partido": {
+        "comparaveis": 792,
+        "diferentes": 57
+      },
+      "nota": null
     }
   },
   {
@@ -4231,6 +4606,17 @@
       "sim": 81,
       "nao": 32,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 663,
+        "diferentes": 99
+      },
+      "partido": {
+        "comparaveis": 671,
+        "diferentes": 53
+      },
+      "nota": null
     }
   },
   {
@@ -4380,6 +4766,17 @@
       "sim": 130,
       "nao": 12,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 952,
+        "diferentes": 25
+      },
+      "partido": {
+        "comparaveis": 950,
+        "diferentes": 26
+      },
+      "nota": null
     }
   },
   {
@@ -4523,6 +4920,17 @@
       "sim": 14,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 93,
+        "diferentes": 19
+      },
+      "partido": {
+        "comparaveis": 95,
+        "diferentes": 3
+      },
+      "nota": null
     }
   },
   {
@@ -4633,6 +5041,14 @@
       "sim": 106,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 512,
+        "diferentes": 106
+      },
+      "nota": null
     }
   },
   {
@@ -4726,6 +5142,17 @@
       "sim": 118,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 818,
+        "diferentes": 43
+      },
+      "partido": {
+        "comparaveis": 815,
+        "diferentes": 46
+      },
+      "nota": null
     }
   },
   {
@@ -4838,6 +5265,17 @@
       "sim": 127,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 849,
+        "diferentes": 24
+      },
+      "partido": {
+        "comparaveis": 849,
+        "diferentes": 22
+      },
+      "nota": null
     }
   },
   {
@@ -4931,6 +5369,17 @@
       "sim": 150,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1053,
+        "diferentes": 34
+      },
+      "partido": {
+        "comparaveis": 1053,
+        "diferentes": 34
+      },
+      "nota": null
     }
   },
   {
@@ -5063,6 +5512,17 @@
       "sim": 75,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 393,
+        "diferentes": 105
+      },
+      "partido": {
+        "comparaveis": 396,
+        "diferentes": 13
+      },
+      "nota": null
     }
   },
   {
@@ -5156,6 +5616,17 @@
       "sim": 136,
       "nao": 13,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 980,
+        "diferentes": 332
+      },
+      "partido": {
+        "comparaveis": 984,
+        "diferentes": 365
+      },
+      "nota": null
     }
   },
   {
@@ -5223,6 +5694,17 @@
       "sim": 138,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 951,
+        "diferentes": 52
+      },
+      "partido": {
+        "comparaveis": 948,
+        "diferentes": 52
+      },
+      "nota": null
     }
   },
   {
@@ -5323,6 +5805,14 @@
       "sim": 79,
       "nao": 61,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 960,
+        "diferentes": 459
+      },
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -5495,6 +5985,17 @@
       "sim": 132,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 990,
+        "diferentes": 12
+      },
+      "partido": {
+        "comparaveis": 988,
+        "diferentes": 7
+      },
+      "nota": null
     }
   },
   {
@@ -5668,6 +6169,14 @@
       "sim": 102,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 759,
+        "diferentes": 90
+      },
+      "partido": null,
+      "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
     }
   },
   {
@@ -5804,6 +6313,17 @@
       "sim": 20,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 100,
+        "diferentes": 15
+      },
+      "partido": {
+        "comparaveis": 100,
+        "diferentes": 1
+      },
+      "nota": null
     }
   },
   {
@@ -5936,6 +6456,14 @@
       "sim": 104,
       "nao": 1,
       "abstencao": 3
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 657,
+        "diferentes": 45
+      },
+      "nota": null
     }
   },
   {
@@ -6115,6 +6643,17 @@
       "sim": 110,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 767,
+        "diferentes": 254
+      },
+      "partido": {
+        "comparaveis": 769,
+        "diferentes": 51
+      },
+      "nota": null
     }
   },
   {
@@ -6208,6 +6747,17 @@
       "sim": 135,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 927,
+        "diferentes": 266
+      },
+      "partido": {
+        "comparaveis": 936,
+        "diferentes": 27
+      },
+      "nota": null
     }
   },
   {
@@ -6340,6 +6890,17 @@
       "sim": 139,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 994,
+        "diferentes": 55
+      },
+      "partido": {
+        "comparaveis": 994,
+        "diferentes": 55
+      },
+      "nota": null
     }
   },
   {
@@ -6472,6 +7033,14 @@
       "sim": 132,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 825,
+        "diferentes": 80
+      },
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -6591,6 +7160,14 @@
       "sim": 128,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 103,
+        "diferentes": 3
+      },
+      "nota": null
     }
   },
   {
@@ -6710,6 +7287,17 @@
       "sim": 103,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 649,
+        "diferentes": 26
+      },
+      "partido": {
+        "comparaveis": 647,
+        "diferentes": 33
+      },
+      "nota": null
     }
   },
   {
@@ -6803,6 +7391,17 @@
       "sim": 131,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 960,
+        "diferentes": 84
+      },
+      "partido": {
+        "comparaveis": 981,
+        "diferentes": 49
+      },
+      "nota": null
     }
   },
   {
@@ -6896,6 +7495,17 @@
       "sim": 160,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1101,
+        "diferentes": 329
+      },
+      "partido": {
+        "comparaveis": 1109,
+        "diferentes": 39
+      },
+      "nota": null
     }
   },
   {
@@ -7053,6 +7663,17 @@
       "sim": 120,
       "nao": 19,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 908,
+        "diferentes": 7
+      },
+      "partido": {
+        "comparaveis": 907,
+        "diferentes": 5
+      },
+      "nota": null
     }
   },
   {
@@ -7159,6 +7780,14 @@
       "sim": 153,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 1045,
+        "diferentes": 50
+      },
+      "nota": null
     }
   },
   {
@@ -7265,6 +7894,17 @@
       "sim": 115,
       "nao": 9,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 814,
+        "diferentes": 113
+      },
+      "partido": {
+        "comparaveis": 804,
+        "diferentes": 109
+      },
+      "nota": null
     }
   },
   {
@@ -7378,6 +8018,17 @@
       "sim": 25,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 150,
+        "diferentes": 41
+      },
+      "partido": {
+        "comparaveis": 150,
+        "diferentes": 11
+      },
+      "nota": null
     }
   },
   {
@@ -7471,6 +8122,17 @@
       "sim": 149,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1052,
+        "diferentes": 95
+      },
+      "partido": {
+        "comparaveis": 1013,
+        "diferentes": 39
+      },
+      "nota": null
     }
   },
   {
@@ -7577,6 +8239,17 @@
       "sim": 82,
       "nao": 61,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 904,
+        "diferentes": 215
+      },
+      "partido": {
+        "comparaveis": 910,
+        "diferentes": 74
+      },
+      "nota": null
     }
   },
   {
@@ -7683,6 +8356,17 @@
       "sim": 96,
       "nao": 60,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 982,
+        "diferentes": 195
+      },
+      "partido": {
+        "comparaveis": 987,
+        "diferentes": 50
+      },
+      "nota": null
     }
   },
   {
@@ -7815,6 +8499,17 @@
       "sim": 128,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1027,
+        "diferentes": 8
+      },
+      "partido": {
+        "comparaveis": 1028,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -7908,6 +8603,14 @@
       "sim": 126,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 567,
+        "diferentes": 23
+      },
+      "nota": null
     }
   },
   {
@@ -8001,6 +8704,17 @@
       "sim": 142,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1026,
+        "diferentes": 347
+      },
+      "partido": {
+        "comparaveis": 1030,
+        "diferentes": 75
+      },
+      "nota": null
     }
   },
   {
@@ -8094,6 +8808,17 @@
       "sim": 75,
       "nao": 76,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 973,
+        "diferentes": 261
+      },
+      "partido": {
+        "comparaveis": 979,
+        "diferentes": 111
+      },
+      "nota": null
     }
   },
   {
@@ -8187,6 +8912,17 @@
       "sim": 123,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 949,
+        "diferentes": 25
+      },
+      "partido": {
+        "comparaveis": 949,
+        "diferentes": 29
+      },
+      "nota": null
     }
   },
   {
@@ -8293,6 +9029,17 @@
       "sim": 83,
       "nao": 48,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 811,
+        "diferentes": 144
+      },
+      "partido": {
+        "comparaveis": 819,
+        "diferentes": 69
+      },
+      "nota": null
     }
   },
   {
@@ -8386,6 +9133,17 @@
       "sim": 79,
       "nao": 69,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 958,
+        "diferentes": 217
+      },
+      "partido": {
+        "comparaveis": 968,
+        "diferentes": 86
+      },
+      "nota": null
     }
   },
   {
@@ -8512,6 +9270,17 @@
       "sim": 91,
       "nao": 47,
       "abstencao": 4
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 928,
+        "diferentes": 170
+      },
+      "partido": {
+        "comparaveis": 938,
+        "diferentes": 62
+      },
+      "nota": null
     }
   },
   {
@@ -8625,6 +9394,14 @@
       "sim": 62,
       "nao": 24,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 499,
+        "diferentes": 159
+      },
+      "nota": null
     }
   },
   {
@@ -8743,6 +9520,17 @@
       "sim": 58,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 402,
+        "diferentes": 50
+      },
+      "partido": {
+        "comparaveis": 399,
+        "diferentes": 47
+      },
+      "nota": null
     }
   },
   {
@@ -8882,6 +9670,17 @@
       "sim": 37,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 274,
+        "diferentes": 7
+      },
+      "partido": {
+        "comparaveis": 273,
+        "diferentes": 8
+      },
+      "nota": null
     }
   },
   {
@@ -9001,6 +9800,14 @@
       "sim": 137,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 982,
+        "diferentes": 79
+      },
+      "nota": null
     }
   },
   {
@@ -9111,6 +9918,17 @@
       "sim": 62,
       "nao": 77,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 864,
+        "diferentes": 236
+      },
+      "partido": {
+        "comparaveis": 867,
+        "diferentes": 80
+      },
+      "nota": null
     }
   },
   {
@@ -9269,6 +10087,17 @@
       "sim": 119,
       "nao": 26,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 934,
+        "diferentes": 234
+      },
+      "partido": {
+        "comparaveis": 932,
+        "diferentes": 210
+      },
+      "nota": null
     }
   },
   {
@@ -9382,6 +10211,17 @@
       "sim": 129,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 999,
+        "diferentes": 9
+      },
+      "partido": {
+        "comparaveis": 999,
+        "diferentes": 10
+      },
+      "nota": null
     }
   },
   {
@@ -9527,6 +10367,17 @@
       "sim": 127,
       "nao": 24,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 977,
+        "diferentes": 10
+      },
+      "partido": {
+        "comparaveis": 978,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -9620,6 +10471,17 @@
       "sim": 94,
       "nao": 16,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 728,
+        "diferentes": 2
+      },
+      "partido": {
+        "comparaveis": 728,
+        "diferentes": 4
+      },
+      "nota": null
     }
   },
   {
@@ -9726,6 +10588,17 @@
       "sim": 59,
       "nao": 76,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 837,
+        "diferentes": 261
+      },
+      "partido": {
+        "comparaveis": 844,
+        "diferentes": 126
+      },
+      "nota": null
     }
   },
   {
@@ -9819,6 +10692,17 @@
       "sim": 130,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 894,
+        "diferentes": 308
+      },
+      "partido": {
+        "comparaveis": 896,
+        "diferentes": 56
+      },
+      "nota": null
     }
   },
   {
@@ -9912,6 +10796,17 @@
       "sim": 87,
       "nao": 45,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 838,
+        "diferentes": 134
+      },
+      "partido": {
+        "comparaveis": 834,
+        "diferentes": 7
+      },
+      "nota": null
     }
   },
   {
@@ -10035,6 +10930,17 @@
       "sim": 107,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 750,
+        "diferentes": 76
+      },
+      "partido": {
+        "comparaveis": 750,
+        "diferentes": 71
+      },
+      "nota": null
     }
   },
   {
@@ -10163,6 +11069,17 @@
       "sim": 95,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 717,
+        "diferentes": 308
+      },
+      "partido": {
+        "comparaveis": 722,
+        "diferentes": 149
+      },
+      "nota": null
     }
   },
   {
@@ -10322,6 +11239,17 @@
       "sim": 119,
       "nao": 4,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 836,
+        "diferentes": 42
+      },
+      "partido": {
+        "comparaveis": 836,
+        "diferentes": 43
+      },
+      "nota": null
     }
   },
   {
@@ -10452,6 +11380,17 @@
       "sim": 29,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 53,
+        "diferentes": 3
+      },
+      "partido": {
+        "comparaveis": 173,
+        "diferentes": 12
+      },
+      "nota": null
     }
   },
   {
@@ -10558,6 +11497,17 @@
       "sim": 134,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 918,
+        "diferentes": 266
+      },
+      "partido": {
+        "comparaveis": 924,
+        "diferentes": 67
+      },
+      "nota": null
     }
   },
   {
@@ -10676,6 +11626,17 @@
       "sim": 120,
       "nao": 7,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 895,
+        "diferentes": 331
+      },
+      "partido": {
+        "comparaveis": 898,
+        "diferentes": 54
+      },
+      "nota": null
     }
   },
   {
@@ -10821,6 +11782,17 @@
       "sim": 107,
       "nao": 55,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1083,
+        "diferentes": 167
+      },
+      "partido": {
+        "comparaveis": 1071,
+        "diferentes": 15
+      },
+      "nota": null
     }
   },
   {
@@ -10927,6 +11899,17 @@
       "sim": 74,
       "nao": 63,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 838,
+        "diferentes": 207
+      },
+      "partido": {
+        "comparaveis": 841,
+        "diferentes": 63
+      },
+      "nota": null
     }
   },
   {
@@ -11024,6 +12007,17 @@
       "sim": 81,
       "nao": 58,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 901,
+        "diferentes": 218
+      },
+      "partido": {
+        "comparaveis": 908,
+        "diferentes": 453
+      },
+      "nota": null
     }
   },
   {
@@ -11189,6 +12183,17 @@
       "sim": 133,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 909,
+        "diferentes": 270
+      },
+      "partido": {
+        "comparaveis": 915,
+        "diferentes": 28
+      },
+      "nota": null
     }
   },
   {
@@ -11342,6 +12347,17 @@
       "sim": 141,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 974,
+        "diferentes": 57
+      },
+      "partido": {
+        "comparaveis": 969,
+        "diferentes": 57
+      },
+      "nota": null
     }
   },
   {
@@ -11435,6 +12451,14 @@
       "sim": 117,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 103,
+        "diferentes": 2
+      },
+      "nota": null
     }
   },
   {
@@ -11528,6 +12552,17 @@
       "sim": 105,
       "nao": 37,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 923,
+        "diferentes": 247
+      },
+      "partido": {
+        "comparaveis": 921,
+        "diferentes": 243
+      },
+      "nota": null
     }
   },
   {
@@ -11621,6 +12656,17 @@
       "sim": 82,
       "nao": 65,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 56,
+        "diferentes": 6
+      },
+      "partido": {
+        "comparaveis": 966,
+        "diferentes": 447
+      },
+      "nota": null
     }
   },
   {
@@ -11727,6 +12773,17 @@
       "sim": 81,
       "nao": 52,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 893,
+        "diferentes": 194
+      },
+      "partido": {
+        "comparaveis": 903,
+        "diferentes": 43
+      },
+      "nota": null
     }
   },
   {
@@ -11820,6 +12877,17 @@
       "sim": 91,
       "nao": 43,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 844,
+        "diferentes": 138
+      },
+      "partido": {
+        "comparaveis": 850,
+        "diferentes": 43
+      },
+      "nota": null
     }
   },
   {
@@ -11913,6 +12981,17 @@
       "sim": 94,
       "nao": 60,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 979,
+        "diferentes": 206
+      },
+      "partido": {
+        "comparaveis": 990,
+        "diferentes": 56
+      },
+      "nota": null
     }
   },
   {
@@ -12006,6 +13085,14 @@
       "sim": 91,
       "nao": 56,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 985,
+        "diferentes": 401
+      },
+      "nota": null
     }
   },
   {
@@ -12149,6 +13236,17 @@
       "sim": 83,
       "nao": 41,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 799,
+        "diferentes": 179
+      },
+      "partido": {
+        "comparaveis": 809,
+        "diferentes": 372
+      },
+      "nota": null
     }
   },
   {
@@ -12242,6 +13340,14 @@
       "sim": 93,
       "nao": 51,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 995,
+        "diferentes": 280
+      },
+      "nota": null
     }
   },
   {
@@ -12348,6 +13454,17 @@
       "sim": 137,
       "nao": 16,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1005,
+        "diferentes": 229
+      },
+      "partido": {
+        "comparaveis": 1013,
+        "diferentes": 85
+      },
+      "nota": null
     }
   },
   {
@@ -12480,6 +13597,17 @@
       "sim": 137,
       "nao": 14,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 989,
+        "diferentes": 154
+      },
+      "partido": {
+        "comparaveis": 970,
+        "diferentes": 189
+      },
+      "nota": null
     }
   },
   {
@@ -12573,6 +13701,14 @@
       "sim": 112,
       "nao": 23,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 801,
+        "diferentes": 18
+      },
+      "nota": null
     }
   },
   {
@@ -12666,6 +13802,14 @@
       "sim": 127,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 841,
+        "diferentes": 28
+      },
+      "nota": null
     }
   },
   {
@@ -12831,6 +13975,14 @@
       "sim": 126,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 841,
+        "diferentes": 56
+      },
+      "nota": null
     }
   },
   {
@@ -12924,6 +14076,17 @@
       "sim": 94,
       "nao": 16,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 743,
+        "diferentes": 10
+      },
+      "partido": {
+        "comparaveis": 742,
+        "diferentes": 12
+      },
+      "nota": null
     }
   },
   {
@@ -13017,6 +14180,17 @@
       "sim": 120,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 55,
+        "diferentes": 4
+      },
+      "partido": {
+        "comparaveis": 888,
+        "diferentes": 88
+      },
+      "nota": null
     }
   },
   {
@@ -13110,6 +14284,17 @@
       "sim": 123,
       "nao": 38,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1053,
+        "diferentes": 157
+      },
+      "partido": {
+        "comparaveis": 1061,
+        "diferentes": 167
+      },
+      "nota": null
     }
   },
   {
@@ -13272,6 +14457,14 @@
       "sim": 128,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 904,
+        "diferentes": 5
+      },
+      "nota": null
     }
   },
   {
@@ -13365,6 +14558,17 @@
       "sim": 111,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 789,
+        "diferentes": 292
+      },
+      "partido": {
+        "comparaveis": 797,
+        "diferentes": 102
+      },
+      "nota": null
     }
   },
   {
@@ -13471,6 +14675,17 @@
       "sim": 74,
       "nao": 69,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 870,
+        "diferentes": 229
+      },
+      "partido": {
+        "comparaveis": 878,
+        "diferentes": 98
+      },
+      "nota": null
     }
   },
   {
@@ -13577,6 +14792,17 @@
       "sim": 103,
       "nao": 41,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 935,
+        "diferentes": 341
+      },
+      "partido": {
+        "comparaveis": 925,
+        "diferentes": 282
+      },
+      "nota": null
     }
   },
   {
@@ -13687,6 +14913,17 @@
       "sim": 123,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 53,
+        "diferentes": 12
+      },
+      "partido": {
+        "comparaveis": 842,
+        "diferentes": 163
+      },
+      "nota": null
     }
   },
   {
@@ -13780,6 +15017,17 @@
       "sim": 76,
       "nao": 60,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 882,
+        "diferentes": 227
+      },
+      "partido": {
+        "comparaveis": 890,
+        "diferentes": 71
+      },
+      "nota": null
     }
   },
   {
@@ -13916,6 +15164,14 @@
       "sim": 109,
       "nao": 8,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 780,
+        "diferentes": 80
+      },
+      "nota": null
     }
   },
   {
@@ -14064,6 +15320,17 @@
       "sim": 56,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 450,
+        "diferentes": 108
+      },
+      "partido": {
+        "comparaveis": 451,
+        "diferentes": 151
+      },
+      "nota": null
     }
   },
   {
@@ -14181,6 +15448,14 @@
       "sim": 70,
       "nao": 28,
       "abstencao": 5
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 608,
+        "diferentes": 175
+      },
+      "nota": null
     }
   },
   {
@@ -14274,6 +15549,17 @@
       "sim": 150,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 993,
+        "diferentes": 38
+      },
+      "partido": {
+        "comparaveis": 1047,
+        "diferentes": 41
+      },
+      "nota": null
     }
   },
   {
@@ -14367,6 +15653,17 @@
       "sim": 105,
       "nao": 16,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 812,
+        "diferentes": 5
+      },
+      "partido": {
+        "comparaveis": 812,
+        "diferentes": 8
+      },
+      "nota": null
     }
   },
   {
@@ -14460,6 +15757,14 @@
       "sim": 112,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 597,
+        "diferentes": 100
+      },
+      "nota": null
     }
   },
   {
@@ -14553,6 +15858,17 @@
       "sim": 139,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 957,
+        "diferentes": 299
+      },
+      "partido": {
+        "comparaveis": 958,
+        "diferentes": 47
+      },
+      "nota": null
     }
   },
   {
@@ -14669,6 +15985,17 @@
       "sim": 88,
       "nao": 12,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 636,
+        "diferentes": 226
+      },
+      "partido": {
+        "comparaveis": 636,
+        "diferentes": 89
+      },
+      "nota": null
     }
   },
   {
@@ -14762,6 +16089,17 @@
       "sim": 77,
       "nao": 69,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 899,
+        "diferentes": 223
+      },
+      "partido": {
+        "comparaveis": 906,
+        "diferentes": 63
+      },
+      "nota": null
     }
   },
   {
@@ -14855,6 +16193,17 @@
       "sim": 98,
       "nao": 12,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 750,
+        "diferentes": 143
+      },
+      "partido": {
+        "comparaveis": 780,
+        "diferentes": 122
+      },
+      "nota": null
     }
   },
   {
@@ -14974,6 +16323,17 @@
       "sim": 72,
       "nao": 34,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 694,
+        "diferentes": 134
+      },
+      "partido": {
+        "comparaveis": 698,
+        "diferentes": 36
+      },
+      "nota": null
     }
   },
   {
@@ -15067,6 +16427,17 @@
       "sim": 98,
       "nao": 52,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1027,
+        "diferentes": 226
+      },
+      "partido": {
+        "comparaveis": 1039,
+        "diferentes": 431
+      },
+      "nota": null
     }
   },
   {
@@ -15173,6 +16544,14 @@
       "sim": 135,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 993,
+        "diferentes": 83
+      },
+      "nota": null
     }
   },
   {
@@ -15273,6 +16652,14 @@
       "sim": 154,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 1064,
+        "diferentes": 98
+      },
+      "nota": null
     }
   },
   {
@@ -15373,6 +16760,17 @@
       "sim": 82,
       "nao": 78,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1104,
+        "diferentes": 610
+      },
+      "partido": {
+        "comparaveis": 1105,
+        "diferentes": 628
+      },
+      "nota": null
     }
   },
   {
@@ -15466,6 +16864,17 @@
       "sim": 79,
       "nao": 79,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1010,
+        "diferentes": 275
+      },
+      "partido": {
+        "comparaveis": 1018,
+        "diferentes": 104
+      },
+      "nota": null
     }
   },
   {
@@ -15559,6 +16968,17 @@
       "sim": 126,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1002,
+        "diferentes": 17
+      },
+      "partido": {
+        "comparaveis": 1003,
+        "diferentes": 23
+      },
+      "nota": null
     }
   },
   {
@@ -15660,6 +17080,17 @@
       "sim": 78,
       "nao": 17,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 540,
+        "diferentes": 68
+      },
+      "partido": {
+        "comparaveis": 544,
+        "diferentes": 100
+      },
+      "nota": null
     }
   },
   {
@@ -15792,6 +17223,17 @@
       "sim": 104,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 657,
+        "diferentes": 183
+      },
+      "partido": {
+        "comparaveis": 661,
+        "diferentes": 59
+      },
+      "nota": null
     }
   },
   {
@@ -15885,6 +17327,17 @@
       "sim": 143,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 973,
+        "diferentes": 294
+      },
+      "partido": {
+        "comparaveis": 975,
+        "diferentes": 41
+      },
+      "nota": null
     }
   },
   {
@@ -16004,6 +17457,17 @@
       "sim": 117,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 853,
+        "diferentes": 146
+      },
+      "partido": {
+        "comparaveis": 892,
+        "diferentes": 152
+      },
+      "nota": null
     }
   },
   {
@@ -16171,6 +17635,17 @@
       "sim": 132,
       "nao": 17,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 993,
+        "diferentes": 225
+      },
+      "partido": {
+        "comparaveis": 1001,
+        "diferentes": 131
+      },
+      "nota": null
     }
   },
   {
@@ -16264,6 +17739,17 @@
       "sim": 129,
       "nao": 20,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1020,
+        "diferentes": 16
+      },
+      "partido": {
+        "comparaveis": 1019,
+        "diferentes": 13
+      },
+      "nota": null
     }
   },
   {
@@ -16396,6 +17882,17 @@
       "sim": 130,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 924,
+        "diferentes": 241
+      },
+      "partido": {
+        "comparaveis": 932,
+        "diferentes": 38
+      },
+      "nota": null
     }
   },
   {
@@ -16489,6 +17986,17 @@
       "sim": 127,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 938,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 936,
+        "diferentes": 9
+      },
+      "nota": null
     }
   },
   {
@@ -16629,6 +18137,17 @@
       "sim": 92,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 584,
+        "diferentes": 201
+      },
+      "partido": {
+        "comparaveis": 589,
+        "diferentes": 37
+      },
+      "nota": null
     }
   },
   {
@@ -16761,6 +18280,17 @@
       "sim": 102,
       "nao": 38,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 871,
+        "diferentes": 133
+      },
+      "partido": {
+        "comparaveis": 881,
+        "diferentes": 49
+      },
+      "nota": null
     }
   },
   {
@@ -16854,6 +18384,17 @@
       "sim": 107,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 853,
+        "diferentes": 55
+      },
+      "partido": {
+        "comparaveis": 851,
+        "diferentes": 61
+      },
+      "nota": null
     }
   },
   {
@@ -16964,6 +18505,17 @@
       "sim": 50,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 275,
+        "diferentes": 56
+      },
+      "partido": {
+        "comparaveis": 280,
+        "diferentes": 1
+      },
+      "nota": null
     }
   },
   {
@@ -17061,6 +18613,17 @@
       "sim": 30,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 199,
+        "diferentes": 23
+      },
+      "partido": {
+        "comparaveis": 199,
+        "diferentes": 10
+      },
+      "nota": null
     }
   },
   {
@@ -17210,6 +18773,17 @@
       "sim": 44,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 231,
+        "diferentes": 91
+      },
+      "partido": {
+        "comparaveis": 231,
+        "diferentes": 43
+      },
+      "nota": null
     }
   },
   {
@@ -17303,6 +18877,14 @@
       "sim": 86,
       "nao": 51,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 883,
+        "diferentes": 369
+      },
+      "nota": null
     }
   },
   {
@@ -17396,6 +18978,17 @@
       "sim": 135,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1022,
+        "diferentes": 20
+      },
+      "partido": {
+        "comparaveis": 1020,
+        "diferentes": 17
+      },
+      "nota": null
     }
   },
   {
@@ -17502,6 +19095,11 @@
       "sim": 82,
       "nao": 47,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -17595,6 +19193,17 @@
       "sim": 102,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 806,
+        "diferentes": 218
+      },
+      "partido": {
+        "comparaveis": 812,
+        "diferentes": 109
+      },
+      "nota": null
     }
   },
   {
@@ -17708,6 +19317,17 @@
       "sim": 79,
       "nao": 57,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 862,
+        "diferentes": 187
+      },
+      "partido": {
+        "comparaveis": 868,
+        "diferentes": 57
+      },
+      "nota": null
     }
   },
   {
@@ -17814,6 +19434,17 @@
       "sim": 109,
       "nao": 40,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 989,
+        "diferentes": 218
+      },
+      "partido": {
+        "comparaveis": 996,
+        "diferentes": 267
+      },
+      "nota": null
     }
   },
   {
@@ -17907,6 +19538,17 @@
       "sim": 114,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 841,
+        "diferentes": 276
+      },
+      "partido": {
+        "comparaveis": 844,
+        "diferentes": 65
+      },
+      "nota": null
     }
   },
   {
@@ -18020,6 +19662,14 @@
       "sim": 103,
       "nao": 39,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 972,
+        "diferentes": 278
+      },
+      "nota": null
     }
   },
   {
@@ -18113,6 +19763,17 @@
       "sim": 99,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 658,
+        "diferentes": 53
+      },
+      "partido": {
+        "comparaveis": 658,
+        "diferentes": 42
+      },
+      "nota": null
     }
   },
   {
@@ -18213,6 +19874,17 @@
       "sim": 124,
       "nao": 25,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 947,
+        "diferentes": 140
+      },
+      "partido": {
+        "comparaveis": 959,
+        "diferentes": 144
+      },
+      "nota": null
     }
   },
   {
@@ -18306,6 +19978,17 @@
       "sim": 97,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 716,
+        "diferentes": 79
+      },
+      "partido": {
+        "comparaveis": 710,
+        "diferentes": 70
+      },
+      "nota": null
     }
   },
   {
@@ -18399,6 +20082,17 @@
       "sim": 98,
       "nao": 30,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 895,
+        "diferentes": 109
+      },
+      "partido": {
+        "comparaveis": 891,
+        "diferentes": 123
+      },
+      "nota": null
     }
   },
   {
@@ -18517,6 +20211,17 @@
       "sim": 67,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 424,
+        "diferentes": 32
+      },
+      "partido": {
+        "comparaveis": 446,
+        "diferentes": 20
+      },
+      "nota": null
     }
   },
   {
@@ -18662,6 +20367,17 @@
       "sim": 132,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 894,
+        "diferentes": 275
+      },
+      "partido": {
+        "comparaveis": 901,
+        "diferentes": 35
+      },
+      "nota": null
     }
   },
   {
@@ -18759,6 +20475,14 @@
       "sim": 106,
       "nao": 26,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 819,
+        "diferentes": 228
+      },
+      "nota": null
     }
   },
   {
@@ -18918,6 +20642,17 @@
       "sim": 70,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 519,
+        "diferentes": 58
+      },
+      "partido": {
+        "comparaveis": 513,
+        "diferentes": 56
+      },
+      "nota": null
     }
   },
   {
@@ -19028,6 +20763,17 @@
       "sim": 94,
       "nao": 36,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 811,
+        "diferentes": 168
+      },
+      "partido": {
+        "comparaveis": 815,
+        "diferentes": 89
+      },
+      "nota": null
     }
   },
   {
@@ -19147,6 +20893,14 @@
       "sim": 45,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 323,
+        "diferentes": 13
+      },
+      "nota": null
     }
   },
   {
@@ -19253,6 +21007,17 @@
       "sim": 114,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 803,
+        "diferentes": 87
+      },
+      "partido": {
+        "comparaveis": 799,
+        "diferentes": 71
+      },
+      "nota": null
     }
   },
   {
@@ -19359,6 +21124,17 @@
       "sim": 79,
       "nao": 29,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 706,
+        "diferentes": 110
+      },
+      "partido": {
+        "comparaveis": 708,
+        "diferentes": 28
+      },
+      "nota": null
     }
   },
   {
@@ -19452,6 +21228,14 @@
       "sim": 67,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 463,
+        "diferentes": 8
+      },
+      "nota": null
     }
   },
   {
@@ -19545,6 +21329,17 @@
       "sim": 133,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 932,
+        "diferentes": 59
+      },
+      "partido": {
+        "comparaveis": 932,
+        "diferentes": 40
+      },
+      "nota": null
     }
   },
   {
@@ -19638,6 +21433,17 @@
       "sim": 81,
       "nao": 40,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 798,
+        "diferentes": 116
+      },
+      "partido": {
+        "comparaveis": 797,
+        "diferentes": 4
+      },
+      "nota": null
     }
   },
   {
@@ -19770,6 +21576,17 @@
       "sim": 127,
       "nao": 29,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1076,
+        "diferentes": 40
+      },
+      "partido": {
+        "comparaveis": 1076,
+        "diferentes": 45
+      },
+      "nota": null
     }
   },
   {
@@ -19910,6 +21727,17 @@
       "sim": 86,
       "nao": 55,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 911,
+        "diferentes": 173
+      },
+      "partido": {
+        "comparaveis": 918,
+        "diferentes": 37
+      },
+      "nota": null
     }
   },
   {
@@ -20028,6 +21856,17 @@
       "sim": 75,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 510,
+        "diferentes": 44
+      },
+      "partido": {
+        "comparaveis": 510,
+        "diferentes": 44
+      },
+      "nota": null
     }
   },
   {
@@ -20162,6 +22001,17 @@
       "sim": 93,
       "nao": 2,
       "abstencao": 12
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 588,
+        "diferentes": 44
+      },
+      "partido": {
+        "comparaveis": 585,
+        "diferentes": 40
+      },
+      "nota": null
     }
   },
   {
@@ -20281,6 +22131,17 @@
       "sim": 65,
       "nao": 73,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 909,
+        "diferentes": 281
+      },
+      "partido": {
+        "comparaveis": 916,
+        "diferentes": 525
+      },
+      "nota": null
     }
   },
   {
@@ -20407,6 +22268,14 @@
       "sim": 17,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 131,
+        "diferentes": 44
+      },
+      "nota": null
     }
   },
   {
@@ -20504,6 +22373,17 @@
       "sim": 114,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 737,
+        "diferentes": 273
+      },
+      "partido": {
+        "comparaveis": 739,
+        "diferentes": 28
+      },
+      "nota": null
     }
   },
   {
@@ -20648,6 +22528,17 @@
       "sim": 70,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 442,
+        "diferentes": 127
+      },
+      "partido": {
+        "comparaveis": 445,
+        "diferentes": 22
+      },
+      "nota": null
     }
   },
   {
@@ -20754,6 +22645,14 @@
       "sim": 95,
       "nao": 54,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 1001,
+        "diferentes": 326
+      },
+      "nota": null
     }
   },
   {
@@ -20847,6 +22746,17 @@
       "sim": 120,
       "nao": 32,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 985,
+        "diferentes": 282
+      },
+      "partido": {
+        "comparaveis": 984,
+        "diferentes": 273
+      },
+      "nota": null
     }
   },
   {
@@ -20944,6 +22854,14 @@
       "sim": 108,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 741,
+        "diferentes": 40
+      },
+      "nota": null
     }
   },
   {
@@ -21063,6 +22981,17 @@
       "sim": 124,
       "nao": 8,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 820,
+        "diferentes": 259
+      },
+      "partido": {
+        "comparaveis": 864,
+        "diferentes": 58
+      },
+      "nota": null
     }
   },
   {
@@ -21164,6 +23093,17 @@
       "sim": 103,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 54,
+        "diferentes": 24
+      },
+      "partido": {
+        "comparaveis": 714,
+        "diferentes": 81
+      },
+      "nota": null
     }
   },
   {
@@ -21295,6 +23235,17 @@
       "sim": 121,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 833,
+        "diferentes": 62
+      },
+      "partido": {
+        "comparaveis": 836,
+        "diferentes": 51
+      },
+      "nota": null
     }
   },
   {
@@ -21401,6 +23352,17 @@
       "sim": 103,
       "nao": 41,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 57,
+        "diferentes": 9
+      },
+      "partido": {
+        "comparaveis": 979,
+        "diferentes": 352
+      },
+      "nota": null
     }
   },
   {
@@ -21533,6 +23495,17 @@
       "sim": 146,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 976,
+        "diferentes": 94
+      },
+      "partido": {
+        "comparaveis": 973,
+        "diferentes": 64
+      },
+      "nota": null
     }
   },
   {
@@ -21646,6 +23619,17 @@
       "sim": 83,
       "nao": 53,
       "abstencao": 3
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 869,
+        "diferentes": 139
+      },
+      "partido": {
+        "comparaveis": 865,
+        "diferentes": 17
+      },
+      "nota": null
     }
   },
   {
@@ -21743,6 +23727,17 @@
       "sim": 127,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 56,
+        "diferentes": 12
+      },
+      "partido": {
+        "comparaveis": 889,
+        "diferentes": 48
+      },
+      "nota": null
     }
   },
   {
@@ -21912,6 +23907,14 @@
       "sim": 122,
       "nao": 1,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 831,
+        "diferentes": 26
+      },
+      "nota": null
     }
   },
   {
@@ -22005,6 +24008,17 @@
       "sim": 115,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 908,
+        "diferentes": 3
+      },
+      "partido": {
+        "comparaveis": 909,
+        "diferentes": 8
+      },
+      "nota": null
     }
   },
   {
@@ -22132,6 +24146,17 @@
       "sim": 133,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 885,
+        "diferentes": 185
+      },
+      "partido": {
+        "comparaveis": 891,
+        "diferentes": 35
+      },
+      "nota": null
     }
   },
   {
@@ -22238,6 +24263,17 @@
       "sim": 90,
       "nao": 33,
       "abstencao": 3
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 702,
+        "diferentes": 112
+      },
+      "partido": {
+        "comparaveis": 712,
+        "diferentes": 96
+      },
+      "nota": null
     }
   },
   {
@@ -22344,6 +24380,17 @@
       "sim": 66,
       "nao": 42,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 635,
+        "diferentes": 148
+      },
+      "partido": {
+        "comparaveis": 639,
+        "diferentes": 46
+      },
+      "nota": null
     }
   },
   {
@@ -22437,6 +24484,17 @@
       "sim": 92,
       "nao": 56,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 950,
+        "diferentes": 191
+      },
+      "partido": {
+        "comparaveis": 959,
+        "diferentes": 47
+      },
+      "nota": null
     }
   },
   {
@@ -22569,6 +24627,17 @@
       "sim": 111,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 825,
+        "diferentes": 67
+      },
+      "partido": {
+        "comparaveis": 823,
+        "diferentes": 55
+      },
+      "nota": null
     }
   },
   {
@@ -22696,6 +24765,17 @@
       "sim": 125,
       "nao": 20,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1011,
+        "diferentes": 24
+      },
+      "partido": {
+        "comparaveis": 1009,
+        "diferentes": 20
+      },
+      "nota": null
     }
   },
   {
@@ -22789,6 +24869,17 @@
       "sim": 125,
       "nao": 17,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 941,
+        "diferentes": 14
+      },
+      "partido": {
+        "comparaveis": 939,
+        "diferentes": 9
+      },
+      "nota": null
     }
   },
   {
@@ -22882,6 +24973,17 @@
       "sim": 122,
       "nao": 25,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 992,
+        "diferentes": 185
+      },
+      "partido": {
+        "comparaveis": 991,
+        "diferentes": 186
+      },
+      "nota": null
     }
   },
   {
@@ -22999,6 +25101,11 @@
       "sim": 93,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "sem voto Sim/Não no Plenário"
     }
   },
   {
@@ -23092,6 +25199,17 @@
       "sim": 139,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 980,
+        "diferentes": 32
+      },
+      "partido": {
+        "comparaveis": 980,
+        "diferentes": 32
+      },
+      "nota": null
     }
   },
   {
@@ -23185,6 +25303,17 @@
       "sim": 152,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 985,
+        "diferentes": 30
+      },
+      "partido": {
+        "comparaveis": 1043,
+        "diferentes": 35
+      },
+      "nota": null
     }
   },
   {
@@ -23278,6 +25407,17 @@
       "sim": 151,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1056,
+        "diferentes": 384
+      },
+      "partido": {
+        "comparaveis": 1060,
+        "diferentes": 74
+      },
+      "nota": null
     }
   },
   {
@@ -23384,6 +25524,17 @@
       "sim": 79,
       "nao": 60,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 912,
+        "diferentes": 224
+      },
+      "partido": {
+        "comparaveis": 919,
+        "diferentes": 91
+      },
+      "nota": null
     }
   },
   {
@@ -23477,6 +25628,17 @@
       "sim": 101,
       "nao": 49,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 949,
+        "diferentes": 167
+      },
+      "partido": {
+        "comparaveis": 958,
+        "diferentes": 42
+      },
+      "nota": null
     }
   },
   {
@@ -23615,6 +25777,17 @@
       "sim": 71,
       "nao": 45,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 791,
+        "diferentes": 368
+      },
+      "partido": {
+        "comparaveis": 782,
+        "diferentes": 332
+      },
+      "nota": null
     }
   },
   {
@@ -23712,6 +25885,14 @@
       "sim": 96,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 703,
+        "diferentes": 52
+      },
+      "nota": null
     }
   },
   {
@@ -23875,6 +26056,17 @@
       "sim": 134,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 944,
+        "diferentes": 110
+      },
+      "partido": {
+        "comparaveis": 954,
+        "diferentes": 101
+      },
+      "nota": null
     }
   },
   {
@@ -23981,6 +26173,17 @@
       "sim": 141,
       "nao": 15,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 983,
+        "diferentes": 61
+      },
+      "partido": {
+        "comparaveis": 1037,
+        "diferentes": 36
+      },
+      "nota": null
     }
   },
   {
@@ -24094,6 +26297,17 @@
       "sim": 120,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 828,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 828,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -24226,6 +26440,17 @@
       "sim": 53,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 303,
+        "diferentes": 50
+      },
+      "partido": {
+        "comparaveis": 302,
+        "diferentes": 42
+      },
+      "nota": null
     }
   },
   {
@@ -24358,6 +26583,11 @@
       "sim": 0,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "sem voto Sim/Não no Plenário"
     }
   },
   {
@@ -24451,6 +26681,17 @@
       "sim": 148,
       "nao": 11,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1034,
+        "diferentes": 397
+      },
+      "partido": {
+        "comparaveis": 1038,
+        "diferentes": 93
+      },
+      "nota": null
     }
   },
   {
@@ -24557,6 +26798,14 @@
       "sim": 61,
       "nao": 90,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 998,
+        "diferentes": 598
+      },
+      "partido": null,
+      "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
     }
   },
   {
@@ -24654,6 +26903,17 @@
       "sim": 70,
       "nao": 58,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 799,
+        "diferentes": 214
+      },
+      "partido": {
+        "comparaveis": 805,
+        "diferentes": 71
+      },
+      "nota": null
     }
   },
   {
@@ -24786,6 +27046,17 @@
       "sim": 86,
       "nao": 53,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 924,
+        "diferentes": 203
+      },
+      "partido": {
+        "comparaveis": 927,
+        "diferentes": 66
+      },
+      "nota": null
     }
   },
   {
@@ -24943,6 +27214,17 @@
       "sim": 68,
       "nao": 57,
       "abstencao": 4
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 793,
+        "diferentes": 159
+      },
+      "partido": {
+        "comparaveis": 791,
+        "diferentes": 19
+      },
+      "nota": null
     }
   },
   {
@@ -25053,6 +27335,17 @@
       "sim": 85,
       "nao": 9,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 583,
+        "diferentes": 183
+      },
+      "partido": {
+        "comparaveis": 586,
+        "diferentes": 64
+      },
+      "nota": null
     }
   },
   {
@@ -25163,6 +27456,17 @@
       "sim": 57,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 434,
+        "diferentes": 6
+      },
+      "partido": {
+        "comparaveis": 434,
+        "diferentes": 7
+      },
+      "nota": null
     }
   },
   {
@@ -25273,6 +27577,14 @@
       "sim": 86,
       "nao": 31,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 539,
+        "diferentes": 156
+      },
+      "nota": null
     }
   },
   {
@@ -25391,6 +27703,17 @@
       "sim": 8,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 114,
+        "diferentes": 25
+      },
+      "partido": {
+        "comparaveis": 115,
+        "diferentes": 51
+      },
+      "nota": null
     }
   },
   {
@@ -25484,6 +27807,17 @@
       "sim": 134,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 959,
+        "diferentes": 97
+      },
+      "partido": {
+        "comparaveis": 961,
+        "diferentes": 81
+      },
+      "nota": null
     }
   },
   {
@@ -25577,6 +27911,17 @@
       "sim": 71,
       "nao": 75,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 916,
+        "diferentes": 251
+      },
+      "partido": {
+        "comparaveis": 923,
+        "diferentes": 81
+      },
+      "nota": null
     }
   },
   {
@@ -25683,6 +28028,17 @@
       "sim": 146,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 963,
+        "diferentes": 34
+      },
+      "partido": {
+        "comparaveis": 963,
+        "diferentes": 21
+      },
+      "nota": null
     }
   },
   {
@@ -25796,6 +28152,17 @@
       "sim": 146,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1010,
+        "diferentes": 104
+      },
+      "partido": {
+        "comparaveis": 1002,
+        "diferentes": 97
+      },
+      "nota": null
     }
   },
   {
@@ -25915,6 +28282,17 @@
       "sim": 89,
       "nao": 12,
       "abstencao": 4
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 638,
+        "diferentes": 67
+      },
+      "partido": {
+        "comparaveis": 637,
+        "diferentes": 42
+      },
+      "nota": null
     }
   },
   {
@@ -26034,6 +28412,17 @@
       "sim": 129,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 994,
+        "diferentes": 10
+      },
+      "partido": {
+        "comparaveis": 995,
+        "diferentes": 13
+      },
+      "nota": null
     }
   },
   {
@@ -26127,6 +28516,17 @@
       "sim": 99,
       "nao": 3,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 684,
+        "diferentes": 63
+      },
+      "partido": {
+        "comparaveis": 680,
+        "diferentes": 45
+      },
+      "nota": null
     }
   },
   {
@@ -26233,6 +28633,17 @@
       "sim": 76,
       "nao": 48,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 766,
+        "diferentes": 144
+      },
+      "partido": {
+        "comparaveis": 770,
+        "diferentes": 31
+      },
+      "nota": null
     }
   },
   {
@@ -26326,6 +28737,17 @@
       "sim": 127,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 837,
+        "diferentes": 50
+      },
+      "partido": {
+        "comparaveis": 883,
+        "diferentes": 44
+      },
+      "nota": null
     }
   },
   {
@@ -26432,6 +28854,17 @@
       "sim": 104,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 749,
+        "diferentes": 53
+      },
+      "partido": {
+        "comparaveis": 749,
+        "diferentes": 58
+      },
+      "nota": null
     }
   },
   {
@@ -26577,6 +29010,17 @@
       "sim": 84,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 543,
+        "diferentes": 72
+      },
+      "partido": {
+        "comparaveis": 542,
+        "diferentes": 70
+      },
+      "nota": null
     }
   },
   {
@@ -26742,6 +29186,17 @@
       "sim": 92,
       "nao": 13,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 720,
+        "diferentes": 210
+      },
+      "partido": {
+        "comparaveis": 724,
+        "diferentes": 119
+      },
+      "nota": null
     }
   },
   {
@@ -26874,6 +29329,17 @@
       "sim": 50,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 342,
+        "diferentes": 6
+      },
+      "partido": {
+        "comparaveis": 342,
+        "diferentes": 6
+      },
+      "nota": null
     }
   },
   {
@@ -26971,6 +29437,17 @@
       "sim": 123,
       "nao": 11,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 861,
+        "diferentes": 152
+      },
+      "partido": {
+        "comparaveis": 870,
+        "diferentes": 262
+      },
+      "nota": null
     }
   },
   {
@@ -27081,6 +29558,17 @@
       "sim": 66,
       "nao": 13,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 574,
+        "diferentes": 41
+      },
+      "partido": {
+        "comparaveis": 573,
+        "diferentes": 38
+      },
+      "nota": null
     }
   },
   {
@@ -27187,6 +29675,17 @@
       "sim": 147,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 890,
+        "diferentes": 289
+      },
+      "partido": {
+        "comparaveis": 934,
+        "diferentes": 49
+      },
+      "nota": null
     }
   },
   {
@@ -27307,6 +29806,14 @@
       "sim": 13,
       "nao": 0,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 52,
+        "diferentes": 1
+      },
+      "nota": null
     }
   },
   {
@@ -27400,6 +29907,17 @@
       "sim": 100,
       "nao": 36,
       "abstencao": 4
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 881,
+        "diferentes": 208
+      },
+      "partido": {
+        "comparaveis": 890,
+        "diferentes": 233
+      },
+      "nota": null
     }
   },
   {
@@ -27506,6 +30024,17 @@
       "sim": 55,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 330,
+        "diferentes": 24
+      },
+      "partido": {
+        "comparaveis": 329,
+        "diferentes": 19
+      },
+      "nota": null
     }
   },
   {
@@ -27573,6 +30102,11 @@
       "sim": 8,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -27666,6 +30200,17 @@
       "sim": 133,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1000,
+        "diferentes": 8
+      },
+      "partido": {
+        "comparaveis": 999,
+        "diferentes": 6
+      },
+      "nota": null
     }
   },
   {
@@ -27759,6 +30304,17 @@
       "sim": 133,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 872,
+        "diferentes": 63
+      },
+      "partido": {
+        "comparaveis": 867,
+        "diferentes": 58
+      },
+      "nota": null
     }
   },
   {
@@ -27852,6 +30408,17 @@
       "sim": 136,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1061,
+        "diferentes": 10
+      },
+      "partido": {
+        "comparaveis": 1060,
+        "diferentes": 9
+      },
+      "nota": null
     }
   },
   {
@@ -27945,6 +30512,17 @@
       "sim": 118,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 565,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 647,
+        "diferentes": 17
+      },
+      "nota": null
     }
   },
   {
@@ -28111,6 +30689,14 @@
       "sim": 139,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 955,
+        "diferentes": 5
+      },
+      "nota": null
     }
   },
   {
@@ -28208,6 +30794,17 @@
       "sim": 128,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 810,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 810,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -28370,6 +30967,17 @@
       "sim": 100,
       "nao": 47,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 926,
+        "diferentes": 158
+      },
+      "partido": {
+        "comparaveis": 928,
+        "diferentes": 59
+      },
+      "nota": null
     }
   },
   {
@@ -28489,6 +31097,17 @@
       "sim": 113,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 872,
+        "diferentes": 18
+      },
+      "partido": {
+        "comparaveis": 872,
+        "diferentes": 18
+      },
+      "nota": null
     }
   },
   {
@@ -28638,6 +31257,17 @@
       "sim": 99,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 599,
+        "diferentes": 226
+      },
+      "partido": {
+        "comparaveis": 601,
+        "diferentes": 342
+      },
+      "nota": null
     }
   },
   {
@@ -28731,6 +31361,17 @@
       "sim": 66,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 377,
+        "diferentes": 26
+      },
+      "partido": {
+        "comparaveis": 377,
+        "diferentes": 25
+      },
+      "nota": null
     }
   },
   {
@@ -28857,6 +31498,17 @@
       "sim": 105,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 876,
+        "diferentes": 18
+      },
+      "partido": {
+        "comparaveis": 875,
+        "diferentes": 20
+      },
+      "nota": null
     }
   },
   {
@@ -28989,6 +31641,17 @@
       "sim": 138,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 905,
+        "diferentes": 267
+      },
+      "partido": {
+        "comparaveis": 912,
+        "diferentes": 66
+      },
+      "nota": null
     }
   },
   {
@@ -29108,6 +31771,17 @@
       "sim": 102,
       "nao": 51,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 968,
+        "diferentes": 187
+      },
+      "partido": {
+        "comparaveis": 976,
+        "diferentes": 102
+      },
+      "nota": null
     }
   },
   {
@@ -29214,6 +31888,17 @@
       "sim": 139,
       "nao": 6,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1013,
+        "diferentes": 79
+      },
+      "partido": {
+        "comparaveis": 1009,
+        "diferentes": 51
+      },
+      "nota": null
     }
   },
   {
@@ -29307,6 +31992,11 @@
       "sim": 11,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -29413,6 +32103,17 @@
       "sim": 150,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1031,
+        "diferentes": 19
+      },
+      "partido": {
+        "comparaveis": 1030,
+        "diferentes": 20
+      },
+      "nota": null
     }
   },
   {
@@ -29523,6 +32224,17 @@
       "sim": 126,
       "nao": 6,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 843,
+        "diferentes": 69
+      },
+      "partido": {
+        "comparaveis": 848,
+        "diferentes": 64
+      },
+      "nota": null
     }
   },
   {
@@ -29642,6 +32354,17 @@
       "sim": 122,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 906,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 905,
+        "diferentes": 10
+      },
+      "nota": null
     }
   },
   {
@@ -29787,6 +32510,17 @@
       "sim": 107,
       "nao": 16,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 758,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 756,
+        "diferentes": 12
+      },
+      "nota": null
     }
   },
   {
@@ -29929,6 +32663,11 @@
       "sim": 5,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -30035,6 +32774,17 @@
       "sim": 75,
       "nao": 50,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 837,
+        "diferentes": 176
+      },
+      "partido": {
+        "comparaveis": 844,
+        "diferentes": 55
+      },
+      "nota": null
     }
   },
   {
@@ -30141,6 +32891,17 @@
       "sim": 92,
       "nao": 5,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 269,
+        "diferentes": 63
+      },
+      "partido": {
+        "comparaveis": 660,
+        "diferentes": 47
+      },
+      "nota": null
     }
   },
   {
@@ -30300,6 +33061,17 @@
       "sim": 80,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 559,
+        "diferentes": 22
+      },
+      "partido": {
+        "comparaveis": 557,
+        "diferentes": 27
+      },
+      "nota": null
     }
   },
   {
@@ -30472,6 +33244,14 @@
       "sim": 129,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 822,
+        "diferentes": 45
+      },
+      "nota": null
     }
   },
   {
@@ -30582,6 +33362,17 @@
       "sim": 115,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 920,
+        "diferentes": 19
+      },
+      "partido": {
+        "comparaveis": 920,
+        "diferentes": 18
+      },
+      "nota": null
     }
   },
   {
@@ -30675,6 +33466,17 @@
       "sim": 145,
       "nao": 17,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1091,
+        "diferentes": 61
+      },
+      "partido": {
+        "comparaveis": 1088,
+        "diferentes": 39
+      },
+      "nota": null
     }
   },
   {
@@ -30797,6 +33599,17 @@
       "sim": 80,
       "nao": 16,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 530,
+        "diferentes": 68
+      },
+      "partido": {
+        "comparaveis": 534,
+        "diferentes": 98
+      },
+      "nota": null
     }
   },
   {
@@ -30903,6 +33716,17 @@
       "sim": 123,
       "nao": 12,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 807,
+        "diferentes": 201
+      },
+      "partido": {
+        "comparaveis": 851,
+        "diferentes": 97
+      },
+      "nota": null
     }
   },
   {
@@ -31017,6 +33841,17 @@
       "sim": 92,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 659,
+        "diferentes": 54
+      },
+      "partido": {
+        "comparaveis": 660,
+        "diferentes": 53
+      },
+      "nota": null
     }
   },
   {
@@ -31110,6 +33945,17 @@
       "sim": 64,
       "nao": 67,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 797,
+        "diferentes": 242
+      },
+      "partido": {
+        "comparaveis": 802,
+        "diferentes": 95
+      },
+      "nota": null
     }
   },
   {
@@ -31203,6 +34049,17 @@
       "sim": 120,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 908,
+        "diferentes": 24
+      },
+      "partido": {
+        "comparaveis": 908,
+        "diferentes": 26
+      },
+      "nota": null
     }
   },
   {
@@ -31300,6 +34157,17 @@
       "sim": 108,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 749,
+        "diferentes": 220
+      },
+      "partido": {
+        "comparaveis": 756,
+        "diferentes": 17
+      },
+      "nota": null
     }
   },
   {
@@ -31465,6 +34333,17 @@
       "sim": 121,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 801,
+        "diferentes": 263
+      },
+      "partido": {
+        "comparaveis": 804,
+        "diferentes": 51
+      },
+      "nota": null
     }
   },
   {
@@ -31587,6 +34466,17 @@
       "sim": 114,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 762,
+        "diferentes": 25
+      },
+      "partido": {
+        "comparaveis": 761,
+        "diferentes": 27
+      },
+      "nota": null
     }
   },
   {
@@ -31751,6 +34641,17 @@
       "sim": 105,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 763,
+        "diferentes": 240
+      },
+      "partido": {
+        "comparaveis": 771,
+        "diferentes": 27
+      },
+      "nota": null
     }
   },
   {
@@ -31865,6 +34766,17 @@
       "sim": 148,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 58,
+        "diferentes": 2
+      },
+      "partido": {
+        "comparaveis": 983,
+        "diferentes": 41
+      },
+      "nota": null
     }
   },
   {
@@ -31975,6 +34887,17 @@
       "sim": 62,
       "nao": 73,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 827,
+        "diferentes": 239
+      },
+      "partido": {
+        "comparaveis": 833,
+        "diferentes": 92
+      },
+      "nota": null
     }
   },
   {
@@ -32081,6 +35004,17 @@
       "sim": 126,
       "nao": 17,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 923,
+        "diferentes": 247
+      },
+      "partido": {
+        "comparaveis": 927,
+        "diferentes": 83
+      },
+      "nota": null
     }
   },
   {
@@ -32195,6 +35129,17 @@
       "sim": 99,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 598,
+        "diferentes": 206
+      },
+      "partido": {
+        "comparaveis": 598,
+        "diferentes": 302
+      },
+      "nota": null
     }
   },
   {
@@ -32305,6 +35250,17 @@
       "sim": 70,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 426,
+        "diferentes": 49
+      },
+      "partido": {
+        "comparaveis": 429,
+        "diferentes": 97
+      },
+      "nota": null
     }
   },
   {
@@ -32432,6 +35388,14 @@
       "sim": 65,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 382,
+        "diferentes": 26
+      },
+      "nota": null
     }
   },
   {
@@ -32525,6 +35489,17 @@
       "sim": 130,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 873,
+        "diferentes": 42
+      },
+      "partido": {
+        "comparaveis": 867,
+        "diferentes": 32
+      },
+      "nota": null
     }
   },
   {
@@ -32618,6 +35593,17 @@
       "sim": 120,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 920,
+        "diferentes": 15
+      },
+      "partido": {
+        "comparaveis": 920,
+        "diferentes": 16
+      },
+      "nota": null
     }
   },
   {
@@ -32724,6 +35710,14 @@
       "sim": 54,
       "nao": 79,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 797,
+        "diferentes": 443
+      },
+      "nota": null
     }
   },
   {
@@ -32830,6 +35824,17 @@
       "sim": 99,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 641,
+        "diferentes": 53
+      },
+      "partido": {
+        "comparaveis": 641,
+        "diferentes": 53
+      },
+      "nota": null
     }
   },
   {
@@ -32996,6 +36001,17 @@
       "sim": 139,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 941,
+        "diferentes": 369
+      },
+      "partido": {
+        "comparaveis": 945,
+        "diferentes": 90
+      },
+      "nota": null
     }
   },
   {
@@ -33131,6 +36147,17 @@
       "sim": 12,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 52,
+        "diferentes": 11
+      },
+      "partido": {
+        "comparaveis": 53,
+        "diferentes": 1
+      },
+      "nota": null
     }
   },
   {
@@ -33224,6 +36251,17 @@
       "sim": 124,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 762,
+        "diferentes": 67
+      },
+      "partido": {
+        "comparaveis": 751,
+        "diferentes": 44
+      },
+      "nota": null
     }
   },
   {
@@ -33355,6 +36393,17 @@
       "sim": 14,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 72,
+        "diferentes": 21
+      },
+      "partido": {
+        "comparaveis": 71,
+        "diferentes": 7
+      },
+      "nota": null
     }
   },
   {
@@ -33513,6 +36562,17 @@
       "sim": 125,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 918,
+        "diferentes": 22
+      },
+      "partido": {
+        "comparaveis": 917,
+        "diferentes": 21
+      },
+      "nota": null
     }
   },
   {
@@ -33619,6 +36679,14 @@
       "sim": 121,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 777,
+        "diferentes": 45
+      },
+      "nota": null
     }
   },
   {
@@ -33745,6 +36813,17 @@
       "sim": 121,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 917,
+        "diferentes": 68
+      },
+      "partido": {
+        "comparaveis": 920,
+        "diferentes": 48
+      },
+      "nota": null
     }
   },
   {
@@ -33910,6 +36989,17 @@
       "sim": 93,
       "nao": 48,
       "abstencao": 10
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 843,
+        "diferentes": 171
+      },
+      "partido": {
+        "comparaveis": 849,
+        "diferentes": 47
+      },
+      "nota": null
     }
   },
   {
@@ -34023,6 +37113,17 @@
       "sim": 126,
       "nao": 24,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 991,
+        "diferentes": 15
+      },
+      "partido": {
+        "comparaveis": 991,
+        "diferentes": 15
+      },
+      "nota": null
     }
   },
   {
@@ -34116,6 +37217,17 @@
       "sim": 138,
       "nao": 13,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1022,
+        "diferentes": 61
+      },
+      "partido": {
+        "comparaveis": 1023,
+        "diferentes": 30
+      },
+      "nota": null
     }
   },
   {
@@ -34222,6 +37334,17 @@
       "sim": 101,
       "nao": 53,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1059,
+        "diferentes": 447
+      },
+      "partido": {
+        "comparaveis": 1044,
+        "diferentes": 410
+      },
+      "nota": null
     }
   },
   {
@@ -34315,6 +37438,17 @@
       "sim": 147,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 426,
+        "diferentes": 149
+      },
+      "partido": {
+        "comparaveis": 506,
+        "diferentes": 20
+      },
+      "nota": null
     }
   },
   {
@@ -34445,6 +37579,14 @@
       "sim": 61,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 351,
+        "diferentes": 74
+      },
+      "nota": null
     }
   },
   {
@@ -34564,6 +37706,17 @@
       "sim": 136,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 935,
+        "diferentes": 69
+      },
+      "partido": {
+        "comparaveis": 936,
+        "diferentes": 44
+      },
+      "nota": null
     }
   },
   {
@@ -34683,6 +37836,17 @@
       "sim": 80,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 674,
+        "diferentes": 174
+      },
+      "partido": {
+        "comparaveis": 676,
+        "diferentes": 177
+      },
+      "nota": null
     }
   },
   {
@@ -34819,6 +37983,14 @@
       "sim": 80,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 386,
+        "diferentes": 15
+      },
+      "nota": null
     }
   },
   {
@@ -34932,6 +38104,17 @@
       "sim": 90,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 603,
+        "diferentes": 127
+      },
+      "partido": {
+        "comparaveis": 637,
+        "diferentes": 114
+      },
+      "nota": null
     }
   },
   {
@@ -35076,6 +38259,14 @@
       "sim": 136,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 975,
+        "diferentes": 66
+      },
+      "nota": null
     }
   },
   {
@@ -35246,6 +38437,17 @@
       "sim": 112,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 791,
+        "diferentes": 258
+      },
+      "partido": {
+        "comparaveis": 792,
+        "diferentes": 89
+      },
+      "nota": null
     }
   },
   {
@@ -35352,6 +38554,17 @@
       "sim": 115,
       "nao": 27,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 889,
+        "diferentes": 135
+      },
+      "partido": {
+        "comparaveis": 895,
+        "diferentes": 112
+      },
+      "nota": null
     }
   },
   {
@@ -35497,6 +38710,17 @@
       "sim": 133,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1072,
+        "diferentes": 9
+      },
+      "partido": {
+        "comparaveis": 1071,
+        "diferentes": 6
+      },
+      "nota": null
     }
   },
   {
@@ -35629,6 +38853,17 @@
       "sim": 134,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 823,
+        "diferentes": 281
+      },
+      "partido": {
+        "comparaveis": 877,
+        "diferentes": 42
+      },
+      "nota": null
     }
   },
   {
@@ -35722,6 +38957,17 @@
       "sim": 124,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 830,
+        "diferentes": 245
+      },
+      "partido": {
+        "comparaveis": 832,
+        "diferentes": 37
+      },
+      "nota": null
     }
   },
   {
@@ -35828,6 +39074,17 @@
       "sim": 74,
       "nao": 81,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 986,
+        "diferentes": 419
+      },
+      "partido": {
+        "comparaveis": 518,
+        "diferentes": 39
+      },
+      "nota": null
     }
   },
   {
@@ -35964,6 +39221,17 @@
       "sim": 117,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 808,
+        "diferentes": 240
+      },
+      "partido": {
+        "comparaveis": 812,
+        "diferentes": 71
+      },
+      "nota": null
     }
   },
   {
@@ -36070,6 +39338,17 @@
       "sim": 61,
       "nao": 78,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 857,
+        "diferentes": 273
+      },
+      "partido": {
+        "comparaveis": 864,
+        "diferentes": 125
+      },
+      "nota": null
     }
   },
   {
@@ -36235,6 +39514,17 @@
       "sim": 95,
       "nao": 41,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 886,
+        "diferentes": 102
+      },
+      "partido": {
+        "comparaveis": 873,
+        "diferentes": 9
+      },
+      "nota": null
     }
   },
   {
@@ -36358,6 +39648,17 @@
       "sim": 114,
       "nao": 19,
       "abstencao": 3
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 858,
+        "diferentes": 11
+      },
+      "partido": {
+        "comparaveis": 859,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -36451,6 +39752,17 @@
       "sim": 125,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 872,
+        "diferentes": 256
+      },
+      "partido": {
+        "comparaveis": 880,
+        "diferentes": 41
+      },
+      "nota": null
     }
   },
   {
@@ -36595,6 +39907,17 @@
       "sim": 84,
       "nao": 55,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 176,
+        "diferentes": 41
+      },
+      "partido": {
+        "comparaveis": 179,
+        "diferentes": 9
+      },
+      "nota": null
     }
   },
   {
@@ -36702,6 +40025,14 @@
       "sim": 112,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 792,
+        "diferentes": 41
+      },
+      "nota": null
     }
   },
   {
@@ -36808,6 +40139,14 @@
       "sim": 63,
       "nao": 91,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 994,
+        "diferentes": 600
+      },
+      "partido": null,
+      "nota": "partido com menos de 6 deputados votando: não há maioria para comparar"
     }
   },
   {
@@ -36939,6 +40278,17 @@
       "sim": 77,
       "nao": 44,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 777,
+        "diferentes": 152
+      },
+      "partido": {
+        "comparaveis": 781,
+        "diferentes": 58
+      },
+      "nota": null
     }
   },
   {
@@ -37032,6 +40382,17 @@
       "sim": 135,
       "nao": 6,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 959,
+        "diferentes": 57
+      },
+      "partido": {
+        "comparaveis": 958,
+        "diferentes": 58
+      },
+      "nota": null
     }
   },
   {
@@ -37138,6 +40499,17 @@
       "sim": 74,
       "nao": 59,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 815,
+        "diferentes": 191
+      },
+      "partido": {
+        "comparaveis": 820,
+        "diferentes": 60
+      },
+      "nota": null
     }
   },
   {
@@ -37237,6 +40609,17 @@
       "sim": 15,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 53,
+        "diferentes": 4
+      },
+      "partido": {
+        "comparaveis": 53,
+        "diferentes": 4
+      },
+      "nota": null
     }
   },
   {
@@ -37353,6 +40736,17 @@
       "sim": 108,
       "nao": 5,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 797,
+        "diferentes": 238
+      },
+      "partido": {
+        "comparaveis": 803,
+        "diferentes": 49
+      },
+      "nota": null
     }
   },
   {
@@ -37472,6 +40866,17 @@
       "sim": 84,
       "nao": 66,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 919,
+        "diferentes": 237
+      },
+      "partido": {
+        "comparaveis": 926,
+        "diferentes": 86
+      },
+      "nota": null
     }
   },
   {
@@ -37616,6 +41021,17 @@
       "sim": 118,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 805,
+        "diferentes": 63
+      },
+      "partido": {
+        "comparaveis": 803,
+        "diferentes": 74
+      },
+      "nota": null
     }
   },
   {
@@ -37713,6 +41129,17 @@
       "sim": 117,
       "nao": 4,
       "abstencao": 8
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 811,
+        "diferentes": 82
+      },
+      "partido": {
+        "comparaveis": 777,
+        "diferentes": 53
+      },
+      "nota": null
     }
   },
   {
@@ -37831,6 +41258,14 @@
       "sim": 133,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 918,
+        "diferentes": 5
+      },
+      "nota": null
     }
   },
   {
@@ -37980,6 +41415,17 @@
       "sim": 133,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 904,
+        "diferentes": 17
+      },
+      "partido": {
+        "comparaveis": 903,
+        "diferentes": 19
+      },
+      "nota": null
     }
   },
   {
@@ -38112,6 +41558,17 @@
       "sim": 121,
       "nao": 22,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 968,
+        "diferentes": 32
+      },
+      "partido": {
+        "comparaveis": 968,
+        "diferentes": 33
+      },
+      "nota": null
     }
   },
   {
@@ -38218,6 +41675,17 @@
       "sim": 138,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 905,
+        "diferentes": 283
+      },
+      "partido": {
+        "comparaveis": 906,
+        "diferentes": 23
+      },
+      "nota": null
     }
   },
   {
@@ -38315,6 +41783,11 @@
       "sim": 6,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -38421,6 +41894,17 @@
       "sim": 87,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 640,
+        "diferentes": 23
+      },
+      "partido": {
+        "comparaveis": 639,
+        "diferentes": 23
+      },
+      "nota": null
     }
   },
   {
@@ -38514,6 +41998,17 @@
       "sim": 78,
       "nao": 69,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 946,
+        "diferentes": 245
+      },
+      "partido": {
+        "comparaveis": 954,
+        "diferentes": 84
+      },
+      "nota": null
     }
   },
   {
@@ -38645,6 +42140,14 @@
       "sim": 47,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 521,
+        "diferentes": 117
+      },
+      "nota": null
     }
   },
   {
@@ -38738,6 +42241,17 @@
       "sim": 125,
       "nao": 14,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 890,
+        "diferentes": 57
+      },
+      "partido": {
+        "comparaveis": 884,
+        "diferentes": 26
+      },
+      "nota": null
     }
   },
   {
@@ -38831,6 +42345,17 @@
       "sim": 126,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 949,
+        "diferentes": 181
+      },
+      "partido": {
+        "comparaveis": 67,
+        "diferentes": 9
+      },
+      "nota": null
     }
   },
   {
@@ -38993,6 +42518,17 @@
       "sim": 109,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 811,
+        "diferentes": 14
+      },
+      "partido": {
+        "comparaveis": 812,
+        "diferentes": 18
+      },
+      "nota": null
     }
   },
   {
@@ -39103,6 +42639,17 @@
       "sim": 134,
       "nao": 13,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 989,
+        "diferentes": 57
+      },
+      "partido": {
+        "comparaveis": 988,
+        "diferentes": 57
+      },
+      "nota": null
     }
   },
   {
@@ -39174,6 +42721,11 @@
       "sim": 11,
       "nao": 1,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "sem voto Sim/Não no Plenário"
     }
   },
   {
@@ -39267,6 +42819,17 @@
       "sim": 58,
       "nao": 64,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 776,
+        "diferentes": 215
+      },
+      "partido": {
+        "comparaveis": 782,
+        "diferentes": 61
+      },
+      "nota": null
     }
   },
   {
@@ -39441,6 +43004,17 @@
       "sim": 109,
       "nao": 10,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 744,
+        "diferentes": 33
+      },
+      "partido": {
+        "comparaveis": 745,
+        "diferentes": 17
+      },
+      "nota": null
     }
   },
   {
@@ -39560,6 +43134,17 @@
       "sim": 132,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 880,
+        "diferentes": 283
+      },
+      "partido": {
+        "comparaveis": 887,
+        "diferentes": 58
+      },
+      "nota": null
     }
   },
   {
@@ -39674,6 +43259,11 @@
       "sim": 85,
       "nao": 5,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "sem voto Sim/Não no Plenário"
     }
   },
   {
@@ -39767,6 +43357,17 @@
       "sim": 90,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 637,
+        "diferentes": 61
+      },
+      "partido": {
+        "comparaveis": 638,
+        "diferentes": 62
+      },
+      "nota": null
     }
   },
   {
@@ -39902,6 +43503,17 @@
       "sim": 128,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 815,
+        "diferentes": 234
+      },
+      "partido": {
+        "comparaveis": 860,
+        "diferentes": 57
+      },
+      "nota": null
     }
   },
   {
@@ -39995,6 +43607,17 @@
       "sim": 107,
       "nao": 26,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 800,
+        "diferentes": 94
+      },
+      "partido": {
+        "comparaveis": 808,
+        "diferentes": 114
+      },
+      "nota": null
     }
   },
   {
@@ -40095,6 +43718,14 @@
       "sim": 98,
       "nao": 41,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 898,
+        "diferentes": 271
+      },
+      "nota": null
     }
   },
   {
@@ -40188,6 +43819,17 @@
       "sim": 83,
       "nao": 55,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 894,
+        "diferentes": 188
+      },
+      "partido": {
+        "comparaveis": 899,
+        "diferentes": 47
+      },
+      "nota": null
     }
   },
   {
@@ -40281,6 +43923,17 @@
       "sim": 76,
       "nao": 76,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1024,
+        "diferentes": 286
+      },
+      "partido": {
+        "comparaveis": 1031,
+        "diferentes": 540
+      },
+      "nota": null
     }
   },
   {
@@ -40374,6 +44027,17 @@
       "sim": 86,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 641,
+        "diferentes": 167
+      },
+      "partido": {
+        "comparaveis": 648,
+        "diferentes": 45
+      },
+      "nota": null
     }
   },
   {
@@ -40496,6 +44160,17 @@
       "sim": 140,
       "nao": 12,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 950,
+        "diferentes": 33
+      },
+      "partido": {
+        "comparaveis": 1003,
+        "diferentes": 39
+      },
+      "nota": null
     }
   },
   {
@@ -40589,6 +44264,17 @@
       "sim": 147,
       "nao": 11,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 988,
+        "diferentes": 58
+      },
+      "partido": {
+        "comparaveis": 1017,
+        "diferentes": 26
+      },
+      "nota": null
     }
   },
   {
@@ -40682,6 +44368,14 @@
       "sim": 139,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 924,
+        "diferentes": 120
+      },
+      "nota": null
     }
   },
   {
@@ -40824,6 +44518,17 @@
       "sim": 98,
       "nao": 38,
       "abstencao": 5
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 52,
+        "diferentes": 6
+      },
+      "partido": {
+        "comparaveis": 898,
+        "diferentes": 315
+      },
+      "nota": null
     }
   },
   {
@@ -40967,6 +44672,17 @@
       "sim": 140,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1108,
+        "diferentes": 18
+      },
+      "partido": {
+        "comparaveis": 1106,
+        "diferentes": 16
+      },
+      "nota": null
     }
   },
   {
@@ -41064,6 +44780,17 @@
       "sim": 110,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 701,
+        "diferentes": 206
+      },
+      "partido": {
+        "comparaveis": 705,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -41157,6 +44884,17 @@
       "sim": 89,
       "nao": 62,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 982,
+        "diferentes": 496
+      },
+      "partido": {
+        "comparaveis": 1037,
+        "diferentes": 511
+      },
+      "nota": null
     }
   },
   {
@@ -41250,6 +44988,17 @@
       "sim": 111,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 831,
+        "diferentes": 9
+      },
+      "partido": {
+        "comparaveis": 830,
+        "diferentes": 7
+      },
+      "nota": null
     }
   },
   {
@@ -41369,6 +45118,17 @@
       "sim": 98,
       "nao": 43,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 923,
+        "diferentes": 158
+      },
+      "partido": {
+        "comparaveis": 931,
+        "diferentes": 48
+      },
+      "nota": null
     }
   },
   {
@@ -41496,6 +45256,17 @@
       "sim": 22,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 101,
+        "diferentes": 3
+      },
+      "partido": {
+        "comparaveis": 100,
+        "diferentes": 3
+      },
+      "nota": null
     }
   },
   {
@@ -41615,6 +45386,17 @@
       "sim": 119,
       "nao": 9,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 843,
+        "diferentes": 255
+      },
+      "partido": {
+        "comparaveis": 846,
+        "diferentes": 63
+      },
+      "nota": null
     }
   },
   {
@@ -41738,6 +45520,17 @@
       "sim": 25,
       "nao": 26,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 310,
+        "diferentes": 53
+      },
+      "partido": {
+        "comparaveis": 312,
+        "diferentes": 20
+      },
+      "nota": null
     }
   },
   {
@@ -41865,6 +45658,14 @@
       "sim": 129,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 877,
+        "diferentes": 39
+      },
+      "nota": null
     }
   },
   {
@@ -41958,6 +45759,14 @@
       "sim": 143,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 987,
+        "diferentes": 45
+      },
+      "nota": null
     }
   },
   {
@@ -42064,6 +45873,17 @@
       "sim": 107,
       "nao": 24,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 888,
+        "diferentes": 28
+      },
+      "partido": {
+        "comparaveis": 889,
+        "diferentes": 33
+      },
+      "nota": null
     }
   },
   {
@@ -42170,6 +45990,17 @@
       "sim": 35,
       "nao": 16,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 337,
+        "diferentes": 40
+      },
+      "partido": {
+        "comparaveis": 339,
+        "diferentes": 17
+      },
+      "nota": null
     }
   },
   {
@@ -42267,6 +46098,17 @@
       "sim": 126,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 848,
+        "diferentes": 288
+      },
+      "partido": {
+        "comparaveis": 853,
+        "diferentes": 20
+      },
+      "nota": null
     }
   },
   {
@@ -42360,6 +46202,17 @@
       "sim": 140,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 520,
+        "diferentes": 138
+      },
+      "partido": {
+        "comparaveis": 819,
+        "diferentes": 20
+      },
+      "nota": null
     }
   },
   {
@@ -42483,6 +46336,17 @@
       "sim": 78,
       "nao": 3,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 526,
+        "diferentes": 60
+      },
+      "partido": {
+        "comparaveis": 525,
+        "diferentes": 63
+      },
+      "nota": null
     }
   },
   {
@@ -42589,6 +46453,17 @@
       "sim": 74,
       "nao": 59,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 75,
+        "diferentes": 18
+      },
+      "partido": {
+        "comparaveis": 893,
+        "diferentes": 429
+      },
+      "nota": null
     }
   },
   {
@@ -42682,6 +46557,17 @@
       "sim": 75,
       "nao": 72,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 957,
+        "diferentes": 262
+      },
+      "partido": {
+        "comparaveis": 965,
+        "diferentes": 85
+      },
+      "nota": null
     }
   },
   {
@@ -42801,6 +46687,17 @@
       "sim": 123,
       "nao": 24,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1026,
+        "diferentes": 15
+      },
+      "partido": {
+        "comparaveis": 1025,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -42932,6 +46829,11 @@
       "sim": 3,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -43038,6 +46940,17 @@
       "sim": 111,
       "nao": 16,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 870,
+        "diferentes": 109
+      },
+      "partido": {
+        "comparaveis": 869,
+        "diferentes": 102
+      },
+      "nota": null
     }
   },
   {
@@ -43161,6 +47074,14 @@
       "sim": 117,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 813,
+        "diferentes": 19
+      },
+      "nota": null
     }
   },
   {
@@ -43366,6 +47287,17 @@
       "sim": 78,
       "nao": 57,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 849,
+        "diferentes": 362
+      },
+      "partido": {
+        "comparaveis": 850,
+        "diferentes": 325
+      },
+      "nota": null
     }
   },
   {
@@ -43472,6 +47404,17 @@
       "sim": 93,
       "nao": 15,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 702,
+        "diferentes": 152
+      },
+      "partido": {
+        "comparaveis": 702,
+        "diferentes": 143
+      },
+      "nota": null
     }
   },
   {
@@ -43604,6 +47547,17 @@
       "sim": 133,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1032,
+        "diferentes": 6
+      },
+      "partido": {
+        "comparaveis": 1030,
+        "diferentes": 3
+      },
+      "nota": null
     }
   },
   {
@@ -43697,6 +47651,14 @@
       "sim": 90,
       "nao": 49,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 919,
+        "diferentes": 396
+      },
+      "nota": null
     }
   },
   {
@@ -43829,6 +47791,17 @@
       "sim": 87,
       "nao": 50,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 830,
+        "diferentes": 173
+      },
+      "partido": {
+        "comparaveis": 838,
+        "diferentes": 56
+      },
+      "nota": null
     }
   },
   {
@@ -43939,6 +47912,17 @@
       "sim": 91,
       "nao": 28,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 688,
+        "diferentes": 100
+      },
+      "partido": {
+        "comparaveis": 696,
+        "diferentes": 73
+      },
+      "nota": null
     }
   },
   {
@@ -44032,6 +48016,17 @@
       "sim": 103,
       "nao": 54,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1035,
+        "diferentes": 152
+      },
+      "partido": {
+        "comparaveis": 1026,
+        "diferentes": 6
+      },
+      "nota": null
     }
   },
   {
@@ -44138,6 +48133,14 @@
       "sim": 137,
       "nao": 15,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 604,
+        "diferentes": 95
+      },
+      "nota": null
     }
   },
   {
@@ -44278,6 +48281,17 @@
       "sim": 111,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 894,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 895,
+        "diferentes": 19
+      },
+      "nota": null
     }
   },
   {
@@ -44427,6 +48441,14 @@
       "sim": 60,
       "nao": 11,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 405,
+        "diferentes": 76
+      },
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -44572,6 +48594,17 @@
       "sim": 117,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 792,
+        "diferentes": 66
+      },
+      "partido": {
+        "comparaveis": 779,
+        "diferentes": 30
+      },
+      "nota": null
     }
   },
   {
@@ -44665,6 +48698,17 @@
       "sim": 118,
       "nao": 25,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 968,
+        "diferentes": 197
+      },
+      "partido": {
+        "comparaveis": 940,
+        "diferentes": 128
+      },
+      "nota": null
     }
   },
   {
@@ -44784,6 +48828,14 @@
       "sim": 116,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 786,
+        "diferentes": 75
+      },
+      "nota": null
     }
   },
   {
@@ -44920,6 +48972,17 @@
       "sim": 113,
       "nao": 13,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 772,
+        "diferentes": 78
+      },
+      "partido": {
+        "comparaveis": 773,
+        "diferentes": 56
+      },
+      "nota": null
     }
   },
   {
@@ -45059,6 +49122,17 @@
       "sim": 91,
       "nao": 50,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 898,
+        "diferentes": 165
+      },
+      "partido": {
+        "comparaveis": 905,
+        "diferentes": 39
+      },
+      "nota": null
     }
   },
   {
@@ -45165,6 +49239,17 @@
       "sim": 134,
       "nao": 20,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1013,
+        "diferentes": 15
+      },
+      "partido": {
+        "comparaveis": 1012,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -45262,6 +49347,17 @@
       "sim": 30,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 197,
+        "diferentes": 20
+      },
+      "partido": {
+        "comparaveis": 197,
+        "diferentes": 1
+      },
+      "nota": null
     }
   },
   {
@@ -45355,6 +49451,17 @@
       "sim": 132,
       "nao": 14,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 923,
+        "diferentes": 233
+      },
+      "partido": {
+        "comparaveis": 971,
+        "diferentes": 105
+      },
+      "nota": null
     }
   },
   {
@@ -45525,6 +49632,17 @@
       "sim": 140,
       "nao": 2,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 953,
+        "diferentes": 304
+      },
+      "partido": {
+        "comparaveis": 957,
+        "diferentes": 42
+      },
+      "nota": null
     }
   },
   {
@@ -45687,6 +49805,17 @@
       "sim": 72,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 491,
+        "diferentes": 8
+      },
+      "partido": {
+        "comparaveis": 492,
+        "diferentes": 8
+      },
+      "nota": null
     }
   },
   {
@@ -45780,6 +49909,11 @@
       "sim": 6,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -45933,6 +50067,17 @@
       "sim": 12,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 54,
+        "diferentes": 0
+      },
+      "partido": {
+        "comparaveis": 54,
+        "diferentes": 0
+      },
+      "nota": null
     }
   },
   {
@@ -46030,6 +50175,17 @@
       "sim": 121,
       "nao": 16,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 55,
+        "diferentes": 19
+      },
+      "partido": {
+        "comparaveis": 55,
+        "diferentes": 6
+      },
+      "nota": null
     }
   },
   {
@@ -46130,6 +50286,17 @@
       "sim": 126,
       "nao": 17,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 952,
+        "diferentes": 68
+      },
+      "partido": {
+        "comparaveis": 953,
+        "diferentes": 44
+      },
+      "nota": null
     }
   },
   {
@@ -46236,6 +50403,14 @@
       "sim": 116,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 771,
+        "diferentes": 42
+      },
+      "nota": null
     }
   },
   {
@@ -46342,6 +50517,17 @@
       "sim": 70,
       "nao": 27,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 638,
+        "diferentes": 129
+      },
+      "partido": {
+        "comparaveis": 642,
+        "diferentes": 200
+      },
+      "nota": null
     }
   },
   {
@@ -46554,6 +50740,17 @@
       "sim": 86,
       "nao": 12,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 585,
+        "diferentes": 210
+      },
+      "partido": {
+        "comparaveis": 589,
+        "diferentes": 76
+      },
+      "nota": null
     }
   },
   {
@@ -46694,6 +50891,17 @@
       "sim": 119,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 913,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 914,
+        "diferentes": 18
+      },
+      "nota": null
     }
   },
   {
@@ -46800,6 +51008,17 @@
       "sim": 109,
       "nao": 35,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 923,
+        "diferentes": 167
+      },
+      "partido": {
+        "comparaveis": 930,
+        "diferentes": 305
+      },
+      "nota": null
     }
   },
   {
@@ -46893,6 +51112,17 @@
       "sim": 87,
       "nao": 68,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1019,
+        "diferentes": 551
+      },
+      "partido": {
+        "comparaveis": 1018,
+        "diferentes": 553
+      },
+      "nota": null
     }
   },
   {
@@ -46999,6 +51229,17 @@
       "sim": 70,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 423,
+        "diferentes": 68
+      },
+      "partido": {
+        "comparaveis": 425,
+        "diferentes": 20
+      },
+      "nota": null
     }
   },
   {
@@ -47151,6 +51392,17 @@
       "sim": 126,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 911,
+        "diferentes": 108
+      },
+      "partido": {
+        "comparaveis": 911,
+        "diferentes": 89
+      },
+      "nota": null
     }
   },
   {
@@ -47283,6 +51535,17 @@
       "sim": 79,
       "nao": 53,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 821,
+        "diferentes": 165
+      },
+      "partido": {
+        "comparaveis": 826,
+        "diferentes": 45
+      },
+      "nota": null
     }
   },
   {
@@ -47380,6 +51643,17 @@
       "sim": 4,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 80,
+        "diferentes": 28
+      },
+      "partido": {
+        "comparaveis": 81,
+        "diferentes": 5
+      },
+      "nota": null
     }
   },
   {
@@ -47473,6 +51747,14 @@
       "sim": 119,
       "nao": 27,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 103,
+        "diferentes": 2
+      },
+      "nota": null
     }
   },
   {
@@ -47579,6 +51861,17 @@
       "sim": 89,
       "nao": 41,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 809,
+        "diferentes": 152
+      },
+      "partido": {
+        "comparaveis": 816,
+        "diferentes": 50
+      },
+      "nota": null
     }
   },
   {
@@ -47672,6 +51965,17 @@
       "sim": 94,
       "nao": 52,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 989,
+        "diferentes": 154
+      },
+      "partido": {
+        "comparaveis": 980,
+        "diferentes": 3
+      },
+      "nota": null
     }
   },
   {
@@ -47804,6 +52108,14 @@
       "sim": 55,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 327,
+        "diferentes": 11
+      },
+      "nota": null
     }
   },
   {
@@ -47897,6 +52209,17 @@
       "sim": 123,
       "nao": 8,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 870,
+        "diferentes": 88
+      },
+      "partido": {
+        "comparaveis": 866,
+        "diferentes": 87
+      },
+      "nota": null
     }
   },
   {
@@ -47990,6 +52313,17 @@
       "sim": 40,
       "nao": 11,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 271,
+        "diferentes": 66
+      },
+      "partido": {
+        "comparaveis": 271,
+        "diferentes": 57
+      },
+      "nota": null
     }
   },
   {
@@ -48083,6 +52417,17 @@
       "sim": 118,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 803,
+        "diferentes": 65
+      },
+      "partido": {
+        "comparaveis": 801,
+        "diferentes": 69
+      },
+      "nota": null
     }
   },
   {
@@ -48176,6 +52521,14 @@
       "sim": 113,
       "nao": 27,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 935,
+        "diferentes": 169
+      },
+      "nota": null
     }
   },
   {
@@ -48282,6 +52635,17 @@
       "sim": 119,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 765,
+        "diferentes": 263
+      },
+      "partido": {
+        "comparaveis": 768,
+        "diferentes": 36
+      },
+      "nota": null
     }
   },
   {
@@ -48402,6 +52766,17 @@
       "sim": 132,
       "nao": 29,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1060,
+        "diferentes": 210
+      },
+      "partido": {
+        "comparaveis": 1065,
+        "diferentes": 239
+      },
+      "nota": null
     }
   },
   {
@@ -48499,6 +52874,17 @@
       "sim": 16,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 78,
+        "diferentes": 6
+      },
+      "partido": {
+        "comparaveis": 78,
+        "diferentes": 6
+      },
+      "nota": null
     }
   },
   {
@@ -48657,6 +53043,17 @@
       "sim": 95,
       "nao": 14,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 687,
+        "diferentes": 11
+      },
+      "partido": {
+        "comparaveis": 686,
+        "diferentes": 10
+      },
+      "nota": null
     }
   },
   {
@@ -48750,6 +53147,17 @@
       "sim": 129,
       "nao": 21,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 983,
+        "diferentes": 15
+      },
+      "partido": {
+        "comparaveis": 981,
+        "diferentes": 12
+      },
+      "nota": null
     }
   },
   {
@@ -48843,6 +53251,17 @@
       "sim": 104,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 656,
+        "diferentes": 32
+      },
+      "partido": {
+        "comparaveis": 655,
+        "diferentes": 27
+      },
+      "nota": null
     }
   },
   {
@@ -48982,6 +53401,14 @@
       "sim": 134,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 923,
+        "diferentes": 9
+      },
+      "nota": null
     }
   },
   {
@@ -49079,6 +53506,17 @@
       "sim": 66,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 432,
+        "diferentes": 155
+      },
+      "partido": {
+        "comparaveis": 431,
+        "diferentes": 39
+      },
+      "nota": null
     }
   },
   {
@@ -49184,6 +53622,17 @@
       "sim": 80,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 54,
+        "diferentes": 1
+      },
+      "partido": {
+        "comparaveis": 487,
+        "diferentes": 27
+      },
+      "nota": null
     }
   },
   {
@@ -49277,6 +53726,17 @@
       "sim": 155,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1094,
+        "diferentes": 47
+      },
+      "partido": {
+        "comparaveis": 1094,
+        "diferentes": 47
+      },
+      "nota": null
     }
   },
   {
@@ -49456,6 +53916,17 @@
       "sim": 55,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 360,
+        "diferentes": 122
+      },
+      "partido": {
+        "comparaveis": 362,
+        "diferentes": 8
+      },
+      "nota": null
     }
   },
   {
@@ -49574,6 +54045,17 @@
       "sim": 62,
       "nao": 43,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 643,
+        "diferentes": 134
+      },
+      "partido": {
+        "comparaveis": 648,
+        "diferentes": 80
+      },
+      "nota": null
     }
   },
   {
@@ -49667,6 +54149,17 @@
       "sim": 142,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 907,
+        "diferentes": 63
+      },
+      "partido": {
+        "comparaveis": 904,
+        "diferentes": 70
+      },
+      "nota": null
     }
   },
   {
@@ -49760,6 +54253,17 @@
       "sim": 41,
       "nao": 64,
       "abstencao": 3
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 667,
+        "diferentes": 354
+      },
+      "partido": {
+        "comparaveis": 279,
+        "diferentes": 40
+      },
+      "nota": null
     }
   },
   {
@@ -49871,6 +54375,17 @@
       "sim": 105,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 702,
+        "diferentes": 24
+      },
+      "partido": {
+        "comparaveis": 701,
+        "diferentes": 12
+      },
+      "nota": null
     }
   },
   {
@@ -49964,6 +54479,17 @@
       "sim": 80,
       "nao": 44,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 759,
+        "diferentes": 135
+      },
+      "partido": {
+        "comparaveis": 766,
+        "diferentes": 34
+      },
+      "nota": null
     }
   },
   {
@@ -50057,6 +54583,17 @@
       "sim": 122,
       "nao": 36,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1082,
+        "diferentes": 290
+      },
+      "partido": {
+        "comparaveis": 1081,
+        "diferentes": 292
+      },
+      "nota": null
     }
   },
   {
@@ -50150,6 +54687,17 @@
       "sim": 99,
       "nao": 43,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 899,
+        "diferentes": 145
+      },
+      "partido": {
+        "comparaveis": 906,
+        "diferentes": 57
+      },
+      "nota": null
     }
   },
   {
@@ -50243,6 +54791,17 @@
       "sim": 156,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1058,
+        "diferentes": 288
+      },
+      "partido": {
+        "comparaveis": 1059,
+        "diferentes": 302
+      },
+      "nota": null
     }
   },
   {
@@ -50336,6 +54895,17 @@
       "sim": 76,
       "nao": 75,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 990,
+        "diferentes": 259
+      },
+      "partido": {
+        "comparaveis": 998,
+        "diferentes": 88
+      },
+      "nota": null
     }
   },
   {
@@ -50429,6 +54999,17 @@
       "sim": 49,
       "nao": 33,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 487,
+        "diferentes": 79
+      },
+      "partido": {
+        "comparaveis": 489,
+        "diferentes": 21
+      },
+      "nota": null
     }
   },
   {
@@ -50574,6 +55155,14 @@
       "sim": 142,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 918,
+        "diferentes": 42
+      },
+      "nota": null
     }
   },
   {
@@ -50667,6 +55256,17 @@
       "sim": 143,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1017,
+        "diferentes": 348
+      },
+      "partido": {
+        "comparaveis": 1023,
+        "diferentes": 36
+      },
+      "nota": null
     }
   },
   {
@@ -50773,6 +55373,17 @@
       "sim": 50,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 308,
+        "diferentes": 21
+      },
+      "partido": {
+        "comparaveis": 308,
+        "diferentes": 9
+      },
+      "nota": null
     }
   },
   {
@@ -50866,6 +55477,17 @@
       "sim": 82,
       "nao": 52,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 52,
+        "diferentes": 5
+      },
+      "partido": {
+        "comparaveis": 906,
+        "diferentes": 419
+      },
+      "nota": null
     }
   },
   {
@@ -50959,6 +55581,17 @@
       "sim": 126,
       "nao": 3,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 913,
+        "diferentes": 14
+      },
+      "partido": {
+        "comparaveis": 912,
+        "diferentes": 15
+      },
+      "nota": null
     }
   },
   {
@@ -51065,6 +55698,17 @@
       "sim": 127,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 978,
+        "diferentes": 8
+      },
+      "partido": {
+        "comparaveis": 978,
+        "diferentes": 9
+      },
+      "nota": null
     }
   },
   {
@@ -51171,6 +55815,17 @@
       "sim": 107,
       "nao": 41,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 921,
+        "diferentes": 186
+      },
+      "partido": {
+        "comparaveis": 926,
+        "diferentes": 108
+      },
+      "nota": null
     }
   },
   {
@@ -51306,6 +55961,17 @@
       "sim": 24,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 98,
+        "diferentes": 0
+      },
+      "partido": {
+        "comparaveis": 97,
+        "diferentes": 0
+      },
+      "nota": null
     }
   },
   {
@@ -51399,6 +56065,17 @@
       "sim": 73,
       "nao": 62,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 58,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 922,
+        "diferentes": 420
+      },
+      "nota": null
     }
   },
   {
@@ -51492,6 +56169,17 @@
       "sim": 111,
       "nao": 37,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 966,
+        "diferentes": 126
+      },
+      "partido": {
+        "comparaveis": 975,
+        "diferentes": 134
+      },
+      "nota": null
     }
   },
   {
@@ -51643,6 +56331,17 @@
       "sim": 103,
       "nao": 14,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 775,
+        "diferentes": 7
+      },
+      "partido": {
+        "comparaveis": 774,
+        "diferentes": 6
+      },
+      "nota": null
     }
   },
   {
@@ -51778,6 +56477,17 @@
       "sim": 126,
       "nao": 20,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1005,
+        "diferentes": 10
+      },
+      "partido": {
+        "comparaveis": 1003,
+        "diferentes": 7
+      },
+      "nota": null
     }
   },
   {
@@ -51888,6 +56598,17 @@
       "sim": 119,
       "nao": 25,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 930,
+        "diferentes": 16
+      },
+      "partido": {
+        "comparaveis": 931,
+        "diferentes": 18
+      },
+      "nota": null
     }
   },
   {
@@ -52015,6 +56736,17 @@
       "sim": 105,
       "nao": 12,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 720,
+        "diferentes": 272
+      },
+      "partido": {
+        "comparaveis": 721,
+        "diferentes": 79
+      },
+      "nota": null
     }
   },
   {
@@ -52121,6 +56853,17 @@
       "sim": 77,
       "nao": 50,
       "abstencao": 4
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 840,
+        "diferentes": 142
+      },
+      "partido": {
+        "comparaveis": 838,
+        "diferentes": 22
+      },
+      "nota": null
     }
   },
   {
@@ -52214,6 +56957,17 @@
       "sim": 142,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 897,
+        "diferentes": 49
+      },
+      "partido": {
+        "comparaveis": 955,
+        "diferentes": 87
+      },
+      "nota": null
     }
   },
   {
@@ -52320,6 +57074,17 @@
       "sim": 80,
       "nao": 67,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 936,
+        "diferentes": 239
+      },
+      "partido": {
+        "comparaveis": 945,
+        "diferentes": 78
+      },
+      "nota": null
     }
   },
   {
@@ -52472,6 +57237,17 @@
       "sim": 15,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 71,
+        "diferentes": 17
+      },
+      "partido": {
+        "comparaveis": 71,
+        "diferentes": 6
+      },
+      "nota": null
     }
   },
   {
@@ -52565,6 +57341,11 @@
       "sim": 1,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -52671,6 +57452,17 @@
       "sim": 73,
       "nao": 91,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1101,
+        "diferentes": 362
+      },
+      "partido": {
+        "comparaveis": 1111,
+        "diferentes": 635
+      },
+      "nota": null
     }
   },
   {
@@ -52764,6 +57556,17 @@
       "sim": 74,
       "nao": 76,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 960,
+        "diferentes": 243
+      },
+      "partido": {
+        "comparaveis": 970,
+        "diferentes": 71
+      },
+      "nota": null
     }
   },
   {
@@ -52857,6 +57660,17 @@
       "sim": 114,
       "nao": 30,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 974,
+        "diferentes": 279
+      },
+      "partido": {
+        "comparaveis": 979,
+        "diferentes": 218
+      },
+      "nota": null
     }
   },
   {
@@ -52958,6 +57772,17 @@
       "sim": 78,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 61,
+        "diferentes": 4
+      },
+      "partido": {
+        "comparaveis": 543,
+        "diferentes": 50
+      },
+      "nota": null
     }
   },
   {
@@ -53051,6 +57876,17 @@
       "sim": 95,
       "nao": 6,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 690,
+        "diferentes": 221
+      },
+      "partido": {
+        "comparaveis": 693,
+        "diferentes": 57
+      },
+      "nota": null
     }
   },
   {
@@ -53223,6 +58059,17 @@
       "sim": 27,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 162,
+        "diferentes": 70
+      },
+      "partido": {
+        "comparaveis": 163,
+        "diferentes": 25
+      },
+      "nota": null
     }
   },
   {
@@ -53342,6 +58189,17 @@
       "sim": 125,
       "nao": 7,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 816,
+        "diferentes": 77
+      },
+      "partido": {
+        "comparaveis": 815,
+        "diferentes": 87
+      },
+      "nota": null
     }
   },
   {
@@ -53448,6 +58306,17 @@
       "sim": 110,
       "nao": 22,
       "abstencao": 4
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 859,
+        "diferentes": 309
+      },
+      "partido": {
+        "comparaveis": 864,
+        "diferentes": 140
+      },
+      "nota": null
     }
   },
   {
@@ -53617,6 +58486,17 @@
       "sim": 101,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 635,
+        "diferentes": 24
+      },
+      "partido": {
+        "comparaveis": 635,
+        "diferentes": 24
+      },
+      "nota": null
     }
   },
   {
@@ -53723,6 +58603,17 @@
       "sim": 103,
       "nao": 42,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 906,
+        "diferentes": 209
+      },
+      "partido": {
+        "comparaveis": 908,
+        "diferentes": 216
+      },
+      "nota": null
     }
   },
   {
@@ -53841,6 +58732,17 @@
       "sim": 23,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 145,
+        "diferentes": 14
+      },
+      "partido": {
+        "comparaveis": 145,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -53934,6 +58836,14 @@
       "sim": 98,
       "nao": 29,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 844,
+        "diferentes": 194
+      },
+      "nota": null
     }
   },
   {
@@ -54027,6 +58937,17 @@
       "sim": 89,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 746,
+        "diferentes": 128
+      },
+      "partido": {
+        "comparaveis": 743,
+        "diferentes": 126
+      },
+      "nota": null
     }
   },
   {
@@ -54120,6 +59041,17 @@
       "sim": 119,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 879,
+        "diferentes": 348
+      },
+      "partido": {
+        "comparaveis": 885,
+        "diferentes": 157
+      },
+      "nota": null
     }
   },
   {
@@ -54217,6 +59149,17 @@
       "sim": 11,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 58,
+        "diferentes": 4
+      },
+      "partido": {
+        "comparaveis": 58,
+        "diferentes": 0
+      },
+      "nota": null
     }
   },
   {
@@ -54336,6 +59279,17 @@
       "sim": 85,
       "nao": 25,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 723,
+        "diferentes": 139
+      },
+      "partido": {
+        "comparaveis": 730,
+        "diferentes": 63
+      },
+      "nota": null
     }
   },
   {
@@ -54455,6 +59409,17 @@
       "sim": 52,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 484,
+        "diferentes": 96
+      },
+      "partido": {
+        "comparaveis": 489,
+        "diferentes": 34
+      },
+      "nota": null
     }
   },
   {
@@ -54599,6 +59564,17 @@
       "sim": 104,
       "nao": 10,
       "abstencao": 4
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 708,
+        "diferentes": 179
+      },
+      "partido": {
+        "comparaveis": 714,
+        "diferentes": 66
+      },
+      "nota": null
     }
   },
   {
@@ -54712,6 +59688,17 @@
       "sim": 116,
       "nao": 36,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 948,
+        "diferentes": 169
+      },
+      "partido": {
+        "comparaveis": 947,
+        "diferentes": 163
+      },
+      "nota": null
     }
   },
   {
@@ -54805,6 +59792,17 @@
       "sim": 120,
       "nao": 25,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 939,
+        "diferentes": 20
+      },
+      "partido": {
+        "comparaveis": 940,
+        "diferentes": 23
+      },
+      "nota": null
     }
   },
   {
@@ -54911,6 +59909,17 @@
       "sim": 74,
       "nao": 38,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 723,
+        "diferentes": 116
+      },
+      "partido": {
+        "comparaveis": 722,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -55004,6 +60013,17 @@
       "sim": 102,
       "nao": 55,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1012,
+        "diferentes": 163
+      },
+      "partido": {
+        "comparaveis": 1008,
+        "diferentes": 13
+      },
+      "nota": null
     }
   },
   {
@@ -55101,6 +60121,17 @@
       "sim": 97,
       "nao": 19,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 817,
+        "diferentes": 208
+      },
+      "partido": {
+        "comparaveis": 823,
+        "diferentes": 96
+      },
+      "nota": null
     }
   },
   {
@@ -55194,6 +60225,17 @@
       "sim": 96,
       "nao": 44,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 881,
+        "diferentes": 310
+      },
+      "partido": {
+        "comparaveis": 922,
+        "diferentes": 321
+      },
+      "nota": null
     }
   },
   {
@@ -55300,6 +60342,17 @@
       "sim": 54,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 301,
+        "diferentes": 88
+      },
+      "partido": {
+        "comparaveis": 301,
+        "diferentes": 8
+      },
+      "nota": null
     }
   },
   {
@@ -55393,6 +60446,17 @@
       "sim": 106,
       "nao": 14,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 786,
+        "diferentes": 183
+      },
+      "partido": {
+        "comparaveis": 794,
+        "diferentes": 85
+      },
+      "nota": null
     }
   },
   {
@@ -55525,6 +60589,17 @@
       "sim": 129,
       "nao": 5,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 866,
+        "diferentes": 281
+      },
+      "partido": {
+        "comparaveis": 864,
+        "diferentes": 348
+      },
+      "nota": null
     }
   },
   {
@@ -55644,6 +60719,17 @@
       "sim": 139,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 947,
+        "diferentes": 297
+      },
+      "partido": {
+        "comparaveis": 954,
+        "diferentes": 31
+      },
+      "nota": null
     }
   },
   {
@@ -55757,6 +60843,17 @@
       "sim": 101,
       "nao": 37,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 52,
+        "diferentes": 27
+      },
+      "partido": {
+        "comparaveis": 52,
+        "diferentes": 17
+      },
+      "nota": null
     }
   },
   {
@@ -55850,6 +60947,11 @@
       "sim": 7,
       "nao": 0,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -55982,6 +61084,17 @@
       "sim": 119,
       "nao": 17,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 886,
+        "diferentes": 12
+      },
+      "partido": {
+        "comparaveis": 886,
+        "diferentes": 13
+      },
+      "nota": null
     }
   },
   {
@@ -56140,6 +61253,17 @@
       "sim": 113,
       "nao": 24,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 921,
+        "diferentes": 14
+      },
+      "partido": {
+        "comparaveis": 920,
+        "diferentes": 14
+      },
+      "nota": null
     }
   },
   {
@@ -56246,6 +61370,17 @@
       "sim": 82,
       "nao": 20,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 628,
+        "diferentes": 137
+      },
+      "partido": {
+        "comparaveis": 632,
+        "diferentes": 97
+      },
+      "nota": null
     }
   },
   {
@@ -56369,6 +61504,17 @@
       "sim": 105,
       "nao": 9,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 789,
+        "diferentes": 200
+      },
+      "partido": {
+        "comparaveis": 796,
+        "diferentes": 49
+      },
+      "nota": null
     }
   },
   {
@@ -56501,6 +61647,17 @@
       "sim": 99,
       "nao": 10,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 729,
+        "diferentes": 48
+      },
+      "partido": {
+        "comparaveis": 729,
+        "diferentes": 49
+      },
+      "nota": null
     }
   },
   {
@@ -56645,6 +61802,17 @@
       "sim": 94,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 755,
+        "diferentes": 120
+      },
+      "partido": {
+        "comparaveis": 760,
+        "diferentes": 120
+      },
+      "nota": null
     }
   },
   {
@@ -56771,6 +61939,17 @@
       "sim": 120,
       "nao": 15,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 888,
+        "diferentes": 139
+      },
+      "partido": {
+        "comparaveis": 875,
+        "diferentes": 104
+      },
+      "nota": null
     }
   },
   {
@@ -56864,6 +62043,14 @@
       "sim": 157,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 614,
+        "diferentes": 22
+      },
+      "nota": null
     }
   },
   {
@@ -56996,6 +62183,17 @@
       "sim": 116,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 857,
+        "diferentes": 17
+      },
+      "partido": {
+        "comparaveis": 855,
+        "diferentes": 15
+      },
+      "nota": null
     }
   },
   {
@@ -57128,6 +62326,14 @@
       "sim": 118,
       "nao": 20,
       "abstencao": 3
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 820,
+        "diferentes": 172
+      },
+      "partido": null,
+      "nota": "menos de 50 votos comparáveis"
     }
   },
   {
@@ -57283,6 +62489,17 @@
       "sim": 74,
       "nao": 23,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 604,
+        "diferentes": 95
+      },
+      "partido": {
+        "comparaveis": 610,
+        "diferentes": 52
+      },
+      "nota": null
     }
   },
   {
@@ -57376,6 +62593,17 @@
       "sim": 123,
       "nao": 18,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 922,
+        "diferentes": 10
+      },
+      "partido": {
+        "comparaveis": 921,
+        "diferentes": 10
+      },
+      "nota": null
     }
   },
   {
@@ -57473,6 +62701,14 @@
       "sim": 93,
       "nao": 3,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": null,
+      "partido": {
+        "comparaveis": 637,
+        "diferentes": 24
+      },
+      "nota": null
     }
   },
   {
@@ -57574,6 +62810,17 @@
       "sim": 108,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 637,
+        "diferentes": 31
+      },
+      "partido": {
+        "comparaveis": 636,
+        "diferentes": 34
+      },
+      "nota": null
     }
   },
   {
@@ -57671,6 +62918,17 @@
       "sim": 80,
       "nao": 1,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 498,
+        "diferentes": 191
+      },
+      "partido": {
+        "comparaveis": 500,
+        "diferentes": 33
+      },
+      "nota": null
     }
   },
   {
@@ -57764,6 +63022,17 @@
       "sim": 133,
       "nao": 11,
       "abstencao": 1
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 926,
+        "diferentes": 305
+      },
+      "partido": {
+        "comparaveis": 976,
+        "diferentes": 67
+      },
+      "nota": null
     }
   },
   {
@@ -57874,6 +63143,17 @@
       "sim": 116,
       "nao": 10,
       "abstencao": 2
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 795,
+        "diferentes": 13
+      },
+      "partido": {
+        "comparaveis": 794,
+        "diferentes": 11
+      },
+      "nota": null
     }
   },
   {
@@ -58018,6 +63298,17 @@
       "sim": 126,
       "nao": 2,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 778,
+        "diferentes": 51
+      },
+      "partido": {
+        "comparaveis": 65,
+        "diferentes": 5
+      },
+      "nota": null
     }
   },
   {
@@ -58111,6 +63402,17 @@
       "sim": 72,
       "nao": 73,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 912,
+        "diferentes": 249
+      },
+      "partido": {
+        "comparaveis": 920,
+        "diferentes": 95
+      },
+      "nota": null
     }
   },
   {
@@ -58217,6 +63519,17 @@
       "sim": 61,
       "nao": 22,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 429,
+        "diferentes": 56
+      },
+      "partido": {
+        "comparaveis": 433,
+        "diferentes": 61
+      },
+      "nota": null
     }
   },
   {
@@ -58349,6 +63662,17 @@
       "sim": 117,
       "nao": 17,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 890,
+        "diferentes": 14
+      },
+      "partido": {
+        "comparaveis": 888,
+        "diferentes": 11
+      },
+      "nota": null
     }
   },
   {
@@ -58442,6 +63766,17 @@
       "sim": 124,
       "nao": 4,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 857,
+        "diferentes": 268
+      },
+      "partido": {
+        "comparaveis": 863,
+        "diferentes": 32
+      },
+      "nota": null
     }
   },
   {
@@ -58535,6 +63870,17 @@
       "sim": 90,
       "nao": 69,
       "abstencao": 0
+    },
+    "divergencia": {
+      "faixa": {
+        "comparaveis": 1054,
+        "diferentes": 296
+      },
+      "partido": {
+        "comparaveis": 1059,
+        "diferentes": 190
+      },
+      "nota": null
     }
   }
 ]
