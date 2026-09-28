@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Câmara Aberta — o que cada deputado propôs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --esq:#d85a30; --cesq:#b88f5a; --cen:#888780; --cdir:#4a7a9f; --dir:#0c447c; --sem:#c8cace;
+  --tinta:#000; --tinta2:#4a4d52; --tinta3:#8b8f96;
+  --linha:#e0e2e5; --linha2:#eff0f2; --fundo:#f4f5f6; --papel:#fff;
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);
+     font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+     font-variant-numeric:tabular-nums;
+     padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+/* ---------- topo ---------- */
+.capa{padding:44px 0 26px}
+h1{font-family:var(--serif);font-size:clamp(34px,5.4vw,52px);font-weight:500;
+   letter-spacing:-.015em;line-height:1.04}
+.chamada{font-family:var(--serif);font-size:clamp(16px,2.1vw,19px);color:var(--tinta2);
+         margin-top:10px;max-width:46ch;line-height:1.45}
+
+/* ---------- busca ---------- */
+.busca{position:relative;margin-top:26px;max-width:440px}
+.busca input{width:100%;font:inherit;font-size:16px;padding:12px 14px;
+             border:1.5px solid var(--linha);border-radius:3px;background:var(--papel);
+             color:var(--tinta);transition:border-color .14s}
+.busca input:focus{outline:none;border-color:var(--tinta)}
+.busca input::placeholder{color:var(--tinta3)}
+.achados{position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--papel);
+         border:1.5px solid var(--tinta);border-radius:3px;max-height:290px;overflow-y:auto;
+         z-index:60;display:none;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+.achados.on{display:block}
+.achado{padding:9px 14px;cursor:pointer;display:flex;justify-content:space-between;
+        gap:12px;align-items:baseline;border-bottom:1px solid var(--linha2)}
+.achado:last-child{border-bottom:none}
+.achado:hover,.achado.sel{background:#f2f3f4}
+.achado b{font-weight:500;font-size:14px}
+.achado span{font-size:12.5px;color:var(--tinta3);white-space:nowrap}
+.achado .pastilha{width:7px;height:7px;border-radius:50%;flex-shrink:0;
+                  display:inline-block;vertical-align:middle}
+.nada{padding:11px 14px;font-size:13.5px;color:var(--tinta3)}
+
+/* ---------- glossário ---------- */
+.termos{border-top:1px solid var(--linha);margin-top:34px;padding-top:22px;
+        display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+        gap:20px 30px}
+.termo dt{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:2px}
+.termo dd{font-size:13.5px;line-height:1.5;color:var(--tinta2);max-width:38ch}
+
+/* ---------- painel do gráfico ---------- */
+.painel{background:var(--papel);border:1px solid var(--linha);border-radius:4px;
+        margin-top:30px;padding:20px 22px 16px}
+.painel-cab{display:flex;justify-content:space-between;align-items:baseline;
+            gap:16px;flex-wrap:wrap;margin-bottom:4px}
+.painel-cab h2{font-family:var(--serif);font-size:20px;font-weight:600}
+.leitura{font-size:13px;color:var(--tinta2);max-width:60ch;margin-bottom:16px}
+
+.controles{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+.bloco{display:flex;gap:4px;align-items:center}
+.bloco+.bloco{margin-left:8px;padding-left:14px;border-left:1px solid var(--linha)}
+.rotulo{font-size:12.5px;color:var(--tinta3);margin-right:5px}
+.pino{font:inherit;font-size:12.5px;padding:4px 10px;border:1px solid var(--linha);
+      background:var(--papel);color:var(--tinta2);border-radius:2px;cursor:pointer;
+      transition:.13s;white-space:nowrap}
+.pino:hover{border-color:#b8bbbf;color:var(--tinta)}
+.pino.on{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.pino:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+.quantos{font-size:12.5px;color:var(--tinta3);margin-left:auto}
+
+.tela{position:relative;width:100%;height:540px}
+.tela svg{position:absolute;inset:0}
+.pt{cursor:pointer;transition:opacity .16s}
+.pt.apagado{opacity:.06!important}
+
+.dica{position:absolute;pointer-events:none;background:#000;color:#fff;
+      padding:8px 11px;border-radius:3px;font-size:12.5px;line-height:1.45;
+      opacity:0;transition:opacity .11s;z-index:30;white-space:nowrap}
+.dica.on{opacity:1}
+.dica b{font-weight:500}
+.dica em{font-style:normal;color:#a8acb2;display:block;font-size:11.5px;margin-top:1px}
+
+.faixas{display:flex;flex-wrap:wrap;gap:15px;margin-top:16px;padding-top:14px;
+        border-top:1px solid var(--linha2);font-size:12.5px;color:var(--tinta2)}
+.faixa{display:flex;align-items:center;gap:6px;cursor:pointer;
+       background:none;border:none;font:inherit;color:inherit;padding:0}
+.faixa:hover{color:var(--tinta)}
+.faixa.off{opacity:.3}
+.faixa i{width:10px;height:10px;border-radius:50%;display:block}
+.rodape{font-size:11.5px;color:var(--tinta3);margin-top:14px;line-height:1.6;max-width:76ch}
+.rodape code{font-family:ui-monospace,monospace;font-size:11px;background:var(--linha2);
+             padding:1px 5px;border-radius:2px}
+
+/* ---------- ficha ---------- */
+.veu{display:none;position:fixed;inset:0;background:rgba(10,12,15,.46);z-index:100;
+     align-items:center;justify-content:center;padding:18px}
+.veu.on{display:flex}
+.ficha{background:var(--papel);border-radius:5px;padding:28px;max-width:560px;width:100%;
+       max-height:88vh;overflow-y:auto}
+.ficha-topo{display:flex;justify-content:space-between;align-items:start;gap:16px;margin-bottom:20px}
+.ficha h2{font-family:var(--serif);font-size:25px;font-weight:600;line-height:1.15}
+.ficha .quem{font-size:13.5px;color:var(--tinta3);margin-top:3px}
+.sair{background:none;border:none;font-size:25px;color:var(--tinta3);cursor:pointer;
+      line-height:1;padding:0 2px}
+.sair:hover{color:var(--tinta)}
+
+.frase{font-family:var(--serif);font-size:19px;line-height:1.45;margin-bottom:6px}
+.frase b{font-weight:600}
+.trilho{height:4px;background:var(--linha);border-radius:2px;overflow:hidden;margin:12px 0 6px}
+.trilho i{display:block;height:100%;background:var(--tinta)}
+.trilho-leg{font-size:12px;color:var(--tinta3)}
+
+.grade{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--linha);
+       border:1px solid var(--linha);border-radius:3px;overflow:hidden;margin-top:18px}
+.cel{background:var(--papel);padding:11px 8px;text-align:center}
+.cel b{display:block;font-family:var(--serif);font-size:20px;font-weight:600;line-height:1.1}
+.cel span{font-size:11.5px;color:var(--tinta3)}
+
+.origem{font-size:11.5px;color:var(--tinta3);margin-top:12px;line-height:1.55}
+
+.secao{font-family:var(--serif);font-size:17px;font-weight:600;
+       margin:24px 0 3px;padding-top:18px;border-top:1px solid var(--linha)}
+.secao-sub{font-size:12px;color:var(--tinta3);margin-bottom:11px}
+
+.prop{border:1px solid var(--linha);border-radius:3px;padding:12px 13px;margin-bottom:10px;
+      cursor:pointer;position:relative;transition:border-color .13s}
+.prop:hover{border-color:#bfc2c6}
+.prop-num{font-size:12px;color:var(--tinta3)}
+.prop-tit{font-size:14px;line-height:1.4;margin-top:3px}
+.prop-pe{display:flex;gap:9px;align-items:center;margin-top:9px;flex-wrap:wrap}
+.selo{font-size:11.5px;font-weight:500;padding:2px 8px;border-radius:2px;white-space:nowrap}
+.s-lei{background:#000;color:#fff}
+.s-aprovada{background:#e2efe6;color:#1d5c37}
+.s-rejeitada{background:#f5e0e0;color:#862929}
+.s-tramitacao{background:#f5eed8;color:#775a11}
+.placar{font-size:12px;color:var(--tinta2)}
+
+.resumo{font-size:13px;line-height:1.55;color:var(--tinta2)}
+.resumo a{display:block;margin-top:9px;font-size:12px;color:#0c447c;text-decoration:none}
+.resumo a:hover{text-decoration:underline}
+.resumo .cru{font-style:italic;color:var(--tinta3)}
+@media(hover:hover) and (pointer:fine){
+  .resumo{position:absolute;left:10px;right:10px;bottom:calc(100% - 2px);
+          background:#000;color:#e8eaec;padding:11px 13px;border-radius:3px;
+          opacity:0;visibility:hidden;transition:opacity .12s;z-index:40;
+          box-shadow:0 10px 26px rgba(0,0,0,.24);pointer-events:none}
+  .prop:hover .resumo{opacity:1;visibility:visible}
+  .resumo a{display:none}
+}
+@media not all and (hover:hover){
+  .resumo{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--linha2)}
+  .prop.aberto .resumo{display:block}
+}
+.vazio{font-size:13px;color:var(--tinta3);padding:8px 0}
+
+
+.corpo{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:26px;align-items:start}
+.lado{border-left:1px solid var(--linha);padding-left:24px}
+.lado h3{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:2px}
+.lado .obs{font-size:12px;color:var(--tinta3);margin-bottom:14px;line-height:1.45}
+.plenario{width:100%;display:block;margin-bottom:6px}
+.assento{transition:opacity .16s}
+.assento.apagado{opacity:.1}
+.total{text-align:center;font-family:var(--serif);font-size:13px;color:var(--tinta3);
+       margin-bottom:16px}
+.total b{display:block;font-size:30px;font-weight:600;color:var(--tinta);line-height:1}
+
+.conta{width:100%;border-collapse:collapse}
+.conta tr{cursor:pointer}
+.conta tr:hover td{color:var(--tinta)}
+.conta tr.off{opacity:.32}
+.conta td{padding:5px 0;font-size:12.5px;color:var(--tinta2);vertical-align:middle}
+.conta td.n{text-align:right;font-weight:500;color:var(--tinta);width:34px}
+.conta td.p{text-align:right;width:40px;font-size:11.5px;color:var(--tinta3)}
+.conta i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px}
+.conta .haste{height:3px;background:var(--linha2);border-radius:2px;margin-top:3px}
+.conta .haste i{display:block;height:100%;border-radius:2px;width:0;margin:0}
+
+@media(max-width:940px){
+  .corpo{grid-template-columns:1fr;gap:22px}
+  .lado{border-left:none;border-top:1px solid var(--linha);padding-left:0;padding-top:20px}
+  .plenario{max-width:340px;margin:0 auto 6px}
+}
+
+
+.mapa{background:var(--papel);border:1px solid var(--linha);border-radius:4px;
+      margin-top:22px;padding:20px 22px 18px}
+.mapa-cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.mapa-cab h2{font-family:var(--serif);font-size:20px;font-weight:600}
+.mapa .leitura{margin-bottom:18px}
+.regs{display:flex;flex-direction:column;gap:3px}
+.reg{display:grid;grid-template-columns:104px minmax(0,1fr) 52px;gap:14px;align-items:center;
+     padding:7px 8px;border-radius:3px;cursor:pointer;transition:background .13s;
+     background:none;border:none;font:inherit;text-align:left;color:inherit;width:100%}
+.reg:hover{background:#f7f8f9}
+.reg.ativa{background:#f0f1f3}
+.reg.ofusca{opacity:.38}
+.reg-nome{font-size:13.5px;font-weight:500}
+.reg-uf{font-size:11.5px;color:var(--tinta3);font-weight:400}
+.pilha{display:flex;height:30px;border-radius:2px;overflow:hidden}
+.pilha span{display:flex;align-items:center;justify-content:center;transition:width .22s;
+            font-size:11px;font-weight:600;color:#fff;overflow:hidden;white-space:nowrap;
+            letter-spacing:-.01em}
+.pilha span.escuro{color:#3a3a3a}
+.reg-n{text-align:right;font-size:13px;color:var(--tinta2)}
+.reg-n b{font-weight:500;color:var(--tinta)}
+.mapa-pe{font-size:11.5px;color:var(--tinta3);margin-top:14px;padding-top:12px;
+         border-top:1px solid var(--linha2);line-height:1.55}
+@media(max-width:620px){
+  .reg{grid-template-columns:78px minmax(0,1fr) 44px;gap:9px}
+  .reg-uf{display:none}
+}
+
+
+.votos{background:var(--papel);border:1px solid var(--linha);border-radius:4px;
+       margin-top:22px;padding:20px 22px 18px}
+.votos-cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.votos-cab h2{font-family:var(--serif);font-size:20px;font-weight:600}
+
+.vt{display:grid;grid-template-columns:minmax(0,1fr) 122px 88px 106px;gap:16px;align-items:center;
+    padding:13px 10px;border-radius:3px;border-bottom:1px solid var(--linha2)}
+.vt:last-child{border-bottom:none}
+.vt:hover{background:#f8f9fa}
+.vt-num{font-size:11.5px;color:var(--tinta3)}
+.vt-tit{font-size:13.5px;line-height:1.4;margin-top:2px}
+.vt-res{font-size:11.5px;color:var(--tinta2);margin-top:5px}
+.vt-res b{font-weight:600;color:var(--tinta)}
+
+.adesao{display:flex;gap:3px;align-items:flex-end;height:38px}
+.adesao div{flex:1;position:relative;height:100%;background:var(--linha2);border-radius:1px}
+.adesao i{position:absolute;bottom:0;left:0;right:0;border-radius:1px;display:block}
+.adesao-leg{font-size:10px;color:var(--tinta3);margin-top:4px;text-align:center}
+
+.cruz{text-align:right}
+.cruz b{font-family:var(--serif);font-size:19px;font-weight:600;display:block;line-height:1.1}
+.cruz span{font-size:10.5px;color:var(--tinta3)}
+
+.meia{position:absolute;left:0;right:0;top:50%;height:1px;background:#c9ccd0;z-index:1}
+
+.votos-pe{font-size:11.5px;color:var(--tinta3);margin-top:16px;padding-top:12px;
+          border-top:1px solid var(--linha2);line-height:1.55}
+.cabecalho-col{display:grid;grid-template-columns:minmax(0,1fr) 122px 88px 106px;gap:16px;
+               padding:0 10px 8px;font-size:11px;color:var(--tinta3);
+               border-bottom:1px solid var(--linha)}
+.cabecalho-col span:nth-child(2){text-align:center}
+.cabecalho-col span:nth-child(3),.cabecalho-col span:nth-child(4){text-align:right}
+.vt-med{font-size:11.5px;color:var(--tinta2);margin-top:2px}
+.vt-med b{font-weight:600;color:var(--tinta)}
+.vt-num a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--tinta3)}
+/* dados reais: não há fonte de consulta pública ligada — a coluna sai, em vez de
+   afirmar "sem consulta" para votações sobre as quais não sabemos nada */
+.votos.real .vt,.votos.real .cabecalho-col{grid-template-columns:minmax(0,1fr) 122px 106px}
+.votos.real .consulta,.votos.real .cabecalho-col span:nth-child(3){display:none}
+
+@media(max-width:700px){
+  .vt,.cabecalho-col,
+  .votos.real .vt,.votos.real .cabecalho-col{grid-template-columns:minmax(0,1fr) 96px;gap:12px}
+  .cruz,.consulta{display:none}
+  .cabecalho-col span:nth-child(3),.cabecalho-col span:nth-child(4){display:none}
+}
+
+
+
+.caso{border:1px solid var(--linha);border-radius:3px;padding:12px 14px}
+.caso-tit{font-size:12.5px;font-weight:600;margin-bottom:9px}
+.caso-tit em{font-style:normal;font-weight:400;color:var(--tinta3)}
+.caso-barras{display:flex;gap:4px;align-items:flex-end;height:44px;position:relative}
+.caso-barras div{flex:1;height:100%;background:var(--linha2);border-radius:1px;position:relative}
+.caso-barras i{position:absolute;bottom:0;left:0;right:0;border-radius:1px;display:block}
+.caso-eixo{display:flex;justify-content:space-between;font-size:10px;
+           color:var(--tinta3);margin-top:5px}
+.caso-nota{font-size:11.5px;color:var(--tinta2);margin-top:9px;line-height:1.45}
+.caso-nota b{font-weight:600;color:var(--tinta)}
+
+@media(max-width:780px){
+  }
+
+
+.regua{margin-top:18px;padding-top:16px;border-top:1px solid var(--linha2)}
+.regua-tit{font-size:12.5px;font-weight:600;margin-bottom:10px}
+.regua-barra{height:8px;border-radius:4px;position:relative;
+             background:linear-gradient(90deg,#c9ccd0 0%,#9aa3ad 34%,#4a7a9f 68%,#0c447c 100%)}
+.regua-marcas{display:flex;justify-content:space-between;margin-top:6px;
+              font-size:10.5px;color:var(--tinta3)}
+.regua-texto{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+.regua-texto div{font-size:11.5px;line-height:1.45;color:var(--tinta2)}
+.regua-texto b{display:block;font-weight:600;color:var(--tinta);font-size:12px;margin-bottom:1px}
+@media(max-width:560px){.regua-texto{grid-template-columns:1fr;gap:9px}}
+
+
+.saibamais{background:none;border:none;font:inherit;font-size:inherit;color:var(--tinta3);
+           cursor:pointer;padding:0;border-bottom:1px dotted var(--tinta3);line-height:1.2}
+.saibamais:hover{color:var(--tinta);border-bottom-color:var(--tinta)}
+.saibamais:focus-visible{outline:2px solid var(--tinta);outline-offset:3px}
+
+.pop{position:fixed;z-index:120;width:min(400px,calc(100vw - 32px));
+     background:rgba(18,19,22,.93);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+     color:#e9eaec;border-radius:7px;padding:20px 22px;
+     box-shadow:0 18px 50px rgba(0,0,0,.42);
+     max-height:min(560px,calc(100vh - 40px));overflow-y:auto;
+     opacity:0;visibility:hidden;transition:opacity .14s}
+.pop.on{opacity:1;visibility:visible}
+.pop h4{font-family:var(--serif);font-size:18px;font-weight:600;color:#fff;margin-bottom:9px}
+.pop p{font-size:12.5px;line-height:1.6;color:#c3c6ca}
+.pop p+p{margin-top:9px}
+.pop .fraco{color:#9599a0;font-size:11.5px;margin-top:11px}
+.pop-sair{position:absolute;top:12px;right:14px;background:none;border:none;
+          color:#8e9299;font-size:20px;cursor:pointer;line-height:1}
+.pop-sair:hover{color:#fff}
+
+.pop .caso{border:1px solid rgba(255,255,255,.14);border-radius:4px;padding:11px 12px;
+           margin-top:12px}
+.pop .caso-tit{font-size:12px;font-weight:600;color:#fff;margin-bottom:8px}
+.pop .caso-tit em{font-style:normal;font-weight:400;color:#9599a0}
+.pop .caso-barras{display:flex;gap:4px;align-items:flex-end;height:40px}
+.pop .caso-barras div{flex:1;height:100%;background:rgba(255,255,255,.11);
+                      border-radius:1px;position:relative}
+.pop .caso-barras i{position:absolute;bottom:0;left:0;right:0;border-radius:1px;display:block}
+.pop .caso-eixo{display:flex;justify-content:space-between;font-size:10px;
+                color:#84888f;margin-top:5px}
+.pop .caso-nota{font-size:11px;color:#b6b9be;margin-top:8px;line-height:1.45}
+.pop .caso-nota b{color:#fff;font-weight:600}
+
+.pop .regua{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.14)}
+.pop .regua-tit{font-size:12px;font-weight:600;color:#fff;margin-bottom:9px}
+.pop .regua-barra{height:7px;border-radius:4px;
+     background:linear-gradient(90deg,#6b7078 0%,#8f99a4 34%,#5d90b8 68%,#2a6fb0 100%)}
+.pop .regua-marcas{display:flex;justify-content:space-between;margin-top:5px;
+                   font-size:10px;color:#84888f}
+.pop .regua-texto{margin-top:11px;display:flex;flex-direction:column;gap:7px}
+.pop .regua-texto div{font-size:11.5px;line-height:1.45;color:#b6b9be}
+.pop .regua-texto b{color:#fff;font-weight:600}
+
+@media(max-width:560px){
+  .pop{left:16px!important;right:16px!important;top:auto!important;
+       bottom:16px;width:auto;max-height:76vh}
+}
+@media(prefers-reduced-motion:reduce){.pop{transition:none}}
+
+
+.partic{margin-top:20px;padding-top:16px;border-top:1px solid var(--linha)}
+.partic-tit{font-family:var(--serif);font-size:16px;font-weight:600;margin-bottom:3px}
+.partic-fr{font-size:13px;color:var(--tinta2);margin-bottom:11px;line-height:1.5}
+.partic-fr b{font-weight:600;color:var(--tinta)}
+.partic-barra{display:flex;height:26px;border-radius:2px;overflow:hidden;gap:2px}
+.partic-barra span{display:flex;align-items:center;justify-content:center;
+                   font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden}
+.pb-sim{background:#3d5c46}
+.pb-nao{background:#7a3b3b}
+.pb-abs{background:#8b8f96}
+.partic-leg{display:flex;gap:14px;margin-top:8px;font-size:11.5px;color:var(--tinta2);
+            flex-wrap:wrap}
+.partic-leg span{display:flex;align-items:center;gap:5px}
+.partic-leg i{width:9px;height:9px;border-radius:2px;display:block}
+.partic-pe{font-size:11px;color:var(--tinta3);margin-top:10px;line-height:1.5}
+
+
+.abas{display:flex;gap:2px;border-bottom:1px solid var(--linha);margin-bottom:18px}
+.aba{background:none;border:none;font:inherit;font-size:14px;font-weight:500;
+     padding:9px 14px;cursor:pointer;color:var(--tinta3);
+     border-bottom:2px solid transparent;margin-bottom:-1px}
+.aba:hover{color:var(--tinta)}
+.aba.on{color:var(--tinta);border-bottom-color:var(--tinta)}
+.aba:focus-visible{outline:2px solid var(--tinta);outline-offset:-2px}
+
+.vista{display:none}
+.vista.on{display:block}
+
+.tabela-rol{overflow-x:auto;-webkit-overflow-scrolling:touch;
+            margin:0 -22px;padding:0 22px}
+table.rank{width:100%;border-collapse:collapse;min-width:1000px;table-layout:fixed}
+table.rank col.c-pos{width:42px}
+table.rank col.c-dep{width:auto}
+table.rank col.c-vot{width:150px}
+table.rank col.c-pre{width:86px}
+table.rank col.c-apr{width:104px}
+table.rank col.c-lei{width:98px}
+table.rank col.c-con{width:118px}
+table.rank col.c-abs{width:96px}
+
+table.rank th{font-size:11.5px;font-weight:500;color:var(--tinta3);text-align:right;
+              padding:0 10px 9px;border-bottom:1px solid var(--linha);
+              cursor:pointer;user-select:none;line-height:1.3;vertical-align:bottom}
+table.rank th:hover{color:var(--tinta)}
+table.rank th.esq{text-align:left}
+table.rank th.ord{color:var(--tinta);font-weight:600}
+table.rank th .seta{font-size:9px;margin-left:3px}
+
+table.rank td{padding:10px;text-align:right;font-size:13px;
+              border-bottom:1px solid var(--linha2);vertical-align:middle;
+              white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.rank tr{cursor:pointer}
+table.rank tbody tr:hover td{background:#f8f9fa}
+
+.pos{color:var(--tinta3);font-size:12px}
+.dep{text-align:left}
+.dep b{font-weight:500;display:flex;align-items:center;gap:7px;
+       overflow:hidden;text-overflow:ellipsis}
+.dep b i{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dep span{font-size:11.5px;color:var(--tinta3)}
+.num{font-variant-numeric:tabular-nums}
+.forte{font-weight:600}
+
+.cel2{line-height:1.2}
+.cel2 em{display:block;font-style:normal;font-size:11px;color:var(--tinta3);margin-top:2px}
+.qc{font-size:10.5px;padding:0 5px;border-radius:2px;font-weight:500;
+    display:inline-block;margin-left:5px}
+.qc-proprio{background:#e7ecf1;color:#2b4a68}
+.qc-legenda{background:#f1f0ec;color:#6b6555}
+
+.mini{display:block;width:100%;max-width:58px;height:4px;background:var(--linha2);
+      border-radius:2px;overflow:hidden;margin:4px 0 0 auto}
+.mini i{display:block;height:100%;background:var(--tinta)}
+.sem{color:var(--tinta3)}
+.rank-pe{font-size:11.5px;color:var(--tinta3);margin-top:14px;padding-top:12px;
+         border-top:1px solid var(--linha2);line-height:1.55}
+
+
+.rank-topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+           flex-wrap:wrap;margin-bottom:14px}
+.qc{display:inline-block;font-size:10.5px;padding:1px 6px;border-radius:2px;
+    margin-left:7px;font-weight:500;vertical-align:middle}
+.qc-proprio{background:#e7ecf1;color:#2b4a68}
+.qc-legenda{background:#f1f0ec;color:#6b6555}
+
+
+.conta-passo{display:grid;grid-template-columns:auto auto auto auto auto;gap:8px;
+             align-items:center;margin:14px 0 4px;font-size:12px}
+.conta-passo div{text-align:center}
+.conta-passo b{display:block;font-family:var(--serif);font-size:17px;font-weight:600;color:#fff;
+               line-height:1.15}
+.conta-passo span{font-size:10.5px;color:#9599a0;display:block;margin-top:2px}
+.conta-passo i{font-style:normal;color:#7e838a;font-size:15px}
+.regra{border:1px solid rgba(255,255,255,.14);border-radius:4px;padding:11px 12px;margin-top:12px}
+.regra-tit{font-size:12px;font-weight:600;color:#fff;margin-bottom:7px}
+.regra-linha{display:flex;align-items:center;gap:9px;font-size:11.5px;color:#b6b9be;
+             padding:4px 0}
+.regra-linha b{color:#fff;font-weight:600;font-variant-numeric:tabular-nums;min-width:44px}
+.regra-linha em{font-style:normal;color:#8e9299;font-size:11px}
+.regra-tr{height:5px;border-radius:3px;background:rgba(255,255,255,.12);flex:1;
+          position:relative;overflow:hidden;max-width:110px}
+.regra-tr i{display:block;height:100%;background:#5d90b8;border-radius:3px}
+.regra-tr.cheio i{background:#2a6fb0}
+
+
+.consulta{text-align:right;line-height:1.25}
+.consulta b{font-family:var(--serif);font-size:16px;font-weight:600;display:block}
+.consulta small{font-size:10.5px;color:var(--tinta3);display:block;margin-top:1px}
+.consulta .barrinha{display:block;height:3px;background:var(--linha2);border-radius:2px;
+                    margin-top:5px;overflow:hidden}
+.consulta .barrinha i{display:block;height:100%;background:#4a7a9f}
+.consulta .nula{font-size:11.5px;color:var(--tinta3);font-family:var(--sans);font-weight:400}
+.amostra-fraca{color:#8a6d1f}
+
+
+.av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
+       background:var(--linha2);overflow:hidden;vertical-align:middle}
+.av-cx .av-ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+               font-weight:600;color:var(--tinta3);letter-spacing:-.02em;line-height:1}
+.av-cx img.av{position:absolute;inset:0;width:100%;height:100%;z-index:1;
+              object-fit:cover;object-position:center 22%;display:block;border:none}
+.av-cx img.av.falhou{display:none}
+
+.dep-cel{display:flex;align-items:center;gap:10px}
+.dep-txt{min-width:0;overflow:hidden}
+.dep-txt b{display:flex;align-items:center;gap:6px;font-weight:500;
+           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.ficha-topo .retrato{display:flex;gap:15px;align-items:center}
+.ficha-topo .retrato>span{flex-shrink:0}
+
+.achado{align-items:center}
+.achado-txt{min-width:0;flex:1}
+
+
+.ades{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:11px;
+      padding-top:10px;border-top:1px solid var(--linha2)}
+.ades-c{text-align:center}
+.ades-tr{height:30px;background:var(--linha2);border-radius:2px;position:relative;
+         overflow:hidden}
+.ades-tr i{position:absolute;bottom:0;left:0;right:0;border-radius:2px;display:block}
+.ades-tr .meio{position:absolute;left:0;right:0;top:50%;height:1px;background:#c9ccd0}
+.ades-pc{font-size:11.5px;font-weight:600;margin-top:4px;line-height:1.1}
+.ades-nm{font-size:9.5px;color:var(--tinta3);line-height:1.15;margin-top:1px}
+.ades-tit{font-size:11px;color:var(--tinta3);margin-top:11px;padding-top:9px;
+          border-top:1px solid var(--linha2)}
+.ades-nenhum{font-size:11.5px;color:var(--tinta3);margin-top:10px;padding-top:9px;
+             border-top:1px solid var(--linha2);font-style:italic}
+
+@media(max-width:720px){
+  .capa{padding:30px 0 20px}
+  .tela{height:400px}
+  .bloco+.bloco{margin-left:0;padding-left:0;border-left:none}
+  .grade{grid-template-columns:repeat(2,1fr)}
+  .ficha{padding:22px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+
+.av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
+       background:var(--linha2);overflow:hidden;vertical-align:middle}
+.av-cx .av-ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+               font-weight:600;color:var(--tinta3);letter-spacing:-.02em;line-height:1}
+.av-cx img.av{position:absolute;inset:0;width:100%;height:100%;z-index:1;
+              object-fit:cover;object-position:center 22%;display:block;border:none}
+.av-cx img.av.falhou{display:none}
+
+.dep-cel{display:flex;align-items:center;gap:10px}
+.dep-txt{min-width:0;overflow:hidden}
+.dep-txt b{display:flex;align-items:center;gap:6px;font-weight:500;
+           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.ficha-topo .retrato{display:flex;gap:15px;align-items:center}
+.ficha-topo .retrato>span{flex-shrink:0}
+
+.achado{align-items:center}
+.achado-txt{min-width:0;flex:1}
+
+
+.ades{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:11px;
+      padding-top:10px;border-top:1px solid var(--linha2)}
+.ades-c{text-align:center}
+.ades-tr{height:30px;background:var(--linha2);border-radius:2px;position:relative;
+         overflow:hidden}
+.ades-tr i{position:absolute;bottom:0;left:0;right:0;border-radius:2px;display:block}
+.ades-tr .meio{position:absolute;left:0;right:0;top:50%;height:1px;background:#c9ccd0}
+.ades-pc{font-size:11.5px;font-weight:600;margin-top:4px;line-height:1.1}
+.ades-nm{font-size:9.5px;color:var(--tinta3);line-height:1.15;margin-top:1px}
+.ades-tit{font-size:11px;color:var(--tinta3);margin-top:11px;padding-top:9px;
+          border-top:1px solid var(--linha2)}
+.ades-nenhum{font-size:11.5px;color:var(--tinta3);margin-top:10px;padding-top:9px;
+             border-top:1px solid var(--linha2);font-style:italic}
+
+@media(max-width:720px){
+  table.rank{min-width:620px}
+  table.rank col.c-vot{width:118px}
+  table.rank col.c-apr,table.rank col.c-abs{width:0}
+  table.rank th:nth-child(5),table.rank td:nth-child(5),
+  table.rank th:nth-child(8),table.rank td:nth-child(8){display:none}
+  table.rank td{padding:9px 7px;font-size:12.5px}
+  table.rank th{padding:0 7px 8px}
+  .rank-topo{flex-direction:column;align-items:stretch;gap:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="capa">
+    <h1>Câmara Aberta</h1>
+    <p class="chamada">Quem propôs o quê na Câmara dos Deputados, e o que de fato virou lei.</p>
+
+    <div class="busca">
+      <input id="busca" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Busque um deputado pelo nome" aria-label="Busque um deputado pelo nome">
+      <div class="achados" id="achados"></div>
+    </div>
+
+    <dl class="termos">
+      <div class="termo">
+        <dt>PL</dt>
+        <dd>Projeto de lei. Cria ou muda uma lei comum. É o tipo mais frequente.</dd>
+      </div>
+      <div class="termo">
+        <dt>PEC</dt>
+        <dd>Proposta de emenda à Constituição. Muda a lei mais importante do país e exige
+            aprovação mais difícil.</dd>
+      </div>
+      <div class="termo">
+        <dt>Espectro</dt>
+        <dd>Onde o partido do deputado se situa entre esquerda e direita: média das respostas
+            de uma pesquisa feita com os próprios parlamentares, calculada por este site.</dd>
+      </div>
+      <div class="termo">
+        <dt>Quociente</dt>
+        <dd>Quantos votos custa uma vaga no estado. É o que define quantas cadeiras cada partido
+            leva. <button class="saibamais" data-pop="popQuoc">ver a conta</button></dd>
+      </div>
+      <div class="termo">
+        <dt>Apoio cruzado</dt>
+        <dd>Quando a proposta é aprovada com votos de quem não é do campo político do autor.
+            <button class="saibamais" data-pop="popCruz">ver exemplo</button></dd>
+      </div>
+      <div class="termo">
+        <dt>Virou lei</dt>
+        <dd>A proposta percorreu toda a tramitação e hoje está em vigor. A maioria nunca
+            chega lá.</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="painel">
+    <div class="abas">
+      <button class="aba on" data-vista="vGrafico">Gráfico</button>
+      <button class="aba" data-vista="vRanking">Ranking</button>
+    </div>
+
+    <div class="vista on" id="vGrafico">
+    <p class="leitura" id="leitura"></p>
+
+    <div class="controles">
+      <div class="bloco">
+        <span class="rotulo">Região</span>
+        <button class="pino on" data-reg="">Todas</button>
+        <button class="pino" data-reg="N">Norte</button>
+        <button class="pino" data-reg="NE">Nordeste</button>
+        <button class="pino" data-reg="CO">Centro-Oeste</button>
+        <button class="pino" data-reg="SE">Sudeste</button>
+        <button class="pino" data-reg="S">Sul</button>
+      </div>
+      <div class="bloco">
+        <span class="rotulo">Eixo vertical</span>
+        <button class="pino on" id="yApres">Apresentadas</button>
+        <button class="pino" id="yLei">Viraram lei</button>
+      </div>
+      <div class="bloco">
+        <span class="rotulo">Escala</span>
+        <button class="pino on" id="pLog">Comprimida</button>
+        <button class="pino" id="pLin">Proporcional</button>
+      </div>
+      <span class="quantos" id="quantos"></span>
+    </div>
+
+    <div class="corpo">
+      <div>
+        <div class="tela" id="tela"><div class="dica" id="dica"></div></div>
+        <div class="faixas" id="faixas"></div>
+      </div>
+
+      <aside class="lado">
+        <h3>Composição</h3>
+        <p class="obs">Cada assento é um deputado, do mais à esquerda ao mais à direita.</p>
+        <svg class="plenario" id="plenario" viewBox="0 0 300 168" role="img"
+             aria-label="Assentos da Câmara ordenados pela posição no espectro"></svg>
+        <p class="total"><b id="totalN">513</b>deputados</p>
+        <table class="conta"><tbody id="conta"></tbody></table>
+      </aside>
+    </div>
+    <p class="rodape" id="rodape"></p>
+    </div>
+
+    <div class="vista" id="vRanking">
+      <div class="rank-topo">
+        <p class="leitura" style="margin:0">Os 513 deputados em tabela. Clique no título de uma
+           coluna para reordenar, e numa linha para abrir a ficha.</p>
+        <div class="bloco">
+          <span class="rotulo">Votação
+            <button class="saibamais" data-pop="popQuoc">o que é quociente</button></span>
+          <button class="pino on" id="vAbs">Número de votos</button>
+          <button class="pino" id="vRel">Em quocientes</button>
+        </div>
+      </div>
+      <div class="tabela-rol">
+        <table class="rank">
+          <colgroup>
+            <col class="c-pos"><col class="c-dep"><col class="c-vot"><col class="c-pre">
+            <col class="c-apr"><col class="c-lei"><col class="c-con"><col class="c-abs">
+          </colgroup>
+          <thead><tr id="rankCab"></tr></thead>
+          <tbody id="rankCorpo"></tbody>
+        </table>
+      </div>
+      <p class="rank-pe" id="rankPe"></p>
+    </div>
+  </div>
+
+  <div class="mapa">
+    <div class="mapa-cab">
+      <h2>Espectro por região</h2>
+      <div class="bloco">
+        <button class="pino on" id="mTam">Tamanho da bancada</button>
+        <button class="pino" id="mProp">Proporção interna</button>
+      </div>
+    </div>
+    <p class="leitura" id="mapaLeitura"></p>
+    <div class="regs" id="regs"></div>
+    <p class="mapa-pe" id="mapaPe"></p>
+  </div>
+
+  <div class="votos">
+    <div class="votos-cab">
+      <h2>Como a Câmara se dividiu</h2>
+      <div class="bloco">
+        <button class="pino on" id="vDisp">Mais disputadas</button>
+        <button class="pino" id="vCons">Mais consensuais</button>
+      </div>
+    </div>
+    <p class="leitura" id="votosLeitura"></p>
+
+    <div class="cabecalho-col">
+      <span>Proposição</span>
+      <span>Quem votou a favor</span>
+      <span>Consulta pública <button class="saibamais" data-pop="popConsulta">o que é</button></span>
+      <span>Apoio cruzado <button class="saibamais" data-pop="popCruz">o que é</button></span>
+    </div>
+    <div id="votosLista"></div>
+    <p class="votos-pe" id="votosPe"></p>
+  </div>
+
+  <div style="height:48px"></div>
+</div>
+
+<div class="veu" id="veu">
+  <div class="ficha" role="dialog" aria-modal="true" aria-labelledby="fNome">
+    <div class="ficha-topo">
+      <div class="retrato">
+        <span id="fFoto"></span>
+        <div><h2 id="fNome"></h2><div class="quem" id="fQuem"></div></div>
+      </div>
+      <button class="sair" onclick="sair()" aria-label="Fechar">&times;</button>
+    </div>
+
+    <p class="frase" id="fFrase"></p>
+    <div class="trilho"><i id="fBarra" style="width:0"></i></div>
+    <div class="trilho-leg" id="fBarraLeg"></div>
+
+    <div class="grade">
+      <div class="cel"><b id="fPec">0</b><span>PECs</span></div>
+      <div class="cel"><b id="fPl">0</b><span>Projetos de lei</span></div>
+      <div class="cel"><b id="fLei">0</b><span>Virou lei</span></div>
+      <div class="cel"><b id="fPlen">0</b><span>Aprov. Plenário</span></div>
+    </div>
+    <p class="origem" id="fDiverge"></p>
+    <p class="origem" id="fEspTxt"></p>
+    <p class="origem" id="fOrigem"></p>
+
+    <div class="partic" id="fPartic"></div>
+
+    <div class="secao">Proposições votadas</div>
+    <div class="secao-sub" id="fSub"></div>
+    <div id="fProps"></div>
+  </div>
+</div>
+
+
+
+
+<div class="pop" id="popConsulta" role="dialog" aria-modal="false" aria-labelledby="popConsultaTit">
+  <button class="pop-sair" onclick="fecharPop()" aria-label="Fechar">&times;</button>
+  <h4 id="popConsultaTit">O que é consulta pública</h4>
+
+  <p>A Câmara mantém o e-Democracia, um portal onde qualquer pessoa pode opinar sobre projetos
+     em tramitação. O número aqui é a parcela dos participantes que se manifestou a favor da
+     proposta, ao lado de quantas pessoas participaram.</p>
+
+  <p><strong style="color:#fff">Isto não é pesquisa de opinião.</strong> Quem participa é quem
+     procurou o portal e se cadastrou, não uma amostra do país. Um grupo organizado consegue
+     encher uma consulta em poucos dias, e temas que mobilizam militância aparecem com números
+     muito diferentes de temas técnicos que ninguém acompanha.</p>
+
+  <p>Por isso o número de participantes vem junto, e não escondido: 90% a favor entre 80 pessoas
+     e 60% a favor entre 40 mil dizem coisas completamente diferentes. Consultas com menos de
+     500 participantes aparecem destacadas, como aviso de que a amostra é pequena demais para
+     concluir qualquer coisa.</p>
+
+  <p class="fraco">A maioria das proposições nunca é aberta a consulta, então a coluna fica vazia
+     na maior parte das linhas. Isso também não significa desinteresse: significa apenas que
+     aquele projeto não passou pelo portal. Fonte: e-Democracia, Câmara dos Deputados.</p>
+</div>
+
+<div class="pop" id="popQuoc" role="dialog" aria-modal="false" aria-labelledby="popQuocTit">
+  <button class="pop-sair" onclick="fecharPop()" aria-label="Fechar">&times;</button>
+  <h4 id="popQuocTit">O que é o quociente eleitoral</h4>
+
+  <p>Deputado federal não é eleito por ser um dos mais votados do estado. A eleição é
+     proporcional: primeiro os votos definem quantas vagas cada partido ganha, e só depois
+     se vê quais nomes ocupam essas vagas.</p>
+
+  <p>O quociente eleitoral é a conta que abre esse processo. Ele divide os votos válidos do
+     estado pelo número de cadeiras que o estado tem na Câmara, e o resultado é quantos votos
+     custa, em média, uma vaga ali.</p>
+
+  <div class="conta-passo">
+    <div><b>22,8 mi</b><span>votos válidos em SP</span></div>
+    <div><i>÷</i></div>
+    <div><b>70</b><span>vagas de SP</span></div>
+    <div><i>=</i></div>
+    <div><b>326 mil</b><span>quociente</span></div>
+  </div>
+
+  <p>É por isso que comparar votação entre estados engana. Em Roraima, que tem 8 vagas e um
+     eleitorado bem menor, o quociente fica perto de 36 mil. Um deputado eleito lá com 40 mil
+     votos teve desempenho melhor, na régua do próprio estado, que um eleito em São Paulo com
+     200 mil.</p>
+
+  <div class="regra">
+    <div class="regra-tit">Por isso a tabela mostra a votação em quocientes</div>
+    <div class="regra-linha"><b>3,00×</b>
+      <span class="regra-tr cheio"><i style="width:100%"></i></span>
+      <em>o triplo do que custa uma vaga no estado</em></div>
+    <div class="regra-linha"><b>1,00×</b>
+      <span class="regra-tr cheio"><i style="width:33%"></i></span>
+      <em>elegeu-se com a própria votação</em></div>
+    <div class="regra-linha"><b>0,30×</b>
+      <span class="regra-tr"><i style="width:10%"></i></span>
+      <em>entrou com o apoio da legenda</em></div>
+  </div>
+
+  <p class="fraco">Votação abaixo do quociente não torna o mandato menos legítimo: é assim que o
+     sistema foi desenhado. Os votos de cada candidato somam para o partido, e a bancada eleita
+     é preenchida pelos mais votados dentro dela. Quem puxa muito voto ajuda a eleger colegas;
+     quem entra pela legenda foi eleito pela votação conjunta do partido. A regra mudou em 2015,
+     quando passou a exigir que o candidato tenha ao menos 10% do quociente para assumir.</p>
+</div>
+
+<div class="pop" id="popCruz" role="dialog" aria-modal="false" aria-labelledby="popCruzTit">
+  <button class="pop-sair" onclick="fecharPop()" aria-label="Fechar">&times;</button>
+  <h4 id="popCruzTit">O que é apoio cruzado</h4>
+  <p>Aprovar uma proposta no Brasil exige juntar votos de partidos diferentes, porque nenhum
+     campo político tem maioria sozinho. Então uma pergunta útil sobre qualquer deputado é:
+     ele consegue convencer quem não pensa como ele?</p>
+  <p>Apoio cruzado mede isso. É a distância entre a posição de quem propôs e a posição média
+     de quem votou a favor.</p>
+
+  <div class="caso">
+    <div class="caso-tit">Apoio baixo <em>— ficou no próprio campo</em></div>
+    <div class="caso-barras"><div><i style="height:88%;background:#d85a30"></i></div><div><i style="height:71%;background:#b88f5a"></i></div><div><i style="height:34%;background:#888780"></i></div><div><i style="height:12%;background:#4a7a9f"></i></div><div><i style="height:6%;background:#0c447c"></i></div></div>
+    <div class="caso-eixo"><span>esquerda</span><span>direita</span></div>
+    <div class="caso-nota">Proposta de uma deputada de esquerda aprovada quase só pela esquerda.
+      Apoio cruzado <b>0,8</b>.</div>
+  </div>
+
+  <div class="caso">
+    <div class="caso-tit">Apoio alto <em>— atravessou o espectro</em></div>
+    <div class="caso-barras"><div><i style="height:79%;background:#d85a30"></i></div><div><i style="height:84%;background:#b88f5a"></i></div><div><i style="height:88%;background:#888780"></i></div><div><i style="height:81%;background:#4a7a9f"></i></div><div><i style="height:76%;background:#0c447c"></i></div></div>
+    <div class="caso-eixo"><span>esquerda</span><span>direita</span></div>
+    <div class="caso-nota">A mesma autora, outra proposta: apoio parecido em todas as faixas.
+      Apoio cruzado <b>4,3</b>.</div>
+  </div>
+
+  <div class="regua">
+    <div class="regua-tit">Como ler o número</div>
+    <div class="regua-barra"></div>
+    <div class="regua-marcas"><span>0</span><span>1</span><span>2</span><span>3</span>
+      <span>4</span><span>5 ou mais</span></div>
+    <div class="regua-texto">
+      <div><b>Até 1,5</b> — aprovada por gente do mesmo campo do autor.</div>
+      <div><b>De 1,5 a 3</b> — houve apoio de fora, nas faixas vizinhas.</div>
+      <div><b>Acima de 3</b> — reuniu votos de campos distantes entre si.</div>
+    </div>
+  </div>
+
+  <p class="fraco">A escala é a mesma do espectro, de 1 a 10. Na prática dificilmente passa de 5:
+     como é uma média, votos dos dois extremos se compensam. Valores baixos também aparecem
+     quando o autor já é de centro, então a medida diz mais sobre quem está nas pontas.
+     Só entram votações com registro de voto individual.</p>
+</div>
+
+<script>
+const CORES={'esquerda':'#d85a30','centro-esquerda':'#b88f5a','centro':'#888780',
+             'centro-direita':'#4a7a9f','direita':'#0c447c','sem-classificacao':'#c8cace'};
+const NOMES={'esquerda':'Esquerda','centro-esquerda':'Centro-esquerda','centro':'Centro',
+             'centro-direita':'Centro-direita','direita':'Direita',
+             'sem-classificacao':'Sem classificação'};
+const FONTE='média das respostas da wave 9 (2021) do Brazilian Legislative Survey, de Power e Zucco, calculada por este site — não a estimativa reescalonada publicada pelos autores. Escala de 1, esquerda, a 10, direita.';
+
+
+// Cor contínua ao longo do espectro. Interpolar em vez de classificar evita que
+// um centésimo de diferença (PL 7,41 x REPUBLICANOS 7,69) mude a cor de dezenas
+// de deputados por causa de um corte que é escolha nossa, não do dado.
+const PARADAS=[[1,[216,90,48]],[3.25,[184,143,90]],[5.5,[136,135,128]],
+               [7.75,[74,122,159]],[10,[12,68,124]]];
+function corDoScore(s){
+  if(s==null)return CORES['sem-classificacao'];
+  s=Math.max(1,Math.min(10,s));
+  for(let i=0;i<PARADAS.length-1;i++){
+    const [a,ca]=PARADAS[i],[b,cb]=PARADAS[i+1];
+    if(s<=b){
+      const t=(s-a)/(b-a);
+      return '#'+ca.map((v,j)=>Math.round(v+(cb[j]-v)*t).toString(16).padStart(2,'0')).join('');
+    }
+  }
+  return CORES['direita'];
+}
+
+const ideX=s=>s==null?null:(s-1)/9;
+function classificar(s){
+  if(s==null)return 'sem-classificacao';
+  if(s<3.50)return 'esquerda';
+  if(s<4.75)return 'centro-esquerda';
+  if(s<=6.25)return 'centro';
+  if(s<=7.50)return 'centro-direita';
+  return 'direita';
+}
+const REGIOES={N:['AC','AP','AM','PA','RO','RR','TO'],
+  NE:['AL','BA','CE','MA','PB','PE','PI','RN','SE'],
+  CO:['DF','GO','MT','MS'],SE:['ES','MG','RJ','SP'],S:['PR','RS','SC']};
+const UF_REG={}; for(const r in REGIOES) REGIOES[r].forEach(u=>UF_REG[u]=r);
+
+
+// votos válidos por UF para deputado federal, ordem de grandeza da eleição de 2022.
+// Fonte a integrar: dados abertos do TSE.
+const VALIDOS_UF={SP:22800000,MG:10600000,RJ:8300000,BA:7200000,RS:6300000,PR:6100000,
+ PE:4600000,CE:4600000,PA:3900000,SC:4200000,MA:3400000,GO:3400000,AM:2000000,ES:2300000,
+ PB:2300000,MT:1900000,RN:1900000,AL:1700000,PI:1700000,DF:1700000,MS:1500000,SE:1200000,
+ RO:950000,TO:900000,AC:420000,AP:420000,RR:290000};
+const VAGAS_UF={SP:70,MG:53,RJ:46,BA:39,RS:31,PR:30,PE:25,CE:22,PA:17,SC:16,MA:18,GO:17,
+ AM:8,ES:10,PB:12,MT:8,RN:8,AL:9,PI:10,DF:8,MS:8,SE:8,RO:8,TO:8,AC:8,AP:8,RR:8};
+
+let seed=7; const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+
+// ---- demonstração: 513 pontos com as bancadas reais ----
+// Bancadas de demonstração — somam exatamente 513. Os scores são PLACEHOLDER:
+// devem vir do Brazilian Legislative Survey (ver CLAUDE.md), nunca de estimativa.
+const BANCADAS=[['PL',92,8.6],['PT',68,2.2],['UNIÃO',59,6.8],['PP',50,7.4],
+  ['REPUBLICANOS',43,7.6],['MDB',42,5.9],['PSD',42,5.7],['PSDB',13,6.1],['PDT',16,3.6],
+  ['PSB',14,3.4],['PODE',12,6.4],['PSOL',12,1.5],['AVANTE',7,6.2],['SOLIDARIEDADE',5,5.4],
+  ['PCdoB',6,1.8],['CIDADANIA',4,4.9],['PV',6,3.9],['PRD',12,6.9],['NOVO',4,null],
+  ['REDE',2,3.1],['PMB',2,null],['PRTB',2,null]];
+const UFS=Object.keys(UF_REG);
+const PRIM=['Ana','Carlos','Marina','José','Luciana','Pedro','Fernanda','Rafael','Beatriz',
+  'Antônio','Juliana','Marcos','Patrícia','Eduardo','Camila','Roberto','Débora','Sérgio'];
+const SOBR=['Almeida','Barbosa','Cardoso','Duarte','Fontes','Gomes','Lima','Moreira',
+  'Nunes','Prado','Queiroz','Ramos','Siqueira','Teixeira','Vasques','Xavier'];
+
+function volume(){
+  const u=rnd();
+  if(u>0.994)return 380+Math.floor(rnd()*180);
+  if(u>0.97) return 90+Math.floor(rnd()*120);
+  if(u>0.85) return 28+Math.floor(rnd()*55);
+  if(u>0.55) return 9+Math.floor(rnd()*18);
+  return 1+Math.floor(rnd()*9);
+}
+
+let deputados=[], demo=true, semScoreNenhum=false;
+
+function montarDemo(){
+  const a=[]; let n=0;
+  BANCADAS.forEach(([sigla,qtd,score])=>{
+    for(let i=0;i<qtd;i++){
+      const uf=UFS[Math.floor(rnd()*UFS.length)];
+      const pl=volume(), pec=Math.floor(rnd()*Math.min(14,pl*0.3+2));
+      const apres=pl+pec;
+      const d={id:++n,
+        nome:`${PRIM[Math.floor(rnd()*PRIM.length)]} ${SOBR[Math.floor(rnd()*SOBR.length)]}`,
+        urlFoto:null,
+        partido:sigla, uf, regiao:UF_REG[uf], score, ideologia:classificar(score),
+        pecs:pec, leis:pl, apresentadas:apres,
+        viraramLei:Math.floor(apres*(rnd()*0.22)), relatorias:null};
+      // chamadas = votações em que o voto do deputado está registrado (não um total
+      // possível: ausência não se calcula). O resto vai para obstrução/presidência.
+      const chamadas=90+Math.floor(rnd()*74);
+      const sim=Math.round(chamadas*(0.55+rnd()*0.3)), abst=Math.round(chamadas*rnd()*0.02);
+      d.votos={chamadas, sim, nao:Math.max(0,chamadas-sim-abst-Math.floor(rnd()*3)),
+               abstencao:abst};
+      const validos=VALIDOS_UF[uf]||1000000, vagas=VAGAS_UF[uf]||8;
+      const quociente=validos/vagas;
+      const u=rnd();
+      const mult = u>0.96 ? 2.2+rnd()*2.6 : u>0.78 ? 0.95+rnd()*1.1
+                 : u>0.30 ? 0.42+rnd()*0.5 : 0.12+rnd()*0.3;
+      d.votosRecebidos=Math.round(quociente*mult);
+      d.quocienteUF=Math.round(quociente);
+      d.validosUF=validos;
+      const ades=()=>{
+        const inv=rnd()>0.5, o={};
+        ['esquerda','centro-esquerda','centro','centro-direita','direita'].forEach((f,j)=>{
+          const pos=inv?(4-j)/4:j/4;
+          o[f]=+Math.max(.02,Math.min(.98,0.10+pos*0.80+(rnd()-0.5)*0.2)).toFixed(3);
+        });
+        return o;
+      };
+      if(rnd()>0.45) d.topLeis=[
+        {numero:'PL 1.234/2023',titulo:'Exemplo de proposição votada em Plenário',
+         status:'aprovada',votos:412,viroulei:true,adesao:ades(),
+         resumo:'Resumo em linguagem comum. Virá do campo resumo do arquivo de dados.',
+         ementa:'Altera a Lei nº ... para dispor sobre ...',urlCamara:'#'},
+        {numero:'PEC 45/2024',titulo:'Exemplo de proposta de emenda à Constituição',
+         status:'rejeitada',votos:289,resumo:null,adesao:ades(),
+         ementa:'Acrescenta parágrafo ao art. ... da Constituição Federal.',urlCamara:'#'},
+        {numero:'PL 8.901/2022',titulo:'Exemplo sem votação nominal',
+         status:'tramitacao',votos:null,adesao:null,
+         resumo:'Outro resumo de demonstração, mais curto.',urlCamara:'#'}];
+      a.push(d);
+    }
+  });
+  return a;
+}
+
+function posicionar(){
+  deputados.forEach(d=>{
+    const b=ideX(d.score);
+    d.x = b==null ? null : Math.max(0,Math.min(1,b+(rnd()-0.5)*0.055));
+  });
+}
+
+async function carregar(){
+  try{
+    const r=await fetch('deputados.json',{cache:'no-store'});
+    if(!r.ok) throw 0;
+    const reais=await r.json();
+    if(!Array.isArray(reais)||!reais.length) throw 0;
+    deputados=reais.map(d=>({
+      id:d.id, nome:d.nome, partido:d.partido, uf:d.uf, federacao:d.federacao||null,
+      regiao:UF_REG[d.uf]||null, urlFoto:d.urlFoto||null,
+      score:d.score??null, ideologia:classificar(d.score??null),
+      scoreNota:d.scoreNota??null,
+      pecs:d.pecs||0, leis:d.leis||0,
+      apresentadas:d.apresentadas ?? ((d.pecs||0)+(d.leis||0)),
+      viraramLei:d.viraramLei ?? null,
+      aprovadasPlenario:d.aprovadasPlenario ?? d.aprovadas ?? null,
+      relatorias:d.relatorias ?? null,
+      apoioCruzado:d.apoioCruzado ?? null,
+      votacoesNominais:d.votacoesNominais ?? null,
+      votos:d.votos ?? null,
+      votosRecebidos:d.votosRecebidos ?? null,
+      quocienteUF:d.quocienteUF ?? (VALIDOS_UF[d.uf]&&VAGAS_UF[d.uf]
+                  ? Math.round(VALIDOS_UF[d.uf]/VAGAS_UF[d.uf]) : null),
+      validosUF:d.validosUF ?? VALIDOS_UF[d.uf] ?? null,
+      topLeis:(d.topLeis||d.topProposicoes||[])
+    }));
+    demo=false;
+  }catch(e){ deputados=montarDemo(); demo=true; }
+
+  // Gráfico 2: proposicoes.json (votos.py). Independente do deputados.json — se
+  // faltar, só este bloco cai na demonstração.
+  try{
+    const r=await fetch('proposicoes.json',{cache:'no-store'});
+    if(!r.ok) throw 0;
+    const ps=await r.json();
+    if(!Array.isArray(ps)||!ps.length) throw 0;
+    votacoes=ps.map(p=>({
+      numero:p.numero||'', titulo:p.titulo||p.ementa||'', data:p.data||null,
+      urlCamara:p.urlCamara||null, tipo:(p.numero||'').split(' ')[0],
+      sim:p.sim, nao:p.nao, abstencao:p.abstencao||0, margem:p.margem,
+      adesao:p.adesaoPorFaixa||null,
+      scoreSim:p.scoreMedioSim??null, scoreNao:p.scoreMedioNao??null,
+      autorScore:p.autorScore??null, autorNota:p.autorNota||null,
+      apoioCruzado:p.apoioCruzado??null,
+      aprovacao:p.aprovacao??null,        // resultado SÓ deste campo, nunca de sim>não
+      excluidos:p.excluidosSemScore||0, excluidosPorPartido:p.excluidosPorPartido||{},
+      consulta:null}));
+    votosDemo=false;
+  }catch(e){ votacoes=[]; votosDemo=true; }
+  document.querySelector('.votos').classList.toggle('real',!votosDemo);
+
+  semScoreNenhum = deputados.length>0 && deputados.every(d=>d.score==null);
+  posicionar();
+  textos();
+  desenhar();
+}
+
+function textos(){
+  leituraTexto();
+  document.getElementById('rodape').innerHTML = demo
+    ? '<strong>Demonstração.</strong> Os 513 pontos são sintéticos, com as bancadas reais da '+
+      'Câmara, para testar a legibilidade. Gere <code>deputados.json</code> e sirva a pasta com '+
+      '<code>python -m http.server</code> para ver os dados verdadeiros. Posição no espectro: '+FONTE
+    : (semScoreNenhum
+        ? '<strong>Falta o ideologia.json.</strong> Sem os scores do BLS nenhum deputado tem '+
+          'posição no espectro, então todos aparecem na faixa cinza à direita e o eixo horizontal '+
+          'fica vazio. O eixo vertical já mostra dados reais. '
+        : '')+
+      'Proposições e votações: dados abertos da Câmara dos Deputados. Posição no espectro: '+FONTE+
+      ' Os limites entre as cinco faixas foram definidos por este site, não pela pesquisa. '+
+      'A altura mede autoria de propostas, e só isso. Boa parte do trabalho legislativo não '+
+      'aparece aqui: relatar projeto de outro deputado, emendar texto em comissão, negociar '+
+      'acordo de bancada. Um ponto baixo não significa deputado ausente ou inativo.';
+}
+
+function leituraTexto(){
+  document.getElementById('leitura').textContent = medida==='apresentadas'
+    ? 'Cada ponto é um deputado. Quanto mais à direita, mais à direita o partido dele se situa. Quanto mais alto, mais proposições apresentou. Clique num ponto para ver a ficha.'
+    : 'Agora a altura é quantas propostas viraram lei de fato. Quem apresenta centenas e emplaca duas desce até a base. Um terço da Câmara fica na linha do zero.';
+}
+
+
+
+const CURTO={'esquerda':'Esquerda','centro-esquerda':'Centro-esq.','centro':'Centro',
+             'centro-direita':'Centro-dir.','direita':'Direita'};
+
+function corta(t,n){
+  t=String(t).replace(/\s+/g,' ').trim();
+  if(t.length<=n)return t;
+  const c=t.slice(0,n);
+  const i=c.lastIndexOf(' ');
+  return (i>n*0.6?c.slice(0,i):c).replace(/[,;:.]$/,'')+'…';
+}
+
+function blocoAdesao(p){
+  if(!p.adesao){
+    return p.votos==null
+      ? '<div class="ades-nenhum">Votação sem registro de voto individual: não dá para saber como cada faixa votou.</div>'
+      : '<div class="ades-nenhum">Sem detalhamento de votos por faixa nesta votação.</div>';
+  }
+  const cols=['esquerda','centro-esquerda','centro','centro-direita','direita'].map(f=>{
+    const pct=p.adesao[f]*100;
+    return `<div class="ades-c">
+      <div class="ades-tr" title="${NOMES[f]}: ${pct.toFixed(0)}% votou sim">
+        <div class="meio"></div>
+        <i style="height:${pct.toFixed(1)}%;background:${CORES[f]}"></i></div>
+      <div class="ades-pc" style="color:${CORES[f]}">${pct.toFixed(0)}%</div>
+      <div class="ades-nm">${CURTO[f]}</div></div>`;
+  }).join('');
+  return `<div class="ades-tit">Parcela de cada faixa que votou sim</div>
+          <div class="ades" style="margin-top:7px;padding-top:0;border-top:none">${cols}</div>`;
+}
+
+// ---------- retrato ----------
+function iniciais(nome){
+  const p=nome.trim().split(/\s+/).filter(w=>w.length>2);
+  return ((p[0]||nome)[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase();
+}
+function retrato(d,px){
+  const fonte=Math.round(px*0.36);
+  const cx=`width:${px}px;height:${px}px`;
+  const img=d.urlFoto
+    ? `<img class="av" src="${d.urlFoto}" alt="" loading="lazy"
+           onerror="this.classList.add('falhou')">`
+    : '';
+  return `<span class="av-cx" style="${cx}" aria-hidden="true"
+    ><span class="av-ini" style="font-size:${fonte}px">${iniciais(d.nome)}</span>${img}</span>`;
+}
+
+// ---------- gráfico ----------
+let comprimida=true;
+let medida='apresentadas';
+const filtro={reg:'',faixas:new Set()};
+const valorY=d=>medida==='apresentadas'?(d.apresentadas||0):(d.viraramLei??0);
+// Apoio cruzado por autoria só tem amostra em 15 dos 513 deputados: votação nominal
+// de texto-base é rara. Como tamanho de bolinha ele diria "sem dado" em 97% dos casos.
+// Raio fixo até haver métrica com cobertura real. Ver CLAUDE.md.
+const raioDe=d=>4;
+const tela=document.getElementById('tela'), dica=document.getElementById('dica');
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
+
+function desenhar(){
+  const W=tela.clientWidth,H=tela.clientHeight;
+  if(!W||!H){                       // aba Ranking ativa: o scatter está oculto
+    plenarioDesenhar(); contaDesenhar(); mapaDesenhar(); votosDesenhar(); rankDesenhar();
+    return;
+  }
+  const m={t:20,r:48,b:58,l:48};
+  const pw=W-m.l-m.r, ph=H-m.t-m.b;
+  const max=Math.max(...deputados.map(valorY),1);
+
+  const svg=el('svg',{width:W,height:H});
+  const y=v=>comprimida
+    ? m.t+ph-(Math.log10(Math.max(1,v))/Math.log10(max))*ph
+    : m.t+ph-(v/max)*ph;
+
+  (comprimida?[1,2,5,10,25,50,100,250,500,1000].filter(t=>t<=max)
+             :[0,Math.round(max*.25),Math.round(max*.5),Math.round(max*.75),max])
+    .filter(t=>t<=max).forEach(t=>{
+      const yy=y(t);
+      svg.appendChild(el('line',{x1:m.l,x2:W-m.r,y1:yy,y2:yy,stroke:'#f0f1f2'}));
+      const g=el('text',{x:m.l-9,y:yy+3.5,'font-size':11,fill:'#a5a9ae','text-anchor':'end'});
+      g.textContent=t; svg.appendChild(g);
+    });
+
+  const defs=el('defs',{}),gr=el('linearGradient',{id:'esp',x1:'0',x2:'1'});
+  [['0%','#d85a30'],['25%','#b88f5a'],['50%','#888780'],['75%','#4a7a9f'],['100%','#0c447c']]
+    .forEach(([o,c])=>gr.appendChild(el('stop',{offset:o,'stop-color':c})));
+  defs.appendChild(gr); svg.appendChild(defs);
+  svg.appendChild(el('rect',{x:m.l,y:H-m.b+16,width:pw,height:4,rx:2,fill:'url(#esp)',opacity:.9}));
+
+  const rot=(x,yy,t,an)=>{const e=el('text',{x,y:yy,'font-size':11.5,fill:'#8b8f96','text-anchor':an||'middle'});
+    e.textContent=t;svg.appendChild(e)};
+  rot(m.l,H-m.b+36,'Esquerda','start');
+  rot(m.l+pw/2,H-m.b+36,'Centro');
+  rot(W-m.r,H-m.b+36,'Direita','end');
+  const ey=el('text',{x:13,y:m.t+ph/2,'font-size':11.5,fill:'#8b8f96','text-anchor':'middle',
+    transform:`rotate(-90 13 ${m.t+ph/2})`});
+  ey.textContent = medida==='apresentadas'
+    ? 'Proposições apresentadas' : 'Proposições que viraram lei';
+  svg.appendChild(ey);
+
+  let n=0;
+  deputados.forEach(d=>{
+    const total=valorY(d);
+    const cx=d.x==null?W-m.r+28:m.l+d.x*pw;
+    const rBase=raioDe(d);
+    const c=el('circle',{cx,cy:y(total),r:rBase,fill:corDoScore(d.score),
+      opacity:.6,class:'pt'});
+    const ok=(!filtro.reg||d.regiao===filtro.reg)&&(!filtro.faixas.size||filtro.faixas.has(d.ideologia));
+    if(!ok)c.classList.add('apagado'); else n++;
+    if(ok){
+      c.addEventListener('mouseenter',e=>{
+        c.setAttribute('r',rBase+3.5); c.setAttribute('opacity',1);
+        const uni=medida==='apresentadas'?'proposições apresentadas':'viraram lei';
+        dica.innerHTML=`<b>${d.nome}</b><em>${d.partido} de ${d.uf}, ${total} ${uni}</em>`;
+        dica.classList.add('on');
+        const r=tela.getBoundingClientRect();
+        let px=e.clientX-r.left+13;
+        if(px+dica.offsetWidth>W-6) px=e.clientX-r.left-dica.offsetWidth-13;
+        dica.style.left=px+'px'; dica.style.top=Math.max(2,e.clientY-r.top-42)+'px';
+      });
+      c.addEventListener('mouseleave',()=>{
+        c.setAttribute('r',rBase);
+        c.setAttribute('opacity',.6);
+        dica.classList.remove('on');
+      });
+      c.addEventListener('click',()=>abrir(d));
+    }
+    svg.appendChild(c);
+  });
+
+  tela.querySelector('svg')?.remove();
+  tela.insertBefore(svg,dica);
+  document.getElementById('quantos').textContent =
+    n===deputados.length ? `${deputados.length} deputados` : `${n} de ${deputados.length}`;
+
+  plenarioDesenhar();
+  contaDesenhar();
+  mapaDesenhar();
+  votosDesenhar();
+  rankDesenhar();
+}
+
+document.getElementById('faixas').innerHTML=Object.keys(CORES).map(k=>
+  `<button class="faixa" data-f="${k}"><i style="background:${CORES[k]}"></i>${NOMES[k]}</button>`).join('');
+document.querySelectorAll('.faixa').forEach(b=>b.onclick=()=>{
+  const k=b.dataset.f;
+  filtro.faixas.has(k)?filtro.faixas.delete(k):filtro.faixas.add(k);
+  document.querySelectorAll('.faixa').forEach(x=>
+    x.classList.toggle('off',filtro.faixas.size>0&&!filtro.faixas.has(x.dataset.f)));
+  desenhar();
+});
+document.querySelectorAll('[data-reg]').forEach(b=>b.onclick=()=>{
+  filtro.reg=b.dataset.reg;
+  document.querySelectorAll('[data-reg]').forEach(x=>x.classList.toggle('on',x===b));
+  desenhar();
+});
+pLog.onclick=()=>{comprimida=true;pLog.classList.add('on');pLin.classList.remove('on');desenhar()};
+pLin.onclick=()=>{comprimida=false;pLin.classList.add('on');pLog.classList.remove('on');desenhar()};
+
+
+// ---------- hemiciclo ----------
+function assentos(total,fileiras,r0,r1){
+  const raios=[],pesos=[];
+  for(let i=0;i<fileiras;i++){
+    const r=r0+(r1-r0)*(i/(fileiras-1));
+    raios.push(r); pesos.push(r);
+  }
+  const soma=pesos.reduce((a,b)=>a+b,0);
+  let cotas=pesos.map(p=>Math.floor(total*p/soma));
+  let resto=total-cotas.reduce((a,b)=>a+b,0);
+  const sobras=pesos.map((p,i)=>[total*p/soma-cotas[i],i]).sort((a,b)=>b[0]-a[0]);
+  for(let k=0;k<resto;k++) cotas[sobras[k%sobras.length][1]]++;
+
+  const pts=[];
+  cotas.forEach((q,i)=>{
+    const r=raios[i];
+    for(let j=0;j<q;j++){
+      const t=q===1?0.5:j/(q-1);
+      const ang=Math.PI-t*Math.PI;          // pi = esquerda, 0 = direita
+      pts.push({ang,r,x:150+r*Math.cos(ang),y:150-r*Math.sin(ang)});
+    }
+  });
+  return pts.sort((a,b)=>b.ang-a.ang);      // da esquerda para a direita
+}
+
+function plenarioDesenhar(){
+  const svg=document.getElementById('plenario');
+  svg.innerHTML='';
+  const ordem=[...deputados].sort((a,b)=>{
+    const sa=a.score==null?99:a.score, sb=b.score==null?99:b.score;
+    return sa-sb;
+  });
+  const pts=assentos(ordem.length,9,54,140);
+  const raio=ordem.length>400?2.6:4;
+
+  ordem.forEach((d,i)=>{
+    const p=pts[i]; if(!p)return;
+    const c=el('circle',{cx:p.x.toFixed(1),cy:p.y.toFixed(1),r:raio,
+      fill:corDoScore(d.score),class:'assento'});
+    const ok=(!filtro.reg||d.regiao===filtro.reg)&&
+             (!filtro.faixas.size||filtro.faixas.has(d.ideologia));
+    if(!ok)c.classList.add('apagado');
+    const t=el('title',{}); t.textContent=`${d.nome} (${d.partido} de ${d.uf})`;
+    c.appendChild(t);
+    svg.appendChild(c);
+  });
+}
+
+function contaDesenhar(){
+  const vis=deputados.filter(d=>!filtro.reg||d.regiao===filtro.reg);
+  const tot=vis.length||1;
+  const linhas=Object.keys(CORES).map(k=>{
+    const n=vis.filter(d=>d.ideologia===k).length;
+    const pct=n/tot*100;
+    const off=filtro.faixas.size>0&&!filtro.faixas.has(k);
+    return `<tr data-f="${k}" class="${off?'off':''}">
+      <td><i style="background:${CORES[k]}"></i>${NOMES[k]}
+          <div class="haste"><i style="background:${CORES[k]};width:${pct.toFixed(1)}%"></i></div></td>
+      <td class="n">${n}</td>
+      <td class="p">${pct.toFixed(0)}%</td></tr>`;
+  }).join('');
+  document.getElementById('conta').innerHTML=linhas;
+  document.getElementById('totalN').textContent=tot;
+  document.querySelectorAll('.conta tr').forEach(tr=>tr.onclick=()=>{
+    const k=tr.dataset.f;
+    filtro.faixas.has(k)?filtro.faixas.delete(k):filtro.faixas.add(k);
+    document.querySelectorAll('.faixa').forEach(x=>
+      x.classList.toggle('off',filtro.faixas.size>0&&!filtro.faixas.has(x.dataset.f)));
+    desenhar();
+  });
+}
+
+
+// ---------- espectro por região ----------
+const REG_NOME={N:'Norte',NE:'Nordeste',CO:'Centro-Oeste',SE:'Sudeste',S:'Sul'};
+let mapaProporcional=false;
+
+function mapaDesenhar(){
+  const ordem=['N','NE','CO','SE','S'];
+  const porReg={};
+  ordem.forEach(r=>porReg[r]=deputados.filter(d=>d.regiao===r));
+  const maior=Math.max(...ordem.map(r=>porReg[r].length),1);
+
+  document.getElementById('regs').innerHTML=ordem.map(r=>{
+    const lista=porReg[r], tot=lista.length;
+    const largura=mapaProporcional?100:(tot/maior*100);
+    // Faixas só na legenda e nos filtros (CLAUDE.md): contar deputados por faixa aqui
+    // poria o PL (7,41) na centro-direita por um centésimo. Cada deputado é um filete
+    // na cor contínua do score, da esquerda para a direita; sem score vai ao fim, cinza.
+    const w=tot?100/tot:0;
+    const segs=[...lista].sort((a,b)=>(a.score??99)-(b.score??99)).map(d=>
+      `<span style="width:${w.toFixed(3)}%;background:${corDoScore(d.score)}"
+             title="${d.nome} (${d.partido})${d.score==null?', sem posição':': '+d.score.toFixed(1)}"></span>`
+    ).join('');
+    const ativa=filtro.reg===r;
+    const ofusca=filtro.reg&&filtro.reg!==r;
+    return `<button class="reg ${ativa?'ativa':''} ${ofusca?'ofusca':''}" data-r="${r}">
+      <span class="reg-nome">${REG_NOME[r]}<br><span class="reg-uf">${REGIOES[r].join(' ')}</span></span>
+      <span class="pilha" style="width:${largura.toFixed(1)}%">${segs}</span>
+      <span class="reg-n"><b>${tot}</b></span>
+    </button>`;
+  }).join('');
+
+  document.querySelectorAll('.reg').forEach(b=>b.onclick=()=>{
+    const r=b.dataset.r;
+    filtro.reg = filtro.reg===r ? '' : r;
+    document.querySelectorAll('[data-reg]').forEach(x=>
+      x.classList.toggle('on',x.dataset.reg===filtro.reg));
+    desenhar();
+  });
+
+  document.getElementById('mapaLeitura').textContent = mapaProporcional
+    ? 'Todas as barras têm a mesma largura, então dá para comparar o perfil de cada região sem o tamanho da bancada atrapalhar.'
+    : 'A largura da barra é o tamanho da bancada. Clique numa região para filtrar o gráfico acima.';
+
+  document.getElementById('mapaPe').textContent =
+    'A posição vem do partido do deputado, não da região. Bancadas grandes do Sudeste e do Nordeste '+
+    'respondem por boa parte da Câmara, então uma inclinação pequena nelas pesa mais no total do que '+
+    'uma inclinação forte no Centro-Oeste.';
+}
+
+
+// ---------- como a Câmara se dividiu ----------
+const FAIXAS=['esquerda','centro-esquerda','centro','centro-direita','direita'];
+const CENTRO_FAIXA={'esquerda':2.2,'centro-esquerda':4.1,'centro':5.5,
+                    'centro-direita':6.9,'direita':8.4};
+let votosModo='disputadas';
+let votacoes=[], votosDemo=true;
+
+const TEMAS=[
+ 'Regras de contratação no setor público','Isenção de imposto sobre alimentos básicos',
+ 'Licenciamento ambiental para obras de infraestrutura','Porte de arma em área rural',
+ 'Piso salarial de categoria profissional','Regulamentação do trabalho por aplicativo',
+ 'Financiamento de campanhas eleitorais','Tempo de contribuição para aposentadoria',
+ 'Demarcação de terras','Tributação de grandes fortunas',
+ 'Ensino domiciliar','Cotas em concursos públicos',
+ 'Prazo de prescrição em crimes financeiros','Repasse federal para saúde municipal',
+ 'Marco legal da inteligência artificial','Redução de jornada de trabalho',
+ 'Privatização de empresa estatal','Programa de transferência de renda',
+ 'Regras de importação de medicamentos','Segurança em escolas públicas'];
+
+function montarVotacoes(){
+  const v=[];
+  for(let i=0;i<20;i++){
+    const disputada=i<10;
+    // adesão por faixa: disputadas têm gradiente forte, consensuais são altas em todas
+    const inverte=rnd()>0.5;
+    const adesao={};
+    FAIXAS.forEach((f,j)=>{
+      const pos=inverte?(4-j)/4:j/4;
+      adesao[f]=disputada
+        ? Math.max(.03,Math.min(.97, 0.12+pos*0.78+(rnd()-0.5)*0.14))
+        : Math.max(.55,Math.min(.99, 0.80+rnd()*0.18));
+    });
+    // placar a partir das bancadas reais por faixa
+    let sim=0,nao=0,somaSim=0;
+    FAIXAS.forEach(f=>{
+      const n=Math.round(deputados.filter(d=>d.ideologia===f).length*(0.82+rnd()*0.14));
+      const s=Math.round(n*adesao[f]);
+      sim+=s; nao+=n-s; somaSim+=s*CENTRO_FAIXA[f];
+    });
+    const scoreSim=sim?somaSim/sim:null;
+    const autorScore=CENTRO_FAIXA[FAIXAS[Math.floor(rnd()*5)]];
+    // a maioria das proposições nunca foi aberta a consulta pública
+    let consulta=null;
+    if(rnd()>0.42){
+      const u=rnd();
+      const part = u>0.94 ? 9000+Math.floor(rnd()*48000)
+                 : u>0.70 ? 700+Math.floor(rnd()*3800)
+                          : 40+Math.floor(rnd()*420);
+      const fav=Math.max(.03,Math.min(.97,rnd()));
+      consulta={participantes:part, favoravel:fav};
+    }
+    const ehPEC=rnd()>0.65;
+    // PEC exige 308 votos, não maioria simples: aprovação nunca se deduz do placar
+    const aprovacao = ehPEC ? (sim>=308?1:0) : (sim>nao?1:0);
+    v.push({
+      consulta, tipo:ehPEC?'PEC':'PL', aprovacao,
+      numero:(ehPEC?'PEC ':'PL ')+(Math.floor(rnd()*900)+100)+'/'+(2021+Math.floor(rnd()*5)),
+      titulo:TEMAS[i%TEMAS.length],
+      sim,nao,margem:Math.abs(sim-nao),adesao,
+      scoreSim,scoreNao:null,autorScore,
+      apoioCruzado:scoreSim==null?null:Math.abs(autorScore-scoreSim)
+    });
+  }
+  return v;
+}
+
+function celaConsulta(c){
+  if(!c) return '<span class="nula">sem consulta</span>';
+  const pct=(c.favoravel*100);
+  const nf=new Intl.NumberFormat('pt-BR');
+  const fraca=c.participantes<500;
+  return `<b class="${fraca?'amostra-fraca':''}">${pct.toFixed(0)}%</b>
+    <small${fraca?' class="amostra-fraca"':''}>${nf.format(c.participantes)} participantes</small>
+    <span class="barrinha"><i style="width:${pct.toFixed(0)}%"></i></span>`;
+}
+
+function votosDesenhar(){
+  if(!votacoes.length) votacoes=montarVotacoes();
+  const lista=[...votacoes].sort((a,b)=>
+    votosModo==='disputadas' ? a.margem-b.margem : b.margem-a.margem).slice(0,10);
+
+  // Quórum qualificado: com placar favorável, a proposta ainda pode cair.
+  const QUORUM={PEC:308,PLP:257};
+  const dataBR=s=>s?s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4):'';
+  // por que não há apoio cruzado: o motivo vem de votos.py (autorNota)
+  const semCruz=v=>!v.autorNota?'sem amostra'
+    :/não é deputado/.test(v.autorNota)?'autor não é deputado'
+    :/sem voto registrado/.test(v.autorNota)?'autor fora da legislatura'
+    :/sem score/.test(v.autorNota)?'autor sem posição':'sem autor com posição';
+
+  document.getElementById('votosLista').innerHTML=lista.map(v=>{
+    const barras=FAIXAS.map(f=>{
+      const a=v.adesao?v.adesao[f]:null;
+      if(a==null) return `<div title="${NOMES[f]}: sem votante com posição nesta votação"></div>`;
+      const pct=a*100;
+      return `<div title="${NOMES[f]}: ${pct.toFixed(0)}% votou a favor">
+        <i style="height:${pct.toFixed(1)}%;background:${CORES[f]}"></i></div>`;
+    }).join('');
+    // NUNCA deduzir de sim>nao: PEC exige 308 votos e pode ser rejeitada com placar favorável
+    const res = v.aprovacao==null ? null : !!v.aprovacao;
+    const q=QUORUM[v.tipo];
+    const num=v.urlCamara
+      ? `<a href="${v.urlCamara}" target="_blank" rel="noopener">${v.numero}</a>` : v.numero;
+    const med=(v.scoreSim==null&&v.scoreNao==null) ? ''
+      : `<div class="vt-med">Posição média de quem votou sim: <b>${v.scoreSim==null?'—':v.scoreSim.toFixed(1)}</b>
+           · de quem votou não: <b>${v.scoreNao==null?'—':v.scoreNao.toFixed(1)}</b></div>`;
+    return `<div class="vt">
+      <div>
+        <div class="vt-num">${num}${v.data?' · '+dataBR(v.data):''}</div>
+        <div class="vt-tit">${v.titulo}</div>
+        <div class="vt-res"><b>${v.sim}</b> a favor, <b>${v.nao}</b> contra,
+          diferença de <b>${v.margem}</b>${res==null?''
+            :res?' — aprovada':(q&&v.sim>v.nao
+              ?` — rejeitada, faltou quórum de ${q}`
+              :' — rejeitada')}</div>
+        ${med}
+      </div>
+      <div>
+        <div class="adesao" style="position:relative">${barras}<div class="meia"></div></div>
+        <div class="adesao-leg">esquerda a direita</div>
+      </div>
+      <div class="consulta">${celaConsulta(v.consulta)}</div>
+      <div class="cruz">
+        <b>${v.apoioCruzado==null?'—':v.apoioCruzado.toFixed(1)}</b>
+        <span${v.autorNota?` title="${v.autorNota}"`:''}>${v.apoioCruzado==null?semCruz(v)
+                 :v.apoioCruzado>3?'campos distantes'
+                 :v.apoioCruzado>1.5?'faixas vizinhas':'campo próprio'}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('votosLeitura').textContent = votosModo==='disputadas'
+    ? 'As dez votações com menor diferença entre sim e não. São as que dividiram a Câmara ao meio, e onde a linha entre os campos aparece com mais clareza.'
+    : 'As dez votações com maior diferença entre sim e não. São as que passaram sem briga, com apoio em todas as faixas do espectro.';
+
+  document.getElementById('votosPe').innerHTML =
+    'Cada coluna é uma faixa do espectro, da esquerda para a direita, e a altura é a parcela '+
+    'daquela faixa que votou a favor — não o número de votos, para que bancadas grandes não '+
+    'dominem a leitura. A linha do meio marca metade. Apoio cruzado é a distância entre a posição '+
+    'de quem propôs e a posição média de quem votou a favor: quanto maior, mais a proposta saiu '+
+    'do campo do autor. Só votações com registro de voto individual entram aqui. '+
+    'O resultado vem do campo de aprovação da própria Câmara, nunca da comparação entre sim e '+
+    'não: emenda à Constituição precisa de 308 votos, então uma PEC pode ter mais sim que não e '+
+    'ainda assim ser rejeitada. '+
+    (votosDemo
+      ? '<strong>Votações de demonstração</strong>: temas, placares e consultas são fictícios. '+
+        'A consulta pública vem do e-Democracia e mede quem foi ao portal opinar, não a população. '+
+        '<button class="saibamais" data-pop="popConsulta">por que isso importa</button>'
+      : viesDeclarado());
+}
+
+// O viés precisa estar escrito, não subentendido: quem não tem posição no espectro fica
+// fora das barras e das médias, e a maior ausência é a da União Brasil. Números
+// calculados das próprias votações, não fixados no texto.
+function viesDeclarado(){
+  const votantes=votacoes.reduce((s,v)=>s+v.sim+v.nao+v.abstencao,0)||1;
+  const fora=votacoes.reduce((s,v)=>s+v.excluidos,0);
+  const uniao=votacoes.reduce((s,v)=>s+((v.excluidosPorPartido||{})['UNIÃO']||0),0);
+  const nUniao=deputados.filter(d=>d.partido==='UNIÃO').length;
+  const pc=x=>(x*100).toFixed(1).replace('.',',')+'%';
+  return `Base: ${votacoes.length} votações finais de texto-base com registro de voto individual, `+
+    `de 2023 a 2026. <strong>Viés declarado:</strong> os ${nUniao} deputados da União Brasil ficam `+
+    `fora das barras e das médias, porque o partido nasceu da fusão de DEM e PSL em 2022, depois `+
+    `da pesquisa que dá a posição no espectro. São ${pc(uniao/votantes)} dos votos dessas votações, `+
+    `quase todos de centro-direita pela origem em DEM e PSL — então as colunas da centro-direita `+
+    `e da direita são calculadas sem uma bancada grande desse lado. Com os demais partidos sem `+
+    `posição (PCdoB, PV, REDE, AVANTE, PRD e outros), o total fora sobe para ${pc(fora/votantes)} `+
+    `dos votos.`;
+}
+
+
+// ---------- popovers ----------
+let popAberto=null;
+function fecharPop(){ if(popAberto){popAberto.classList.remove('on');popAberto=null} }
+
+document.addEventListener('click',e=>{
+  const gatilho=e.target.closest('.saibamais');
+  if(gatilho){
+    e.stopPropagation();
+    const alvo=document.getElementById(gatilho.dataset.pop);
+    if(popAberto===alvo){fecharPop();return}
+    fecharPop();
+    alvo.classList.add('on');
+    popAberto=alvo;
+    if(window.innerWidth>560){
+      const r=gatilho.getBoundingClientRect();
+      const lg=alvo.offsetWidth, al=alvo.offsetHeight;
+      let x=r.left, y=r.bottom+9;
+      if(x+lg>window.innerWidth-16) x=window.innerWidth-lg-16;
+      if(y+al>window.innerHeight-16) y=Math.max(16,r.top-al-9);
+      alvo.style.left=x+'px'; alvo.style.top=y+'px';
+    }else{ alvo.style.left=''; alvo.style.top=''; }
+    return;
+  }
+  if(popAberto&&!e.target.closest('.pop')) fecharPop();
+});
+window.addEventListener('resize',fecharPop);
+
+
+// ---------- ranking ----------
+const COLS=[
+  {k:'pos',  t:'#',              cls:'pos', ord:false},
+  {k:'nome', t:'Deputado',       cls:'dep', ord:true, esq:true},
+  {k:'votosRecebidos', t:'Votação',        ord:true},
+  {k:'registros',      t:'Votos registrados', ord:true},
+  {k:'apresentadas',   t:'Apresentadas',    ord:true},
+  {k:'viraramLei',     t:'Viraram lei',     ord:true},
+  {k:'taxa',           t:'Conversão',       ord:true},
+  {k:'abs',            t:'Abstenções',      ord:true}
+  // Sem coluna de apoio cruzado por deputado: só 15 dos 513 têm amostra (CLAUDE.md).
+  // Ele existe por votação, no bloco "Como a Câmara se dividiu".
+];
+let ordCol='votosRecebidos', ordDesc=true, votoRelativo=false;
+
+const taxaDe=d=>(!d.apresentadas||d.viraramLei==null)?null:d.viraramLei/d.apresentadas;
+const absDe=d=>{
+  if(!d.votos)return null;
+  const t=d.votos.sim+d.votos.nao+d.votos.abstencao;
+  return t?d.votos.abstencao/t:null;
+};
+// Contagem, nunca taxa: sem o período de exercício de cada deputado, dividir por um
+// total transformaria suplente e licenciado em faltoso (CLAUDE.md, "Presença").
+const registrosDe=d=>d.votos?d.votos.chamadas:null;
+// votos em múltiplos do quociente eleitoral do estado — a única forma de comparar
+// um deputado de SP (70 vagas) com um de RR (8 vagas) sem viés de tamanho.
+const quocientesDe=d=>(d.votosRecebidos==null||!d.quocienteUF)?null:d.votosRecebidos/d.quocienteUF;
+const valorCol=(d,k)=>
+  k==='taxa'?taxaDe(d):
+  k==='abs'?absDe(d):
+  k==='registros'?registrosDe(d):
+  k==='votosRecebidos'?(votoRelativo?quocientesDe(d):d.votosRecebidos):d[k];
+
+function celaVoto(d,nf){
+  if(d.votosRecebidos==null)return '<span class="sem">—</span>';
+  const q=quocientesDe(d);
+  const acima=q!=null&&q>=1;
+  const selo=q==null?''
+    : `<span class="qc ${acima?'qc-proprio':'qc-legenda'}" title="${
+        acima?'Votação própria igual ou acima do quociente eleitoral do estado'
+             :'Votação própria abaixo do quociente: eleito com apoio da legenda'
+      }">${acima?'acima':'legenda'}</span>`;
+  return votoRelativo
+    ? `${q==null?'—':q.toFixed(2)+'×'}${selo}<em>${nf.format(d.votosRecebidos)}</em>`
+    : `${nf.format(d.votosRecebidos)}${selo}<em>${q==null?'':q.toFixed(2)+'× o quociente'}</em>`;
+}
+
+function rankDesenhar(){
+  document.getElementById('rankCab').innerHTML=COLS.map(c=>
+    `<th class="${c.esq?'esq':''} ${ordCol===c.k?'ord':''}" ${c.ord?`data-k="${c.k}"`:''}>${c.t}${
+      ordCol===c.k?`<span class="seta">${ordDesc?'▼':'▲'}</span>`:''}</th>`).join('');
+
+  const lista=deputados.filter(d=>
+    (!filtro.reg||d.regiao===filtro.reg)&&
+    (!filtro.faixas.size||filtro.faixas.has(d.ideologia)));
+
+  lista.sort((a,b)=>{
+    if(ordCol==='nome') return ordDesc?b.nome.localeCompare(a.nome):a.nome.localeCompare(b.nome);
+    const va=valorCol(a,ordCol), vb=valorCol(b,ordCol);
+    if(va==null&&vb==null)return 0;
+    if(va==null)return 1;
+    if(vb==null)return -1;
+    return ordDesc?vb-va:va-vb;
+  });
+
+  const nf=new Intl.NumberFormat('pt-BR');
+  document.getElementById('rankCorpo').innerHTML=lista.map((d,i)=>{
+    const t=taxaDe(d), a=absDe(d), p=registrosDe(d);
+    return `<tr data-id="${d.id}">
+      <td class="pos">${i+1}</td>
+      <td class="dep"><div class="dep-cel">${retrato(d,32)}<div class="dep-txt">
+        <b><i style="background:${corDoScore(d.score)}"></i>${d.nome}</b>
+        <em style="display:block;font-style:normal;font-size:11px;color:var(--tinta3)">${d.partido} de ${d.uf}</em>
+      </div></div></td>
+      <td class="num forte cel2">${celaVoto(d,nf)}</td>
+      <td class="num">${p==null?'<span class="sem">—</span>':nf.format(p)}</td>
+      <td class="num">${d.apresentadas??'<span class="sem">—</span>'}</td>
+      <td class="num">${d.viraramLei??'<span class="sem">—</span>'}</td>
+      <td class="num">${t==null?'<span class="sem">—</span>'
+        :`${(t*100).toFixed(1)}%<span class="mini"><i style="width:${
+           Math.min(100,t*100*3).toFixed(0)}%"></i></span>`}</td>
+      <td class="num">${a==null?'<span class="sem">—</span>':(a*100).toFixed(1)+'%'}</td>
+    </tr>`;
+  }).join('');
+
+  document.querySelectorAll('#rankCab th[data-k]').forEach(th=>th.onclick=()=>{
+    const k=th.dataset.k;
+    if(ordCol===k) ordDesc=!ordDesc; else {ordCol=k; ordDesc=k!=='nome';}
+    rankDesenhar();
+  });
+  document.querySelectorAll('#rankCorpo tr').forEach(tr=>tr.onclick=()=>{
+    const d=deputados.find(x=>String(x.id)===tr.dataset.id);
+    if(d)abrir(d);
+  });
+
+  document.getElementById('rankPe').innerHTML=
+    'A eleição para deputado é proporcional: a votação de cada candidato soma para o partido, e '+
+    'as vagas do estado são repartidas entre os partidos antes de chegar aos nomes. Por isso '+
+    'votação alta não significa mandato mais legítimo, e votação baixa não significa o contrário. '+
+    'O selo mostra quem teve votação própria acima do quociente eleitoral do estado e quem entrou '+
+    'com o apoio da legenda. Comparar números brutos entre estados também engana, já que o '+
+    'eleitorado varia muito: use a parcela do estado para comparar um deputado de São Paulo com '+
+    'um de Roraima. Votos registrados conta as votações finais de texto-base, com registro de '+
+    'voto individual, em que o voto do deputado aparece. Não é taxa de presença: quem assumiu no '+
+    'meio do mandato, esteve de licença ou em missão oficial tem menos registros sem ter faltado, '+
+    'e o dado aberto não distingue esses casos. Conversão é a parcela das propostas apresentadas '+
+    'que virou lei. '+
+    (demo ? '<strong>Votação e votos registrados são números de demonstração.</strong>'
+          : '<strong>A coluna Votação ainda está vazia</strong>, à espera dos dados abertos do TSE.');
+}
+
+// ---------- busca ----------
+const campo=document.getElementById('busca'), lista=document.getElementById('achados');
+let sel=-1, atuais=[];
+
+campo.addEventListener('input',()=>{
+  const q=campo.value.trim().toLowerCase();
+  if(q.length<2){lista.classList.remove('on');return}
+  atuais=deputados.filter(d=>
+    d.nome.toLowerCase().includes(q)||d.partido.toLowerCase().includes(q)).slice(0,25);
+  sel=-1;
+  lista.innerHTML = atuais.length
+    ? atuais.map((d,i)=>`<div class="achado" data-i="${i}">
+        ${retrato(d,30)}
+        <div class="achado-txt"><b><span class="pastilha"
+          style="background:${corDoScore(d.score)}"></span>${d.nome}</b></div>
+        <span>${d.partido} de ${d.uf}</span></div>`).join('')
+    : '<div class="nada">Nenhum deputado com esse nome.</div>';
+  lista.classList.add('on');
+  lista.querySelectorAll('.achado').forEach(x=>
+    x.onclick=()=>{abrir(atuais[+x.dataset.i]);lista.classList.remove('on')});
+});
+
+campo.addEventListener('keydown',e=>{
+  if(!lista.classList.contains('on')||!atuais.length)return;
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    sel=e.key==='ArrowDown'?Math.min(sel+1,atuais.length-1):Math.max(sel-1,0);
+    lista.querySelectorAll('.achado').forEach((x,i)=>x.classList.toggle('sel',i===sel));
+    lista.querySelectorAll('.achado')[sel]?.scrollIntoView({block:'nearest'});
+  }
+  if(e.key==='Enter'&&sel>=0){abrir(atuais[sel]);lista.classList.remove('on')}
+});
+document.addEventListener('click',e=>{
+  if(!campo.contains(e.target)&&!lista.contains(e.target))lista.classList.remove('on');
+});
+
+// ---------- ficha ----------
+function abrir(d){
+  document.getElementById('fFoto').innerHTML=retrato(d,66);
+  fNome.textContent=d.nome;
+  fQuem.textContent=`${d.partido} de ${d.uf}`+(d.federacao?`, federação ${d.federacao}`:'');
+  fPec.textContent=d.pecs;
+  fPl.textContent=d.leis;
+  fLei.textContent=d.viraramLei??'—';
+  fPlen.textContent=d.aprovadasPlenario??'—';
+
+  // os dois números divergem nos dois sentidos e isso confunde sem explicação
+  const vl=d.viraramLei, ap=d.aprovadasPlenario;
+  document.getElementById('fDiverge').textContent =
+    (vl==null||ap==null||vl===ap) ? ''
+    : ap<vl ? 'Aprovadas em Plenário é menor porque parte das leis foi aprovada direto nas comissões, sem ir a voto no Plenário.'
+            : 'Aprovadas em Plenário é maior porque projetos já aprovados aqui ainda aguardam o Senado, então ainda não são lei.';
+
+  // Só o número: a faixa não rotula o deputado (ver CLAUDE.md, "Os cortes em cinco
+  // faixas foram ABANDONADOS na cor") — PL em 7,41 não é "centro-direita" por decreto nosso.
+  document.getElementById('fEspTxt').textContent =
+    d.score==null ? '' : `Posição no espectro: ${d.score.toFixed(1)} de 10.`;
+
+  const apres=d.apresentadas||0, virou=d.viraramLei;
+  if(virou==null||!apres){
+    fFrase.innerHTML=`Apresentou <b>${apres}</b> proposições.`;
+    fBarra.style.width='0';
+    fBarraLeg.textContent='Ainda não há dado sobre quantas viraram lei.';
+  }else{
+    const pct=virou/apres;
+    fFrase.innerHTML=`Apresentou <b>${apres}</b> proposições. <b>${virou}</b> viraram lei.`;
+    fBarra.style.width=Math.min(100,pct*100)+'%';
+    fBarraLeg.textContent=`Isso é ${(pct*100).toFixed(1)}% do que propôs.`;
+  }
+
+  fOrigem.textContent = d.score!=null
+    ? 'Posição no espectro vem do partido, não do deputado. É a '+FONTE
+    : (semScoreNenhum
+        ? 'Os scores do espectro ainda não foram carregados: falta preencher ideologia.json.'
+        // "não consta da pesquisa" seria falso para PCdoB, PV e REDE, que constam com
+        // poucas respostas — o motivo vem de ideologia.json via scoreNota.
+        : 'O partido deste deputado não recebeu posição no espectro'+
+          (d.scoreNota ? ` (${d.scoreNota}).` : '.'));
+
+  const box=document.getElementById('fPartic');
+  if(!d.votos||!d.votos.chamadas){
+    box.innerHTML='';
+  }else{
+    const v=d.votos, part=v.sim+v.nao+v.abstencao;
+    const outros=v.chamadas-part;           // obstrução ou presidindo a sessão (Art. 17)
+    const pct=n=>(part?n/part*100:0);
+    const seg=(n,cl,rot)=>{
+      const w=pct(n);
+      return `<span class="${cl}" style="width:${w.toFixed(2)}%"
+                title="${rot}: ${n} votos">${w>=11?Math.round(w)+'%':''}</span>`;
+    };
+    box.innerHTML=`
+      <div class="partic-tit">Votos registrados</div>
+      <p class="partic-fr">Tem voto registrado em <b>${v.chamadas}</b> votações finais de
+         texto-base desta legislatura${outros>0?`, ${outros} delas em obstrução ou presidindo a sessão`:''}.</p>
+      <div class="partic-barra">
+        ${seg(v.sim,'pb-sim','Sim')}${seg(v.nao,'pb-nao','Não')}${seg(v.abstencao,'pb-abs','Abstenção')}
+      </div>
+      <div class="partic-leg">
+        <span><i style="background:#3d5c46"></i>Sim, ${v.sim}</span>
+        <span><i style="background:#7a3b3b"></i>Não, ${v.nao}</span>
+        <span><i style="background:#8b8f96"></i>Abstenção, ${v.abstencao}</span>
+      </div>
+      <p class="partic-pe">Quem não aparece no registro de uma votação pode ter faltado, estar em
+         missão oficial ou em licença. O dado aberto não distingue esses casos, então o site conta
+         apenas as votações em que o voto foi registrado, e não atribui faltas a ninguém.</p>`;
+  }
+
+  const props=d.topLeis||[];
+  const toque=!window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  fSub.textContent=props.length?(toque?'Toque numa proposição para ler o resumo.'
+                                       :'Passe o mouse para ler o resumo.'):'';
+  fProps.innerHTML = props.length ? props.map(p=>{
+    const st=(p.virouLei??p.viroulei)?'lei':(p.status||'tramitacao');
+    const nome={lei:'Virou lei',aprovada:'Aprovada em Plenário',
+                rejeitada:'Rejeitada',tramitacao:'Ainda tramitando'}[st];
+    const txt=p.resumo?p.resumo
+      :`<span class="cru">Sem resumo. Texto oficial: ${p.ementa||'não disponível'}</span>`;
+    return `<div class="prop" onclick="this.classList.toggle('aberto')">
+      <div class="prop-num">${p.numero||''}</div>
+      <div class="prop-tit">${corta(p.titulo||p.ementa||'—',110)}</div>
+      <div class="prop-pe"><span class="selo s-${st}">${nome}</span>
+        ${p.votos!=null?`<span class="placar">${p.votos} votos</span>`
+                       :'<span class="placar">votação sem registro de votos</span>'}</div>
+      <div class="resumo">${txt}
+        ${p.urlCamara?`<a href="${p.urlCamara}" target="_blank" rel="noopener"
+           onclick="event.stopPropagation()">Ver a ficha oficial na Câmara</a>`:''}</div>
+      ${blocoAdesao(p)}
+    </div>`;
+  }).join('') : '<p class="vazio">Nenhuma proposição votada em Plenário registrada.</p>';
+
+  veu.classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function sair(){veu.classList.remove('on');document.body.style.overflow=''}
+veu.onclick=e=>{if(e.target.id==='veu')sair()};
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if(popAberto){fecharPop();return}
+  if(lista.classList.contains('on')){lista.classList.remove('on');return}
+  sair();
+});
+
+mTam.onclick=()=>{mapaProporcional=false;mTam.classList.add('on');mProp.classList.remove('on');mapaDesenhar()};
+mProp.onclick=()=>{mapaProporcional=true;mProp.classList.add('on');mTam.classList.remove('on');mapaDesenhar()};
+
+vDisp.onclick=()=>{votosModo='disputadas';vDisp.classList.add('on');vCons.classList.remove('on');votosDesenhar()};
+vCons.onclick=()=>{votosModo='consensuais';vCons.classList.add('on');vDisp.classList.remove('on');votosDesenhar()};
+
+yApres.onclick=()=>{
+  medida='apresentadas';
+  yApres.classList.add('on');yLei.classList.remove('on');
+  comprimida=true;
+  pLog.classList.add('on');pLin.classList.remove('on');
+  leituraTexto();desenhar();
+};
+yLei.onclick=()=>{
+  medida='viraramLei';
+  yLei.classList.add('on');yApres.classList.remove('on');
+  comprimida=false;                    // faixa curta: comprimir só atrapalha
+  pLin.classList.add('on');pLog.classList.remove('on');
+  leituraTexto();desenhar();
+};
+
+document.querySelectorAll('.aba').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.aba').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.vista').forEach(v=>
+    v.classList.toggle('on',v.id===b.dataset.vista));
+  if(b.dataset.vista==='vGrafico') desenhar();
+});
+
+vAbs.onclick=()=>{votoRelativo=false;vAbs.classList.add('on');vRel.classList.remove('on');rankDesenhar()};
+vRel.onclick=()=>{votoRelativo=true;vRel.classList.add('on');vAbs.classList.remove('on');rankDesenhar()};
+
+window.addEventListener('load',carregar);
+let tResize;
+window.addEventListener('resize',()=>{
+  clearTimeout(tResize);
+  tResize=setTimeout(()=>{if(deputados.length)desenhar()},140);
+});
+</script>
+</body>
+</html>
