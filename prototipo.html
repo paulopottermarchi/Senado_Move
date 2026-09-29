@@ -1282,7 +1282,7 @@ function posicionar(){
 let FRASES={}, INICIO_LEG=null;
 async function carregarFrases(){
   try{
-    const r=await fetch('temas/resumo.json',{cache:'no-store'});
+    const r=await fetch('temas/resumo.json',{cache:'no-cache'});
     if(!r.ok) return;
     const j=await r.json(); FRASES=j.frases||{}; INICIO_LEG=j.inicioLegislatura||null;
   }catch(e){}
@@ -1290,7 +1290,7 @@ async function carregarFrases(){
 
 async function carregar(){
   try{
-    const r=await fetch('deputados.json',{cache:'no-store'});
+    const r=await fetch('deputados.json',{cache:'no-cache'});
     if(!r.ok) throw 0;
     const reais=await r.json();
     if(!Array.isArray(reais)||!reais.length) throw 0;
@@ -1324,11 +1324,11 @@ async function carregar(){
     }));
     demo=false;
     try{
-      const rl=await fetch('legislaturas.json',{cache:'no-store'});
+      const rl=await fetch('legislaturas.json',{cache:'no-cache'});
       if(rl.ok) LEGISLATURAS=await rl.json();
-      const rw=await fetch('wikipedia.json',{cache:'no-store'}).catch(()=>null);
+      const rw=await fetch('wikipedia.json',{cache:'no-cache'}).catch(()=>null);
       if(rw&&rw.ok) WIKI=await rw.json();
-      const ry=await fetch('youtube.json',{cache:'no-store'}).catch(()=>null);
+      const ry=await fetch('youtube.json',{cache:'no-cache'}).catch(()=>null);
       if(ry&&ry.ok) YT=await ry.json();
     }catch(e){}
   }catch(e){ deputados=montarDemo(); demo=true; }
@@ -1336,13 +1336,13 @@ async function carregar(){
   // Gráfico 2: proposicoes.json (votos.py). Independente do deputados.json — se
   // faltar, só este bloco cai na demonstração.
   try{
-    const r=await fetch('proposicoes.json',{cache:'no-store'});
+    const r=await fetch('proposicoes.json',{cache:'no-cache'});
     if(!r.ok) throw 0;
     const ps=await r.json();
     if(!Array.isArray(ps)||!ps.length) throw 0;
     // enquetes.json (enquetes.py): se faltar, a coluna diz "não consultada", sem inventar
     let enq={};
-    try{ const re=await fetch('enquetes.json',{cache:'no-store'}); if(re.ok) enq=await re.json(); }catch(e){}
+    try{ const re=await fetch('enquetes.json',{cache:'no-cache'}); if(re.ok) enq=await re.json(); }catch(e){}
     const consultaDe=id=>{
       const e=enq[String(id)];
       if(!e) return {ausente:'enquete não consultada nesta atualização'};
@@ -1411,12 +1411,13 @@ function ytHTML(d){
 function notoHTML(d){
   if(demo) return '';
   const w=WIKI[String(d.id)], nf=new Intl.NumberFormat('pt-BR');
+  if(!w&&!temWiki()){ const yt=ytHTML(d); return yt?`<div class="partic-tit">Notoriedade</div>${yt}`:''; }
   if(!w) return `<div class="partic-tit">Notoriedade</div><p class="partic-fr">Sem artigo na Wikipédia ligado a este
     deputado pelo identificador da Câmara.</p>${ytHTML(d)}`;
   const pico=w.pico&&w.pico[1]?`, com pico de ${nf.format(w.pico[1])} em ${w.pico[0].slice(8,10)}/${w.pico[0].slice(5,7)}`:'';
   const url='https://pt.wikipedia.org/wiki/'+encodeURIComponent(w.artigo.replace(/ /g,'_'));
   return `<div class="partic-tit">Notoriedade</div>
-    <p class="partic-fr">O artigo dele na Wikipédia foi lido <b>${nf.format(w.visitas90)}</b> vezes nos últimos 90 dias${pico}.
+    <p class="partic-fr">O artigo na Wikipédia foi lido <b>${nf.format(w.visitas90)}</b> vezes nos últimos 90 dias${pico}.
       <a href="${url}" target="_blank" rel="noopener">Ver o artigo</a></p>
     ${ytHTML(d)}
     <p class="partic-pe">Mede procura, não aprovação nem trabalho: escândalo também gera leitura.</p>`;
@@ -1571,7 +1572,7 @@ function textos(){
 
 function leituraTexto(){
   document.getElementById('leitura').textContent = medida==='apresentadas'
-    ? 'Cada ponto é um deputado. Quanto mais à direita, mais à direita o partido dele se situa. Quanto mais alto, mais proposições apresentou. Clique num ponto para ver a ficha.'
+    ? 'Cada ponto é um deputado. Quanto mais à direita, mais à direita se situa o partido do deputado. Quanto mais alto, mais proposições apresentou. Clique num ponto para ver a ficha.'
     : 'Agora a altura é quantas propostas viraram lei de fato. Quem apresenta centenas e emplaca duas desce até a base. Um terço da Câmara fica na linha do zero.';
 }
 
@@ -2087,6 +2088,10 @@ const registrosDe=d=>d.votos?d.votos.chamadas:null;
 // Notoriedade = leituras do artigo na Wikipédia em 90 dias. Sem artigo ligado pelo id da
 // Câmara, fica sem número (nunca zero): não ter artigo não é o mesmo que ninguém procurar.
 const wikiDe=d=>{const w=WIKI[String(d.id)]; return w?w.visitas90:null;};
+// wikipedia.json ausente (ainda não gerado) ≠ deputado sem artigo: sem o arquivo, a coluna e a
+// frase somem, em vez de dizer "sem artigo" para os 513.
+const temWiki=()=>!!WIKI._fonte;
+const colsVisiveis=()=>COLS.filter(c=>c.k!=='wiki'||temWiki());
 // votos em múltiplos do quociente eleitoral do estado — a única forma de comparar
 // um deputado de SP (70 vagas) com um de RR (8 vagas) sem viés de tamanho.
 const quocientesDe=d=>(d.votosRecebidos==null||!d.quocienteUF)?null:d.votosRecebidos/d.quocienteUF;
@@ -2113,7 +2118,7 @@ function celaVoto(d,nf){
 }
 
 function rankDesenhar(){
-  document.getElementById('rankCab').innerHTML=COLS.map(c=>
+  document.getElementById('rankCab').innerHTML=colsVisiveis().map(c=>
     `<th class="${c.esq?'esq':''} ${ordCol===c.k?'ord':''}" ${c.ord?`data-k="${c.k}"`:''}>${c.t}${
       ordCol===c.k?`<span class="seta">${ordDesc?'▼':'▲'}</span>`:''}</th>`).join('');
 
@@ -2151,8 +2156,8 @@ function rankDesenhar(){
       <td class="num">${a==null?'<span class="sem">—</span>':(a*100).toFixed(1)+'%'}</td>
       <td class="num">${taxaDiv(d)==null?`<span class="sem" title="${(d.divergencia&&d.divergencia.nota)||''}">—</span>`
         :pct1(taxaDiv(d))}</td>
-      <td class="num">${wikiDe(d)==null?'<span class="sem" title="Sem artigo na Wikipédia ligado pelo identificador da Câmara">—</span>'
-        :`${nf.format(wikiDe(d))}<em>leituras</em>`}</td>
+      ${!temWiki()?'':`<td class="num">${wikiDe(d)==null?'<span class="sem" title="Sem artigo na Wikipédia ligado pelo identificador da Câmara">—</span>'
+        :`${nf.format(wikiDe(d))}<em>leituras</em>`}</td>`}
     </tr>`;
   }).join('');
 
@@ -2183,14 +2188,15 @@ function rankDesenhar(){
     'em que o deputado votou ao contrário dos colegas do próprio partido naquele dia, contando só '+
     'quando o partido votou unido (70% ou mais no mesmo lado); abstenção e obstrução não contam, e '+
     'partido com menos de seis deputados votando não tem maioria para comparar. '+
+    (!temWiki()?'':
     'Notoriedade: quantas vezes o artigo do deputado na Wikipédia em português foi lido nos últimos 90 dias, '+
     'por leitores humanos, somando os redirecionamentos. Mede procura, não aprovação nem trabalho: escândalo '+
     'também gera leitura. O artigo é ligado ao deputado só pelo identificador da Câmara (no Wikidata ou num '+
-    `link do próprio artigo), nunca pelo nome; ${deputados.filter(d=>wikiDe(d)==null).length} deputados ficam sem número. `+
+    `link do próprio artigo), nunca pelo nome; ${deputados.filter(d=>wikiDe(d)==null).length} deputados ficam sem número. `)+
     (demo ? '<strong>Votação e votos registrados são números de demonstração.</strong>'
           : 'Votação: resultado oficial do TSE na eleição de 2022; quociente eleitoral pela regra '+
             'do Código Eleitoral (votos válidos do estado ÷ vagas, art. 106). O voto é ligado ao '+
-            'deputado só quando o nome dele na Câmara é idêntico ao nome de urna; '+
+            'deputado só quando o nome na Câmara é idêntico ao nome de urna; '+
             `${deputados.filter(d=>d.votosRecebidos==null).length} deputados usaram outro nome `+
             'na urna e aparecem com —, sem votação atribuída por aproximação.')+
     (mandato ? ` Com o mandato ${rotuloLeg(mandato)} escolhido, apresentadas, viraram lei e `+
@@ -2202,11 +2208,13 @@ function rankDesenhar(){
 const campo=document.getElementById('busca'), lista=document.getElementById('achados');
 let sel=-1, atuais=[];
 
+// sem acento e sem caixa: "joao" acha "João"
+const semAcento=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 campo.addEventListener('input',()=>{
-  const q=campo.value.trim().toLowerCase();
+  const q=semAcento(campo.value.trim());
   if(q.length<2){lista.classList.remove('on');return}
   atuais=deputados.filter(d=>
-    d.nome.toLowerCase().includes(q)||d.partido.toLowerCase().includes(q)).slice(0,25);
+    semAcento(d.nome).includes(q)||semAcento(d.partido).includes(q)).slice(0,25);
   sel=-1;
   lista.innerHTML = atuais.length
     ? atuais.map((d,i)=>`<div class="achado" data-i="${i}">
@@ -2229,7 +2237,8 @@ campo.addEventListener('keydown',e=>{
     lista.querySelectorAll('.achado').forEach((x,i)=>x.classList.toggle('sel',i===sel));
     lista.querySelectorAll('.achado')[sel]?.scrollIntoView({block:'nearest'});
   }
-  if(e.key==='Enter'&&sel>=0){abrir(atuais[sel]);lista.classList.remove('on')}
+  // Enter sem seta abre o primeiro resultado
+  if(e.key==='Enter'){abrir(atuais[Math.max(sel,0)]);lista.classList.remove('on')}
 });
 document.addEventListener('click',e=>{
   if(!campo.contains(e.target)&&!lista.contains(e.target))lista.classList.remove('on');
@@ -2481,9 +2490,9 @@ function blocoNoticias(n){
 
 async function carregarSemana(){
   let s, noticias=null;
-  try{ const rn=await fetch('noticias.json',{cache:'no-store'}); if(rn.ok) noticias=await rn.json(); }catch(e){}
+  try{ const rn=await fetch('noticias.json',{cache:'no-cache'}); if(rn.ok) noticias=await rn.json(); }catch(e){}
   try{
-    const r=await fetch('semana.json',{cache:'no-store'});
+    const r=await fetch('semana.json',{cache:'no-cache'});
     if(!r.ok) return;
     s=await r.json();
   }catch(e){ return; }

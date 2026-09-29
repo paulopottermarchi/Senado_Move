@@ -132,6 +132,8 @@ a{color:var(--link)}
 .selo{font-size:11.5px;font-weight:500;padding:2px 8px;border-radius:2px;white-space:nowrap;
       background:#000;color:#fff}
 .item-not{font-size:12.5px;color:var(--tinta2);margin-top:4px}
+.item-tempo{font-size:12.5px;color:var(--tinta2);margin-top:4px;max-width:72ch}
+.item-tempo .caminho{display:block;color:var(--tinta3)}
 .item-not span{color:var(--tinta3)}
 .item-ementa{font-size:14.5px;line-height:1.5;margin-top:5px;max-width:72ch}
 /* passo 8: resumo por IA com a ementa oficial a um clique */
@@ -259,8 +261,8 @@ async function iniciar(){
   }
   try{
     const [rt,rd]=await Promise.all([
-      fetch('temas/taxonomia.json',{cache:'no-store'}),
-      fetch(`temas/${id}.json`,{cache:'no-store'})]);
+      fetch('temas/taxonomia.json',{cache:'no-cache'}),
+      fetch(`temas/${id}.json`,{cache:'no-cache'})]);
     if(!rt.ok) throw {falta:'taxonomia'};
     if(!rd.ok) throw {falta:'deputado'};
     tax=await rt.json(); dep=await rd.json();
@@ -286,7 +288,7 @@ async function iniciar(){
 // Com quem vota (blocos.py → blocos.json). Mede apoio ao governo do momento e semelhança
 // de voto, não ideologia: por isso fica separado do espectro e diz isso antes do número.
 async function comQuemVota(id){
-  let B; try{ const r=await fetch('blocos.json',{cache:'no-store'}); if(!r.ok) return; B=await r.json(); }catch(e){ return; }
+  let B; try{ const r=await fetch('blocos.json',{cache:'no-cache'}); if(!r.ok) return; B=await r.json(); }catch(e){ return; }
   const d=B.deputados[String(id)], el=document.getElementById('cqv');
   if(!d||!el) return;
   const N=i=>B.nomes[i]||['?','?','?'], p=N(String(id))[1], hoje=N(String(id))[4];
@@ -316,14 +318,14 @@ async function comQuemVota(id){
 // da lista ganham a linha "Notícia" quando a notícia linka a ficha da proposição.
 let NOTICIAS={};
 async function carregarNoticias(){
-  try{ const r=await fetch('noticias.json',{cache:'no-store'}); if(!r.ok) return; const n=await r.json();
+  try{ const r=await fetch('noticias.json',{cache:'no-cache'}); if(!r.ok) return; const n=await r.json();
     (n.itens||[]).forEach(x=>x.p.forEach(([id])=>{(NOTICIAS[id]=NOTICIAS[id]||[]).push(x);})); }catch(e){}
 }
 
 async function notoriedade(id){
   let W={}, Y={};
-  try{ const r=await fetch('wikipedia.json',{cache:'no-store'}); if(r.ok) W=await r.json(); }catch(e){}
-  try{ const r=await fetch('youtube.json',{cache:'no-store'}); if(r.ok) Y=await r.json(); }catch(e){}
+  try{ const r=await fetch('wikipedia.json',{cache:'no-cache'}); if(r.ok) W=await r.json(); }catch(e){}
+  try{ const r=await fetch('youtube.json',{cache:'no-cache'}); if(r.ok) Y=await r.json(); }catch(e){}
   const el=document.getElementById('noto'), w=W[String(id)], y=Y[String(id)];
   // canal oficial (cadastro da Câmara): número como o YouTube informa, sem ranking nem soma
   const yt=!y?'':`<p class="cqv-txt">${y.inscritos!=null?`<b>${NF.format(y.inscritos)}</b> inscritos no canal oficial no YouTube`
@@ -332,6 +334,8 @@ async function notoriedade(id){
   if(!W._fonte&&!y) return;
   if(!el) return;
   el.hidden=false;
+  // wikipedia.json ausente (ainda não gerado) não é "sem artigo": aí só o YouTube
+  if(!w&&!W._fonte){ el.innerHTML=`<h2 id="notoTit">Notoriedade</h2>${yt}`; return; }
   if(!w){ el.innerHTML=`<h2 id="notoTit">Notoriedade</h2><p class="cqv-txt">Sem artigo na Wikipédia ligado a este deputado
     pelo identificador da Câmara. Não ter artigo ligado não quer dizer que ninguém procure por ele.</p>${yt}`; return; }
   const max=Math.max(1,...w.mensal), meses=W._meses||[];
@@ -351,7 +355,7 @@ async function notoriedade(id){
 // há emenda dele e o contrato cresceu — com o enquadramento antes: emenda manda dinheiro, não
 // assina contrato nem aditivo. Só aparece para quem tem emenda ou é da UF coberta.
 async function obrasDoDeputado(id,uf){
-  let O; try{ const r=await fetch('obras_deputados.json',{cache:'no-store'}); if(!r.ok) return; O=await r.json(); }catch(e){ return; }
+  let O; try{ const r=await fetch('obras_deputados.json',{cache:'no-cache'}); if(!r.ok) return; O=await r.json(); }catch(e){ return; }
   const lista=(O.deputados||{})[String(id)]||[], el=document.getElementById('obrasDep');
   if(!el||(!lista.length&&uf!==O._uf)) return;
   const REAIS=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
@@ -360,15 +364,15 @@ async function obrasDoDeputado(id,uf){
   const escopo=`${NF.format(O._obrasAcompanhadas)} obras de ${esc(O._uf)} com contrato federal que o site acompanha, por ora`;
   el.hidden=false;
   if(!lista.length){ el.innerHTML=`<h2 id="obrasTit">Obras com emenda deste deputado</h2>
-    <p class="cqv-txt">Nenhuma emenda dele nas ${escopo}.</p>`; return; }
+    <p class="cqv-txt">Nenhuma emenda deste deputado nas ${escopo}.</p>`; return; }
   el.innerHTML=`<h2 id="obrasTit">Obras com emenda deste deputado</h2>
     <p class="cqv-av">A emenda manda dinheiro para a obra; quem contrata e assina os aditivos é o órgão que executa. O número diz
-      em quantas obras há emenda dele e o contrato cresceu, não que ele tenha causado o aumento — que pode ser reajuste de preços.</p>
-    <div class="ob-n"><div><b>${NF.format(cresceu.length)}</b><span>com emenda dele em que o contrato cresceu depois da assinatura</span></div>
-      <div><b>${NF.format(lista.length)}</b><span>com emenda dele, ao todo</span></div></div>
+      em quantas obras há emenda deste deputado e o contrato cresceu, não que a emenda tenha causado o aumento — que pode ser reajuste de preços.</p>
+    <div class="ob-n"><div><b>${NF.format(cresceu.length)}</b><span>com emenda deste deputado em que o contrato cresceu depois da assinatura</span></div>
+      <div><b>${NF.format(lista.length)}</b><span>com emenda deste deputado, ao todo</span></div></div>
     <ul class="ob-l">${lista.slice().sort((a,b)=>(pct(b)??-1e9)-(pct(a)??-1e9)).map(x=>{const p=pct(x);
       return `<li><span><a href="obras.html?obra=${encodeURIComponent(x.obra)}">${esc(x.nome)}</a>
-        <small>${esc(x.municipios.join(', '))} · emenda${x.emendas.length>1?'s':''} de ${[...new Set(x.emendas.map(e=>e[1]))].join(', ')}: ${REAIS.format(x.emendas.reduce((s,e)=>s+e[2],0))} empenhados</small></span>
+        <small>${esc(x.municipios.length>4?x.municipios.slice(0,3).join(', ')+' e mais '+(x.municipios.length-3):x.municipios.join(', '))} · emenda${x.emendas.length>1?'s':''} de ${[...new Set(x.emendas.map(e=>e[1]))].join(', ')}: ${REAIS.format(x.emendas.reduce((s,e)=>s+e[2],0))} empenhados</small></span>
         <span class="v">${p==null?'—':Math.abs(p)<0.01?'sem variação':sinal(p)}<small>contrato</small></span></li>`}).join('')}</ul>
     <p class="cqv-av">Entre as ${escopo}. Autor da emenda como a CGU registra, ligado a este perfil só por nome parlamentar
       exato e com todas as emendas daquele código dentro do mandato na Câmara.</p>`;
@@ -523,6 +527,60 @@ function lista(vis){
   box.querySelectorAll('.salto').forEach(b=>b.onclick=()=>escolher(b.dataset.cat,true));
 }
 
+// Tempo e caminho de cada proposição (temas.py; etapas de tramitacoes.py). Datas do registro da Câmara.
+// "Sem andamento" não diz por quê: pode ser espera de relator, de pauta, da outra Casa.
+const HOJE=new Date().toISOString().slice(0,10);
+const dias=(a,b)=>Math.round((Date.parse(b)-Date.parse(a))/864e5);
+function duracao(n){
+  if(n<1) return 'no mesmo dia';
+  if(n<31) return `${n} dia${n>1?'s':''}`;
+  const m=Math.round(n/30.44); if(m<12) return `${m} ${m>1?'meses':'mês'}`;
+  const a=Math.floor(m/12), r=m%12;
+  return `${a} ano${a>1?'s':''}${r?` e ${r} ${r>1?'meses':'mês'}`:''}`;
+}
+const ROTULO={APRESENTADA:'aguardando distribuição',PLEN:'Plenário',SENADO:'Senado','SANÇÃO':'sanção','PROMULGAÇÃO':'promulgação'};
+// comissão especial: a Câmara grava a sigla da proposição (PEC22804 = PEC 228/04, PL021903 = PL 219/03)
+const especial=s=>{const m=/^(PEC|PLP|PDL|MPV|PL)0*(\d+)(\d{2})$/.exec(s); return m?`comissão especial (${m[1]} ${m[2]}/${m[3]})`:null};
+const rotulo=s=>ROTULO[s]||especial(s)||s;                 // comissão: a sigla como a Câmara grava (CCJC, CSAUDE…)
+// arquivamento automático no fim da legislatura (RICD, art. 105): 31 de janeiro do ano de troca
+const fimLegislatura=d=>/-01-31$/.test(d)&&(+d.slice(0,4)-1995)%4===0;
+function tempo(p){
+  // O ESTADO vem da situação oficial (p.s); o histórico dá só datas e caminho. Medido: proposição
+  // apensada arquivada junto com a principal não tem evento de arquivamento próprio (PL 6069/2005),
+  // e há arquivamento com código fora da lista (PEC 541/2006) — o histórico sozinho contradizia a situação.
+  const tr=p.tr||{}, l=[], s=p.s||'', ua=tr.ua||p.u;
+  const per=tr.per||[], ult=t=>per.filter(x=>x[0]===t).slice(-1)[0];
+  const desde=d=>`${duracao(dias(p.d,d))} depois de apresentada`;
+  let fimData=HOJE;
+  if(p.l){
+    if(tr.lei){ l.push(`Virou lei em ${data(tr.lei)}, ${desde(tr.lei)}.`); fimData=tr.lei; }
+    else l.push('Virou lei.');
+  }else if(/^Arquivad/i.test(s)){
+    const a=ult('arquivada'), d=(a&&!a[2]&&a[1])||ua;
+    const ap=ult('apensada');
+    if(d) l.push(`Arquivada ${fimLegislatura(d)?'no fim da legislatura, ':''}em ${data(d)}, ${desde(d)}${ap&&!ap[2]?` (estava apensada ao ${esc(ap[3])})`:''}.`);
+    fimData=d||ua||HOJE;
+  }else if(/Retirad|Devolvid|Rejeitad|Prejudicad/i.test(s)){
+    const d=(tr.fim&&tr.fim[1])||ua;
+    if(d) l.push(`${esc(s)} em ${data(d)}, ${desde(d)}.`);
+    fimData=d||HOJE;
+  }else if(/Tramitando em Conjunto/i.test(s)){
+    const ap=ult('apensada');
+    l.push(ap&&!ap[2]?`Tramita apensada ao ${esc(ap[3])} desde ${data(ap[1])}: anda junto com a proposição principal.`
+                      :'Tramita apensada a outra proposição: anda junto com a principal.');
+  }else{
+    const et=(tr.et||[]).slice(-1)[0];
+    if(et) l.push(`${et[0]==='APRESENTADA'?'Aguardando distribuição':'Em '+esc(rotulo(et[0]))} desde ${data(et[1])} (${duracao(dias(et[1],HOJE))}).`);
+    if(ua) l.push(`Último andamento registrado há ${duracao(dias(ua,HOJE))}.`);
+  }
+  let cam='';
+  const et=(tr.et||[]).filter(x=>x[0]!=='LEI');
+  if(et.length>1||(et.length===1&&tr.lei)){
+    cam=`<span class="caminho">Caminho: ${et.map((x,i)=>`${esc(rotulo(x[0]))} ${duracao(dias(x[1],(et[i+1]&&et[i+1][1])||fimData))}`).join(' → ')}${tr.lei?' → lei':''}</span>`;
+  }
+  return l.length||cam?`<p class="item-tempo">${l.join(' ')}${cam}</p>`:'';
+}
+
 function item(p){
   let porque;
   if(!p.c.length){
@@ -548,6 +606,7 @@ function item(p){
         <p>${esc(p.e)||'<i>Sem ementa no registro da Câmara.</i>'}</p><a href="${urlFicha(p.id)}" target="_blank" rel="noopener">Ficha e texto integral na Câmara</a></details>`
          :`<p class="item-ementa">${esc(p.e)||'<i>Sem ementa no registro da Câmara.</i>'}</p>`}
     ${p.s?`<p class="item-sit">Situação na Câmara: ${esc(p.s)}</p>`:''}
+    ${tempo(p)}
     ${(NOTICIAS[p.id]||[]).slice(0,2).map(x=>`<p class="item-not">Notícia: <a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a>
       <span>(${esc(x.assinatura||'Agência Câmara')}, ${data((x.d||'').slice(0,10))})</span></p>`).join('')}
     <p class="porque">${porque}</p>

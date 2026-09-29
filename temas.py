@@ -31,10 +31,20 @@ from datetime import date
 
 from coleta import BASE, CACHE, TIPOS, e_autor, ler_cache, virou_lei
 import resumos  # passo 8: resumo do inteiro teor, gerado por resumos.py
+import tramitacoes  # histórico de tramitação → etapas (tramitacoes.py baixa; aqui só se lê o cache)
+
+
+def tramitacao(pid, det):
+    """Etapas da proposição a partir do cache de tramitacoes.py; None se ainda não baixado."""
+    ev = ler_cache(tramitacoes.CACHE_T / f"{pid}.json")
+    if not ev:
+        return None
+    r = tramitacoes.etapas(ev, [(det.get("numero"), det.get("ano"))])
+    return {k: v for k, v in r.items() if v}
 
 SAIDA = BASE / "temas"
 DEPUTADOS = BASE / "deputados.json"
-VERSAO = "2026-09-28.2"   # mudar a cada alteração de regra: vai para a página
+VERSAO = "2026-09-29.1"   # mudar a cada alteração de regra: vai para a página
 # 57ª legislatura. A frase-resumo e o filtro padrão da página contam só daqui para a
 # frente: a API devolve a carreira inteira, e somar mandatos antigos põe veterano e
 # estreante na mesma régua. Trocar a cada legislatura (a 58ª começa em 1º/2/2027).
@@ -287,6 +297,11 @@ def main():
                 "e": ementa,
                 "s": ((det.get("statusProposicao") or {}).get("descricaoSituacao") or ""),
                 "l": 1 if virou_lei(det) else 0,
+                # tempo: último andamento e órgão atual (do cache da Etapa A) e, quando o histórico
+                # já foi baixado (tramitacoes.py), as etapas — por onde passou e desde quando.
+                "u": ((det.get("statusProposicao") or {}).get("dataHora") or "")[:10],
+                "o": (det.get("statusProposicao") or {}).get("siglaOrgao"),
+                **({"tr": tr} if (tr := tramitacao(p["id"], det)) else {}),
                 "c": cats,
                 # passo 8: resumo do inteiro teor (resumos.py); só quando existe
                 **({"r": resumo_de[p["id"]]} if p["id"] in resumo_de else {}),

@@ -137,6 +137,7 @@ h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2}
 .pe small{display:block;color:var(--tinta2);font-size:12.5px}
 .pe .v{text-align:right;font-weight:600}
 .fontes{margin-top:8px;padding-left:18px;font-size:13px;line-height:1.7}
+.sist{font-weight:400;color:var(--tinta3);font-size:12px}
 
 .vazio{padding:28px 0;color:var(--tinta2);font-size:14px}
 .erro{padding:18px;border:1px solid var(--linha);border-radius:var(--raio-p);margin-top:18px;font-size:14px}
@@ -178,6 +179,10 @@ h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2}
     </nav>
   </div>
 </header>
+<script>
+// No celular a barra rola de lado: abre já mostrando o item da página atual.
+(()=>{const a=document.querySelector('.nav a.aqui'); if(a) a.parentElement.scrollLeft=a.offsetLeft-16;})();
+</script>
 
 <main class="wrap">
   <div class="capa">
@@ -190,8 +195,8 @@ h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2}
       <p><b>Aditivo não é irregularidade.</b> A lei permite acrescentar até 25% do valor inicial atualizado de
          uma obra, e até 50% em reforma de edifício ou de equipamento (Lei 14.133/2021, art. 125; antes, Lei
          8.666/1993, art. 65). O reajuste de preços previsto no contrato repõe a inflação e também aumenta o
-         valor. A página mostra quanto o valor cresceu e o que cada termo diz, no texto do próprio documento;
-         não afirma que houve irregularidade, e o crescimento total mistura acréscimo e reajuste.</p>
+         valor, e o reequilíbrio econômico-financeiro recompõe custos imprevistos. A página separa o aumento
+         por natureza pelo texto de cada termo, e não afirma que houve irregularidade.</p>
       <p><b>O que está e o que falta.</b> <span id="cobertura">Só obras que têm contrato no sistema de contratos
          do governo federal.</span> Obra estadual ou municipal contratada pelo próprio estado ou prefeitura
          (Metrô, CPTM, DER, prefeituras) não aparece: o contrato dela não está nessa base. Valores em reais
@@ -263,6 +268,8 @@ function curto(v){
 const data=d=>d?d.slice(0,10).split('-').reverse().join('/'):'—';
 const sinal=v=>(v>0?'+':v<0?'−':'')+nf1.format(Math.abs(v))+'%';
 const pctDe=o=>o.inicial>0?(o.atual/o.inicial-1)*100:null;
+// lista longa (manutenção de rodovia cobre centenas de municípios) vira "A, B, C e mais N"
+const listaCurta=(l,n=3)=>l.length<=n+1?l.join(', '):`${l.slice(0,n).join(', ')} e mais ${nf.format(l.length-n)}`;
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 
 let OBRAS=[], META={}, lista=[], mostrando=30, aberta=null;
@@ -295,9 +302,10 @@ function selos(o){
   const s=[];
   if(o.situacao) s.push(`<span class="selo${/Paralisada|Inacabada|Cancelada/.test(o.situacao)?' forte':''}">${esc(o.situacao)}</span>`);
   if(o.fisica&&o.fisica.pct!=null) s.push(`<span class="selo">execução física ${nf.format(o.fisica.pct)}%</span>`);
-  const ac=o.contratos.reduce((n,c)=>n+c.acrescimos,0), rj=o.contratos.reduce((n,c)=>n+c.reajustes,0);
-  if(ac) s.push(`<span class="selo">${ac} termo${ac>1?'s':''} de acréscimo</span>`);
-  if(rj) s.push(`<span class="selo">${rj} de reajuste</span>`);
+  // natureza pelo texto de cada termo (não pelo campo do sistema, que chama acréscimo de "reajuste")
+  const conta=n=>o.contratos.reduce((s,c)=>s+((c.naturezas||{})[n]||0),0);
+  [['acréscimo','de acréscimo'],['reequilíbrio','de reequilíbrio'],['reajuste','de reajuste'],['supressão','de supressão']]
+    .forEach(([n,r],i)=>{const k=conta(n); if(k) s.push(`<span class="selo">${k}${i===0?` termo${k>1?'s':''}`:''} ${r}</span>`)});
   if(o.paralisacoes.length) s.push(`<span class="selo forte">paralisação registrada</span>`);
   if(o.emendas.length) s.push(`<span class="selo">${o.emendas.length} emenda${o.emendas.length>1?'s':''} parlamentar${o.emendas.length>1?'es':''}</span>`);
   if(o.contratos.some(c=>c.outrasObras)) s.push(`<span class="selo">contrato compartilhado com outras obras</span>`);
@@ -314,7 +322,7 @@ function desenhar(){
       <button class="ob-cab" aria-expanded="${aberta===o.id}" data-id="${esc(o.id)}">
         <span class="ob-pos">${i+1}</span>
         <span class="ob-txt"><span class="ob-nome">${esc(o.nome)}</span>
-          <small>${esc(o.municipios.join(', ')||'município não informado')} · ${esc(o.orgao||'')}</small>
+          <small>${esc(o.municipios.length?listaCurta(o.municipios):'município não informado')} · ${esc(o.orgao||'')}</small>
           <span class="selos">${selos(o)}</span></span>
         <span class="ob-num"><b>${p==null?'—':sinal(p)}</b><small>${curto(o.inicial)} → ${curto(o.atual)}</small></span>
       </button>
@@ -326,15 +334,28 @@ function desenhar(){
 }
 
 function termoTexto(t){
-  const q=t.qual.length?` (${t.qual.map(x=>x.toLowerCase()).join(', ')})`:'';
-  return `${esc(t.tipo)}${t.numero?' '+esc(t.numero):''}${esc(q)}`;
+  // natureza pelo texto do termo; o campo do sistema só aparece quando discorda
+  const nat=(t.nat||[]).join(', ');
+  const sist=t.qual.map(x=>x.toLowerCase().replace('acréscimo / supressão','acréscimo/supressão').replace('vigência','prazo'));
+  const difere=sist.length&&sist.some(x=>!(t.nat||[]).some(n=>x.includes(n)));
+  return `${esc(t.tipo)}${t.numero?' '+esc(t.numero):''}${nat?` · ${esc(nat)}`:''}`+
+    (difere?` <span class="sist">(no sistema: ${esc(sist.join(', '))})</span>`:'');
+}
+const NAT_ORD=['acréscimo','acréscimo/supressão','reequilíbrio','reajuste','prorrogação','supressão'];
+const NAT_ROT={'acréscimo/supressão':'acréscimo e supressão (saldo)','prorrogação':'prorrogação (o termo não cita valor)'};
+function composicaoTexto(comp,sem,total){
+  if(!(total>0.5)) return '';
+  const partes=NAT_ORD.filter(n=>comp[n]).map(n=>`${NAT_ROT[n]||n} ${curto(comp[n])} (${Math.round(comp[n]/total*100)}%)`);
+  if(Math.abs(sem)>=1) partes.push(`sem natureza conferida ${curto(sem)} (${Math.round(sem/total*100)}%)`);
+  return partes.join(' · ');
 }
 function linkDou(t){ return t.dou?` · <a href="${esc(t.dou[1])}" target="_blank" rel="noopener">extrato no DOU, ${data(t.dou[0])}</a>`:''; }
 
 function cascata(c){
   const linhas=[];
   c.termos.forEach((t,i)=>{
-    const v=t.valor==null?'<small>sem valor</small>':reais.format(t.valor)+(t.delta?`<small>${t.delta>0?'+':'−'}${reais.format(Math.abs(t.delta))} registrado aqui</small>`:'');
+    const obs=t.confere===false?' · o texto fala de outro valor':t.confere?' · confere com o texto':'';
+    const v=t.valor==null?'<small>sem valor</small>':reais.format(t.valor)+(t.delta?`<small>${t.delta>0?'+':'−'}${reais.format(Math.abs(t.delta))} registrado aqui${obs}</small>`:'');
     linhas.push(`<div class="cx"><span class="d">${data(t.data)}</span>
       <span class="t"><b>${termoTexto(t)}</b>${t.texto?`<small>${esc(t.texto)}</small>`:''}${linkDou(t)}</span>
       <span class="v">${v}</span></div>`);
@@ -343,10 +364,23 @@ function cascata(c){
   linhas.push(`<div class="cx total"><span class="d">hoje</span><span class="t"><b>Valor global atual</b>
      <small>Registro do contrato no Contratos.gov.br (inicial ${reais.format(c.inicial)})</small></span>
      <span class="v">${reais.format(c.atual)}${p!=null?`<small>${sinal(p)} sobre o inicial</small>`:''}</span></div>`);
+  const comp=composicaoTexto(c.composicao||{},c.semNatureza||0,c.atual-c.inicial);
+  if(comp) linhas.push(`<div class="cx"><span class="d"></span><span class="t">Do aumento, pela natureza que cada termo declara
+     <small>${comp}</small></span><span class="v"></span></div>`);
   linhas.push(`<div class="cx pago"><span class="d"></span><span class="t">Pago até agora <small>${nf.format(c.empenhos)} empenho${c.empenhos!==1?'s':''} ligado${c.empenhos!==1?'s':''} ao contrato; inclui restos a pagar pagos</small></span>
      <span class="v">${reais.format(c.pago)}</span></div>`);
   const aviso=c.fecha?'':`<p class="nota">A sequência de valores registrados nos termos não fecha exatamente com o valor inicial e o atual do registro do contrato; os dois extremos vêm do registro, e os termos mostram o que o sistema gravou em cada um.</p>`;
   return linhas.join('')+aviso;
+}
+
+// Sanções vigentes da empresa (CEIS/CNEP, pelo CNPJ). O arquivo lista só as vigentes; a sanção pode ser
+// de outro órgão e de outro contrato. Sem o arquivo, "não consultado" — nunca "sem sanção".
+function sancoesTexto(c){
+  if(c.sancoes==null) return `<small>Sanções da empresa (CEIS/CNEP): não consultado nesta rodada.</small>`;
+  if(!c.sancoes.length) return `<small>Nenhuma sanção vigente para esta empresa no CEIS e no CNEP da CGU (arquivo de ${data(META._sancoes)}).</small>`;
+  return `<small><b>Sanção vigente para esta empresa</b> (${esc(c.sancoes[0][0])}, CGU, arquivo de ${data(META._sancoes)}): `+
+    c.sancoes.map(s=>`${esc(s[1])}, de ${esc(s[2])} a ${esc(s[3]||'—')}, aplicada por ${esc(s[4])} (processo ${esc(s[5])})`).join('; ')+
+    `. A sanção pode ter sido aplicada por outro órgão, em outro contrato; não diz respeito necessariamente a esta obra.</small>`;
 }
 
 function eventos(o){
@@ -362,6 +396,8 @@ function eventos(o){
       t:inicial?`Contrato ${esc(c.numero)} assinado com ${esc(c.fornecedor[0])}`:termoTexto(t)+` — contrato ${esc(c.numero)}`,
       s:(inicial?`${esc(c.unidade||c.orgao||'')} · ${reais.format(c.inicial)}`:(t.delta?`${t.delta>0?'+':'−'}${reais.format(Math.abs(t.delta))} registrados neste termo`:''))+linkDou(t)});
   }));
+  o.contratos.forEach(c=>(c.responsaveis||[]).filter(r=>(r.funcao||'').startsWith('Gestor')&&r.nome&&r.de).forEach(r=>
+    ev.push({d:r.de,tipo:'gestão',t:`${esc(r.nome)}: ${esc(r.funcao.toLowerCase())} do contrato ${esc(c.numero)}`,s:`designação pela portaria ${esc(r.portaria||'—')}`})));
   o.paralisacoes.forEach(p=>ev.push({d:p[0],tipo:'situação',cls:'alerta',t:esc(p[1]||'Situação alterada'),s:esc(p[2]||'')}));
   if(o.previsto[1]) ev.push({d:o.previsto[1],tipo:'previsão',t:'Término previsto no cadastro',s:''});
   if(o.efetivo[1]) ev.push({d:o.efetivo[1],tipo:'execução',t:'Término efetivo',s:''});
@@ -376,7 +412,7 @@ function detalhe(o){
     <dl class="ids">
       <div><dt>Órgão responsável</dt><dd>${esc(o.orgao||'—')}</dd></div>
       <div><dt>Executor</dt><dd>${esc(o.executores.join(', ')||'—')}</dd></div>
-      <div><dt>Município</dt><dd>${esc(o.municipios.join(', ')||'—')}</dd></div>
+      <div><dt>Município${o.municipios.length>1?`s (${nf.format(o.municipios.length)})`:''}</dt><dd>${esc(o.municipios.length?listaCurta(o.municipios,12):'—')}</dd></div>
       <div><dt>Situação no ObrasGov</dt><dd>${esc(o.situacao||'—')}</dd></div>
       <div><dt>Tipo</dt><dd>${esc([o.especie,...o.tipos].filter(Boolean).join(' · ')||'—')}</dd></div>
       <div><dt>Prazo previsto no cadastro</dt><dd>${data(o.previsto[0])} a ${data(o.previsto[1])}</dd></div>
@@ -388,6 +424,8 @@ function detalhe(o){
     <p>${o.contratos.length>1?`Soma dos ${o.contratos.length} contratos ligados à obra: `:''}contratado por
        <b>${reais.format(o.inicial)}</b>, hoje <b>${reais.format(o.atual)}</b>${p!=null?` (${sinal(p)})`:''};
        pago até agora ${reais.format(o.pago)}.</p>
+    ${(()=>{const comp={},tot=o.atual-o.inicial;let sem=0;o.contratos.forEach(c=>{Object.entries(c.composicao||{}).forEach(([n,v])=>comp[n]=(comp[n]||0)+v);sem+=c.semNatureza||0});
+       const s=composicaoTexto(comp,sem,tot); return s?`<p>Do aumento, pelo que cada termo declara: ${s}.</p>`:''})()}
     ${o.investimentoPrevisto?`<p class="nota">Investimento previsto no cadastro da obra: ${reais.format(o.investimentoPrevisto)}
        (${o.fontes.map(f=>esc(f[0])).join(', ')}). É o valor que está no cadastro hoje, não necessariamente a
        estimativa original, e pode cobrir mais que os contratos listados.</p>`:''}`);
@@ -395,12 +433,28 @@ function detalhe(o){
     h.push(`<div class="contrato"><p class="c-cab"><b>Contrato ${esc(c.numero)}</b> · ${esc(c.categoria||'')}${c.modalidade?' · '+esc(c.modalidade):''}${c.licitacao?' nº '+esc(c.licitacao):''}
       <small>${esc(c.unidade||c.orgao||'')} · empresa ${esc(c.fornecedor[0])} (CNPJ ${esc(c.fornecedor[1])})
       · <a href="${esc(c.url)}" target="_blank" rel="noopener">ver no Contratos.gov.br</a></small>
+      ${sancoesTexto(c)}
       ${c.objeto?`<small>${esc(c.objeto)}</small>`:''}
       ${c.outrasObras?`<small><b>Este contrato também está ligado a ${c.outrasObras} outra${c.outrasObras>1?'s':''} obra${c.outrasObras>1?'s':''} no ObrasGov</b>: os valores são do contrato inteiro, não só desta obra.</small>`:''}</p>
       <div class="casc">${cascata(c)}</div></div>`);
   });
 
-  h.push(`<h3>Deputados e governadores</h3>`);
+  h.push(`<h3>Pessoas ligadas por documento</h3>
+    <p class="nota">Regra fixa, sem "grau de confiança": uma pessoa só aparece se um documento oficial a liga a esta obra ou
+      a este contrato por identificador (número do contrato, identificador da obra, código da emenda). Nome citado em
+      texto não liga ninguém.</p>`);
+  const resp=o.contratos.flatMap(c=>(c.responsaveis||[]).map(r=>({...r,contrato:c.numero})));
+  const gestores=resp.filter(r=>(r.funcao||'').startsWith('Gestor')&&r.nome);
+  const outros=resp.filter(r=>!(r.funcao||'').startsWith('Gestor'));
+  if(resp.length){
+    h.push(`<p><b>Gestão do contrato</b> <span class="nota">— servidores designados por portaria para acompanhar a execução;
+      aditivo é decidido e assinado pela autoridade do órgão, não por eles.</span></p><div class="pessoas">`+
+      gestores.map(r=>`<div class="pe"><span><b>${esc(r.nome)}</b><small>${esc(r.funcao)} do contrato ${esc(r.contrato)} · portaria ${esc(r.portaria||'—')}</small></span>
+        <span class="v" style="font-weight:400">${data(r.de)}${r.ate?` a ${data(r.ate)}`:' em diante'}</span></div>`).join('')+
+      (outros.length?`<div class="pe"><span><b>${nf.format(outros.length)} ${outros.length>1?'designações':'designação'} de fiscalização e apoio</b>
+        <small>${esc([...new Set(outros.map(r=>r.funcao))].join(', '))} — nomes não exibidos; portarias ${esc([...new Set(outros.map(r=>r.portaria).filter(Boolean))].slice(0,4).join('; '))}</small></span>
+        <span class="v"></span></div>`:'')+`</div>`);
+  } else h.push(`<p><b>Gestão do contrato:</b> nenhum gestor ou fiscal cadastrado no Contratos.gov.br para ${o.contratos.length>1?'estes contratos':'este contrato'}.</p>`);
   if(o.emendas.length){
     h.push(`<p class="nota">Vínculo financeiro: autor da emenda parlamentar que empenhou recurso nesta obra, no ano da emenda.
       A emenda manda o dinheiro; o contrato e os aditivos são assinados pelo órgão que executa, não por quem fez a emenda.</p><div class="pessoas">`+
@@ -410,6 +464,8 @@ function detalhe(o){
         return `<div class="pe"><span><b>${nome}</b><small>${quem} · ${esc(e.tipo)} · ${esc(e.ano)} · código ${esc(e.codigo)}</small></span>
         <span class="v">${reais.format(e.empenhado)}<small style="font-weight:400;color:var(--tinta2)">empenhados na obra</small></span></div>`}).join('')+`</div>`);
   } else h.push(`<p><b>Deputados:</b> nenhuma emenda parlamentar nos empenhos desta obra, e nenhum outro documento das fontes liga um deputado a ela.</p>`);
+  h.push(`<p><b>Dirigente do órgão na data</b> (reitor, ministro, diretor-geral): ainda não aparece. O extrato no Diário Oficial
+    gerado pelo sistema de contratos não traz quem assinou, e o cargo na data exige o ato de nomeação de cada dirigente.</p>`);
   const contratantes=[...new Set(o.contratos.map(c=>c.orgao||c.unidade).filter(Boolean))];
   const partes=[...new Set([o.orgao,...o.executores,...(o.tomadores||[]),...(o.repassadores||[])].filter(Boolean))];
   h.push(`<p><b>Governador:</b> nenhum documento das fontes liga um governador a esta obra. Quem contrata é
@@ -447,7 +503,7 @@ function resumo(){
     Crescimento total, somando acréscimos e reajustes.`;
   if(cob.obrasNaUf) $('#cobertura').textContent=`Das ${nf.format(cob.obrasNaUf)} obras de ${META._uf} no ObrasGov, ${nf.format(cob.obrasComContrato)} têm contrato no sistema de contratos do governo federal (Contratos.gov.br) — só essas estão aqui.`;
   $('#kicker').textContent=`Obras com contrato federal · ${META._uf==='SP'?'São Paulo':META._uf}`;
-  $('#rodapeData').textContent=`ObrasGov atualizado em ${data(META._obrasgovAtualizado)}; arquivo de emendas da CGU de ${META._emendasCgu||'—'}; página gerada em ${data(META._geradoEm)}.`;
+  $('#rodapeData').textContent=`ObrasGov atualizado em ${data(META._obrasgovAtualizado)}; arquivo de emendas da CGU de ${data(META._emendasCgu)}; página gerada em ${data(META._geradoEm)}.`;
 }
 
 async function carregar(){

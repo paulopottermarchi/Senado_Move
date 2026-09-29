@@ -671,13 +671,18 @@ def main():
                   f" · votação {v['votacao']}\n    {v['descricao']}")
         sys.exit(2)
 
-    SAIDA.write_text(json.dumps(resultado, ensure_ascii=False, indent=2), encoding="utf-8")
+    # Um deputado por linha, compacto: 25% menor que o indentado (2,1 → 1,6 MB) e o diff diário
+    # no git continua legível, deputado por deputado. votos.py regrava no mesmo formato.
+    tmp = SAIDA.with_suffix(".tmp")
+    linhas = (json.dumps(d, ensure_ascii=False, separators=(",", ":")) for d in resultado)
+    tmp.write_text("[\n" + ",\n".join(linhas) + "\n]\n", encoding="utf-8")
+    os.replace(tmp, SAIDA)   # atômico: interrompido, o arquivo anterior fica inteiro
     # Datas das legislaturas que aparecem nos dados — rótulos do filtro de mandato.
     usadas = {int(k) for d in resultado for k in (*d["mandatos"], *d["porLegislatura"])}
     LEGISLATURAS.write_text(json.dumps([l for l in legs if l["id"] in usadas],
                                        ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"\nChecagem de sanidade OK: nenhuma proposição 'rejeitada' virou lei; recorte "
-          f"por mandato fecha com o total em todos.")
+    print("\nChecagem de sanidade OK: nenhuma proposição 'rejeitada' virou lei; recorte "
+          "por mandato fecha com o total em todos.")
     print(f"{SAIDA.name} gravado · {len(resultado)} deputados · "
           f"{contador_req} requisições nesta execução · {time.monotonic() - t0:.0f}s\n")
     tabela(resultado)

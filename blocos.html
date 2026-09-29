@@ -187,6 +187,10 @@ h4{font-size:13.5px;font-weight:600;margin-top:16px}
     </nav>
   </div>
 </header>
+<script>
+// No celular a barra rola de lado: abre já mostrando o item da página atual.
+(()=>{const a=document.querySelector('.nav a.aqui'); if(a) a.parentElement.scrollLeft=a.offsetLeft-16;})();
+</script>
 
 <main class="wrap">
   <div class="capa">
@@ -284,7 +288,7 @@ const nomeBloco=i=>B.blocos[i].medianaGoverno>=.5?'Acompanha o Governo':'Vota co
 const corBloco=i=>`var(--b${Math.min(i,1)})`;
 
 async function carregar(){
-  B=await (await fetch('blocos.json',{cache:'no-store'})).json();
+  B=await (await fetch('blocos.json',{cache:'no-cache'})).json();
   const c=B.corte, nb=B.blocos.length;
   chamada.textContent=`Agrupando os ${nf.format(Object.keys(B.deputados).length)} deputados só pela semelhança dos votos, `+
     `sem olhar o partido, aparecem ${nb} blocos. Dentro de cada um, os deputados votam igual em ${pc(c.concordanciaDentro)} `+
@@ -372,7 +376,7 @@ function selecionar(id,rolar){
   ficha.style.setProperty('--c',corBloco(d.bloco));
   ficha.innerHTML=`<div class="f-cab">${retrato(id,N(id)[0],56)}<div><h3>${esc(N(id)[0])}</h3><p>${esc(rotPartido(id))} · ${nomeBloco(d.bloco)}</p></div></div>
     <p class="f-txt">${g==null?'Menos de 50 votações com orientação do Governo: sem porcentagem.'
-      :`Votou como o líder do Governo orientou em <b>${pc(g)}</b> das ${nf.format(d.governo[1])} votações em que houve orientação e ele votou Sim ou Não.${compara}`}</p>
+      :`Votou como o líder do Governo orientou em <b>${pc(g)}</b> das ${nf.format(d.governo[1])} votações em que houve orientação e voto Sim ou Não do deputado.${compara}`}</p>
     ${g==null?'':`<div class="regua" role="img" aria-label="${pc(g)}; colegas de partido de ${pc(lo)} a ${pc(hi)}, mediana ${pc(mp)}">
       <span class="base"></span>${lo!=null?`<span class="faixa" style="left:${lo*100}%;width:${(hi-lo)*100}%" title="Colegas de partido: de ${pc(lo)} a ${pc(hi)}"></span>`:''}
       ${mp!=null?`<span class="md" style="left:${mp*100}%" title="Mediana do partido: ${pc(mp)}"></span>`:''}<span class="eu" style="left:${g*100}%"></span></div>

@@ -113,6 +113,11 @@ jobs:
       - name: Obras e contratos
         run: python obras.py || echo "::warning::obras.py falhou; obras.json ficou como estava"
 
+      # Histórico de tramitação (quanto tempo e por onde passou), uma chamada por proposição.
+      # Rebaixa só as que andaram; com o cache vazio, no máximo 12 mil por rodada (~1 h).
+      - name: Tramitações
+        run: python tramitacoes.py --limite 12000 || echo "::warning::tramitacoes.py falhou; temas.py usa o que houver no cache"
+
       - name: Temas e frase-resumo
         run: python temas.py
 
