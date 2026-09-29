@@ -259,8 +259,8 @@ async function iniciar(){
   }
   try{
     const [rt,rd]=await Promise.all([
-      fetch('temas/taxonomia.json',{cache:'no-store'}),
-      fetch(`temas/${id}.json`,{cache:'no-store'})]);
+      fetch('temas/taxonomia.json',{cache:'no-cache'}),
+      fetch(`temas/${id}.json`,{cache:'no-cache'})]);
     if(!rt.ok) throw {falta:'taxonomia'};
     if(!rd.ok) throw {falta:'deputado'};
     tax=await rt.json(); dep=await rd.json();
@@ -286,7 +286,7 @@ async function iniciar(){
 // Com quem vota (blocos.py → blocos.json). Mede apoio ao governo do momento e semelhança
 // de voto, não ideologia: por isso fica separado do espectro e diz isso antes do número.
 async function comQuemVota(id){
-  let B; try{ const r=await fetch('blocos.json',{cache:'no-store'}); if(!r.ok) return; B=await r.json(); }catch(e){ return; }
+  let B; try{ const r=await fetch('blocos.json',{cache:'no-cache'}); if(!r.ok) return; B=await r.json(); }catch(e){ return; }
   const d=B.deputados[String(id)], el=document.getElementById('cqv');
   if(!d||!el) return;
   const N=i=>B.nomes[i]||['?','?','?'], p=N(String(id))[1], hoje=N(String(id))[4];
@@ -316,14 +316,14 @@ async function comQuemVota(id){
 // da lista ganham a linha "Notícia" quando a notícia linka a ficha da proposição.
 let NOTICIAS={};
 async function carregarNoticias(){
-  try{ const r=await fetch('noticias.json',{cache:'no-store'}); if(!r.ok) return; const n=await r.json();
+  try{ const r=await fetch('noticias.json',{cache:'no-cache'}); if(!r.ok) return; const n=await r.json();
     (n.itens||[]).forEach(x=>x.p.forEach(([id])=>{(NOTICIAS[id]=NOTICIAS[id]||[]).push(x);})); }catch(e){}
 }
 
 async function notoriedade(id){
   let W={}, Y={};
-  try{ const r=await fetch('wikipedia.json',{cache:'no-store'}); if(r.ok) W=await r.json(); }catch(e){}
-  try{ const r=await fetch('youtube.json',{cache:'no-store'}); if(r.ok) Y=await r.json(); }catch(e){}
+  try{ const r=await fetch('wikipedia.json',{cache:'no-cache'}); if(r.ok) W=await r.json(); }catch(e){}
+  try{ const r=await fetch('youtube.json',{cache:'no-cache'}); if(r.ok) Y=await r.json(); }catch(e){}
   const el=document.getElementById('noto'), w=W[String(id)], y=Y[String(id)];
   // canal oficial (cadastro da Câmara): número como o YouTube informa, sem ranking nem soma
   const yt=!y?'':`<p class="cqv-txt">${y.inscritos!=null?`<b>${NF.format(y.inscritos)}</b> inscritos no canal oficial no YouTube`
@@ -332,6 +332,8 @@ async function notoriedade(id){
   if(!W._fonte&&!y) return;
   if(!el) return;
   el.hidden=false;
+  // wikipedia.json ausente (ainda não gerado) não é "sem artigo": aí só o YouTube
+  if(!w&&!W._fonte){ el.innerHTML=`<h2 id="notoTit">Notoriedade</h2>${yt}`; return; }
   if(!w){ el.innerHTML=`<h2 id="notoTit">Notoriedade</h2><p class="cqv-txt">Sem artigo na Wikipédia ligado a este deputado
     pelo identificador da Câmara. Não ter artigo ligado não quer dizer que ninguém procure por ele.</p>${yt}`; return; }
   const max=Math.max(1,...w.mensal), meses=W._meses||[];
@@ -351,7 +353,7 @@ async function notoriedade(id){
 // há emenda dele e o contrato cresceu — com o enquadramento antes: emenda manda dinheiro, não
 // assina contrato nem aditivo. Só aparece para quem tem emenda ou é da UF coberta.
 async function obrasDoDeputado(id,uf){
-  let O; try{ const r=await fetch('obras_deputados.json',{cache:'no-store'}); if(!r.ok) return; O=await r.json(); }catch(e){ return; }
+  let O; try{ const r=await fetch('obras_deputados.json',{cache:'no-cache'}); if(!r.ok) return; O=await r.json(); }catch(e){ return; }
   const lista=(O.deputados||{})[String(id)]||[], el=document.getElementById('obrasDep');
   if(!el||(!lista.length&&uf!==O._uf)) return;
   const REAIS=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
@@ -360,15 +362,15 @@ async function obrasDoDeputado(id,uf){
   const escopo=`${NF.format(O._obrasAcompanhadas)} obras de ${esc(O._uf)} com contrato federal que o site acompanha, por ora`;
   el.hidden=false;
   if(!lista.length){ el.innerHTML=`<h2 id="obrasTit">Obras com emenda deste deputado</h2>
-    <p class="cqv-txt">Nenhuma emenda dele nas ${escopo}.</p>`; return; }
+    <p class="cqv-txt">Nenhuma emenda deste deputado nas ${escopo}.</p>`; return; }
   el.innerHTML=`<h2 id="obrasTit">Obras com emenda deste deputado</h2>
     <p class="cqv-av">A emenda manda dinheiro para a obra; quem contrata e assina os aditivos é o órgão que executa. O número diz
-      em quantas obras há emenda dele e o contrato cresceu, não que ele tenha causado o aumento — que pode ser reajuste de preços.</p>
-    <div class="ob-n"><div><b>${NF.format(cresceu.length)}</b><span>com emenda dele em que o contrato cresceu depois da assinatura</span></div>
-      <div><b>${NF.format(lista.length)}</b><span>com emenda dele, ao todo</span></div></div>
+      em quantas obras há emenda deste deputado e o contrato cresceu, não que a emenda tenha causado o aumento — que pode ser reajuste de preços.</p>
+    <div class="ob-n"><div><b>${NF.format(cresceu.length)}</b><span>com emenda deste deputado em que o contrato cresceu depois da assinatura</span></div>
+      <div><b>${NF.format(lista.length)}</b><span>com emenda deste deputado, ao todo</span></div></div>
     <ul class="ob-l">${lista.slice().sort((a,b)=>(pct(b)??-1e9)-(pct(a)??-1e9)).map(x=>{const p=pct(x);
       return `<li><span><a href="obras.html?obra=${encodeURIComponent(x.obra)}">${esc(x.nome)}</a>
-        <small>${esc(x.municipios.join(', '))} · emenda${x.emendas.length>1?'s':''} de ${[...new Set(x.emendas.map(e=>e[1]))].join(', ')}: ${REAIS.format(x.emendas.reduce((s,e)=>s+e[2],0))} empenhados</small></span>
+        <small>${esc(x.municipios.length>4?x.municipios.slice(0,3).join(', ')+' e mais '+(x.municipios.length-3):x.municipios.join(', '))} · emenda${x.emendas.length>1?'s':''} de ${[...new Set(x.emendas.map(e=>e[1]))].join(', ')}: ${REAIS.format(x.emendas.reduce((s,e)=>s+e[2],0))} empenhados</small></span>
         <span class="v">${p==null?'—':Math.abs(p)<0.01?'sem variação':sinal(p)}<small>contrato</small></span></li>`}).join('')}</ul>
     <p class="cqv-av">Entre as ${escopo}. Autor da emenda como a CGU registra, ligado a este perfil só por nome parlamentar
       exato e com todas as emendas daquele código dentro do mandato na Câmara.</p>`;

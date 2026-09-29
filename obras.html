@@ -178,6 +178,10 @@ h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2}
     </nav>
   </div>
 </header>
+<script>
+// No celular a barra rola de lado: abre já mostrando o item da página atual.
+(()=>{const a=document.querySelector('.nav a.aqui'); if(a) a.parentElement.scrollLeft=a.offsetLeft-16;})();
+</script>
 
 <main class="wrap">
   <div class="capa">
@@ -263,6 +267,8 @@ function curto(v){
 const data=d=>d?d.slice(0,10).split('-').reverse().join('/'):'—';
 const sinal=v=>(v>0?'+':v<0?'−':'')+nf1.format(Math.abs(v))+'%';
 const pctDe=o=>o.inicial>0?(o.atual/o.inicial-1)*100:null;
+// lista longa (manutenção de rodovia cobre centenas de municípios) vira "A, B, C e mais N"
+const listaCurta=(l,n=3)=>l.length<=n+1?l.join(', '):`${l.slice(0,n).join(', ')} e mais ${nf.format(l.length-n)}`;
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 
 let OBRAS=[], META={}, lista=[], mostrando=30, aberta=null;
@@ -314,7 +320,7 @@ function desenhar(){
       <button class="ob-cab" aria-expanded="${aberta===o.id}" data-id="${esc(o.id)}">
         <span class="ob-pos">${i+1}</span>
         <span class="ob-txt"><span class="ob-nome">${esc(o.nome)}</span>
-          <small>${esc(o.municipios.join(', ')||'município não informado')} · ${esc(o.orgao||'')}</small>
+          <small>${esc(o.municipios.length?listaCurta(o.municipios):'município não informado')} · ${esc(o.orgao||'')}</small>
           <span class="selos">${selos(o)}</span></span>
         <span class="ob-num"><b>${p==null?'—':sinal(p)}</b><small>${curto(o.inicial)} → ${curto(o.atual)}</small></span>
       </button>
@@ -376,7 +382,7 @@ function detalhe(o){
     <dl class="ids">
       <div><dt>Órgão responsável</dt><dd>${esc(o.orgao||'—')}</dd></div>
       <div><dt>Executor</dt><dd>${esc(o.executores.join(', ')||'—')}</dd></div>
-      <div><dt>Município</dt><dd>${esc(o.municipios.join(', ')||'—')}</dd></div>
+      <div><dt>Município${o.municipios.length>1?`s (${nf.format(o.municipios.length)})`:''}</dt><dd>${esc(o.municipios.length?listaCurta(o.municipios,12):'—')}</dd></div>
       <div><dt>Situação no ObrasGov</dt><dd>${esc(o.situacao||'—')}</dd></div>
       <div><dt>Tipo</dt><dd>${esc([o.especie,...o.tipos].filter(Boolean).join(' · ')||'—')}</dd></div>
       <div><dt>Prazo previsto no cadastro</dt><dd>${data(o.previsto[0])} a ${data(o.previsto[1])}</dd></div>
@@ -447,7 +453,7 @@ function resumo(){
     Crescimento total, somando acréscimos e reajustes.`;
   if(cob.obrasNaUf) $('#cobertura').textContent=`Das ${nf.format(cob.obrasNaUf)} obras de ${META._uf} no ObrasGov, ${nf.format(cob.obrasComContrato)} têm contrato no sistema de contratos do governo federal (Contratos.gov.br) — só essas estão aqui.`;
   $('#kicker').textContent=`Obras com contrato federal · ${META._uf==='SP'?'São Paulo':META._uf}`;
-  $('#rodapeData').textContent=`ObrasGov atualizado em ${data(META._obrasgovAtualizado)}; arquivo de emendas da CGU de ${META._emendasCgu||'—'}; página gerada em ${data(META._geradoEm)}.`;
+  $('#rodapeData').textContent=`ObrasGov atualizado em ${data(META._obrasgovAtualizado)}; arquivo de emendas da CGU de ${data(META._emendasCgu)}; página gerada em ${data(META._geradoEm)}.`;
 }
 
 async function carregar(){

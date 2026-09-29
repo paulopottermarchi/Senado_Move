@@ -195,6 +195,10 @@ a.pessoa:hover{border-color:#c9ccd1}
     </nav>
   </div>
 </header>
+<script>
+// No celular a barra rola de lado: abre já mostrando o item da página atual.
+(()=>{const a=document.querySelector('.nav a.aqui'); if(a) a.parentElement.scrollLeft=a.offsetLeft-16;})();
+</script>
 
 <main class="wrap">
   <div class="capa">
@@ -321,18 +325,18 @@ function retrato(id,nome,px){
 const pessoa=([id,nome,partido,uf,voto,coesao])=>({id,nome,partido,uf,voto,coesao});
 
 async function carregar(){
-  const [rp,rr,re,rs,rn]=await Promise.all([fetch('proposicoes.json',{cache:'no-store'}),
-                                   fetch('temas/resumo.json',{cache:'no-store'}).catch(()=>null),
-                                   fetch('enquetes.json',{cache:'no-store'}).catch(()=>null),
-                                   fetch('ecidadania.json',{cache:'no-store'}).catch(()=>null),
-                                   fetch('notoriedade.json',{cache:'no-store'}).catch(()=>null)]);
+  const [rp,rr,re,rs,rn]=await Promise.all([fetch('proposicoes.json',{cache:'no-cache'}),
+                                   fetch('temas/resumo.json',{cache:'no-cache'}).catch(()=>null),
+                                   fetch('enquetes.json',{cache:'no-cache'}).catch(()=>null),
+                                   fetch('ecidadania.json',{cache:'no-cache'}).catch(()=>null),
+                                   fetch('notoriedade.json',{cache:'no-cache'}).catch(()=>null)]);
   // enquetes.json (enquetes.py) e ecidadania.json (ecidadania.py): sem eles, a página
   // funciona e diz "não consultada"
   try{ if(re&&re.ok) ENQ=await re.json(); }catch(e){}
   try{ if(rs&&rs.ok) ECID=await rs.json(); }catch(e){}
   try{ if(rn&&rn.ok) NOT=await rn.json(); }catch(e){}
   // notícias da Agência Câmara por proposição (noticias.py), pelo link da notícia para a ficha
-  try{ const r=await fetch('noticias.json',{cache:'no-store'}); if(r.ok){ const n=await r.json();
+  try{ const r=await fetch('noticias.json',{cache:'no-cache'}); if(r.ok){ const n=await r.json();
     (n.itens||[]).forEach(x=>x.p.forEach(([id])=>{(NOTICIAS[id]=NOTICIAS[id]||[]).push(x);})); } }catch(e){}
   LEIS=(await rp.json()).map(p=>({...p, tipo:(p.numero||'').split(' ')[0], div:(p.divergentes||[]).map(pessoa),
                                   nom:p.nominaisPlenario||[], enq:ENQ[String(p.idProposicao)]||null, sf:ECID[String(p.idProposicao)]||null, noto:NOT[String(p.idProposicao)]||null,

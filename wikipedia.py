@@ -13,8 +13,8 @@ Ligação deputado → artigo, só por identificador, nunca pelo nome (homônimo
      Câmara, e o artigo da pt.wikipedia ligado a esse item.
   2. Para quem não tem P7480: artigo da pt.wikipedia com link externo para
      camara.leg.br/deputados/{id} — o id exato. Páginas que linkam mais de 2 deputados
-     (listas, legislaturas) são descartadas; só vale se sobrar exatamente um artigo, e se o
-     item do Wikidata dele não tiver P7480 de OUTRO deputado.
+     (listas, legislaturas) são descartadas; o item do Wikidata do artigo tem de ser de um ser
+     humano (P31 = Q5) e não pode ter P7480 de OUTRO deputado; só vale se sobrar exatamente um.
 Quem não tem artigo ligado fica sem número — nunca zero.
 
 Visitas: API de pageviews da Wikimedia, leitores humanos (agent=user), todos os acessos,
@@ -29,6 +29,7 @@ import os
 import re
 import sys
 import time
+from collections import defaultdict
 from datetime import date, timedelta
 from urllib.parse import quote, unquote
 
@@ -39,7 +40,9 @@ import coleta  # truststore, caminhos, ler/gravar cache
 SAIDA = coleta.BASE / "wikipedia.json"
 CACHE_WP = coleta.CACHE / "wikipedia"
 MAPA = CACHE_WP / "mapa.json"
-UA = "camara-aberta/1.0 (github.com/paulopottermarchi/Senado_Move; dados públicos)"
+# Formato pedido pela Wikimedia (URL completa e contato): sem ele o cliente cai no limite de
+# "não identificado", 10 req/min, em vez de 200 (mediawiki.org/wiki/Wikimedia_APIs/Rate_limits).
+UA = "CamaraAberta/1.0 (https://github.com/paulopottermarchi/Senado_Move; https://github.com/paulopottermarchi/Senado_Move/issues)"
 API = "https://pt.wikipedia.org/w/api.php"
 PV = ("https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/pt.wikipedia/"
       "all-access/user/{titulo}/{gran}/{ini}/{fim}")
@@ -49,11 +52,13 @@ sessao.headers["User-Agent"] = UA
 _ultima = [0.0]
 
 
-def pedir(url, params=None, intervalo=1.0):
+def pedir(url, params=None, intervalo=1.0, tentativas=8):
     """GET educado: intervalo mínimo, maxlag na API do MediaWiki, e espera em 429/5xx.
     Uma requisição por segundo na API do MediaWiki: a 4/s, a Wikimedia devolveu 429
-    ("too many requests") para acesso sem login — medido em 29/9/2026."""
-    for n in range(5):
+    ("too many requests") para acesso sem login — medido em 29/9/2026. Mesmo a 1/s o bloqueio
+    voltou uma vez e durou mais de 2,5 min: a espera cresce (30 s, 1, 2, 4… min, até 10) e
+    respeita o retry-after."""
+    for n in range(tentativas):
         espera = intervalo - (time.monotonic() - _ultima[0])
         if espera > 0:
             time.sleep(espera)
@@ -73,8 +78,11 @@ def pedir(url, params=None, intervalo=1.0):
                 continue
             return d
         # respeita o tempo pedido pelo servidor (429 veio com retry-after de 19 s)
-        time.sleep(max(int(r.headers.get("retry-after") or 0), 10 * (n + 1)))
-    raise RuntimeError(f"sem resposta depois de 5 tentativas: {url}")
+        espera = max(int(r.headers.get("retry-after") or 0), min(600, 30 * 2 ** n))
+        print(f"      HTTP {r.status_code} ({r.headers.get('content-type', '')[:30]}); "
+              f"nova tentativa em {espera} s", flush=True)
+        time.sleep(espera)
+    raise RuntimeError(f"sem resposta depois de {tentativas} tentativas: {url}")
 
 
 def mw(params):
@@ -101,39 +109,83 @@ def ligar(ids):
             mapa[int(cam)] = (titulo_da_url(b["art"]["value"]), "Wikidata")
     print(f"   via Wikidata (P7480): {len(mapa)}", flush=True)
 
-    for i in ids:
-        if i in mapa:
-            continue
-        candidatos = set()
-        for proto in ("https", "http"):
-            d = mw({"action": "query", "list": "exturlusage", "euquery": f"www.camara.leg.br/deputados/{i}",
-                    "euprotocol": proto, "eunamespace": 0, "eulimit": 50})
+    # 2ª via numa varredura só: todos os artigos com link para camara.leg.br/deputados/{id}, paginado
+    # (~30 requisições). Antes era uma consulta por deputado (~600, com 429 a cada poucas).
+    ids_da_pagina = defaultdict(set)      # título → ids de deputado que o artigo linka
+    for proto in ("https", "http"):
+        cont = {}
+        while True:
+            d = mw({"action": "query", "list": "exturlusage", "euquery": "www.camara.leg.br/deputados/",
+                    "euprotocol": proto, "eunamespace": 0, "eulimit": "max", **cont})
             for x in d["query"]["exturlusage"]:
-                if re.search(rf"camara\.leg\.br/deputados/{i}(?:$|[/?#])", x["url"]):
-                    candidatos.add(x["title"])
-        bons = []
-        for t in candidatos:
-            d = mw({"action": "query", "prop": "extlinks|pageprops", "titles": t, "ellimit": 500,
-                    "elquery": "www.camara.leg.br/deputados/", "elprotocol": "https", "ppprop": "wikibase_item"})
-            pg = next(iter(d["query"]["pages"].values()))
-            outros = {int(x) for l in pg.get("extlinks", []) for x in re.findall(r"deputados/(\d+)", l["*"])}
-            item = (pg.get("pageprops") or {}).get("wikibase_item")
-            if len(outros) <= 2 and p7480.get(item, i) == i:
-                bons.append(t)
-        if len(bons) == 1:
+                m = re.search(r"camara\.leg\.br/deputados/(\d+)(?:$|[/?#])", x["url"])
+                if m:
+                    ids_da_pagina[x["title"]].add(int(m[1]))
+            if "continue" not in d:
+                break
+            cont = d["continue"]
+    print(f"   artigos com link para a página de um deputado: {len(ids_da_pagina)}", flush=True)
+
+    # Candidatos: artigos que linkam o deputado e no máximo mais um (3+ é lista ou legislatura).
+    candidatos = defaultdict(list)
+    for t, lig in ids_da_pagina.items():
+        if len(lig) <= 2:
+            for i in lig:
+                if i in ids and i not in mapa:
+                    candidatos[i].append(t)
+    # Item do Wikidata de cada candidato, 50 por requisição: descarta o que tem P7480 de OUTRO deputado.
+    titulos = sorted({t for ts in candidatos.values() for t in ts})
+    item_de = {}
+    for k in range(0, len(titulos), 50):
+        d = mw({"action": "query", "prop": "pageprops", "ppprop": "wikibase_item",
+                "titles": "|".join(titulos[k:k + 50])})
+        normal = {x["to"]: x["from"] for x in d["query"].get("normalized", [])}
+        for pg in d["query"]["pages"].values():
+            item_de[normal.get(pg["title"], pg["title"])] = (pg.get("pageprops") or {}).get("wikibase_item")
+    # Só artigo sobre uma PESSOA: item do Wikidata com P31 = Q5 (ser humano), por identificador.
+    # Medido em 29/9/2026: sem isso, 7 dos 91 ligados por esta via eram listas de deputados
+    # estaduais, "Governo do Paraná", o município "Maravilha (SC)", "Câmara dos Deputados do Brasil".
+    itens = sorted({it for it in item_de.values() if it})
+    humanos = set()
+    for k in range(0, len(itens), 200):
+        valores = " ".join(f"wd:{x}" for x in itens[k:k + 200])
+        q = f"SELECT ?item WHERE {{ VALUES ?item {{ {valores} }} ?item wdt:P31 wd:Q5 . }}"
+        rows = pedir("https://query.wikidata.org/sparql", {"query": q, "format": "json"})["results"]["bindings"]
+        humanos |= {b["item"]["value"].rsplit("/", 1)[1] for b in rows}
+    nao_pessoa = 0
+    for i, ts in candidatos.items():
+        pessoas = [t for t in ts if item_de.get(t) in humanos]
+        nao_pessoa += len(ts) - len(pessoas)
+        bons = [t for t in pessoas if p7480.get(item_de.get(t), i) == i]
+        if len(bons) == 1:                # exatamente um artigo; dois ou mais = ambíguo, fica sem
             mapa[i] = (bons[0], "link para a página da Câmara")
+    print(f"   candidatos descartados por não serem artigo sobre pessoa (P31 ≠ Q5): {nao_pessoa}", flush=True)
     print(f"   total ligado: {len(mapa)} de {len(ids)}", flush=True)
     return mapa
 
 
-def redirecionamentos(titulo):
-    d = mw({"action": "query", "prop": "redirects", "titles": titulo, "rdlimit": "max", "rdnamespace": 0})
-    pg = next(iter(d["query"]["pages"].values()))
-    return [r["title"] for r in pg.get("redirects", [])]
+def redirecionamentos(titulos):
+    """{título: [redirecionamentos para ele]}, 50 títulos por requisição (com continuação)."""
+    saida = {t: [] for t in titulos}
+    for k in range(0, len(titulos), 50):
+        lote, cont = titulos[k:k + 50], {}
+        while True:
+            d = mw({"action": "query", "prop": "redirects", "titles": "|".join(lote),
+                    "rdlimit": "max", "rdnamespace": 0, **cont})
+            normal = {x["to"]: x["from"] for x in d["query"].get("normalized", [])}
+            for pg in d["query"]["pages"].values():
+                t = normal.get(pg["title"], pg["title"])
+                saida.setdefault(t, []).extend(r["title"] for r in pg.get("redirects", []))
+            if "continue" not in d:
+                break
+            cont = d["continue"]
+    return saida
 
 
-def visitas(titulo, gran, ini, fim):
-    d = pedir(PV.format(titulo=quote(titulo.replace(" ", "_"), safe=""), gran=gran, ini=ini, fim=fim), intervalo=0.5)
+def diarias(titulo, ini, fim):
+    """Leituras por dia (AAAAMMDD → n). Uma série só por título: os 90 dias e os meses saem dela."""
+    d = pedir(PV.format(titulo=quote(titulo.replace(" ", "_"), safe=""), gran="daily", ini=ini, fim=fim),
+              intervalo=0.5)
     return {x["timestamp"][:8]: x["views"] for x in (d or {}).get("items", [])}
 
 
@@ -172,15 +224,22 @@ def main():
     ini_m = lista_meses[0]
     print(f"Visitas de {ini90} a {fim90} e mensais de {ini_m:%Y-%m} a {fim_m:%Y-%m}…", flush=True)
 
+    artigos = sorted((k, v) for k, v in mapa.items() if not k.startswith("_"))
+    redir = redirecionamentos(sorted({t for _, (t, _) in artigos}))
+    ini, fim = min(ini90, ini_m), fim90
     saida = {}
-    for k, (titulo, via) in sorted((k, v) for k, v in mapa.items() if not k.startswith("_")):
-        titulos = [titulo] + redirecionamentos(titulo)
-        dia, mes = {}, {}
+    for n, (k, (titulo, via)) in enumerate(artigos, 1):
+        if n % 50 == 0:
+            print(f"   {n}/{len(artigos)} artigos", flush=True)
+        titulos = [titulo] + redir.get(titulo, [])
+        todas = defaultdict(int)
         for t in titulos:
-            for d_, v in visitas(t, "daily", f"{ini90:%Y%m%d}", f"{fim90:%Y%m%d}").items():
-                dia[d_] = dia.get(d_, 0) + v
-            for d_, v in visitas(t, "monthly", f"{ini_m:%Y%m%d}", f"{fim_m:%Y%m%d}").items():
-                mes[d_[:6]] = mes.get(d_[:6], 0) + v
+            for d_, v in diarias(t, f"{ini:%Y%m%d}", f"{fim:%Y%m%d}").items():
+                todas[d_] += v
+        dia = {d_: v for d_, v in todas.items() if f"{ini90:%Y%m%d}" <= d_ <= f"{fim90:%Y%m%d}"}
+        mes = defaultdict(int)
+        for d_, v in todas.items():
+            mes[d_[:6]] += v
         pico = max(dia.items(), key=lambda x: x[1]) if dia else None
         saida[k] = {
             "artigo": titulo, "via": via, "redirecionamentos": len(titulos) - 1,

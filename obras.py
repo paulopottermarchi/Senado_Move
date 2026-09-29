@@ -56,7 +56,8 @@ import time
 import zipfile
 import zlib
 from collections import Counter, defaultdict
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 
 import requests
 
@@ -397,7 +398,10 @@ def main():
                 continue
             k = codigo_emenda(bruto)
             if k is None:
-                cont_emendas["código incompleto"] += 1
+                # medido: "@", "s/e", "-8", "2" — o campo vem preenchido sem código de emenda;
+                # 8 dígitos seriam o código sem o ano, que não se completa por aproximação
+                cont_emendas["código de 8 dígitos (sem o ano)" if re.fullmatch(r"\d{8}", re.sub(r"\.0$", "", str(bruto)))
+                             else "campo sem código válido (@, s/e…)"] += 1
             elif k not in emendas:
                 cont_emendas["código sem par na CGU"] += 1
             else:
@@ -456,7 +460,8 @@ def main():
         "_fonte": "ObrasGov.br (API pública) + Contratos.gov.br (API) + CGU (emendas parlamentares)",
         "_uf": uf,
         "_obrasgovAtualizado": atualizado,
-        "_emendasCgu": emendas.get("_versao"),
+        # data do arquivo da CGU (Last-Modified), em ISO
+        "_emendasCgu": parsedate_to_datetime(emendas["_versao"]).date().isoformat() if emendas.get("_versao") else None,
         "_geradoEm": datetime.now(BRASILIA).isoformat(timespec="minutes"),
         "_cobertura": {"obrasNaUf": len(obras), "obrasComContrato": len(saida),
                        "ligacoes": total_lig, "foraDaConferencia": dict(fora),

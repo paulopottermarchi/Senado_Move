@@ -469,7 +469,7 @@ def main():
 
     saida.sort(key=lambda x: x["data"], reverse=True)
     gravar_json(PROPOSICOES, saida, um_por_linha=True)
-    gravar_json(coleta.SAIDA, deputados)
+    gravar_json(coleta.SAIDA, deputados, um_por_linha=True)   # mesmo formato de coleta.py
 
     # ------------------------------------------------ relatório
     print(f"\nVotações na legislatura: {len(votacoes)} · de texto-base (allowlist): "

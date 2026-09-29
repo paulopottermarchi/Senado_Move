@@ -44,7 +44,6 @@ não alcançava a Câmara). Na primeira rodada conferir no log:
 """
 
 import argparse
-import json
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
