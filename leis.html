@@ -66,10 +66,6 @@ h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,46px);font-weight:500;lin
      background:var(--papel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2380858d' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center}
 .chk{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--tinta2);cursor:pointer}
 .chk input{width:16px;height:16px;accent-color:var(--tinta)}
-.seg{display:inline-flex;gap:2px;background:var(--linha2);border-radius:999px;padding:3px}
-.seg button{font:inherit;font-size:13px;border:none;background:transparent;color:var(--tinta2);
-            border-radius:999px;padding:6px 13px;cursor:pointer}
-.seg button.on{background:var(--papel);color:var(--tinta);font-weight:500;box-shadow:0 1px 2px rgba(16,18,22,.12)}
 .linha2{margin-top:12px;padding-top:12px;border-top:1px solid var(--linha2)}
 .contagem{font-size:13px;color:var(--tinta3);margin-left:auto}
 .limpar{font:inherit;font-size:13px;background:none;border:none;text-decoration:underline;
@@ -86,6 +82,11 @@ h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,46px);font-weight:500;lin
 .lei-res{font-size:13px;color:var(--tinta2)}
 .lei-res b{color:var(--tinta);font-weight:600}
 .ementa{font-family:var(--serif);font-size:18px;line-height:1.45;margin-top:8px;max-width:72ch}
+.oficial{margin-top:6px;max-width:72ch}
+.oficial summary{cursor:pointer;font-size:12px;color:var(--tinta3);line-height:1.5}
+.oficial summary b{font-weight:500;color:var(--tinta2);text-decoration:underline;text-underline-offset:2px}
+.oficial p{font-size:13.5px;color:var(--tinta2);margin-top:6px;line-height:1.5}
+.oficial a{font-size:12.5px;color:var(--tinta2)}
 .cats{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
 .cats span{font-size:11px;color:var(--tinta2);border:1px solid var(--linha);border-radius:999px;padding:0 8px;cursor:help}
 .corpo-lei{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:22px;margin-top:14px;align-items:start}
@@ -128,6 +129,36 @@ a.pessoa:hover{border-color:#c9ccd1}
 .av-cx img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;z-index:1}
 .av-cx img.falhou{display:none}
 
+/* dois registros lado a lado, nunca somados numa nota: disputa no Plenário e enquete */
+.nots{margin-top:8px;font-size:13px;line-height:1.5;max-width:72ch}
+.nots-rot{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3)}
+.nots small{color:var(--tinta3)}
+.noto{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:16px;padding:10px 14px;
+      background:#fafaf8;border:1px solid var(--linha2);border-radius:var(--raio-p);cursor:help}
+.noto-rot{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3)}
+.noto b{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1}
+.noto-barra{width:90px;height:6px;border-radius:3px;background:var(--linha);overflow:hidden}
+.noto-barra i{display:block;height:100%;background:var(--tinta2)}
+.noto-fatos{font-size:12.5px;color:var(--tinta2)}
+.sinais{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.sinal{border:1px solid var(--linha2);border-radius:var(--raio-p);padding:12px 14px;min-width:0}
+.sinal h5{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3)}
+.sinal .n{font-family:var(--serif);font-size:25px;font-weight:600;line-height:1.1;margin-top:5px}
+.sinal .n small{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--tinta2);margin-left:4px}
+.sinal p{font-size:12.5px;color:var(--tinta2);margin-top:5px;line-height:1.5}
+.sinal p a{color:var(--tinta2)}
+.sinal .fraca{color:#8a5a00}
+.sinal .sem{font-size:13px;color:var(--tinta3);margin-top:8px}
+.enq{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--linha2);margin-top:9px}
+.enq i{display:block;height:100%}
+.nominais{list-style:none;margin-top:10px}
+.nominais li{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:12px;font-size:13px;
+             padding:7px 0;border-top:1px solid var(--linha2);line-height:1.45}
+.nominais .d{color:var(--tinta3)}
+.nominais .pl{color:var(--tinta2);white-space:nowrap}
+.nominais .d small{display:block;font-size:10.5px;font-weight:600;color:var(--tinta);line-height:1.3}
+.sinal p b{color:var(--tinta);font-weight:600}
+
 .mais{display:block;margin:22px auto 0;font:inherit;font-size:14px;background:var(--papel);border:1px solid var(--linha);
       border-radius:999px;padding:10px 22px;cursor:pointer}
 .mais:hover{border-color:#c9ccd1}
@@ -140,7 +171,9 @@ a.pessoa:hover{border-color:#c9ccd1}
 .rodape-site p+p{margin-top:10px}
 
 @media(max-width:760px){
-  .corpo-lei{grid-template-columns:1fr}
+  .corpo-lei,.sinais{grid-template-columns:1fr}
+  .nominais li{grid-template-columns:minmax(0,1fr) auto}
+  .nominais .d{grid-column:1/-1}
   .lei,.painel{padding:18px}
   .contagem{margin-left:0;width:100%}
 }
@@ -156,6 +189,8 @@ a.pessoa:hover{border-color:#c9ccd1}
       <a href="prototipo.html#deputados">Deputados</a>
       <a href="prototipo.html#semana">Esta semana</a>
       <a class="aqui" href="leis.html" aria-current="page">Leis votadas</a>
+      <a href="blocos.html">Quem vota com quem</a>
+      <a href="obras.html">Obras</a>
       <a href="prototipo.html#sobre">Sobre os dados</a>
     </nav>
   </div>
@@ -175,6 +210,17 @@ a.pessoa:hover{border-color:#c9ccd1}
       <p>Só conta quando o partido votou unido: pelo menos 70% dos colegas no mesmo lado. Se o
          partido rachou, não havia posição a contrariar e ninguém aparece. Entram apenas os votos
          Sim e Não; abstenção e obstrução ficam de fora. O partido é o que o deputado tinha no dia do voto.</p>
+      <p><b>Enquete e consulta pública não são pesquisa de opinião.</b> Cada lei traz três registros do
+         peso que teve, lado a lado e nunca somados numa nota: quantas vezes o Plenário votou nome a nome
+         sobre ela (a disputa entre os deputados), quantas pessoas responderam à enquete da Câmara e quantas
+         votaram na consulta pública do Senado (o interesse de quem procurou cada site). Quem responde não é
+         uma amostra do país, a mesma pessoa pode responder nas duas, e uma campanha organizada enche uma
+         consulta em poucos dias.</p>
+      <p><b>Notoriedade na Câmara não é importância.</b> A porcentagem diz o quanto o assunto foi falado dentro
+         da Câmara: quantos projetos sobre o mesmo tema foram apensados, quantas vezes o Plenário votou nome a
+         nome, quão apertado foi o placar final, se tramitou em urgência e, nas PEC, quantos deputados
+         assinaram. É a média simples desses itens, com pesos iguais, e cada um aparece ao lado do número.
+         O público (enquete e consulta) fica fora da conta.</p>
     </div>
   </div>
 
@@ -189,12 +235,16 @@ a.pessoa:hover{border-color:#c9ccd1}
       <label class="campo"><span>Tipo</span><select class="sel" id="fTipo"><option value="">Todos</option></select></label>
     </div>
     <div class="ctl linha2">
+      <label class="campo"><span>Ordem</span><select class="sel" id="fOrdem">
+        <option value="data">Mais recentes</option>
+        <option value="margem">Menor diferença entre sim e não</option>
+        <option value="noto">Mais notórias na Câmara</option>
+        <option value="nominais">Mais votações nominais</option>
+        <option value="enquete">Mais respostas na enquete da Câmara</option>
+        <option value="senado">Mais votos na consulta do Senado</option>
+        <option value="div">Mais votos diferentes do partido</option>
+      </select></label>
       <label class="chk"><input type="checkbox" id="fSoDiv"> Só leis com voto diferente do partido</label>
-      <div class="seg" role="group" aria-label="Ordem">
-        <button class="on" data-o="data">Mais recentes</button>
-        <button data-o="margem">Mais disputadas</button>
-        <button data-o="div">Mais votos diferentes</button>
-      </div>
       <button class="limpar" id="limpar" hidden>Limpar filtros</button>
       <span class="contagem" id="contagem"></span>
     </div>
@@ -217,6 +267,26 @@ a.pessoa:hover{border-color:#c9ccd1}
        Brazilian Legislative Survey (Power e Zucco, 2021), calculada por este site; os limites entre as
        faixas são escolha deste site. Deputados de partidos sem posição, como a União Brasil, ficam fora
        dessas barras. Categorias pela classificação deste site, a partir da ementa oficial.</p>
+    <p>Votações nominais no Plenário: todas as votações com voto de cada deputado registrado sobre a
+       proposição, desde o ano em que foi apresentada — texto-base, emendas, destaques e requerimentos,
+       inclusive o de urgência, que a Câmara registra no requerimento e liga à proposição. Mesmos arquivos
+       anuais dos Dados Abertos.</p>
+    <p>Enquete: a <a href="https://www.camara.leg.br/enquetes" target="_blank" rel="noopener">enquete da
+       Câmara</a> de cada proposição, na página de resultado. A Câmara publica quantas pessoas escolheram
+       cada uma das cinco opções; os percentuais desta página são calculados dessas contagens e podem
+       diferir por arredondamento dos que a Câmara mostra, que força a soma a dar 100. Enquete aberta
+       continua recebendo respostas, inclusive depois da votação; a data da consulta vai junto.</p>
+    <p>Consulta do Senado: o <a href="https://www12.senado.leg.br/ecidadania" target="_blank" rel="noopener">e-Cidadania</a>,
+       onde toda matéria que tramita no Senado recebe votos Sim e Não (Resolução 26/2013). A lei é ligada à
+       matéria do Senado pelo número único que as duas casas usam desde 2019, e a ligação é confirmada no
+       registro do próprio Senado (Dados Abertos do Senado), nunca pelo nome ou pela ementa. Lei que ainda
+       não chegou ao Senado aparece como tal.</p>
+    <p>Notoriedade na Câmara: média simples de itens de 0 a 100 — projetos apensados e votações nominais (escala
+       logarítmica até o máximo desta página: cada um a mais pesa menos), placar da votação final (100 × (1 −
+       diferença ÷ total de Sim e Não): quanto mais apertado, maior), urgência (100 se tramitou em regime de
+       urgência) e, só nas PEC de deputados com o registro completo, assinaturas (deputados que assinaram ÷ 513).
+       Apensados e urgência saem das tramitações da Câmara; assinaturas, dos autores registrados. Mede o quanto
+       se falou do assunto dentro da Câmara, não a importância da lei.</p>
   </div>
 </footer>
 
@@ -234,7 +304,7 @@ const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(
 const cap=s=>s?s.charAt(0).toUpperCase()+s.slice(1):s;
 const dataBR=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)}`:'';
 
-let LEIS=[], ATUAIS=new Set(), limite=PASSO, ordem='data';
+let LEIS=[], ATUAIS=new Set(), ENQ={}, ECID={}, NOT={}, NOTICIAS={}, limite=PASSO, ordem='data';
 const f={texto:'',dep:'',tema:'',tipo:'',soDiv:false};
 
 function iniciais(nome){
@@ -251,10 +321,22 @@ function retrato(id,nome,px){
 const pessoa=([id,nome,partido,uf,voto,coesao])=>({id,nome,partido,uf,voto,coesao});
 
 async function carregar(){
-  const [rp,rr]=await Promise.all([fetch('proposicoes.json',{cache:'no-store'}),
-                                   fetch('temas/resumo.json',{cache:'no-store'}).catch(()=>null)]);
+  const [rp,rr,re,rs,rn]=await Promise.all([fetch('proposicoes.json',{cache:'no-store'}),
+                                   fetch('temas/resumo.json',{cache:'no-store'}).catch(()=>null),
+                                   fetch('enquetes.json',{cache:'no-store'}).catch(()=>null),
+                                   fetch('ecidadania.json',{cache:'no-store'}).catch(()=>null),
+                                   fetch('notoriedade.json',{cache:'no-store'}).catch(()=>null)]);
+  // enquetes.json (enquetes.py) e ecidadania.json (ecidadania.py): sem eles, a página
+  // funciona e diz "não consultada"
+  try{ if(re&&re.ok) ENQ=await re.json(); }catch(e){}
+  try{ if(rs&&rs.ok) ECID=await rs.json(); }catch(e){}
+  try{ if(rn&&rn.ok) NOT=await rn.json(); }catch(e){}
+  // notícias da Agência Câmara por proposição (noticias.py), pelo link da notícia para a ficha
+  try{ const r=await fetch('noticias.json',{cache:'no-store'}); if(r.ok){ const n=await r.json();
+    (n.itens||[]).forEach(x=>x.p.forEach(([id])=>{(NOTICIAS[id]=NOTICIAS[id]||[]).push(x);})); } }catch(e){}
   LEIS=(await rp.json()).map(p=>({...p, tipo:(p.numero||'').split(' ')[0], div:(p.divergentes||[]).map(pessoa),
-                                  _num:norm(p.numero), _ementa:norm(p.ementa)}));
+                                  nom:p.nominaisPlenario||[], enq:ENQ[String(p.idProposicao)]||null, sf:ECID[String(p.idProposicao)]||null, noto:NOT[String(p.idProposicao)]||null,
+                                  _num:norm(p.numero), _ementa:norm((p.ementa||'')+' '+(p.resumo||''))}));
   // quem tem página por tema: deputados em exercício (temas/resumo.json traz as frases por id)
   try{ if(rr&&rr.ok) ATUAIS=new Set(Object.keys((await rr.json()).frases||{}).map(Number)); }catch(e){}
 
@@ -272,6 +354,8 @@ async function carregar(){
 
   // ?dep=ID vem da ficha do deputado na página principal
   const q=new URLSearchParams(location.search);
+  // ?ordem=senado|enquete|nominais|… — link direto para um ranking
+  if(q.get('ordem')&&[...fOrdem.options].some(o=>o.value===q.get('ordem'))){ ordem=fOrdem.value=q.get('ordem'); }
   if(q.get('dep')){ const id=+q.get('dep'); if(nomes.has(id)){ fDep.value=nomes.get(id); f.dep=nomes.get(id); f.soDiv=true; fSoDiv.checked=true; }
                     else { f.depSemDiv=id; } }
   desenhar();
@@ -301,9 +385,13 @@ function filtradas(){
     &&(!f.tipo||l.tipo===f.tipo)
     &&(!f.soDiv||l.div.length)
     &&(!dep||dep<0||l.div.some(p=>p.id===dep)));
+  const part=l=>l.enq&&l.enq.total!=null?l.enq.total:-1;  // sem enquete vai para o fim
+  const partSF=l=>l.sf&&l.sf.sim!=null?l.sf.sim+l.sf.nao:-1;
   const k={data:(a,b)=>b.data.localeCompare(a.data), margem:(a,b)=>a.margem-b.margem,
-           div:(a,b)=>b.div.length-a.div.length};
-  return [...L].sort(k[ordem]);
+           div:(a,b)=>b.div.length-a.div.length, nominais:(a,b)=>b.nom.length-a.nom.length,
+           enquete:(a,b)=>part(b)-part(a), senado:(a,b)=>partSF(b)-partSF(a),
+           noto:(a,b)=>(b.noto?b.noto.pct:-1)-(a.noto?a.noto.pct:-1)};
+  return [...L].sort((a,b)=>k[ordem](a,b)||b.data.localeCompare(a.data));
 }
 
 function barraAdesao(a){
@@ -334,6 +422,113 @@ function blocoDivergentes(l,dep){
     diferente da maioria do próprio partido <em>· ver nomes</em></summary>${grupos}</details>`;
 }
 
+// Quantas vezes o Plenário votou nome a nome sobre a proposição. Registro de disputa,
+// não nota: fica ao lado da enquete, nunca somado a ela (quem escolhe os pesos
+// escolhe o ranking).
+function sinalNominais(l){
+  const n=l.nom.length;
+  return `<div class="sinal"><h5>Votações nominais no Plenário</h5>
+    <div class="n">${n}</div>
+    <p>${n>1?'Vezes em que o Plenário votou nome a nome sobre esta proposição: texto-base, emendas, destaques e requerimentos, como o de urgência.'
+            :'Só a votação final teve o voto de cada deputado registrado.'}</p></div>`;
+}
+
+// Enquete da Câmara: as cinco opções, na ordem em que a Câmara publica. Cores de
+// concordância, nunca as do espectro: enquete não tem ideologia.
+const ENQ_CORES=['#1d5c37','#8fbf9f','#c9ccd0','#dca3a3','#862929'];
+const ENQ_NOMES=['Concordo totalmente','Concordo na maior parte','Estou indeciso','Discordo na maior parte','Discordo totalmente'];
+const pct=(n,t)=>Math.round(100*n/t);
+function sinalEnquete(l){
+  const e=l.enq, cab='<h5>Enquete da Câmara</h5>';
+  const link=`<a href="https://www.camara.leg.br/enquetes/${l.idProposicao}/resultados" target="_blank" rel="noopener">ver na Câmara</a>`;
+  if(!e) return `<div class="sinal">${cab}<p class="sem">Não consultada nesta atualização · ${link}</p></div>`;
+  if(e.situacao==='sem enquete') return `<div class="sinal">${cab}<p class="sem">A Câmara não abriu enquete para esta proposição.</p></div>`;
+  const t=e.total;
+  const quando=e.situacao==='encerrada'
+    ? `Encerrada em ${dataBR(e.encerradaEm)}`
+    : `Aberta desde ${dataBR(e.inicio)}, ainda recebe respostas (consultada em ${dataBR(e.consultadaEm)})`;
+  const outro=e.numeroNaEnquete?` — lá com o número anterior, ${esc(e.numeroNaEnquete)}`:'';
+  if(!t) return `<div class="sinal">${cab}<div class="n">0 <small>respostas</small></div>
+    <p>Ninguém respondeu. ${quando} · ${link}${outro}</p></div>`;
+  const [ct,cm,ind,dm,dt]=e.votos;
+  // Abaixo de 100 respostas, contagem em vez de percentual: "100% indecisos" com uma
+  // resposta só diz mais do que o dado. (Mediana medida: 18 respostas por lei.)
+  const q=(n,um,varios)=>t<100?`<b>${n}</b> ${n===1?um:varios}`:`<b>${pct(n,t)}%</b> ${varios}`;
+  const partes=`${q(ct+cm,'concorda','concordam')}, total ou em parte · ${q(dm+dt,'discorda','discordam')}`+
+               (ind?` · ${q(ind,'indeciso','indecisos')}`:'');
+  const barra=e.votos.map((v,i)=>v?`<i style="width:${(100*v/t).toFixed(2)}%;background:${ENQ_CORES[i]}" title="${ENQ_NOMES[i]}: ${nf.format(v)} (${pct(v,t)}%)"></i>`:'').join('');
+  return `<div class="sinal">${cab}
+    <div class="n">${nf.format(t)} <small>${t===1?'resposta':'respostas'}</small></div>
+    <div class="enq" role="img" aria-label="${e.votos.map((v,i)=>`${ENQ_NOMES[i]}: ${v}`).join('; ')}">${barra}</div>
+    <p>${partes}</p>
+    ${t<500?'<p class="fraca">Poucas respostas, menos de 500.</p>':''}
+    <p>${quando} · ${link}${outro}</p></div>`;
+}
+
+// Notoriedade na Câmara (notoriedade.py): a porcentagem SEMPRE com os fatos que a compõem
+// ao lado — é a condição do briefing para um índice composto. Não é importância.
+function faixaNotoriedade(l){
+  const n=l.noto; if(!n) return '';
+  const c=n.componentes, fatos=[];
+  fatos.push(`${c.apensados.n} ${c.apensados.n===1?'projeto apensado':'projetos apensados'}`);
+  fatos.push(`${c.nominais.n} ${c.nominais.n===1?'votação nominal':'votações nominais'}`);
+  if(c.placar) fatos.push(`placar ${nf.format(c.placar.sim)} × ${nf.format(c.placar.nao)}`);
+  fatos.push(c.urgencia.sim?'tramitou em urgência':'sem urgência');
+  if(c.assinaturas) fatos.push(`${nf.format(c.assinaturas.n)} deputados assinaram`);
+  const nota=Object.entries({apensados:'apensados',nominais:'votações nominais',placar:'placar apertado',urgencia:'urgência',assinaturas:'assinaturas'})
+    .filter(([k])=>c[k]).map(([k,r])=>`${r}: ${c[k].valor}`).join(' · ');
+  return `<div class="noto" title="Média simples, de 0 a 100 cada — ${nota}">
+    <span class="noto-rot">Notoriedade na Câmara</span><b>${n.pct}%</b>
+    <span class="noto-barra" aria-hidden="true"><i style="width:${n.pct}%"></i></span>
+    <span class="noto-fatos">${fatos.join(' · ')}</span></div>`;
+}
+
+// Consulta pública do Senado (e-Cidadania): Sim e Não, como o Senado publica.
+function sinalSenado(l){
+  const c=l.sf, cab='<h5>Consulta do Senado</h5>';
+  if(!c) return `<div class="sinal">${cab}<p class="sem">Não está no Senado, ou a ligação não foi confirmada nesta atualização.</p></div>`;
+  const link=`<a href="https://www12.senado.leg.br/ecidadania/visualizacaomateria?id=${c.codigoMateria}" target="_blank" rel="noopener">ver no e-Cidadania</a>`;
+  if(c.sim==null) return `<div class="sinal">${cab}<p class="sem">Matéria ${esc(c.identificacao)} no Senado, sem página de consulta · ${link}</p></div>`;
+  const t=c.sim+c.nao;
+  const quando=c.situacao==='encerrada'?'Encerrada':`Aberta, ainda recebe votos (consultada em ${dataBR(c.consultadaEm)})`;
+  if(!t) return `<div class="sinal">${cab}<div class="n">0 <small>votos</small></div><p>Ninguém votou. ${quando} · ${link}</p></div>`;
+  const q=(n,um,varios)=>t<100?`<b>${n}</b> ${n===1?um:varios}`:`<b>${pct(n,t)}%</b> ${varios}`;
+  const barra=[[c.sim,ENQ_CORES[0],'Sim'],[c.nao,ENQ_CORES[4],'Não']].map(([v,cor,n])=>v?
+    `<i style="width:${(100*v/t).toFixed(2)}%;background:${cor}" title="${n}: ${nf.format(v)} (${pct(v,t)}%)"></i>`:'').join('');
+  return `<div class="sinal">${cab}
+    <div class="n">${nf.format(t)} <small>${t===1?'voto':'votos'}</small></div>
+    <div class="enq" role="img" aria-label="Sim: ${c.sim}; Não: ${c.nao}">${barra}</div>
+    <p>${q(c.sim,'a favor','a favor')} · ${q(c.nao,'contra','contra')}</p>
+    ${t<500?'<p class="fraca">Poucos votos, menos de 500.</p>':''}
+    <p>${quando} · ${link}</p></div>`;
+}
+
+// A lista, em ordem cronológica: dá para ver a urgência, o texto-base, os destaques.
+function blocoNominais(l){
+  if(l.nom.length<2) return '';
+  const itens=l.nom.map(([id,data,desc,s,n])=>`<li><span class="d">${dataBR(data)}${id===l.idVotacao?'<small>votação desta página</small>':''}</span>
+    <span>${esc(desc)}</span><span class="pl">${nf.format(s)} × ${nf.format(n)}</span></li>`).join('');
+  return `<details class="div"><summary>As ${l.nom.length} votações nominais no Plenário <em>· o que foi votado, sim × não</em></summary>
+    <ul class="nominais">${itens}</ul></details>`;
+}
+
+// Passo 8: com resumo (resumos.py), ele é o texto principal — sempre com o aviso de que
+// foi gerado por IA a partir do texto APRESENTADO (o aprovado pode ser um substitutivo)
+// e com a ementa oficial a um clique. Sem resumo, a ementa, como sempre.
+function textoLei(l){
+  const ementa=esc(l.ementa||l.titulo||'Sem ementa no registro da Câmara.');
+  if(!l.resumo) return `<p class="ementa">${ementa}</p>`;
+  return `<p class="ementa">${esc(l.resumo)}</p>
+    <details class="oficial"><summary>Resumo do texto apresentado, gerado por IA a partir do texto integral. Pode conter erros; o aprovado pode ser diferente. <b>Ver a ementa oficial</b></summary>
+      <p>${ementa}</p><a href="${esc(l.urlCamara)}" target="_blank" rel="noopener">Ficha e texto integral na Câmara</a></details>`;
+}
+
+function noticiasLei(l){
+  const ns=NOTICIAS[l.idProposicao]; if(!ns) return '';
+  return `<div class="nots"><span class="nots-rot">Na Agência Câmara</span>${ns.slice(0,3).map(x=>
+    `<a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a> <small>${dataBR(x.d)} · ${esc(x.assinatura||'Agência Câmara')}</small>`).join('<br>')}</div>`;
+}
+
 function cartao(l,dep){
   const res=l.aprovacao==null?'':l.aprovacao?'aprovada':(QUORUM[l.tipo]&&l.sim>l.nao?`rejeitada, faltou quórum de ${QUORUM[l.tipo]}`:'rejeitada');
   const med=(l.scoreMedioSim!=null||l.scoreMedioNao!=null)
@@ -343,9 +538,12 @@ function cartao(l,dep){
   return `<article class="lei">
     <div class="lei-cab"><span class="lei-num"><a href="${esc(l.urlCamara)}" target="_blank" rel="noopener">${esc(l.numero)}</a> · votada em ${dataBR(l.data)}</span>
       <span class="lei-res"><b>${nf.format(l.sim)}</b> a favor, <b>${nf.format(l.nao)}</b> contra${res?` — ${res}`:''}</span></div>
-    <p class="ementa">${esc(l.ementa||l.titulo||'Sem ementa no registro da Câmara.')}</p>${cats}
+    ${textoLei(l)}${cats}${noticiasLei(l)}
     <div class="corpo-lei"><div><p class="placar">Diferença de <b>${nf.format(l.margem)}</b> votos${l.abstencao?`, ${l.abstencao} abstenções`:''}.</p>${med}</div>
       <div>${barraAdesao(l.adesaoPorFaixa)}</div></div>
+    ${faixaNotoriedade(l)}
+    <div class="sinais">${sinalNominais(l)}${sinalEnquete(l)}${sinalSenado(l)}</div>
+    ${blocoNominais(l)}
     ${blocoDivergentes(l,dep)}
   </article>`;
 }
@@ -380,13 +578,11 @@ fDep.oninput=()=>{f.dep=fDep.value.trim(); reset();};
 fTema.onchange=()=>{f.tema=fTema.value; reset();};
 fTipo.onchange=()=>{f.tipo=fTipo.value; reset();};
 fSoDiv.onchange=()=>{f.soDiv=fSoDiv.checked; reset();};
-document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{
-  ordem=b.dataset.o; document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b)); reset();});
+fOrdem.onchange=()=>{ordem=fOrdem.value; reset();};
 mais.onclick=()=>{limite+=PASSO; desenhar();};
 limpar.onclick=()=>{
   Object.assign(f,{texto:'',dep:'',tema:'',tipo:'',soDiv:false,depSemDiv:null});
-  fTexto.value=fDep.value=''; fTema.value=fTipo.value=''; fSoDiv.checked=false; ordem='data';
-  document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x.dataset.o==='data'));
+  fTexto.value=fDep.value=''; fTema.value=fTipo.value=''; fSoDiv.checked=false; ordem=fOrdem.value='data';
   history.replaceState(null,'','leis.html'); reset();
 };
 carregar().catch(e=>{ lista.innerHTML='<p class="vazio">Não foi possível carregar proposicoes.json. Abra o site por um servidor (não direto do disco).</p>'; });

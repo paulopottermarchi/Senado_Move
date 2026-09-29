@@ -68,6 +68,7 @@ CACHE = BASE / "cache"
 SAIDA = BASE / "deputados.json"
 IDEOLOGIA = BASE / "ideologia.json"
 ELEICAO = BASE / "eleicao2022.json"          # gerado por eleicao.py (TSE), estático
+RESUMOS = {}  # passo 8: {id da proposição: resumo}, de resumos.json — carregado em main()
 LEGISLATURAS = BASE / "legislaturas.json"    # datas dos mandatos, para o filtro do site
 FAIXAS = ("esquerda", "centro-esquerda", "centro", "centro-direita", "direita")
 
@@ -439,7 +440,7 @@ def processar_deputado(dep, legs):
             "virouLei": lei,
             "nominal": pl is not None,
             "dataVotacao": vb.get("data") if vb else None,
-            "resumo": None,  # passo 8 (LLM) — pulado nesta rodada
+            "resumo": RESUMOS.get(p["id"]),  # passo 8: resumos.py (IA, do inteiro teor)
             "ementa": det.get("ementa") or p.get("ementa"),
             "urlCamara": "https://www.camara.leg.br/proposicoesWeb/"
                          f"fichadetramitacao?idProposicao={p['id']}",
@@ -631,6 +632,9 @@ def main():
     ap.add_argument("--limite", type=int, default=10,
                     help="quantos deputados processar, na ordem da API (padrão 10)")
     args = ap.parse_args()
+    global RESUMOS
+    import resumos  # aqui, não no topo: resumos.py importa coleta
+    RESUMOS = resumos.carregar()
     sys.stdout.reconfigure(encoding="utf-8")
 
     t0 = time.monotonic()

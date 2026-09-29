@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Obras: quanto o contrato cresceu | Câmara Aberta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#16181b; --tinta2:#4a4e55; --tinta3:#80858d;
+  --linha:#e4e5e8; --linha2:#f0f1f3; --fundo:#f6f6f4; --papel:#fff;
+  --raio:14px; --raio-p:8px;
+  --sombra:0 1px 2px rgba(16,18,22,.04),0 6px 24px rgba(16,18,22,.05);
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  /* obras: tinta neutra — valor não tem ideologia, nada da paleta do espectro */
+  --base:#c9ccd1; --cresce:#2b2f35;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);font-size:15px;line-height:1.55;
+     -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+a{color:inherit}
+
+.topo{position:sticky;top:0;z-index:80;background:rgba(246,246,244,.86);
+      backdrop-filter:saturate(160%) blur(12px);-webkit-backdrop-filter:saturate(160%) blur(12px);
+      border-bottom:1px solid var(--linha)}
+.topo-in{max-width:1080px;margin:0 auto;padding:0 22px;height:56px;display:flex;align-items:center;
+         justify-content:space-between;gap:20px}
+.marca{font-family:var(--serif);font-size:19px;font-weight:600;text-decoration:none;white-space:nowrap}
+.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-size:13.5px;color:var(--tinta2);text-decoration:none;padding:7px 11px;border-radius:999px;white-space:nowrap}
+.nav a:hover{background:var(--linha2);color:var(--tinta)}
+.nav a.aqui{background:var(--tinta);color:#fff}
+
+.capa{padding:52px 0 8px}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta3);margin-bottom:10px}
+h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,46px);font-weight:500;line-height:1.08;letter-spacing:-.015em;max-width:20ch}
+.chamada{font-size:clamp(15.5px,1.8vw,17.5px);color:var(--tinta2);margin-top:14px;max-width:64ch}
+.aviso{margin-top:24px;background:var(--papel);border:1px solid var(--linha);border-left:3px solid var(--tinta);
+       border-radius:var(--raio-p);padding:16px 20px;max-width:78ch}
+.aviso b{font-weight:600}
+.aviso p{font-size:14px;line-height:1.65;color:var(--tinta2)}
+.aviso p+p{margin-top:8px}
+
+.painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
+        padding:24px 28px;margin-top:26px}
+h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2}
+.sub{font-size:14px;color:var(--tinta2);margin-top:6px;max-width:72ch}
+.sub b{font-weight:600;color:var(--tinta)}
+
+/* controles */
+.ctl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:18px}
+.texto,.sel{font:inherit;font-size:14px;border:1px solid var(--linha);border-radius:999px;background:var(--papel);
+       color:var(--tinta);padding:8px 16px}
+.texto{width:320px;max-width:100%}
+.sel{padding:8px 12px}
+.texto:focus,.sel:focus{outline:none;border-color:var(--tinta2);box-shadow:0 0 0 4px rgba(22,24,27,.06)}
+.chk{font-size:13.5px;color:var(--tinta2);display:flex;gap:6px;align-items:center;cursor:pointer}
+.conta{font-size:13px;color:var(--tinta3);margin-top:10px}
+
+/* lista */
+.lista{margin-top:10px}
+.ob{border-top:1px solid var(--linha2)}
+.ob-cab{display:grid;grid-template-columns:34px minmax(0,1fr) 200px;gap:12px;align-items:center;width:100%;
+        background:none;border:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:12px 4px 4px}
+.ob-cab:hover .ob-nome{text-decoration:underline;text-underline-offset:3px}
+.ob-pos{font-size:12.5px;color:var(--tinta3);text-align:right}
+.ob-nome{display:block;font-size:14.5px;font-weight:500;line-height:1.3}
+.ob-txt small{display:block;font-size:12.5px;color:var(--tinta3);margin-top:2px}
+.ob-num{text-align:right;line-height:1.25}
+.ob-num b{font-family:var(--serif);font-size:22px;font-weight:600}
+.ob-num small{display:block;font-size:12px;color:var(--tinta2)}
+.ob-barra{margin:6px 4px 12px 50px;height:8px;border-radius:4px;background:var(--linha2);overflow:hidden;display:flex}
+.ob-barra i{display:block;height:100%}
+.ob-barra .b0{background:var(--base)}
+.ob-barra .b1{background:var(--cresce)}
+.ob-barra .b2{background:repeating-linear-gradient(45deg,var(--base) 0 3px,transparent 3px 6px)}
+.selos{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.selo{font-size:11.5px;border:1px solid var(--linha);border-radius:999px;padding:0 8px;color:var(--tinta2);white-space:nowrap}
+.selo.forte{border-color:var(--tinta2);color:var(--tinta)}
+.mais{display:block;margin:16px auto 0;font:inherit;font-size:14px;background:var(--papel);border:1px solid var(--linha);border-radius:999px;padding:9px 20px;cursor:pointer}
+.mais[hidden]{display:none}
+
+/* detalhe */
+.det{margin:0 4px 18px 50px;border:1px solid var(--linha);border-radius:var(--raio-p);padding:18px 20px}
+.det[hidden]{display:none}
+.det h3{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3);
+        margin-top:20px;padding-bottom:6px;border-bottom:1px solid var(--linha)}
+.det h3:first-child{margin-top:0}
+.det p{font-size:14px;line-height:1.6;max-width:74ch}
+.det p+p{margin-top:6px}
+.nota{font-size:12.5px!important;color:var(--tinta3)}
+.ids{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px 18px;margin-top:10px;font-size:13.5px}
+.ids dt{font-size:11.5px;color:var(--tinta3)}
+.ids dd{font-weight:500;line-height:1.35}
+
+/* cascata financeira */
+.casc{margin-top:10px}
+.cx{display:grid;grid-template-columns:96px minmax(0,1fr) 150px;gap:10px;padding:7px 0;border-bottom:1px solid var(--linha2);font-size:13.5px;align-items:baseline}
+.cx .d{color:var(--tinta3);font-size:12.5px}
+.cx .v{text-align:right;font-weight:600;white-space:nowrap}
+.cx .v small{display:block;font-weight:400;font-size:12px;color:var(--tinta2)}
+.cx .t b{font-weight:600}
+.cx .t small{display:block;color:var(--tinta2);font-size:12.5px;line-height:1.45;margin-top:2px}
+.cx .t a{font-size:12.5px}
+.cx.total{border-bottom:2px solid var(--tinta);font-size:14px}
+.cx.pago .v{color:var(--tinta2)}
+.contrato+.contrato{margin-top:18px}
+.c-cab{font-size:14px;margin-top:12px}
+.c-cab b{font-weight:600}
+.c-cab small{display:block;font-size:12.5px;color:var(--tinta2)}
+
+/* linha do tempo */
+.tempo{list-style:none;margin-top:12px;position:relative}
+.tempo::before{content:"";position:absolute;left:79px;top:6px;bottom:6px;width:1px;background:var(--linha)}
+.ev{display:grid;grid-template-columns:70px 20px minmax(0,1fr);gap:0 0;padding:6px 0;font-size:13.5px}
+.ev .d{font-size:12.5px;color:var(--tinta3);text-align:right;padding-right:10px;padding-top:1px}
+.ev .p{position:relative}
+.ev .p::before{content:"";position:absolute;left:5px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--papel);border:2px solid var(--tinta2)}
+.ev.dinheiro .p::before{background:var(--cresce);border-color:var(--cresce)}
+.ev.alerta .p::before{border-color:var(--tinta);background:repeating-linear-gradient(45deg,var(--tinta) 0 2px,var(--papel) 2px 4px)}
+.ev .x b{font-weight:600}
+.ev .x .tipo{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta3);margin-right:6px}
+.ev .x small{display:block;color:var(--tinta2);font-size:12.5px;line-height:1.45}
+.ev .x a{font-size:12.5px}
+
+.pessoas{margin-top:10px}
+.pe{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:10px;padding:7px 0;border-bottom:1px solid var(--linha2);font-size:13.5px}
+.pe b{font-weight:600}
+.pe small{display:block;color:var(--tinta2);font-size:12.5px}
+.pe .v{text-align:right;font-weight:600}
+.fontes{margin-top:8px;padding-left:18px;font-size:13px;line-height:1.7}
+
+.vazio{padding:28px 0;color:var(--tinta2);font-size:14px}
+.erro{padding:18px;border:1px solid var(--linha);border-radius:var(--raio-p);margin-top:18px;font-size:14px}
+
+.rodape-site{margin-top:56px;border-top:1px solid var(--linha);background:var(--papel);padding:36px 0 44px}
+.rodape-site h2{font-size:18px;font-weight:600;margin-bottom:8px}
+.rodape-site p{font-size:13.5px;line-height:1.7;color:var(--tinta2);max-width:78ch}
+.rodape-site p+p{margin-top:10px}
+
+@media(max-width:760px){
+  .painel{padding:18px}
+  .ob-cab{grid-template-columns:26px minmax(0,1fr);gap:8px}
+  .ob-num{grid-column:2;text-align:left;display:flex;gap:10px;align-items:baseline}
+  .ob-num small{display:inline}
+  .ob-barra{margin-left:38px}
+  .det{margin-left:0;margin-right:0;padding:14px}
+  .cx{grid-template-columns:78px minmax(0,1fr);}
+  .cx .v{grid-column:2;text-align:left}
+  .tempo::before{left:61px}
+  .ev{grid-template-columns:52px 20px minmax(0,1fr)}
+  .pe{grid-template-columns:1fr}
+  .pe .v{text-align:left}
+}
+@media(max-width:520px){ .topo .marca{display:none} }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="prototipo.html">Câmara Aberta</a>
+    <nav class="nav" aria-label="Seções do site">
+      <a href="prototipo.html#deputados">Deputados</a>
+      <a href="prototipo.html#semana">Esta semana</a>
+      <a href="leis.html">Leis votadas</a>
+      <a href="blocos.html">Quem vota com quem</a>
+      <a class="aqui" href="obras.html" aria-current="page">Obras</a>
+      <a href="prototipo.html#sobre">Sobre os dados</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="capa">
+    <p class="kicker" id="kicker">Obras com contrato federal · São Paulo</p>
+    <h1>Quanto o contrato da obra cresceu</h1>
+    <p class="chamada">Do valor assinado ao valor de hoje, termo a termo, com o documento oficial de cada passo:
+       quem contratou, qual empresa, quanto já foi pago e qual emenda parlamentar pôs dinheiro na obra.</p>
+
+    <div class="aviso" role="note">
+      <p><b>Aditivo não é irregularidade.</b> A lei permite acrescentar até 25% do valor inicial atualizado de
+         uma obra, e até 50% em reforma de edifício ou de equipamento (Lei 14.133/2021, art. 125; antes, Lei
+         8.666/1993, art. 65). O reajuste de preços previsto no contrato repõe a inflação e também aumenta o
+         valor. A página mostra quanto o valor cresceu e o que cada termo diz, no texto do próprio documento;
+         não afirma que houve irregularidade, e o crescimento total mistura acréscimo e reajuste.</p>
+      <p><b>O que está e o que falta.</b> <span id="cobertura">Só obras que têm contrato no sistema de contratos
+         do governo federal.</span> Obra estadual ou municipal contratada pelo próprio estado ou prefeitura
+         (Metrô, CPTM, DER, prefeituras) não aparece: o contrato dela não está nessa base. Valores em reais
+         correntes, sem correção pela inflação.</p>
+    </div>
+  </div>
+
+  <section class="painel" aria-labelledby="t-lista">
+    <h2 id="t-lista">As obras, da que mais cresceu para a que menos</h2>
+    <p class="sub" id="resumo"></p>
+    <div class="ctl">
+      <input class="texto" id="fBusca" type="search" placeholder="Obra, município, empresa, órgão ou autor de emenda" autocomplete="off" aria-label="Buscar">
+      <select class="sel" id="fOrdem" aria-label="Ordem">
+        <option value="pct">Maior crescimento (%)</option>
+        <option value="reais">Maior crescimento (R$)</option>
+        <option value="atual">Maior valor atual</option>
+        <option value="recente">Contrato mais recente</option>
+      </select>
+      <select class="sel" id="fMin" aria-label="Valor inicial mínimo">
+        <option value="0">Qualquer valor</option>
+        <option value="1000000">A partir de R$ 1 milhão</option>
+        <option value="10000000">A partir de R$ 10 milhões</option>
+      </select>
+      <select class="sel" id="fSit" aria-label="Situação"><option value="">Qualquer situação</option></select>
+      <label class="chk"><input type="checkbox" id="fCresceu"> só as que cresceram</label>
+    </div>
+    <p class="conta" id="conta" aria-live="polite"></p>
+    <div class="lista" id="lista"></div>
+    <button class="mais" id="mais" hidden>Mostrar mais</button>
+  </section>
+</main>
+
+<footer class="rodape-site">
+  <div class="wrap">
+    <h2>Como é calculado</h2>
+    <p><b>A obra</b> vem do ObrasGov.br, o cadastro de obras do governo federal (API de dados abertos), pelo
+       identificador dela no Cadastro Integrado de Projetos de Investimento. De lá vêm órgão, situação,
+       município, execução física, paralisações, empenhos e os contratos que o gestor ligou à obra.</p>
+    <p><b>O contrato</b> vem do Contratos.gov.br, pelo número que o próprio ObrasGov grava. A ligação é
+       conferida: o número do contrato e o CNPJ da empresa têm de ser iguais nas duas bases, senão o contrato
+       fica de fora. Crescimento = valor global atual menos valor inicial, os dois campos do registro do contrato.
+       Cada termo mostra o valor que o sistema registrou nele; às vezes o novo valor só aparece registrado no
+       termo seguinte, por isso a variação é "registrada neste termo", e o texto do termo vai junto. Pago = valor
+       pago e restos a pagar pagos nos empenhos ligados ao contrato. Os extratos do Diário Oficial da União vêm do
+       próprio Contratos.gov.br, com o link da página publicada.</p>
+    <p><b>Emendas</b>: o empenho da obra no ObrasGov traz o código da emenda parlamentar; o autor é o que a CGU
+       registra para esse código (arquivo de emendas do Portal da Transparência), escrito como a CGU escreve.
+       Código incompleto não é completado por aproximação. <b>Nenhuma pessoa é ligada a uma obra pelo nome</b>:
+       menção em proposição, discurso ou notícia não entra, porque nomes de obra se repetem ("Linha 17",
+       "Hospital Regional") e o mesmo vale para nomes de gente.</p>
+    <p id="rodapeData"></p>
+  </div>
+</footer>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf=new Intl.NumberFormat('pt-BR');
+const nf1=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:1,minimumFractionDigits:1});
+const reais=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+function curto(v){
+  const a=Math.abs(v), s=v<0?'−':'';
+  if(a>=1e9) return s+'R$ '+nf1.format(a/1e9)+' bi';
+  if(a>=1e6) return s+'R$ '+nf1.format(a/1e6)+' mi';
+  if(a>=1e3) return s+'R$ '+nf.format(Math.round(a/1e3))+' mil';
+  return s+reais.format(a);
+}
+const data=d=>d?d.slice(0,10).split('-').reverse().join('/'):'—';
+const sinal=v=>(v>0?'+':v<0?'−':'')+nf1.format(Math.abs(v))+'%';
+const pctDe=o=>o.inicial>0?(o.atual/o.inicial-1)*100:null;
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+
+let OBRAS=[], META={}, lista=[], mostrando=30, aberta=null;
+
+function textoBusca(o){
+  return norm([o.nome,o.descricao,o.orgao,...o.executores,...o.municipios,
+    ...o.contratos.flatMap(c=>[c.fornecedor[0],c.fornecedor[1],c.fornecedor[1]&&c.fornecedor[1].replace(/\D/g,''),c.numero,c.unidade,c.objeto]),
+    ...o.emendas.map(e=>e.autor)].join(' '));
+}
+
+function filtrar(){
+  const q=norm($('#fBusca').value.trim()), ordem=$('#fOrdem').value, min=+$('#fMin').value,
+        sit=$('#fSit').value, cresceu=$('#fCresceu').checked;
+  lista=OBRAS.filter(o=>o.inicial>=min && (!sit||o.situacao===sit) && (!cresceu||o.atual>o.inicial+0.5)
+                        && (!q||o._busca.includes(q)));
+  const chave={pct:o=>pctDe(o)??-1e9, reais:o=>o.atual-o.inicial, atual:o=>o.atual,
+               recente:o=>o.contratos.map(c=>c.assinatura||'').sort().pop()||''}[ordem];
+  lista.sort((a,b)=>{const x=chave(a),y=chave(b);return x<y?1:x>y?-1:0});
+  mostrando=30; desenhar();
+}
+
+function barra(o){
+  const m=Math.max(o.inicial,o.atual)||1;
+  if(o.atual>=o.inicial)
+    return `<i class="b0" style="width:${o.inicial/m*100}%"></i><i class="b1" style="width:${(o.atual-o.inicial)/m*100}%"></i>`;
+  return `<i class="b0" style="width:${o.atual/m*100}%"></i><i class="b2" style="width:${(o.inicial-o.atual)/m*100}%"></i>`;
+}
+
+function selos(o){
+  const s=[];
+  if(o.situacao) s.push(`<span class="selo${/Paralisada|Inacabada|Cancelada/.test(o.situacao)?' forte':''}">${esc(o.situacao)}</span>`);
+  if(o.fisica&&o.fisica.pct!=null) s.push(`<span class="selo">execução física ${nf.format(o.fisica.pct)}%</span>`);
+  const ac=o.contratos.reduce((n,c)=>n+c.acrescimos,0), rj=o.contratos.reduce((n,c)=>n+c.reajustes,0);
+  if(ac) s.push(`<span class="selo">${ac} termo${ac>1?'s':''} de acréscimo</span>`);
+  if(rj) s.push(`<span class="selo">${rj} de reajuste</span>`);
+  if(o.paralisacoes.length) s.push(`<span class="selo forte">paralisação registrada</span>`);
+  if(o.emendas.length) s.push(`<span class="selo">${o.emendas.length} emenda${o.emendas.length>1?'s':''} parlamentar${o.emendas.length>1?'es':''}</span>`);
+  if(o.contratos.some(c=>c.outrasObras)) s.push(`<span class="selo">contrato compartilhado com outras obras</span>`);
+  return s.join('');
+}
+
+function desenhar(){
+  const el=$('#lista');
+  $('#conta').textContent=`${nf.format(lista.length)} de ${nf.format(OBRAS.length)} obras`;
+  if(!lista.length){el.innerHTML='<p class="vazio">Nenhuma obra com esses filtros.</p>';$('#mais').hidden=true;return}
+  el.innerHTML=lista.slice(0,mostrando).map((o,i)=>{
+    const p=pctDe(o);
+    return `<article class="ob" id="o-${esc(o.id)}">
+      <button class="ob-cab" aria-expanded="${aberta===o.id}" data-id="${esc(o.id)}">
+        <span class="ob-pos">${i+1}</span>
+        <span class="ob-txt"><span class="ob-nome">${esc(o.nome)}</span>
+          <small>${esc(o.municipios.join(', ')||'município não informado')} · ${esc(o.orgao||'')}</small>
+          <span class="selos">${selos(o)}</span></span>
+        <span class="ob-num"><b>${p==null?'—':sinal(p)}</b><small>${curto(o.inicial)} → ${curto(o.atual)}</small></span>
+      </button>
+      <div class="ob-barra" aria-hidden="true">${barra(o)}</div>
+      <div class="det" ${aberta===o.id?'':'hidden'}>${aberta===o.id?detalhe(o):''}</div>
+    </article>`;
+  }).join('');
+  $('#mais').hidden=lista.length<=mostrando;
+}
+
+function termoTexto(t){
+  const q=t.qual.length?` (${t.qual.map(x=>x.toLowerCase()).join(', ')})`:'';
+  return `${esc(t.tipo)}${t.numero?' '+esc(t.numero):''}${esc(q)}`;
+}
+function linkDou(t){ return t.dou?` · <a href="${esc(t.dou[1])}" target="_blank" rel="noopener">extrato no DOU, ${data(t.dou[0])}</a>`:''; }
+
+function cascata(c){
+  const linhas=[];
+  c.termos.forEach((t,i)=>{
+    const v=t.valor==null?'<small>sem valor</small>':reais.format(t.valor)+(t.delta?`<small>${t.delta>0?'+':'−'}${reais.format(Math.abs(t.delta))} registrado aqui</small>`:'');
+    linhas.push(`<div class="cx"><span class="d">${data(t.data)}</span>
+      <span class="t"><b>${termoTexto(t)}</b>${t.texto?`<small>${esc(t.texto)}</small>`:''}${linkDou(t)}</span>
+      <span class="v">${v}</span></div>`);
+  });
+  const p=c.inicial>0?(c.atual/c.inicial-1)*100:null;
+  linhas.push(`<div class="cx total"><span class="d">hoje</span><span class="t"><b>Valor global atual</b>
+     <small>Registro do contrato no Contratos.gov.br (inicial ${reais.format(c.inicial)})</small></span>
+     <span class="v">${reais.format(c.atual)}${p!=null?`<small>${sinal(p)} sobre o inicial</small>`:''}</span></div>`);
+  linhas.push(`<div class="cx pago"><span class="d"></span><span class="t">Pago até agora <small>${nf.format(c.empenhos)} empenho${c.empenhos!==1?'s':''} ligado${c.empenhos!==1?'s':''} ao contrato; inclui restos a pagar pagos</small></span>
+     <span class="v">${reais.format(c.pago)}</span></div>`);
+  const aviso=c.fecha?'':`<p class="nota">A sequência de valores registrados nos termos não fecha exatamente com o valor inicial e o atual do registro do contrato; os dois extremos vêm do registro, e os termos mostram o que o sistema gravou em cada um.</p>`;
+  return linhas.join('')+aviso;
+}
+
+function eventos(o){
+  const ev=[];
+  if(o.cadastro) ev.push({d:o.cadastro,tipo:'cadastro',t:'Obra cadastrada no ObrasGov',s:`${esc(o.orgao||'')}`});
+  if(o.previsto[0]) ev.push({d:o.previsto[0],tipo:'previsão',t:'Início previsto',s:''});
+  if(o.efetivo[0]) ev.push({d:o.efetivo[0],tipo:'execução',t:'Início efetivo',s:''});
+  o.emendas.forEach(e=>ev.push({d:e.ano+'-01-00',rot:e.ano,tipo:'emenda',cls:'dinheiro',
+     t:`Emenda de ${esc(e.autor)}`,s:`${esc(e.tipo)} · código ${esc(e.codigo)} · ${reais.format(e.empenhado)} empenhados nesta obra`}));
+  o.contratos.forEach(c=>c.termos.forEach(t=>{
+    const inicial=t.tipo==='Contrato'||t.tipo==='Empenho';
+    ev.push({d:t.data,tipo:inicial?'contrato':'termo',cls:t.delta>0?'dinheiro':'',
+      t:inicial?`Contrato ${esc(c.numero)} assinado com ${esc(c.fornecedor[0])}`:termoTexto(t)+` — contrato ${esc(c.numero)}`,
+      s:(inicial?`${esc(c.unidade||c.orgao||'')} · ${reais.format(c.inicial)}`:(t.delta?`${t.delta>0?'+':'−'}${reais.format(Math.abs(t.delta))} registrados neste termo`:''))+linkDou(t)});
+  }));
+  o.paralisacoes.forEach(p=>ev.push({d:p[0],tipo:'situação',cls:'alerta',t:esc(p[1]||'Situação alterada'),s:esc(p[2]||'')}));
+  if(o.previsto[1]) ev.push({d:o.previsto[1],tipo:'previsão',t:'Término previsto no cadastro',s:''});
+  if(o.efetivo[1]) ev.push({d:o.efetivo[1],tipo:'execução',t:'Término efetivo',s:''});
+  if(o.fisica&&o.fisica.atualizada) ev.push({d:o.fisica.atualizada,tipo:'execução',t:`Execução física informada: ${nf.format(o.fisica.pct)}%`,s:''});
+  return ev.filter(e=>e.d).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
+}
+
+function detalhe(o){
+  const p=pctDe(o), h=[];
+  h.push(`<h3>A obra</h3>
+    ${o.descricao&&o.descricao!==o.nome?`<p>${esc(o.descricao)}</p>`:''}
+    <dl class="ids">
+      <div><dt>Órgão responsável</dt><dd>${esc(o.orgao||'—')}</dd></div>
+      <div><dt>Executor</dt><dd>${esc(o.executores.join(', ')||'—')}</dd></div>
+      <div><dt>Município</dt><dd>${esc(o.municipios.join(', ')||'—')}</dd></div>
+      <div><dt>Situação no ObrasGov</dt><dd>${esc(o.situacao||'—')}</dd></div>
+      <div><dt>Tipo</dt><dd>${esc([o.especie,...o.tipos].filter(Boolean).join(' · ')||'—')}</dd></div>
+      <div><dt>Prazo previsto no cadastro</dt><dd>${data(o.previsto[0])} a ${data(o.previsto[1])}</dd></div>
+      <div><dt>Execução física</dt><dd>${o.fisica&&o.fisica.pct!=null?`${nf.format(o.fisica.pct)}% (informada em ${data(o.fisica.atualizada)})`:'não informada'}</dd></div>
+      <div><dt>Identificador no ObrasGov</dt><dd>${esc(o.id)}</dd></div>
+    </dl>`);
+
+  h.push(`<h3>O dinheiro</h3>
+    <p>${o.contratos.length>1?`Soma dos ${o.contratos.length} contratos ligados à obra: `:''}contratado por
+       <b>${reais.format(o.inicial)}</b>, hoje <b>${reais.format(o.atual)}</b>${p!=null?` (${sinal(p)})`:''};
+       pago até agora ${reais.format(o.pago)}.</p>
+    ${o.investimentoPrevisto?`<p class="nota">Investimento previsto no cadastro da obra: ${reais.format(o.investimentoPrevisto)}
+       (${o.fontes.map(f=>esc(f[0])).join(', ')}). É o valor que está no cadastro hoje, não necessariamente a
+       estimativa original, e pode cobrir mais que os contratos listados.</p>`:''}`);
+  o.contratos.forEach(c=>{
+    h.push(`<div class="contrato"><p class="c-cab"><b>Contrato ${esc(c.numero)}</b> · ${esc(c.categoria||'')}${c.modalidade?' · '+esc(c.modalidade):''}${c.licitacao?' nº '+esc(c.licitacao):''}
+      <small>${esc(c.unidade||c.orgao||'')} · empresa ${esc(c.fornecedor[0])} (CNPJ ${esc(c.fornecedor[1])})
+      · <a href="${esc(c.url)}" target="_blank" rel="noopener">ver no Contratos.gov.br</a></small>
+      ${c.objeto?`<small>${esc(c.objeto)}</small>`:''}
+      ${c.outrasObras?`<small><b>Este contrato também está ligado a ${c.outrasObras} outra${c.outrasObras>1?'s':''} obra${c.outrasObras>1?'s':''} no ObrasGov</b>: os valores são do contrato inteiro, não só desta obra.</small>`:''}</p>
+      <div class="casc">${cascata(c)}</div></div>`);
+  });
+
+  h.push(`<h3>Deputados e governadores</h3>`);
+  if(o.emendas.length){
+    h.push(`<p class="nota">Vínculo financeiro: autor da emenda parlamentar que empenhou recurso nesta obra, no ano da emenda.
+      A emenda manda o dinheiro; o contrato e os aditivos são assinados pelo órgão que executa, não por quem fez a emenda.</p><div class="pessoas">`+
+      o.emendas.map(e=>{
+        const nome=e.deputado?`<a href="deputado.html?id=${e.deputado}">${esc(e.autor)}</a>`:esc(e.autor);
+        const quem=e.deputado?'deputado federal':(/Individual/.test(e.tipo)?'autor sem perfil neste site (senador, ex-deputado ou sem conferência)':'não é uma pessoa: '+esc(e.tipo.replace('Emenda de ','emenda de ').toLowerCase()));
+        return `<div class="pe"><span><b>${nome}</b><small>${quem} · ${esc(e.tipo)} · ${esc(e.ano)} · código ${esc(e.codigo)}</small></span>
+        <span class="v">${reais.format(e.empenhado)}<small style="font-weight:400;color:var(--tinta2)">empenhados na obra</small></span></div>`}).join('')+`</div>`);
+  } else h.push(`<p><b>Deputados:</b> nenhuma emenda parlamentar nos empenhos desta obra, e nenhum outro documento das fontes liga um deputado a ela.</p>`);
+  const contratantes=[...new Set(o.contratos.map(c=>c.orgao||c.unidade).filter(Boolean))];
+  const partes=[...new Set([o.orgao,...o.executores,...(o.tomadores||[]),...(o.repassadores||[])].filter(Boolean))];
+  h.push(`<p><b>Governador:</b> nenhum documento das fontes liga um governador a esta obra. Quem contrata é
+    ${esc(contratantes.join(', ')||'—')}, e as partes registradas no ObrasGov são ${esc(partes.join('; ')||'—')}.
+    Governador só aparece quando o governo do estado for parte da obra, e então como chefe do Executivo no cargo
+    na data, não como quem assinou.</p>`);
+
+  h.push(`<h3>Linha do tempo</h3><ol class="tempo">`+eventos(o).map(e=>
+    `<li class="ev ${e.cls||''}"><span class="d">${e.rot||data(e.d)}</span><span class="p"></span>
+      <span class="x"><span class="tipo">${esc(e.tipo)}</span><b>${e.t}</b>${e.s?`<small>${e.s}</small>`:''}</span></li>`).join('')+`</ol>`);
+
+  const fontes=[[`Obra no ObrasGov (dados abertos)`,`https://api-publica.obrasgov.gestao.gov.br/obras/projeto-investimento?id_projeto_investimento=${encodeURIComponent(o.id)}`],
+    ...o.contratos.map(c=>[`Contrato ${c.numero} no Contratos.gov.br`,c.url])];
+  h.push(`<h3>Fontes</h3><ul class="fontes">`+fontes.map(f=>`<li><a href="${esc(f[1])}" target="_blank" rel="noopener">${esc(f[0])}</a></li>`).join('')+`</ul>`);
+  return h.join('');
+}
+
+function abrir(id,rolar){
+  aberta=aberta===id?null:id;
+  const u=new URL(location); if(aberta) u.searchParams.set('obra',aberta); else u.searchParams.delete('obra');
+  history.replaceState(null,'',u);
+  if(aberta && !lista.slice(0,mostrando).some(o=>o.id===aberta)){
+    const i=lista.findIndex(o=>o.id===aberta); if(i>=0) mostrando=i+1;
+  }
+  desenhar();
+  if(aberta&&rolar){const el=document.getElementById('o-'+aberta); if(el) el.scrollIntoView({block:'start'});}
+}
+
+function resumo(){
+  const c=OBRAS.filter(o=>o.inicial>0), cresc=c.filter(o=>o.atual>o.inicial+0.5).map(pctDe).sort((a,b)=>a-b);
+  const med=cresc.length?cresc[Math.floor(cresc.length/2)]:0;
+  const cob=META._cobertura||{};
+  $('#resumo').innerHTML=`Em <b>${nf.format(cresc.length)} de ${nf.format(c.length)}</b> obras o valor do contrato cresceu depois da assinatura;
+    entre elas, a mediana foi <b>${sinal(med)}</b>. Em ${nf.format(c.filter(o=>o.atual<o.inicial-0.5).length)} o valor caiu (supressão).
+    Crescimento total, somando acréscimos e reajustes.`;
+  if(cob.obrasNaUf) $('#cobertura').textContent=`Das ${nf.format(cob.obrasNaUf)} obras de ${META._uf} no ObrasGov, ${nf.format(cob.obrasComContrato)} têm contrato no sistema de contratos do governo federal (Contratos.gov.br) — só essas estão aqui.`;
+  $('#kicker').textContent=`Obras com contrato federal · ${META._uf==='SP'?'São Paulo':META._uf}`;
+  $('#rodapeData').textContent=`ObrasGov atualizado em ${data(META._obrasgovAtualizado)}; arquivo de emendas da CGU de ${META._emendasCgu||'—'}; página gerada em ${data(META._geradoEm)}.`;
+}
+
+async function carregar(){
+  try{
+    const r=await fetch('obras.json',{cache:'no-cache'}); if(!r.ok) throw new Error('HTTP '+r.status);
+    const d=await r.json(); META=d; OBRAS=d.obras; OBRAS.forEach(o=>o._busca=textoBusca(o));
+  }catch(e){ $('#lista').innerHTML=`<p class="erro">Não foi possível carregar obras.json (${esc(e.message)}).</p>`; return }
+  const sits=[...new Set(OBRAS.map(o=>o.situacao).filter(Boolean))].sort();
+  $('#fSit').insertAdjacentHTML('beforeend',sits.map(s=>`<option>${esc(s)}</option>`).join(''));
+  resumo();
+  const q=new URLSearchParams(location.search);
+  if(q.get('ordem')&&$(`#fOrdem option[value="${CSS.escape(q.get('ordem'))}"]`)) $('#fOrdem').value=q.get('ordem');
+  filtrar();
+  if(q.get('obra')&&OBRAS.some(o=>o.id===q.get('obra'))) abrir(q.get('obra'),true);
+}
+
+$('#lista').addEventListener('click',e=>{const b=e.target.closest('.ob-cab'); if(b) abrir(b.dataset.id,false)});
+['#fOrdem','#fMin','#fSit','#fCresceu'].forEach(s=>$(s).addEventListener('change',filtrar));
+let t; $('#fBusca').addEventListener('input',()=>{clearTimeout(t);t=setTimeout(filtrar,150)});
+$('#mais').addEventListener('click',()=>{mostrando+=30;desenhar()});
+carregar();
+</script>
+</body>
+</html>

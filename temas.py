@@ -30,6 +30,7 @@ from collections import Counter
 from datetime import date
 
 from coleta import BASE, CACHE, TIPOS, e_autor, ler_cache, virou_lei
+import resumos  # passo 8: resumo do inteiro teor, gerado por resumos.py
 
 SAIDA = BASE / "temas"
 DEPUTADOS = BASE / "deputados.json"
@@ -253,6 +254,7 @@ def main():
     if not lista:
         sys.exit("Sem cache/deputados_lista.json. Rode coleta.py antes.")
     publicado = {d["id"]: d for d in (ler_cache(DEPUTADOS) or [])}
+    resumo_de = resumos.carregar()
     if not publicado:
         sys.exit(f"Sem {DEPUTADOS.name}. Rode coleta.py antes.")
 
@@ -286,6 +288,8 @@ def main():
                 "s": ((det.get("statusProposicao") or {}).get("descricaoSituacao") or ""),
                 "l": 1 if virou_lei(det) else 0,
                 "c": cats,
+                # passo 8: resumo do inteiro teor (resumos.py); só quando existe
+                **({"r": resumo_de[p["id"]]} if p["id"] in resumo_de else {}),
             })
             if args.auditoria:
                 auditoria.append([id_dep, dep["nome"], f"{p['siglaTipo']} {p['numero']}/{p['ano']}",

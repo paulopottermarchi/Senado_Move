@@ -24,12 +24,14 @@ import argparse
 import csv
 import json
 import os
+import re
 import sys
 from collections import Counter, defaultdict
 from datetime import datetime
 
 import coleta  # a allowlist, o status e as faixas são os da Etapa A — nunca duplicar
 from temas import CATEGORIAS, CURTO, classificar  # a mesma classificação da página por tema
+import resumos  # passo 8: resumo do inteiro teor, gerado por resumos.py
 
 ANOS = range(2023, 2027)  # legislatura atual
 BULK = coleta.CACHE / "bulk"
@@ -106,6 +108,27 @@ def partido_na_data(historico, quando):
 
 def media(valores):
     return round(sum(valores) / len(valores), 2) if valores else None
+
+
+def e_nominal(v):
+    """Votação com voto individual registrado, pelo placar oficial do próprio arquivo de
+    votações. Serve para anos cujo arquivo de votos não é baixado; main() confere a
+    regra a cada rodada contra os votos individuais da legislatura (medido: 1.125 de
+    1.125 no Plenário, nenhuma exceção nas 42 mil votações de 2023–2026)."""
+    return sum(int(v[k] or 0) for k in ("votosSim", "votosNao", "votosOutros")) > 0
+
+
+_PLACAR_NO_TEXTO = re.compile(r"[\s.;,]*\bSim\b\s*:?\s*\d", re.I)
+
+
+def linha_nominal(v):
+    """[id, data, descrição sem o placar, sim, não] — o placar vai em números, à parte."""
+    d = _PLACAR_NO_TEXTO.split(v["descricao"] or "", maxsplit=1)[0].strip()
+    if d and d[-1] not in ".!?)":
+        d += "."
+    if len(d) > 200:
+        d = d[:199].rsplit(" ", 1)[0] + "…"
+    return [v["id"], v["data"], d, int(v["votosSim"] or 0), int(v["votosNao"] or 0)]
 
 
 def calcular_votacao(v, votos_da_votacao, ideologia):
@@ -300,8 +323,45 @@ def main():
         if r["idProposicao"] in ids_prop:
             autores[r["idProposicao"]].append(r)
 
+    # A regra de nominal dos anos anteriores (placar oficial > 0, sem o arquivo de votos)
+    # é conferida a cada rodada contra os votos individuais da legislatura.
+    violacoes = [f"{i}: placar oficial {'> 0 sem' if e_nominal(v) else '= 0 com'} votos individuais"
+                 for i, v in votacoes.items() if e_nominal(v) != (i in votos)]
+
+    # Todas as votações nominais do Plenário sobre cada proposição, desde o ano em que
+    # ela foi apresentada: texto-base, emendas, destaques e requerimentos. O de urgência
+    # é registrado no REQ, não na proposição — por isso a ligação vem também de
+    # votacoesProposicoes (medido: 29 votações ligadas ao projeto e ao REQ, nenhuma a
+    # dois projetos). Quantas vezes o Plenário parou para votar nome a nome é registro
+    # de disputa, não nota de importância: o site não junta isso a nenhum outro número.
+    anos_antes = range(min(anos_prop, default=ANOS.start), ANOS.start)
+    print(f"Lendo votações de {anos_antes.start}–{anos_antes.stop - 1} "
+          "(só para contar as nominais de cada proposição)…", flush=True)
+    todas = {r["id"]: r for r in linhas("votacoes", anos_antes, args.atualizar)}
+    todas.update(votacoes)
+    ligadas = defaultdict(set)
+    for i in todas:
+        if i.split("-")[0] in ids_prop:
+            ligadas[i.split("-")[0]].add(i)
+    for r in linhas("votacoesProposicoes", anos_antes, args.atualizar):
+        if r["proposicao_id"] in ids_prop:
+            ligadas[r["proposicao_id"]].add(r["idVotacao"])
+    for i, rs in rel.items():
+        for r in rs:
+            if r["proposicao_id"] in ids_prop:
+                ligadas[r["proposicao_id"]].add(i)
+    nominais_plen = {}
+    for id_prop in ids_prop:
+        vs = sorted((todas[i] for i in ligadas[id_prop] if i in todas
+                     and todas[i]["siglaOrgao"] == "PLEN" and e_nominal(todas[i])),
+                    key=lambda v: v["dataHoraRegistro"])
+        nominais_plen[id_prop] = [linha_nominal(v) for v in vs]
+        if por_prop[id_prop][0]["id"] not in {v["id"] for v in vs}:
+            violacoes.append(f"{id_prop}: a votação final não está entre as nominais do Plenário")
+
     # ------------------------------------------------ por votação
-    saida, violacoes = [], []
+    resumo_de = resumos.carregar()
+    saida = []
     sem_score_total = Counter()
     motivos_autor = Counter()
     for id_prop, (v, p) in por_prop.items():
@@ -346,7 +406,7 @@ def main():
             "idProposicao": int(id_prop),
             "numero": (p or {}).get("proposicao_titulo"),
             "titulo": coleta.titulo_curto(ementa),
-            "resumo": None,  # passo 8 (LLM) — ainda não
+            "resumo": resumo_de.get(int(id_prop)),  # passo 8: resumos.py (IA, do inteiro teor)
             "ementa": ementa,
             "data": v["data"],
             "autorId": autor_id,
@@ -356,6 +416,8 @@ def main():
             "autorNota": motivo,
             **{k: c[k] for k in ("sim", "nao", "abstencao", "obstrucao", "margem")},
             "nominal": True,
+            # todas as nominais do Plenário sobre a proposição: [id, data, descrição, sim, não]
+            "nominaisPlenario": nominais_plen[id_prop],
             "aprovacao": aprovacao,
             "resultado": resultado,
             "scoreMedioSim": c["scoreMedioSim"],
@@ -426,6 +488,11 @@ def main():
           f"({excl / votantes:.1%}); só a UNIÃO: {sem_score_total['UNIÃO']} "
           f"({sem_score_total['UNIÃO'] / votantes:.1%}) · {dict(sem_score_total.most_common())}")
     print(f"Autor: {dict(motivos_autor.most_common())}")
+    n_nom = sorted(len(x["nominaisPlenario"]) for x in saida)
+    antes = sum(1 for x in saida if any(n[1] < f"{ANOS.start}" for n in x["nominaisPlenario"]))
+    print(f"Votações nominais do Plenário por proposição (todas, não só a final): mediana "
+          f"{n_nom[len(n_nom) // 2]} · máx {n_nom[-1]} · só a final: {n_nom.count(1)} · "
+          f"com nominais antes de {ANOS.start}: {antes}")
     taxa = lambda x: x["diferentes"] / x["comparaveis"]
     for g in ("faixa", "partido"):
         t = sorted(taxa(d["divergencia"][g]) for d in deputados if d["divergencia"][g])

@@ -1,2 +1,5 @@
 requests>=2.31
 truststore>=0.9
+# passo 8 (resumos.py): texto do PDF e o lote de resumos
+pypdf>=6.0
+anthropic>=1.0

@@ -38,6 +38,30 @@ a{color:var(--link)}
 .frase{font-family:var(--serif);font-size:clamp(17px,2.1vw,20px);line-height:1.45;
        color:var(--tinta);max-width:58ch;margin:10px 0 0}
 .frase b{font-weight:600}
+/* com quem vota (blocos.json) */
+.cqv{margin-top:18px;background:var(--papel,#fff);border:1px solid var(--linha);border-radius:12px;padding:16px 20px;max-width:760px}
+.cqv[hidden]{display:none}
+.cqv h2{font-size:15px;font-weight:600}
+.cqv-av{font-size:12.5px;color:var(--tinta3);margin-top:3px}
+.cqv-txt{font-size:14px;line-height:1.6;margin-top:8px}
+.cqv-txt b{font-weight:600}
+.cqv-regua{position:relative;height:28px;margin-top:8px}
+.cqv-regua .base{position:absolute;left:0;right:0;top:13px;height:2px;background:var(--linha);border-radius:1px}
+.cqv-regua .faixa{position:absolute;top:9px;height:10px;background:var(--linha2,#f0f1f3);border:1px solid var(--linha);border-radius:5px}
+.cqv-regua .md{position:absolute;top:5px;width:2px;height:18px;margin-left:-1px;background:var(--tinta)}
+.cqv-regua .eu{position:absolute;top:6px;width:16px;height:16px;margin-left:-8px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--tinta)}
+.noto-meses{display:flex;align-items:flex-end;gap:3px;height:46px;margin-top:10px}
+.noto-meses i{flex:1;background:var(--tinta2);opacity:.55;border-radius:2px 2px 0 0;min-height:2px}
+.noto-meses i:hover{opacity:1}
+.cqv-leg{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--tinta3)}
+.ob-n{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px}
+.ob-n div{min-width:120px}
+.ob-n b{display:block;font-family:var(--serif,Georgia,serif);font-size:28px;font-weight:600;line-height:1.1}
+.ob-n span{font-size:12.5px;color:var(--tinta2)}
+.ob-l{list-style:none;margin-top:10px}
+.ob-l li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:6px 0;border-top:1px solid var(--linha2,#f0f1f3);font-size:13.5px}
+.ob-l small{display:block;color:var(--tinta3);font-size:12px}
+.ob-l .v{text-align:right;font-weight:600;white-space:nowrap}
 .carreira{font-size:13px;color:var(--tinta3);margin-top:6px}
 
 .av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
@@ -107,7 +131,15 @@ a{color:var(--link)}
 .item-data{font-size:12px;color:var(--tinta3)}
 .selo{font-size:11.5px;font-weight:500;padding:2px 8px;border-radius:2px;white-space:nowrap;
       background:#000;color:#fff}
+.item-not{font-size:12.5px;color:var(--tinta2);margin-top:4px}
+.item-not span{color:var(--tinta3)}
 .item-ementa{font-size:14.5px;line-height:1.5;margin-top:5px;max-width:72ch}
+/* passo 8: resumo por IA com a ementa oficial a um clique */
+.oficial{margin-top:4px;max-width:72ch}
+.oficial summary{cursor:pointer;font-size:12px;color:var(--tinta3);line-height:1.5}
+.oficial summary b{font-weight:500;color:var(--tinta2);text-decoration:underline;text-underline-offset:2px}
+.oficial p{font-size:13.5px;color:var(--tinta2);margin-top:5px;line-height:1.5}
+.oficial a{font-size:12.5px;color:var(--tinta2)}
 .item-sit{font-size:12.5px;color:var(--tinta2);margin-top:6px}
 .porque{font-size:12px;color:var(--tinta3);margin-top:4px;line-height:1.5;max-width:76ch}
 .porque q{color:var(--tinta2)}
@@ -172,6 +204,8 @@ a{color:var(--link)}
       <a href="prototipo.html#semana">Esta semana</a>
       <a href="prototipo.html#votacoes">Votações</a>
       <a href="leis.html">Leis votadas</a>
+      <a href="blocos.html">Quem vota com quem</a>
+      <a href="obras.html">Obras</a>
       <a href="prototipo.html#sobre">Sobre os dados</a>
     </nav>
   </div>
@@ -243,15 +277,110 @@ async function iniciar(){
     }
     return;
   }
+  await carregarNoticias();
   const t=q.get('tema');
   sel = t==='todas'||t==='nc' ? t : (t!=null&&/^\d+$/.test(t)&&tax.categorias[+t]!=null ? +t : null);
   montar();
+}
+
+// Com quem vota (blocos.py → blocos.json). Mede apoio ao governo do momento e semelhança
+// de voto, não ideologia: por isso fica separado do espectro e diz isso antes do número.
+async function comQuemVota(id){
+  let B; try{ const r=await fetch('blocos.json',{cache:'no-store'}); if(!r.ok) return; B=await r.json(); }catch(e){ return; }
+  const d=B.deputados[String(id)], el=document.getElementById('cqv');
+  if(!d||!el) return;
+  const N=i=>B.nomes[i]||['?','?','?'], p=N(String(id))[1], hoje=N(String(id))[4];
+  const g=d.governo?d.governo[0]/d.governo[1]:null, mp=B.medianaGovernoPorPartido[p];
+  const ps=Object.keys(B.deputados).filter(x=>N(x)[1]===p&&B.deputados[x].governo).map(x=>B.deputados[x].governo[0]/B.deputados[x].governo[1]);
+  const lo=ps.length?Math.min(...ps):null, hi=ps.length?Math.max(...ps):null;
+  const pc=v=>Math.round(v*100)+'%';
+  const bloco=B.blocos[d.bloco].medianaGoverno>=.5?'que acompanha o Governo':'que vota contra o Governo';
+  const cor=d.bloco===0?'#1f7a6d':'#7a4fa0';
+  el.hidden=false;
+  el.innerHTML=`<h2 id="cqvTit">Com quem vota</h2>
+    <p class="cqv-av">Votar junto não é pensar igual: no voto nominal, o que mais separa os deputados é apoiar ou não o governo do momento.</p>
+    <p class="cqv-txt">${g==null?'Menos de 50 votações com orientação do Governo: sem porcentagem.'
+      :`Votou como o líder do Governo orientou em <b>${pc(g)}</b> das ${NF.format(d.governo[1])} votações do Plenário em que houve orientação`+
+       `${mp!=null?` — a mediana do ${esc(p)}${hoje&&hoje!==p?' (partido em que mais votou no período)':''} é ${pc(mp)}`:''}. `}
+      Pela semelhança dos votos, sem olhar o partido, está no bloco ${bloco}.</p>
+    ${g==null?'':`<div class="cqv-regua" role="img" aria-label="${pc(g)}; colegas de partido de ${pc(lo)} a ${pc(hi)}">
+      <span class="base"></span>${lo!=null?`<span class="faixa" style="left:${lo*100}%;width:${(hi-lo)*100}%"></span>`:''}
+      ${mp!=null?`<span class="md" style="left:${mp*100}%"></span>`:''}<span class="eu" style="left:${g*100}%;background:${cor}"></span></div>
+      <div class="cqv-leg"><span>0%: sempre contra a orientação</span><span>cinza: colegas de partido · traço: mediana</span><span>100%</span></div>`}
+    <p class="cqv-txt">Vota mais parecido com ${d.parecidos.map(([o,v])=>`<a href="blocos.html?dep=${o}">${esc(N(String(o))[0])}</a> (${esc(N(String(o))[1])}, ${pc(v)})`).join(', ')}.
+      <a href="blocos.html?dep=${id}">Ver quem vota com quem</a></p>`;
+}
+
+// Notoriedade (wikipedia.py → wikipedia.json): leituras do artigo na Wikipédia.
+// Notícias da Agência Câmara por proposição (noticias.py). Carregadas uma vez; os itens
+// da lista ganham a linha "Notícia" quando a notícia linka a ficha da proposição.
+let NOTICIAS={};
+async function carregarNoticias(){
+  try{ const r=await fetch('noticias.json',{cache:'no-store'}); if(!r.ok) return; const n=await r.json();
+    (n.itens||[]).forEach(x=>x.p.forEach(([id])=>{(NOTICIAS[id]=NOTICIAS[id]||[]).push(x);})); }catch(e){}
+}
+
+async function notoriedade(id){
+  let W={}, Y={};
+  try{ const r=await fetch('wikipedia.json',{cache:'no-store'}); if(r.ok) W=await r.json(); }catch(e){}
+  try{ const r=await fetch('youtube.json',{cache:'no-store'}); if(r.ok) Y=await r.json(); }catch(e){}
+  const el=document.getElementById('noto'), w=W[String(id)], y=Y[String(id)];
+  // canal oficial (cadastro da Câmara): número como o YouTube informa, sem ranking nem soma
+  const yt=!y?'':`<p class="cqv-txt">${y.inscritos!=null?`<b>${NF.format(y.inscritos)}</b> inscritos no canal oficial no YouTube`
+    :y.oculto?'Canal oficial no YouTube, com o número de inscritos oculto pelo dono':'Canal oficial no YouTube'} ·
+    <a href="${y.url}" target="_blank" rel="noopener">abrir o canal</a>${y.em?` <span class="cqv-av">(dados do YouTube, ${y.em.slice(8,10)}/${y.em.slice(5,7)})</span>`:''}</p>`;
+  if(!W._fonte&&!y) return;
+  if(!el) return;
+  el.hidden=false;
+  if(!w){ el.innerHTML=`<h2 id="notoTit">Notoriedade</h2><p class="cqv-txt">Sem artigo na Wikipédia ligado a este deputado
+    pelo identificador da Câmara. Não ter artigo ligado não quer dizer que ninguém procure por ele.</p>${yt}`; return; }
+  const max=Math.max(1,...w.mensal), meses=W._meses||[];
+  const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const barras=w.mensal.map((v,i)=>`<i style="height:${Math.max(2,v/max*100).toFixed(1)}%" title="${meses[i]?MES[+meses[i].slice(5,7)-1]+'/'+meses[i].slice(2,4):''}: ${NF.format(v)} leituras"></i>`).join('');
+  const url='https://pt.wikipedia.org/wiki/'+encodeURIComponent(w.artigo.replace(/ /g,'_'));
+  el.innerHTML=`<h2 id="notoTit">Notoriedade</h2>
+    <p class="cqv-av">Mede procura, não aprovação nem trabalho: escândalo também gera leitura.</p>
+    <p class="cqv-txt">O artigo na Wikipédia foi lido <b>${NF.format(w.visitas90)}</b> vezes nos últimos 90 dias${
+      w.pico&&w.pico[1]?`, com pico de ${NF.format(w.pico[1])} em ${w.pico[0].slice(8,10)}/${w.pico[0].slice(5,7)}`:''}.
+      <a href="${url}" target="_blank" rel="noopener">Ver o artigo</a></p>
+    <div class="noto-meses" role="img" aria-label="Leituras por mês nos últimos 12 meses">${barras}</div>
+    <div class="cqv-leg"><span>${meses[0]?MES[+meses[0].slice(5,7)-1]+'/'+meses[0].slice(2,4):''}</span><span>leituras por mês</span><span>${meses[11]?MES[+meses[11].slice(5,7)-1]+'/'+meses[11].slice(2,4):''}</span></div>${yt}`;
+}
+
+// Obras com emenda do deputado (obras.py → obras_deputados.json). O contador é de obras em que
+// há emenda dele e o contrato cresceu — com o enquadramento antes: emenda manda dinheiro, não
+// assina contrato nem aditivo. Só aparece para quem tem emenda ou é da UF coberta.
+async function obrasDoDeputado(id,uf){
+  let O; try{ const r=await fetch('obras_deputados.json',{cache:'no-store'}); if(!r.ok) return; O=await r.json(); }catch(e){ return; }
+  const lista=(O.deputados||{})[String(id)]||[], el=document.getElementById('obrasDep');
+  if(!el||(!lista.length&&uf!==O._uf)) return;
+  const REAIS=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+  const pct=x=>x.inicial>0?(x.atual/x.inicial-1)*100:null, cresceu=lista.filter(x=>x.atual>x.inicial+0.5);
+  const sinal=v=>(v>0?'+':'−')+Math.abs(v).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+  const escopo=`${NF.format(O._obrasAcompanhadas)} obras de ${esc(O._uf)} com contrato federal que o site acompanha, por ora`;
+  el.hidden=false;
+  if(!lista.length){ el.innerHTML=`<h2 id="obrasTit">Obras com emenda deste deputado</h2>
+    <p class="cqv-txt">Nenhuma emenda dele nas ${escopo}.</p>`; return; }
+  el.innerHTML=`<h2 id="obrasTit">Obras com emenda deste deputado</h2>
+    <p class="cqv-av">A emenda manda dinheiro para a obra; quem contrata e assina os aditivos é o órgão que executa. O número diz
+      em quantas obras há emenda dele e o contrato cresceu, não que ele tenha causado o aumento — que pode ser reajuste de preços.</p>
+    <div class="ob-n"><div><b>${NF.format(cresceu.length)}</b><span>com emenda dele em que o contrato cresceu depois da assinatura</span></div>
+      <div><b>${NF.format(lista.length)}</b><span>com emenda dele, ao todo</span></div></div>
+    <ul class="ob-l">${lista.slice().sort((a,b)=>(pct(b)??-1e9)-(pct(a)??-1e9)).map(x=>{const p=pct(x);
+      return `<li><span><a href="obras.html?obra=${encodeURIComponent(x.obra)}">${esc(x.nome)}</a>
+        <small>${esc(x.municipios.join(', '))} · emenda${x.emendas.length>1?'s':''} de ${[...new Set(x.emendas.map(e=>e[1]))].join(', ')}: ${REAIS.format(x.emendas.reduce((s,e)=>s+e[2],0))} empenhados</small></span>
+        <span class="v">${p==null?'—':Math.abs(p)<0.01?'sem variação':sinal(p)}<small>contrato</small></span></li>`}).join('')}</ul>
+    <p class="cqv-av">Entre as ${escopo}. Autor da emenda como a CGU registra, ligado a este perfil só por nome parlamentar
+      exato e com todas as emendas daquele código dentro do mandato na Câmara.</p>`;
 }
 
 function montar(){
   const d=dep, apres=d.pecs+d.leis, vl=d.viraramLei;
   document.title=`${d.nome}: proposições por tema | Câmara Aberta`;
   const antes=d.props.filter(p=>p.d<tax.inicioLegislatura).length;
+  comQuemVota(d.id);
+  notoriedade(d.id);
+  obrasDoDeputado(d.id,d.uf);
   document.getElementById('raiz').innerHTML=`
     <header class="cab">
       ${retrato(d,72)}
@@ -262,6 +391,9 @@ function montar(){
     ${antes?`<p class="carreira">Somando mandatos anteriores: ${NF.format(apres)} ${plural(apres,'proposição','proposições')}
       (${NF.format(d.pecs)} ${plural(d.pecs,'PEC','PECs')} e ${NF.format(d.leis)} ${plural(d.leis,'projeto de lei','projetos de lei')}),
       ${vl===0?'nenhuma virou lei':`${NF.format(vl)} ${plural(vl,'virou lei','viraram lei')}`}.</p>`:''}
+    <section class="cqv" id="cqv" hidden aria-labelledby="cqvTit"></section>
+    <section class="cqv" id="noto" hidden aria-labelledby="notoTit"></section>
+    <section class="cqv" id="obrasDep" hidden aria-labelledby="obrasTit"></section>
 
     <div class="controles">
       ${antes?`<div class="bloco"><span class="rotulo">Período</span>
@@ -307,7 +439,7 @@ function ligar(sel_,b){document.querySelectorAll(sel_).forEach(x=>x.classList.to
 function visiveis(){
   return dep.props.filter(p=>(!filtro.leg||p.d>=tax.inicioLegislatura)&&
     (!filtro.tipo||p.t===filtro.tipo)&&(!filtro.lei||p.l)&&
-    (!filtro.texto||semAcento(p.e).includes(filtro.texto)));
+    (!filtro.texto||semAcento(p.e+' '+(p.r||'')).includes(filtro.texto)));
 }
 
 function desenhar(){
@@ -411,8 +543,13 @@ function item(p){
       title="Abrir a ficha de tramitação na Câmara">${p.t} ${p.n}/${p.a}</a>
       <span class="item-data">apresentada em ${data(p.d)}</span>
       ${p.l?'<span class="selo">Virou lei</span>':''}</div>
-    <p class="item-ementa">${esc(p.e)||'<i>Sem ementa no registro da Câmara.</i>'}</p>
+    ${p.r?`<p class="item-ementa">${esc(p.r)}</p>
+      <details class="oficial"><summary>Resumo gerado por IA a partir do texto integral; pode conter erros. <b>Ver a ementa oficial</b></summary>
+        <p>${esc(p.e)||'<i>Sem ementa no registro da Câmara.</i>'}</p><a href="${urlFicha(p.id)}" target="_blank" rel="noopener">Ficha e texto integral na Câmara</a></details>`
+         :`<p class="item-ementa">${esc(p.e)||'<i>Sem ementa no registro da Câmara.</i>'}</p>`}
     ${p.s?`<p class="item-sit">Situação na Câmara: ${esc(p.s)}</p>`:''}
+    ${(NOTICIAS[p.id]||[]).slice(0,2).map(x=>`<p class="item-not">Notícia: <a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)}</a>
+      <span>(${esc(x.assinatura||'Agência Câmara')}, ${data((x.d||'').slice(0,10))})</span></p>`).join('')}
     <p class="porque">${porque}</p>
   </article>`;
 }

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quem vota com quem | Câmara Aberta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#16181b; --tinta2:#4a4e55; --tinta3:#80858d;
+  --linha:#e4e5e8; --linha2:#f0f1f3; --fundo:#f6f6f4; --papel:#fff;
+  --raio:14px; --raio-p:8px;
+  --sombra:0 1px 2px rgba(16,18,22,.04),0 6px 24px rgba(16,18,22,.05);
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  /* blocos de voto: cores fora da paleta do espectro — bloco não é ideologia */
+  --b0:#1f7a6d; --b1:#7a4fa0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);font-size:15px;line-height:1.55;
+     -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
+a{color:inherit}
+
+.topo{position:sticky;top:0;z-index:80;background:rgba(246,246,244,.86);
+      backdrop-filter:saturate(160%) blur(12px);-webkit-backdrop-filter:saturate(160%) blur(12px);
+      border-bottom:1px solid var(--linha)}
+.topo-in{max-width:1080px;margin:0 auto;padding:0 22px;height:56px;display:flex;align-items:center;
+         justify-content:space-between;gap:20px}
+.marca{font-family:var(--serif);font-size:19px;font-weight:600;text-decoration:none;white-space:nowrap}
+.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-size:13.5px;color:var(--tinta2);text-decoration:none;padding:7px 11px;border-radius:999px;white-space:nowrap}
+.nav a:hover{background:var(--linha2);color:var(--tinta)}
+.nav a.aqui{background:var(--tinta);color:#fff}
+
+.capa{padding:52px 0 8px}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta3);margin-bottom:10px}
+h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,46px);font-weight:500;line-height:1.08;letter-spacing:-.015em;max-width:20ch}
+.chamada{font-size:clamp(15.5px,1.8vw,17.5px);color:var(--tinta2);margin-top:14px;max-width:64ch}
+.aviso{margin-top:24px;background:var(--papel);border:1px solid var(--linha);border-left:3px solid var(--tinta);
+       border-radius:var(--raio-p);padding:16px 20px;max-width:78ch}
+.aviso b{font-weight:600}
+.aviso p{font-size:14px;line-height:1.65;color:var(--tinta2)}
+.aviso p+p{margin-top:8px}
+
+.painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
+        padding:24px 28px;margin-top:26px}
+h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2}
+.sub{font-size:14px;color:var(--tinta2);margin-top:6px;max-width:70ch}
+
+/* os dois blocos */
+.blocos{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.bloco{border:1px solid var(--linha);border-radius:var(--raio-p);padding:16px 18px;border-top:4px solid var(--c)}
+.bloco h3{font-size:15px;font-weight:600}
+.bloco .n{font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.1;margin-top:4px}
+.bloco .n small{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--tinta2);margin-left:4px}
+.bloco p{font-size:13px;color:var(--tinta2);margin-top:6px}
+.bloco .partidos{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.bloco .partidos span{font-size:12px;border:1px solid var(--linha);border-radius:999px;padding:1px 9px;color:var(--tinta2)}
+.bloco .partidos b{font-weight:600;color:var(--tinta)}
+
+/* linhas por partido */
+.eixo{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;margin-top:22px;font-size:11.5px;color:var(--tinta3)}
+.eixo .reg{position:relative;height:16px}
+.eixo .reg span{position:absolute;transform:translateX(-50%)}
+.eixo .reg span:first-child{transform:none}
+.eixo .reg span:last-child{transform:translateX(-100%)}
+.linhas{margin-top:4px}
+.lp{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center;padding:3px 0;border-top:1px solid var(--linha2)}
+.lp-nome{font-size:13px;font-weight:500;line-height:1.25}
+.lp-nome small{display:block;font-weight:400;font-size:11.5px;color:var(--tinta3)}
+.qb{white-space:nowrap}
+.qb::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin:0 3px 0 2px;vertical-align:0}
+.trilho{position:relative;height:34px;background:linear-gradient(to right,transparent calc(50% - .5px),var(--linha) calc(50% - .5px),var(--linha) calc(50% + .5px),transparent calc(50% + .5px))}
+.pt{position:absolute;width:11px;height:11px;border-radius:50%;margin-left:-5.5px;border:1.5px solid #fff;
+    background:var(--c);cursor:pointer;padding:0;opacity:.9}
+.pt:hover,.pt:focus-visible{transform:scale(1.5);z-index:3;opacity:1}
+.pt.sel{transform:scale(1.9);z-index:4;opacity:1;box-shadow:0 0 0 2px var(--tinta)}
+.pt.apaga{opacity:.18}
+.med{position:absolute;top:3px;bottom:3px;width:2px;margin-left:-1px;background:var(--tinta);opacity:.55;border-radius:1px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:12.5px;color:var(--tinta2);align-items:center}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:-1px}
+.leg .m{display:inline-block;width:2px;height:12px;background:var(--tinta);opacity:.55;margin-right:6px;vertical-align:-2px}
+
+/* busca e ficha */
+.busca{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.texto{font:inherit;font-size:14px;border:1px solid var(--linha);border-radius:999px;background:var(--papel);
+       color:var(--tinta);padding:8px 16px;width:320px;max-width:100%}
+.texto:focus{outline:none;border-color:var(--tinta2);box-shadow:0 0 0 4px rgba(22,24,27,.06)}
+.limpar{font:inherit;font-size:13px;background:none;border:none;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.limpar[hidden]{display:none}
+.ficha{margin-top:18px;border:1px solid var(--linha);border-radius:var(--raio-p);padding:18px 20px}
+.ficha[hidden]{display:none}
+.f-cab{display:flex;gap:14px;align-items:center}
+.f-cab h3{font-family:var(--serif);font-size:22px;font-weight:500;line-height:1.15}
+.f-cab p{font-size:13px;color:var(--tinta2)}
+.f-txt{font-size:14.5px;line-height:1.6;margin-top:12px;max-width:72ch}
+.f-txt b{font-weight:600}
+.regua{position:relative;height:30px;margin-top:10px;max-width:560px}
+.regua .base{position:absolute;left:0;right:0;top:14px;height:2px;background:var(--linha);border-radius:1px}
+.regua .faixa{position:absolute;top:10px;height:10px;background:var(--linha2);border:1px solid var(--linha);border-radius:5px}
+.regua .eu{position:absolute;top:7px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:var(--c);border:2px solid #fff;box-shadow:0 0 0 1px var(--tinta)}
+.regua .md{position:absolute;top:6px;width:2px;height:18px;margin-left:-1px;background:var(--tinta)}
+.regua-leg{display:flex;justify-content:space-between;font-size:11px;color:var(--tinta3);max-width:560px}
+.f-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:13px}
+h4{font-size:13.5px;font-weight:600;margin-top:16px}
+
+.pessoas{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:8px}
+.pessoa{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--linha2);border-radius:var(--raio-p);
+        text-decoration:none;color:inherit;min-width:0;background:var(--papel);font:inherit;text-align:left;cursor:pointer}
+.pessoa:hover{border-color:#c9ccd1}
+.pessoa-txt{min-width:0;flex:1}
+.pessoa b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;font-weight:500;line-height:1.25}
+.pessoa small{font-size:12px;color:var(--tinta3)}
+.pct{font-size:12.5px;font-weight:600;margin-left:auto;flex-shrink:0;text-align:right;line-height:1.2}
+.pct small{display:block;font-weight:400}
+.av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;background:var(--linha2);overflow:hidden}
+.av-cx .av-ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--tinta3);font-size:12px}
+.av-cx img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;z-index:1}
+.av-cx img.falhou{display:none}
+
+/* por tema: duas barras por categoria, uma por bloco */
+.tg{margin-top:18px}
+.tg h3{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3);
+       padding-bottom:6px;border-bottom:1px solid var(--linha)}
+.tr{display:grid;grid-template-columns:230px minmax(0,1fr) 150px;gap:14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--linha2)}
+.tr.fraco{opacity:.55}
+.tr-nome{font-size:13.5px;font-weight:500;line-height:1.3}
+.tr-nome small{display:block;font-weight:400;font-size:11.5px;color:var(--tinta3)}
+.tr-barras{display:grid;gap:4px}
+.tb{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:8px;align-items:center}
+.tb-trilho{height:8px;border-radius:4px;background:var(--linha2);overflow:hidden}
+.tb-trilho i{display:block;height:100%}
+.tb b{font-size:12px;font-weight:600;text-align:right}
+.tr-op{font-size:12px;color:var(--tinta2);text-align:right}
+.tr-op b{font-weight:600;color:var(--tinta)}
+
+/* pares improváveis */
+.pares{margin-top:14px}
+.par{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--linha2)}
+.par .x{text-align:center;font-size:13px;line-height:1.25;min-width:120px}
+.par .x b{display:block;font-family:var(--serif);font-size:20px;font-weight:600}
+.par .x small{color:var(--tinta3);font-size:11.5px}
+.par .pessoa{border:none;padding:0}
+.par .pessoa:last-child{flex-direction:row-reverse;text-align:right}
+.mais{display:block;margin:16px auto 0;font:inherit;font-size:14px;background:var(--papel);border:1px solid var(--linha);border-radius:999px;padding:9px 20px;cursor:pointer}
+.mais[hidden]{display:none}
+
+.rodape-site{margin-top:56px;border-top:1px solid var(--linha);background:var(--papel);padding:36px 0 44px}
+.rodape-site h2{font-size:18px;font-weight:600;margin-bottom:8px}
+.rodape-site p{font-size:13.5px;line-height:1.7;color:var(--tinta2);max-width:78ch}
+.rodape-site p+p{margin-top:10px}
+
+@media(max-width:760px){
+  .blocos{grid-template-columns:1fr}
+  .painel{padding:18px}
+  .eixo,.lp{grid-template-columns:1fr;gap:2px}
+  .eixo>span:first-child{display:none}
+  .lp-nome small{display:inline;margin-left:6px}
+  .tr{grid-template-columns:1fr;gap:6px}
+  .tr-op{text-align:left}
+  .par{grid-template-columns:1fr;text-align:left}
+  .par .x{text-align:left;display:flex;gap:8px;align-items:baseline}
+  .par .pessoa:last-child{flex-direction:row;text-align:left}
+}
+@media(max-width:520px){ .topo .marca{display:none} }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="prototipo.html">Câmara Aberta</a>
+    <nav class="nav" aria-label="Seções do site">
+      <a href="prototipo.html#deputados">Deputados</a>
+      <a href="prototipo.html#semana">Esta semana</a>
+      <a href="leis.html">Leis votadas</a>
+      <a class="aqui" href="blocos.html" aria-current="page">Quem vota com quem</a>
+      <a href="obras.html">Obras</a>
+      <a href="prototipo.html#sobre">Sobre os dados</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="capa">
+    <p class="kicker">Votações nominais do Plenário · 2023 a 2026</p>
+    <h1>Quem vota junto com quem</h1>
+    <p class="chamada" id="chamada">Agrupando os deputados só pela semelhança dos votos, sem olhar o partido.</p>
+
+    <div class="aviso" role="note">
+      <p><b>Votar junto não é pensar igual.</b> No voto nominal, o que mais separa os deputados é apoiar ou
+         não o governo do momento — o Governo federal, desde 2023. Os blocos abaixo saem só da semelhança dos
+         votos, sem olhar partido nem orientação, e coincidem quase exatamente com seguir ou não o que o líder
+         do Governo orientou. Por isso o espectro do gráfico principal vem de uma pesquisa com os próprios
+         deputados, e não de votos: são duas coisas diferentes, e o site mostra as duas.</p>
+      <p>Dois deputados que votam igual podem ter motivos diferentes: acordo de bancada, cargo no governo,
+         convicção, pedido da base. A página mostra quem votou junto, não por quê. O partido de cada um é
+         aquele em que deu a maior parte dos votos no período <span id="trocas"></span>.</p>
+    </div>
+  </div>
+
+  <section class="painel" aria-labelledby="t-blocos">
+    <h2 id="t-blocos">Os blocos que existem de fato</h2>
+    <p class="sub" id="subBlocos"></p>
+    <div class="blocos" id="blocos"></div>
+
+    <div class="eixo" aria-hidden="true"><span></span>
+      <div class="reg"><span style="left:0">0%</span><span style="left:25%">25%</span><span style="left:50%">50%</span><span style="left:75%">75%</span><span style="left:100%">100%</span></div>
+    </div>
+    <div class="linhas" id="linhas"></div>
+    <div class="leg" id="leg"></div>
+
+    <div class="busca">
+      <input class="texto" id="fDep" type="search" list="listaDep" placeholder="Buscar um deputado" autocomplete="off" aria-label="Buscar um deputado">
+      <datalist id="listaDep"></datalist>
+      <button class="limpar" id="limpar" hidden>Limpar</button>
+    </div>
+    <div class="ficha" id="ficha" hidden aria-live="polite"></div>
+  </section>
+
+  <section class="painel" aria-labelledby="t-temas" id="secTemas" hidden>
+    <h2 id="t-temas">O que cada bloco aprovou, por tema</h2>
+    <p class="sub" id="subTemas"></p>
+    <div class="leg" id="legTemas"></div>
+    <div id="temas"></div>
+  </section>
+
+  <section class="painel" aria-labelledby="t-pares">
+    <h2 id="t-pares">Pares improváveis</h2>
+    <p class="sub" id="subPares"></p>
+    <div class="pares" id="pares"></div>
+    <button class="mais" id="maisPares" hidden>Mostrar mais</button>
+  </section>
+</main>
+
+<footer class="rodape-site">
+  <div class="wrap">
+    <h2>Como é calculado</h2>
+    <p>Votos de cada deputado nas votações nominais do Plenário, de 2023 a 2026 (Dados Abertos da Câmara dos
+       Deputados). Só Sim e Não: abstenção, obstrução e ausência não entram. A concordância entre dois deputados
+       é a parcela das votações em que os dois votaram Sim ou Não e votaram igual; par com menos de 100 votações
+       em comum não entra, e deputado com menos de 100 votos Sim ou Não no Plenário também não.</p>
+    <p>Os blocos saem de um agrupamento hierárquico por concordância média, sem usar o partido. O número de
+       blocos não é escolhido pelo site: o corte fica onde a concordância despenca de uma fusão para a seguinte.
+       A frequência com que cada deputado votou como o Governo orientou vem das orientações de bancada
+       registradas pela Câmara (bancada "Governo", orientação Sim ou Não), e só aparece para quem tem pelo menos
+       50 dessas votações.</p>
+    <p>Pares improváveis: deputados de partidos a pelo menos 4 pontos de distância na escala do espectro (média
+       das respostas da wave 9, de 2021, do Brazilian Legislative Survey, de Power e Zucco, calculada por este
+       site), que votaram pelo mesmo partido em pelo menos 75% das vezes, com 200 ou mais votações em comum e 90%
+       ou mais de votos iguais. Partidos sem posição no espectro, como a União Brasil, não entram.</p>
+  </div>
+</footer>
+
+<script>
+const nf=new Intl.NumberFormat('pt-BR');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const pc=v=>Math.round(v*100)+'%';
+const pc1=v=>(v*100).toFixed(1).replace('.',',')+'%';
+let B=null, SEL=null, PASSO=12, limitePares=PASSO;
+
+function iniciais(nome){
+  const p=String(nome).trim().split(/\s+/).filter(w=>w.length>2);
+  return ((p[0]||nome||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase();
+}
+function retrato(id,nome,px){
+  return `<span class="av-cx" style="width:${px}px;height:${px}px" aria-hidden="true"><span class="av-ini">${esc(iniciais(nome))}</span>`+
+    `<img src="https://www.camara.leg.br/internet/deputado/bandep/${id}.jpg" alt="" loading="lazy" onerror="this.classList.add('falhou')"></span>`;
+}
+// [nome, partido no período, UF, score, partido hoje]
+const N=id=>B.nomes[id]||['?','?','?',null,'?'];
+const rotPartido=id=>{const [,p,uf,,hoje]=N(id); return `${p}-${uf}`+(hoje&&hoje!==p?` (hoje ${hoje})`:'');};
+const pctGov=id=>{const g=B.deputados[id]?.governo; return g?g[0]/g[1]:null;};
+// O nome de cada bloco sai do próprio dado: a mediana de votos como o Governo orientou.
+const nomeBloco=i=>B.blocos[i].medianaGoverno>=.5?'Acompanha o Governo':'Vota contra o Governo';
+const corBloco=i=>`var(--b${Math.min(i,1)})`;
+
+async function carregar(){
+  B=await (await fetch('blocos.json',{cache:'no-store'})).json();
+  const c=B.corte, nb=B.blocos.length;
+  chamada.textContent=`Agrupando os ${nf.format(Object.keys(B.deputados).length)} deputados só pela semelhança dos votos, `+
+    `sem olhar o partido, aparecem ${nb} blocos. Dentro de cada um, os deputados votam igual em ${pc(c.concordanciaDentro)} `+
+    `ou mais das vezes; entre os blocos, só ${pc(c.concordanciaEntre)}. Nenhum deles é um partido.`;
+  trocas.textContent=B.trocaramDePartido?`(${B.trocaramDePartido} dos deputados desta página estão hoje em outro partido)`:'';
+  subBlocos.textContent=`${nf.format(B.votacoes)} votações nominais do Plenário. Cada linha abaixo é um partido; cada ponto, `+
+    `um deputado, na posição da frequência com que votou como o líder do Governo orientou (${nf.format(B.votacoesComOrientacao)} `+
+    `votações com orientação). A cor é o bloco em que a semelhança dos votos o colocou.`;
+  blocos.innerHTML=B.blocos.map((b,i)=>`<div class="bloco" style="--c:${corBloco(i)}">
+      <h3>${nomeBloco(i)}</h3>
+      <div class="n">${nf.format(b.n)}<small>deputados</small></div>
+      <p>Mediana: votaram como o Governo orientou em ${pc(b.medianaGoverno)} das vezes.</p>
+      <div class="partidos">${Object.entries(b.partidos).map(([p,q])=>`<span>${esc(p)} <b>${q}</b></span>`).join('')}</div>
+    </div>`).join('');
+  leg.innerHTML=B.blocos.map((b,i)=>`<span><i style="--c:${corBloco(i)}"></i>${nomeBloco(i)}</span>`).join('')+
+    '<span><span class="m"></span>mediana do partido</span><span>linha do meio: 50%</span>';
+  desenharLinhas();
+  const nomes=Object.keys(B.nomes).map(id=>[id,`${N(id)[0]} (${N(id)[1]}-${N(id)[2]})`]).sort((a,b)=>a[1].localeCompare(b[1]));
+  listaDep.innerHTML=nomes.map(([,t])=>`<option value="${esc(t)}">`).join('');
+  desenharPares();
+  desenharTemas();
+  const q=new URLSearchParams(location.search).get('dep');
+  if(q&&B.nomes[q]) selecionar(q,false);
+}
+
+function desenharLinhas(){
+  const porP={};
+  Object.keys(B.deputados).forEach(id=>{ const v=pctGov(id); if(v==null) return; const p=N(id)[1]; (porP[p]=porP[p]||[]).push(id); });
+  const med=ids=>{const v=ids.map(pctGov).sort((a,b)=>a-b), n=v.length; return n%2?v[n>>1]:(v[n/2-1]+v[n/2])/2;};
+  const grandes=Object.entries(porP).filter(([,ids])=>ids.length>=3), outros=Object.entries(porP).filter(([,ids])=>ids.length<3).flatMap(([,ids])=>ids);
+  const linhasP=grandes.map(([p,ids])=>[p,ids,med(ids)]).sort((a,b)=>b[2]-a[2]);
+  if(outros.length) linhasP.push([`Outros (${[...new Set(outros.map(id=>N(id)[1]))].join(', ')})`,outros,null]);
+  linhas.innerHTML=linhasP.map(([p,ids,m])=>{
+    const cont={}; ids.forEach(id=>{const b=B.deputados[id].bloco; cont[b]=(cont[b]||0)+1;});
+    // quantos do partido caíram em cada bloco, com a cor do bloco
+    const partes=B.blocos.map((_,i)=>cont[i]?`<span class="qb" style="--c:${corBloco(i)}" title="${cont[i]} em “${nomeBloco(i)}”">${cont[i]}</span>`:'').filter(Boolean);
+    // altura dentro da linha: fixa por deputado (não muda a cada visita), para os pontos não se sobreporem
+    const pts=ids.map(id=>{ const y=4+((+id*2654435761)%1000)/1000*19;
+      return `<button class="pt" data-id="${id}" style="left:${(pctGov(id)*100).toFixed(2)}%;top:${y.toFixed(1)}px;--c:${corBloco(B.deputados[id].bloco)}"
+        title="${esc(N(id)[0])} (${esc(rotPartido(id))}): votou como o Governo orientou em ${pc(pctGov(id))} · ${nomeBloco(B.deputados[id].bloco)}"
+        aria-label="${esc(N(id)[0])}, ${pc(pctGov(id))}"></button>`;}).join('');
+    return `<div class="lp"><div class="lp-nome">${esc(p)}<small>${ids.length} deputados${B.blocos.length>1&&partes.length>1?' · '+partes.join(' '):''}</small></div>
+      <div class="trilho">${m!=null?`<span class="med" style="left:${(m*100).toFixed(2)}%" title="Mediana do partido: ${pc(m)}"></span>`:''}${pts}</div></div>`;
+  }).join('');
+  linhas.querySelectorAll('.pt').forEach(b=>b.onclick=()=>selecionar(b.dataset.id,true));
+}
+
+// Por tema: nas votações finais de texto-base (Sim = aprovar a lei), a parcela dos votos Sim
+// de cada bloco nas leis do tema. Mesmas categorias da página do deputado (temas.py).
+function desenharTemas(){
+  const T=B.temas||[]; if(!T.length) return;
+  secTemas.hidden=false;
+  subTemas.textContent=`Nas ${nf.format(B.temasLeis)} votações finais de texto-base — em que votar Sim é aprovar a lei —, `+
+    `a parcela dos votos Sim de cada bloco nas leis de cada tema. As categorias são as mesmas da página do deputado, `+
+    `pela classificação deste site a partir da ementa; uma lei pode ter mais de uma, e ${B.temasSemCategoria} ficaram sem categoria.`;
+  legTemas.innerHTML=B.blocos.map((b,i)=>`<span><i style="--c:${corBloco(i)}"></i>${nomeBloco(i)}</span>`).join('')+
+    '<span>“lados opostos”: a maioria de um bloco votou Sim e a do outro, Não</span>';
+  const grupos=[...new Set(T.map(t=>t.grupo))];
+  temas.innerHTML=grupos.map(g=>`<div class="tg"><h3>${esc(g)}</h3>${T.filter(t=>t.grupo===g).map(t=>{
+      const barras=t.sim.map((v,i)=>v==null?'':`<div class="tb" title="${nomeBloco(i)}: ${nf.format(t.votos[i][0])} votos Sim e ${nf.format(t.votos[i][1])} Não">
+          <span class="tb-trilho"><i style="width:${(v*100).toFixed(1)}%;background:${corBloco(i)}"></i></span><b>${pc(v)}</b></div>`).join('');
+      return `<div class="tr${t.leis<3?' fraco':''}">
+        <div class="tr-nome">${esc(t.categoria)}<small>${t.leis} ${t.leis===1?'lei':'leis'}${t.leis<3?' · poucas para comparar':''}</small></div>
+        <div class="tr-barras">${barras}</div>
+        <div class="tr-op">${t.divergem?`lados opostos em <b>${t.divergem}</b> de ${t.leis}`:'mesmo lado em todas'}</div></div>`;
+    }).join('')}</div>`).join('');
+}
+
+function pessoaHTML(id,direita){
+  return `<button class="pessoa" data-id="${id}">${retrato(id,N(id)[0],34)}
+    <span class="pessoa-txt"><b>${esc(N(id)[0])}</b><small>${esc(rotPartido(id))}</small></span>${direita||''}</button>`;
+}
+
+function selecionar(id,rolar){
+  SEL=id; const d=B.deputados[id]; if(!d) return;
+  fDep.value=`${N(id)[0]} (${N(id)[1]}-${N(id)[2]})`; limpar.hidden=false;
+  history.replaceState(null,'',`blocos.html?dep=${id}`);
+  linhas.querySelectorAll('.pt').forEach(b=>{ b.classList.toggle('sel',b.dataset.id===id); b.classList.toggle('apaga',b.dataset.id!==id); });
+  const g=pctGov(id), p=N(id)[1], mp=B.medianaGovernoPorPartido[p];
+  const ps=Object.keys(B.deputados).filter(x=>N(x)[1]===p&&pctGov(x)!=null).map(pctGov);
+  const lo=ps.length?Math.min(...ps):null, hi=ps.length?Math.max(...ps):null;
+  const compara = g==null||mp==null ? '' : Math.abs(g-mp)<.05 ? ` Fica perto da mediana do ${esc(p)} (${pc(mp)}).`
+    : ` A mediana do ${esc(p)} é ${pc(mp)}: ${g>mp?'votou mais vezes com o Governo que a maioria dos colegas de partido':'votou menos vezes com o Governo que a maioria dos colegas de partido'}.`;
+  ficha.hidden=false;
+  ficha.style.setProperty('--c',corBloco(d.bloco));
+  ficha.innerHTML=`<div class="f-cab">${retrato(id,N(id)[0],56)}<div><h3>${esc(N(id)[0])}</h3><p>${esc(rotPartido(id))} · ${nomeBloco(d.bloco)}</p></div></div>
+    <p class="f-txt">${g==null?'Menos de 50 votações com orientação do Governo: sem porcentagem.'
+      :`Votou como o líder do Governo orientou em <b>${pc(g)}</b> das ${nf.format(d.governo[1])} votações em que houve orientação e ele votou Sim ou Não.${compara}`}</p>
+    ${g==null?'':`<div class="regua" role="img" aria-label="${pc(g)}; colegas de partido de ${pc(lo)} a ${pc(hi)}, mediana ${pc(mp)}">
+      <span class="base"></span>${lo!=null?`<span class="faixa" style="left:${lo*100}%;width:${(hi-lo)*100}%" title="Colegas de partido: de ${pc(lo)} a ${pc(hi)}"></span>`:''}
+      ${mp!=null?`<span class="md" style="left:${mp*100}%" title="Mediana do partido: ${pc(mp)}"></span>`:''}<span class="eu" style="left:${g*100}%"></span></div>
+      <div class="regua-leg"><span>0%: sempre contra a orientação</span><span>faixa cinza: colegas de partido</span><span>100%: sempre a favor</span></div>`}
+    <h4>Vota mais parecido com</h4>
+    <div class="pessoas">${d.parecidos.map(([o,v,c])=>pessoaHTML(o,`<span class="pct">${pc1(v)}<small>em ${nf.format(c)}</small></span>`)).join('')}</div>
+    <div class="f-links"><a href="deputado.html?id=${id}">Proposições por tema</a><a href="leis.html?dep=${id}">Leis em que votou diferente do partido</a></div>`;
+  ficha.querySelectorAll('.pessoa').forEach(b=>b.onclick=()=>selecionar(b.dataset.id,true));
+  if(rolar) ficha.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function desenharPares(){
+  const L=B.improvaveis;
+  // A descrição sai do dado: quais partidos se juntam e em que bloco estão — nada fixo no texto.
+  const comb={}, blocosPar=new Set(); let minGov=1;
+  L.forEach(([a,b])=>{ const [x,y]=[a,b].map(String).sort((i,j)=>N(i)[3]-N(j)[3]);
+    const k=`${N(x)[1]} e ${N(y)[1]}`; comb[k]=(comb[k]||0)+1;
+    blocosPar.add(B.deputados[x].bloco+'-'+B.deputados[y].bloco);
+    const g=pctGov(y); if(g!=null) minGov=Math.min(minGov,g); });
+  const combTxt=Object.entries(comb).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${k} (${n})`).join(', ');
+  const mesmoBloco=blocosPar.size===1?[...blocosPar][0].split('-'):null;
+  subPares.textContent=`Deputados de partidos distantes no espectro — pelo menos ${nf.format(B.regras.distOpostos)} pontos na escala de 1 a 10 — `+
+    `que votaram igual em ${pc(B.regras.parMin)} ou mais das votações em comum. São ${nf.format(B.improvaveisTotal)} pares: ${combTxt}.`+
+    (mesmoBloco&&mesmoBloco[0]===mesmoBloco[1]?` Todos no bloco que ${nomeBloco(+mesmoBloco[0]).replace(/^./,c=>c.toLowerCase())}: `+
+      `o deputado do partido mais à direita de cada par votou como o Governo orientou em ${pc(minGov)} ou mais das vezes.`:'');
+  pares.innerHTML=L.slice(0,limitePares).map(([a,b,v,c])=>`<div class="par">${pessoaHTML(a)}
+      <div class="x"><b>${pc1(v)}</b><small>de votos iguais em ${nf.format(c)} votações</small></div>${pessoaHTML(b)}</div>`).join('');
+  pares.querySelectorAll('.pessoa').forEach(x=>x.onclick=()=>{ selecionar(x.dataset.id,false); document.getElementById('t-blocos').scrollIntoView({behavior:'smooth'}); });
+  maisPares.hidden=L.length<=limitePares;
+}
+maisPares.onclick=()=>{limitePares+=PASSO; desenharPares();};
+
+fDep.onchange=fDep.oninput=()=>{
+  const alvo=norm(fDep.value.trim()); if(!alvo) return;
+  const achou=Object.keys(B.nomes).filter(id=>norm(`${N(id)[0]} (${N(id)[1]}-${N(id)[2]})`)===alvo);
+  if(achou.length===1) selecionar(achou[0],true);
+};
+limpar.onclick=()=>{ SEL=null; fDep.value=''; limpar.hidden=true; ficha.hidden=true;
+  linhas.querySelectorAll('.pt').forEach(b=>b.classList.remove('sel','apaga')); history.replaceState(null,'','blocos.html'); };
+carregar().catch(()=>{ chamada.textContent='Não foi possível carregar blocos.json. Abra o site por um servidor (não direto do disco).'; });
+</script>
+</body>
+</html>

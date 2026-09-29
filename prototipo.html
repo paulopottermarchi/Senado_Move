@@ -264,10 +264,6 @@ h1{font-family:var(--serif);font-size:clamp(34px,5.4vw,52px);font-weight:500;
 .vt-med{font-size:11.5px;color:var(--tinta2);margin-top:2px}
 .vt-med b{font-weight:600;color:var(--tinta)}
 .vt-num a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--tinta3)}
-/* dados reais: não há fonte de consulta pública ligada — a coluna sai, em vez de
-   afirmar "sem consulta" para votações sobre as quais não sabemos nada */
-.votos.real .vt,.votos.real .cabecalho-col{grid-template-columns:minmax(0,1fr) 122px 106px}
-.votos.real .consulta,.votos.real .cabecalho-col span:nth-child(3){display:none}
 
 @media(max-width:700px){
   .vt,.cabecalho-col,
@@ -464,6 +460,7 @@ table.rank tbody tr:hover td{background:#f8f9fa}
 .consulta{text-align:right;line-height:1.25}
 .consulta b{font-family:var(--serif);font-size:16px;font-weight:600;display:block}
 .consulta small{font-size:10.5px;color:var(--tinta3);display:block;margin-top:1px}
+.consulta small a{color:inherit}
 .consulta .barrinha{display:block;height:3px;background:var(--linha2);border-radius:2px;
                     margin-top:5px;overflow:hidden}
 .consulta .barrinha i{display:block;height:100%;background:#4a7a9f}
@@ -555,6 +552,18 @@ table.rank tbody tr:hover td{background:#f8f9fa}
 .sem-aut{font-size:12px;color:var(--tinta2)}
 .sem-aut a{color:inherit}
 .sem-em{font-size:13px;line-height:1.45;margin-top:2px}
+.not-bloco{margin-top:22px;padding-top:18px;border-top:1px solid var(--linha)}
+.not-bloco h3{font-size:15px;font-weight:600}
+.not-bloco h3 span{font-weight:400;color:var(--tinta3);font-size:12.5px;margin-left:6px}
+.not-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px 22px;margin-top:10px}
+.not-it{padding:10px 0;border-top:1px solid var(--linha2)}
+.not-prop{font-size:11.5px;border:1px solid var(--linha);border-radius:999px;padding:0 7px;text-decoration:none;margin-left:6px}
+.not-tit{display:block;font-weight:500;font-size:14px;line-height:1.35;margin-top:3px;text-decoration:none}
+.not-tit:hover{text-decoration:underline}
+.not-tr{font-size:12.5px;color:var(--tinta2);line-height:1.45;margin-top:3px}
+.not-ass{font-size:11px;color:var(--tinta3);white-space:nowrap}
+.yt-fonte{font-size:11.5px;color:var(--tinta3)}
+.sem-ia{font-size:10.5px;color:var(--tinta3);border:1px solid var(--linha);border-radius:999px;padding:0 6px;white-space:nowrap;cursor:help}
 .sem-and{font-size:12px;color:var(--tinta3);margin-top:2px}
 .sem-mais{font-size:12px;color:var(--tinta3);padding-top:8px}
 .semana-pe{font-size:11.5px;color:var(--tinta3);margin-top:14px;line-height:1.6;max-width:80ch}
@@ -747,6 +756,8 @@ html{scroll-behavior:smooth}
       <a href="#semana">Esta semana</a>
       <a href="#votacoes">Votações</a>
       <a href="leis.html">Leis votadas</a>
+      <a href="blocos.html">Quem vota com quem</a>
+      <a href="obras.html">Obras</a>
       <a href="#regioes">Regiões</a>
       <a href="#sobre">Sobre os dados</a>
     </nav>
@@ -932,11 +943,12 @@ html{scroll-behavior:smooth}
     <div class="cabecalho-col">
       <span>Proposição</span>
       <span>Quem votou a favor</span>
-      <span>Consulta pública <button class="saibamais" data-pop="popConsulta">o que é</button></span>
+      <span>Enquete da Câmara <button class="saibamais" data-pop="popConsulta">o que é</button></span>
       <span>Apoio cruzado <button class="saibamais" data-pop="popCruz">o que é</button></span>
     </div>
     <div id="votosLista"></div>
     <a class="ver-temas ver-leis" href="leis.html">Ver todas as leis votadas, e quem votou diferente do próprio partido</a>
+    <a class="ver-temas ver-leis" href="leis.html?ordem=senado">Ver as leis com mais participação do público, na consulta do Senado e na enquete da Câmara</a>
     <p class="votos-pe" id="votosPe"></p>
   </section>
 
@@ -1015,11 +1027,11 @@ html{scroll-behavior:smooth}
 
 <div class="pop" id="popConsulta" role="dialog" aria-modal="false" aria-labelledby="popConsultaTit">
   <button class="pop-sair" onclick="fecharPop()" aria-label="Fechar">&times;</button>
-  <h4 id="popConsultaTit">O que é consulta pública</h4>
+  <h4 id="popConsultaTit">O que é a enquete da Câmara</h4>
 
-  <p>A Câmara mantém o e-Democracia, um portal onde qualquer pessoa pode opinar sobre projetos
-     em tramitação. O número aqui é a parcela dos participantes que se manifestou a favor da
-     proposta, ao lado de quantas pessoas participaram.</p>
+  <p>Cada proposição tem uma enquete no site da Câmara, com cinco respostas, de "concordo
+     totalmente" a "discordo totalmente". O número aqui é a parcela que concorda, total ou em
+     parte, ao lado de quantas pessoas responderam.</p>
 
   <p><strong style="color:#fff">Isto não é pesquisa de opinião.</strong> Quem participa é quem
      procurou o portal e se cadastrou, não uma amostra do país. Um grupo organizado consegue
@@ -1031,9 +1043,10 @@ html{scroll-behavior:smooth}
      500 participantes aparecem destacadas, como aviso de que a amostra é pequena demais para
      concluir qualquer coisa.</p>
 
-  <p class="fraco">A maioria das proposições nunca é aberta a consulta, então a coluna fica vazia
-     na maior parte das linhas. Isso também não significa desinteresse: significa apenas que
-     aquele projeto não passou pelo portal. Fonte: e-Democracia, Câmara dos Deputados.</p>
+  <p class="fraco">Enquete aberta continua recebendo respostas, inclusive depois da votação. Os
+     percentuais são calculados das contagens que a Câmara publica e podem diferir por
+     arredondamento dos que ela mostra. Fonte: enquetes da Câmara dos Deputados
+     (camara.leg.br/enquetes).</p>
 </div>
 
 <div class="pop" id="popQuoc" role="dialog" aria-modal="false" aria-labelledby="popQuocTit">
@@ -1313,6 +1326,10 @@ async function carregar(){
     try{
       const rl=await fetch('legislaturas.json',{cache:'no-store'});
       if(rl.ok) LEGISLATURAS=await rl.json();
+      const rw=await fetch('wikipedia.json',{cache:'no-store'}).catch(()=>null);
+      if(rw&&rw.ok) WIKI=await rw.json();
+      const ry=await fetch('youtube.json',{cache:'no-store'}).catch(()=>null);
+      if(ry&&ry.ok) YT=await ry.json();
     }catch(e){}
   }catch(e){ deputados=montarDemo(); demo=true; }
 
@@ -1323,6 +1340,17 @@ async function carregar(){
     if(!r.ok) throw 0;
     const ps=await r.json();
     if(!Array.isArray(ps)||!ps.length) throw 0;
+    // enquetes.json (enquetes.py): se faltar, a coluna diz "não consultada", sem inventar
+    let enq={};
+    try{ const re=await fetch('enquetes.json',{cache:'no-store'}); if(re.ok) enq=await re.json(); }catch(e){}
+    const consultaDe=id=>{
+      const e=enq[String(id)];
+      if(!e) return {ausente:'enquete não consultada nesta atualização'};
+      if(e.situacao==='sem enquete') return {ausente:'a Câmara não abriu enquete'};
+      return {participantes:e.total, favoravel:e.total?(e.votos[0]+e.votos[1])/e.total:0,
+              concordam:e.votos[0]+e.votos[1],
+              url:`https://www.camara.leg.br/enquetes/${id}/resultados`, aberta:e.situacao==='aberta'};
+    };
     votacoes=ps.map(p=>({
       numero:p.numero||'', titulo:p.titulo||p.ementa||'', data:p.data||null,
       urlCamara:p.urlCamara||null, tipo:(p.numero||'').split(' ')[0],
@@ -1335,7 +1363,7 @@ async function carregar(){
       excluidos:p.excluidosSemScore||0, excluidosPorPartido:p.excluidosPorPartido||{},
       // quem votou diferente da maioria do próprio partido: [id, nome, partido, uf, voto, coesão]
       divIds:(p.divergentes||[]).map(x=>x[0]),
-      consulta:null}));
+      consulta:consultaDe(p.idProposicao)}));
     votosDemo=false;
     DIV_LEIS=new Map();
     votacoes.forEach(v=>v.divIds.forEach(id=>DIV_LEIS.set(id,(DIV_LEIS.get(id)||0)+1)));
@@ -1368,6 +1396,32 @@ let MEDIANA_DIV=null, DIV_LEIS=new Map();   // id → nº das 164 leis em que di
 const taxaDiv=d=>{const p=d.divergencia&&d.divergencia.partido;
   return p&&p.comparaveis?p.diferentes/p.comparaveis:null;};
 const pct1=x=>(x*100).toFixed(1).replace('.',',')+'%';
+// Canal oficial no YouTube (youtube.py): o número como o YouTube informa, só na ficha de
+// cada um — sem ranking nem soma, pela política da API.
+function ytHTML(d){
+  const y=YT[String(d.id)]; if(!y) return '';
+  const nf=new Intl.NumberFormat('pt-BR');
+  const num=y.inscritos!=null?`<b>${nf.format(y.inscritos)}</b> inscritos no canal oficial no YouTube`
+    : y.oculto?'Canal oficial no YouTube, com o número de inscritos oculto pelo dono':'Canal oficial no YouTube';
+  return `<p class="partic-fr">${num} · <a href="${y.url}" target="_blank" rel="noopener">abrir o canal</a>${
+    y.em?` <span class="yt-fonte">(dados do YouTube, ${y.em.slice(8,10)}/${y.em.slice(5,7)})</span>`:''}</p>`;
+}
+
+// Notoriedade na ficha: leituras na Wikipédia, com o aviso antes de qualquer leitura errada.
+function notoHTML(d){
+  if(demo) return '';
+  const w=WIKI[String(d.id)], nf=new Intl.NumberFormat('pt-BR');
+  if(!w) return `<div class="partic-tit">Notoriedade</div><p class="partic-fr">Sem artigo na Wikipédia ligado a este
+    deputado pelo identificador da Câmara.</p>${ytHTML(d)}`;
+  const pico=w.pico&&w.pico[1]?`, com pico de ${nf.format(w.pico[1])} em ${w.pico[0].slice(8,10)}/${w.pico[0].slice(5,7)}`:'';
+  const url='https://pt.wikipedia.org/wiki/'+encodeURIComponent(w.artigo.replace(/ /g,'_'));
+  return `<div class="partic-tit">Notoriedade</div>
+    <p class="partic-fr">O artigo dele na Wikipédia foi lido <b>${nf.format(w.visitas90)}</b> vezes nos últimos 90 dias${pico}.
+      <a href="${url}" target="_blank" rel="noopener">Ver o artigo</a></p>
+    ${ytHTML(d)}
+    <p class="partic-pe">Mede procura, não aprovação nem trabalho: escândalo também gera leitura.</p>`;
+}
+
 function textoDivergencia(d){
   const t=taxaDiv(d);
   if(t==null) return d.divergencia&&d.divergencia.nota
@@ -1425,6 +1479,8 @@ function textoEleicao(d){
 
 // ---------- filtros de estado e de mandato ----------
 let LEGISLATURAS=[], mandato='';
+// notoriedade: leituras do artigo na Wikipédia (wikipedia.py). Sem o arquivo, a coluna fica em branco.
+let WIKI={}, YT={};
 const LEG_ATUAL=()=>LEGISLATURAS.length?String(LEGISLATURAS[LEGISLATURAS.length-1].id):null;
 const rotuloLeg=id=>{
   const l=LEGISLATURAS.find(x=>String(x.id)===String(id));
@@ -1867,11 +1923,15 @@ function montarVotacoes(){
 
 function celaConsulta(c){
   if(!c) return '<span class="nula">sem consulta</span>';
+  if(c.ausente) return `<span class="nula" title="${c.ausente}">—</span>`;
+  if(!c.participantes) return '<span class="nula">ninguém respondeu</span>';
   const pct=(c.favoravel*100);
   const nf=new Intl.NumberFormat('pt-BR');
   const fraca=c.participantes<500;
-  return `<b class="${fraca?'amostra-fraca':''}">${pct.toFixed(0)}%</b>
-    <small${fraca?' class="amostra-fraca"':''}>${nf.format(c.participantes)} participantes</small>
+  // Abaixo de 100 respostas, contagem ("5 de 6"), não percentual — como em leis.html.
+  const poucas=c.concordam!=null&&c.participantes<100;
+  return `<b class="${fraca?'amostra-fraca':''}">${poucas?`${c.concordam} de ${c.participantes}`:pct.toFixed(0)+'%'}</b>
+    <small${fraca?' class="amostra-fraca"':''}>concordam · ${c.url?`<a href="${c.url}" target="_blank" rel="noopener">${poucas?'ver':nf.format(c.participantes)+' respostas'}</a>`:`${nf.format(c.participantes)} participantes`}${c.aberta?', aberta':''}</small>
     <span class="barrinha"><i style="width:${pct.toFixed(0)}%"></i></span>`;
 }
 
@@ -1945,7 +2005,7 @@ function votosDesenhar(){
     'ainda assim ser rejeitada. '+
     (votosDemo
       ? '<strong>Votações de demonstração</strong>: temas, placares e consultas são fictícios. '+
-        'A consulta pública vem do e-Democracia e mede quem foi ao portal opinar, não a população. '+
+        'A enquete vem do site da Câmara e mede quem foi lá responder, não a população. '+
         '<button class="saibamais" data-pop="popConsulta">por que isso importa</button>'
       : viesDeclarado());
 }
@@ -2008,7 +2068,8 @@ const COLS=[
   {k:'viraramLei',     t:'Viraram lei',     ord:true},
   {k:'taxa',           t:'Conversão',       ord:true},
   {k:'abs',            t:'Abstenções',      ord:true},
-  {k:'div',            t:'Diferente do partido', ord:true}
+  {k:'div',            t:'Diferente do partido', ord:true},
+  {k:'wiki',           t:'Notoriedade', ord:true}
   // Sem coluna de apoio cruzado por deputado: só 15 dos 513 têm amostra (CLAUDE.md).
   // Ele existe por votação, no bloco "Como a Câmara se dividiu".
 ];
@@ -2023,6 +2084,9 @@ const absDe=d=>{
 // Contagem, nunca taxa: sem o período de exercício de cada deputado, dividir por um
 // total transformaria suplente e licenciado em faltoso (CLAUDE.md, "Presença").
 const registrosDe=d=>d.votos?d.votos.chamadas:null;
+// Notoriedade = leituras do artigo na Wikipédia em 90 dias. Sem artigo ligado pelo id da
+// Câmara, fica sem número (nunca zero): não ter artigo não é o mesmo que ninguém procurar.
+const wikiDe=d=>{const w=WIKI[String(d.id)]; return w?w.visitas90:null;};
 // votos em múltiplos do quociente eleitoral do estado — a única forma de comparar
 // um deputado de SP (70 vagas) com um de RR (8 vagas) sem viés de tamanho.
 const quocientesDe=d=>(d.votosRecebidos==null||!d.quocienteUF)?null:d.votosRecebidos/d.quocienteUF;
@@ -2031,6 +2095,7 @@ const valorCol=(d,k)=>
   k==='abs'?absDe(d):
   k==='registros'?registrosDe(d):
   k==='div'?taxaDiv(d):
+  k==='wiki'?wikiDe(d):
   k==='votosRecebidos'?(votoRelativo?quocientesDe(d):d.votosRecebidos):d[k];
 
 function celaVoto(d,nf){
@@ -2086,6 +2151,8 @@ function rankDesenhar(){
       <td class="num">${a==null?'<span class="sem">—</span>':(a*100).toFixed(1)+'%'}</td>
       <td class="num">${taxaDiv(d)==null?`<span class="sem" title="${(d.divergencia&&d.divergencia.nota)||''}">—</span>`
         :pct1(taxaDiv(d))}</td>
+      <td class="num">${wikiDe(d)==null?'<span class="sem" title="Sem artigo na Wikipédia ligado pelo identificador da Câmara">—</span>'
+        :`${nf.format(wikiDe(d))}<em>leituras</em>`}</td>
     </tr>`;
   }).join('');
 
@@ -2116,6 +2183,10 @@ function rankDesenhar(){
     'em que o deputado votou ao contrário dos colegas do próprio partido naquele dia, contando só '+
     'quando o partido votou unido (70% ou mais no mesmo lado); abstenção e obstrução não contam, e '+
     'partido com menos de seis deputados votando não tem maioria para comparar. '+
+    'Notoriedade: quantas vezes o artigo do deputado na Wikipédia em português foi lido nos últimos 90 dias, '+
+    'por leitores humanos, somando os redirecionamentos. Mede procura, não aprovação nem trabalho: escândalo '+
+    'também gera leitura. O artigo é ligado ao deputado só pelo identificador da Câmara (no Wikidata ou num '+
+    `link do próprio artigo), nunca pelo nome; ${deputados.filter(d=>wikiDe(d)==null).length} deputados ficam sem número. `+
     (demo ? '<strong>Votação e votos registrados são números de demonstração.</strong>'
           : 'Votação: resultado oficial do TSE na eleição de 2022; quociente eleitoral pela regra '+
             'do Código Eleitoral (votos válidos do estado ÷ vagas, art. 106). O voto é ligado ao '+
@@ -2229,7 +2300,7 @@ function abrir(d){
 
   const box=document.getElementById('fPartic');
   if(!d.votos||!d.votos.chamadas){
-    box.innerHTML='';
+    box.innerHTML=notoHTML(d);
   }else{
     const v=d.votos, part=v.sim+v.nao+v.abstencao;
     const outros=v.chamadas-part;           // obstrução ou presidindo a sessão (Art. 17)
@@ -2255,7 +2326,7 @@ function abrir(d){
       </div>
       <p class="partic-pe">Quem não aparece no registro de uma votação pode ter faltado, estar em
          missão oficial ou em licença. O dado aberto não distingue esses casos, então o site conta
-         apenas as votações em que o voto foi registrado, e não atribui faltas a ninguém.</p>`;
+         apenas as votações em que o voto foi registrado, e não atribui faltas a ninguém.</p>`+notoHTML(d);
   }
 
   const props=d.topLeis||[];
@@ -2341,7 +2412,8 @@ function semItem(x,linhaExtra){
     <div class="sem-l1"><a href="https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${x.id}"
       target="_blank" rel="noopener">${x.t} ${x.n}/${x.a}</a><span>${dataCurta(x.data)}</span></div>
     ${aut.length?`<div class="sem-aut">${aut.slice(0,3).join(', ')}${aut.length>3?` e mais ${aut.length-3}`:''}</div>`:''}
-    <div class="sem-em">${escS(corta(x.e||'Sem ementa no registro da Câmara.',150))}</div>
+    ${x.r?`<div class="sem-em" title="Resumo gerado por IA a partir do texto integral; pode conter erros. Ementa oficial: ${escS(x.e||'')}">${escS(corta(x.r,240))} <span class="sem-ia">resumo por IA</span></div>`
+         :`<div class="sem-em">${escS(corta(x.e||'Sem ementa no registro da Câmara.',150))}</div>`}
     ${semCategorias(x)}
     ${linhaExtra?`<div class="sem-and">${linhaExtra}</div>`:''}
   </div>`;
@@ -2389,8 +2461,27 @@ function semPauta(p){
         :'<div class="sem-and">Pauta ainda não publicada.</div>'}</div>`;
   }).join('');
 }
+// Notícias da Agência Câmara sobre PEC e PL (noticias.py). A assinatura exigida no rodapé
+// de cada notícia vai junto de cada trecho reproduzido; sem regra confirmada, só título e link.
+function blocoNoticias(n){
+  if(!n||!n.itens||!n.itens.length) return '';
+  const it=n.itens.map((x,i)=>`<div class="not-it"${i>=4?' data-extra hidden':''}>
+      <div class="sem-l1"><span>${dataCurta(x.d)}</span>${x.p.map(([id,rot])=>
+        `<a class="not-prop" href="https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${id}" target="_blank" rel="noopener">${escS(rot)}</a>`).join(' ')}</div>
+      <a class="not-tit" href="${x.u}" target="_blank" rel="noopener">${escS(x.t)}</a>
+      ${x.trecho?`<p class="not-tr">${escS(x.trecho)} <span class="not-ass">${escS(x.assinatura)}</span></p>`:''}
+    </div>`).join('');
+  const ocultos=Math.max(0,n.itens.length-4);
+  return `<div class="not-bloco"><h3>Notícias sobre PEC e PL <span>Agência Câmara</span></h3>
+    <div class="not-lista">${it}</div>
+    ${ocultos?`<button class="sem-mais-btn" type="button" onclick="semExpandir(this)">Mostrar mais ${ocultos}</button>`:''}
+    <p class="semana-pe">Notícias da Agência Câmara de Notícias, pelos feeds RSS da Câmara, ligadas à proposição pelo
+      link da própria notícia para a ficha. ${escS(n._regra||'')} Só o texto: as fotos têm crédito próprio.</p></div>`;
+}
+
 async function carregarSemana(){
-  let s;
+  let s, noticias=null;
+  try{ const rn=await fetch('noticias.json',{cache:'no-store'}); if(rn.ok) noticias=await rn.json(); }catch(e){}
   try{
     const r=await fetch('semana.json',{cache:'no-store'});
     if(!r.ok) return;
@@ -2413,6 +2504,7 @@ async function carregarSemana(){
         ${temas?`<p class="sem-obs">Temas mais frequentes: ${escS(temas)}.</p>`:''}
         ${semLista(s.novas,null)}</div>
     </div>
+    ${blocoNoticias(noticias)}
     <p class="semana-pe">${escS(s.universo)} Datas oficiais da Câmara: apresentação e último andamento
       registrado. Uma proposição que andou mais de uma vez na semana aparece com o andamento mais recente.
       Categorias pela classificação deste site, a partir da ementa oficial (ou da indexação da Câmara,
