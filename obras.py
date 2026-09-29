@@ -53,6 +53,7 @@ import os
 import re
 import sys
 import time
+import unicodedata
 import zipfile
 import zlib
 from collections import Counter, defaultdict
@@ -244,8 +245,20 @@ def codigo_emenda(v):
 _ID_LINK = re.compile(r"contratos\.comprasnet\.gov\.br/transparencia/contratos/(\d+)$")
 
 
+def sem_cpf(lista):
+    """Responsáveis do contrato só com função, nome, portaria e datas. O campo "usuario" vem como
+    "***.490.498-** - NOME": o pedaço do CPF, mesmo mascarado, não é gravado nem no cache."""
+    saida = []
+    for x in lista or []:
+        nome = (x.get("usuario") or "").split(" - ", 1)[-1].strip()
+        saida.append({"funcao": x.get("funcao_id"), "nome": None if re.search(r"\d", nome) else nome,
+                      "portaria": x.get("portaria"), "de": x.get("data_inicio"), "ate": x.get("data_fim"),
+                      "situacao": x.get("situacao")})
+    return saida
+
+
 def contrato(cid, atualizar):
-    """Registro, histórico, empenhos e publicações no DOU de um contrato (cache de 7 dias)."""
+    """Registro, histórico, empenhos, publicações no DOU e responsáveis de um contrato (cache)."""
     caminho = CACHE_O / "contratos" / f"{cid}.json"
     c = fresco(caminho, atualizar)
     if c is None:
@@ -256,8 +269,105 @@ def contrato(cid, atualizar):
              "historico": pedir(f"{CT}/contrato/{cid}/historico", intervalo=0.5) or [],
              "empenhos": pedir(f"{CT}/contrato/{cid}/empenhos", intervalo=0.5) or [],
              "publicacoes": pedir(f"{CT}/contrato/{cid}/publicacoes", intervalo=0.5) or []}
+    if "responsaveis" not in c:   # cache anterior a 29/9/2026: só esta parte é pedida
+        c["responsaveis"] = sem_cpf(pedir(f"{CT}/contrato/{cid}/responsaveis", intervalo=0.5))
+        coleta.gravar_cache(caminho, c)
+    elif not caminho.exists():
         coleta.gravar_cache(caminho, c)
     return c
+
+
+# ---------------------------------------------------------------- natureza de cada termo
+
+def _maiusculo(t):
+    return unicodedata.normalize("NFKD", t or "").encode("ascii", "ignore").decode().upper()
+
+
+# Natureza pelo TEXTO do próprio termo (o que ele diz e a fundamentação que cita), nunca pelo campo
+# "qualificação" do sistema, que o gestor preenche. Medido no contrato 36154/2022 do IFSP (Reitoria):
+# o sistema marca "reajuste" em dois aditivos de acréscimo de itens (art. 65, I, "a") e num de
+# reequilíbrio (art. 65, II, "d"); só os dois apostilamentos são reajuste (INCC).
+NATUREZAS = [
+    ("acréscimo", re.compile(r"ACRESC")),
+    ("supressão", re.compile(r"SUPRESS|SUPRIM")),
+    ("reequilíbrio", re.compile(r"REEQUILIBRIO|RECOMPOSICAO|EQUILIBRIO ECONOMICO")),
+    ("reajuste", re.compile(r"REAJUST|REPACTUA|\bINCC\b|\bIPCA\b")),
+    ("prazo", re.compile(r"PRORROG|VIGENCIA|PRAZO")),
+]
+DE_VALOR = ("acréscimo", "supressão", "reequilíbrio", "reajuste")
+_REAIS = re.compile(r"R\$\s*(-?\s*[\d.]+,\d{2})")
+_PCT = re.compile(r"(\d{1,3}(?:,\d+)?)\s*%")
+
+
+def natureza(texto):
+    t = _maiusculo(texto)
+    return [n for n, rx in NATUREZAS if rx.search(t)]
+
+
+def natureza_de_valor(nat, delta):
+    """A natureza a que a variação do termo é atribuída, ou None. Acréscimo e supressão no mesmo
+    termo são uma alteração quantitativa só (o saldo). Texto que só fala de prazo com o valor mudando
+    é prorrogação — em serviço contínuo (manutenção de rodovia), prorrogar acrescenta o novo período."""
+    dv = [n for n in nat if n in DE_VALOR]
+    if "acréscimo" in dv and "supressão" in dv:
+        dv = [n for n in dv if n not in ("acréscimo", "supressão")] + ["acréscimo/supressão"]
+    if not dv and "prazo" in nat and delta:
+        dv = ["prorrogação"]
+    return dv[0] if len(dv) == 1 else None
+
+
+def confere(delta, valor, anterior, texto):
+    """O valor que o texto do termo declara bate com a variação registrada? True / False / None.
+    True: um R$ igual à variação ou ao novo total, ou um percentual que, aplicado ao valor anterior,
+    dá a variação (tolerância de 1% ou R$ 1). False: SÓ quando o texto traz valor em R$ e nenhum bate —
+    é o caso do valor registrado no termo seguinte. Percentual que não bate não contradiz (a base pode
+    ser o saldo a executar, o valor inicial atualizado…): None."""
+    t = _maiusculo(texto)
+    reais = [num(x.replace(" ", "")) for x in _REAIS.findall(t)]
+    pcts = [float(p.replace(",", ".")) for p in _PCT.findall(t)]
+    perto = lambda a, b: abs(abs(a) - abs(b)) <= max(1.0, 0.01 * abs(b))
+    if any(perto(v, delta) or (valor and perto(v, valor)) for v in reais):
+        return True
+    if anterior and any(perto(anterior * p / 100, delta) for p in pcts):
+        return True
+    return False if reais else None
+
+
+# ---------------------------------------------------------------- CGU: sanções (CEIS e CNEP)
+
+SANCOES = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/{c}/{d}_{C}.zip"
+
+
+def sancoes(cnpjs):
+    """({cnpj: [[cadastro, categoria, início, fim, órgão sancionador, processo]]}, data do arquivo).
+    Cadastros da CGU do dia mais recente publicado (tenta 7 dias). Só pessoa jurídica com CNPJ igual
+    ao de uma contratada; as linhas de pessoa física (CPF) não são guardadas. Os cadastros listam
+    sanções VIGENTES: sanção já encerrada não aparece, então "vigente na data da assinatura" não é
+    verificável por aqui."""
+    hoje = datetime.now(BRASILIA).date()
+    for k in range(7):
+        d = f"{hoje - timedelta(days=k):%Y%m%d}"
+        achou, saida = False, defaultdict(list)
+        for cad in ("ceis", "cnep"):
+            try:
+                r = sessao.get(SANCOES.format(c=cad, d=d, C=cad.upper()), timeout=180)
+            except requests.RequestException:
+                break
+            if r.status_code != 200:
+                break
+            with zipfile.ZipFile(io.BytesIO(r.content)) as z, z.open(z.namelist()[0]) as f:
+                rd = csv.DictReader(io.TextIOWrapper(f, encoding="latin-1"), delimiter=";")
+                if "CPF OU CNPJ DO SANCIONADO" not in (rd.fieldnames or []):
+                    raise LeiauteMudou(f"CGU {cad}: colunas mudaram ({rd.fieldnames})")
+                for x in rd:
+                    doc = so_digitos(x["CPF OU CNPJ DO SANCIONADO"])
+                    if x.get("TIPO DE PESSOA") == "J" and doc in cnpjs:
+                        saida[doc].append([cad.upper(), x["CATEGORIA DA SANÇÃO"], x["DATA INÍCIO SANÇÃO"],
+                                           x["DATA FINAL SANÇÃO"], x["ÓRGÃO SANCIONADOR"], x["NÚMERO DO PROCESSO"]])
+            achou = cad == "cnep"
+        if achou:
+            return dict(saida), f"{d[:4]}-{d[4:6]}-{d[6:]}"
+    return None, None
 
 
 def montar_contrato(cid, og, c):
@@ -280,22 +390,42 @@ def montar_contrato(cid, og, c):
             dou[p.get("contratohistorico_id")].append([p.get("data_publicacao"), p["link_publicacao"]])
 
     termos, anterior = [], None
+    composicao = defaultdict(float)
     for h in sorted(c["historico"], key=lambda x: x["id"]):     # ordem de registro no sistema
         v = num(h.get("valor_global"))
         registrado = v if v > 0 else None       # encerramento e rescisão vêm com 0: não é valor
         delta = round(registrado - anterior, 2) if registrado is not None and anterior is not None else None
+        texto = " ".join(filter(None, [h.get("observacao"), h.get("objeto") if h.get("tipo") != "Contrato" else None]))
+        nat = natureza(texto) if h.get("tipo") not in ("Contrato", "Empenho") else []
+        bate = confere(delta, registrado, anterior, texto) if delta else None
         if registrado is not None:
             anterior = registrado
         termos.append({
             "id": h["id"], "data": h.get("data_assinatura"), "tipo": h.get("tipo"),
             "numero": h.get("numero"),
-            "qual": [q["descricao"] for q in h.get("qualificacao_termo") or []],
+            "nat": nat,                                                   # pelo texto do termo
+            "qual": [q["descricao"] for q in h.get("qualificacao_termo") or []],   # campo do sistema
             "valor": registrado, "delta": delta if delta else None,
+            "confere": bate,
             "texto": curto(h.get("observacao")),
             "dou": (dou.get(h["id"]) or [None])[0],
         })
     valores = [t["valor"] for t in termos if t["valor"] is not None]
     fecha = bool(valores) and abs(valores[0] - inicial) < 1 and abs(valores[-1] - atual) < 1
+    # Decomposição por natureza SÓ quando a sequência de valores fecha com o registro nas duas pontas:
+    # em contrato antigo, migrado para o sistema, o valor gravado no histórico não é o total (medido:
+    # "Contrato" com R$ 6,47 bi para um registro de R$ 139 mi). A variação conta para uma natureza se
+    # o termo tem UMA natureza de valor e o texto não contradiz o valor (valor registrado no termo
+    # seguinte → o texto fala de outro montante → "sem natureza conferida").
+    for t in termos:
+        nv = natureza_de_valor(t["nat"], t["delta"]) if fecha and t["delta"] else None
+        t["atribuido"] = nv if nv and t["confere"] is not False else None
+        if t["atribuido"]:
+            composicao[t["atribuido"]] += t["delta"]
+    conta = Counter(n for t in termos for n in t["nat"])
+    # Gestor por nome (quem responde pelo contrato); fiscais e demais só pela função e portaria.
+    responsaveis = [{**r, "nome": r["nome"] if (r["funcao"] or "").startswith("Gestor") else None}
+                    for r in c.get("responsaveis") or []]
 
     pago = sum(num(e.get("pago")) + num(e.get("rppago")) for e in c["empenhos"])
     return {
@@ -313,10 +443,10 @@ def montar_contrato(cid, og, c):
         "inicial": round(inicial, 2), "atual": round(atual, 2),
         "pago": round(pago, 2), "empenhos": len(c["empenhos"]),
         "termos": termos, "fecha": fecha,
-        "reajustes": sum(1 for t in termos if "REAJUSTE" in t["qual"] or
-                         (t["tipo"] == "Termo de Apostilamento" and "REAJUST" in (t["texto"] or "").upper())),
-        "acrescimos": sum(1 for t in termos if "ACRÉSCIMO / SUPRESSÃO" in t["qual"]),
-        "prazos": sum(1 for t in termos if "VIGÊNCIA" in t["qual"]),
+        "naturezas": {n: conta[n] for n, _ in NATUREZAS if conta[n]},       # nº de termos, pelo texto
+        "composicao": {n: round(v, 2) for n, v in composicao.items()},      # R$ por natureza, conferido
+        "semNatureza": round(atual - inicial - sum(composicao.values()), 2),
+        "responsaveis": responsaveis,
         "url": f"https://contratos.comprasnet.gov.br/transparencia/contratos/{cid}",
     }, None
 
@@ -449,6 +579,14 @@ def main():
             "pago": round(sum(c["pago"] for c in contratos), 2),
         })
 
+    # Sanções vigentes das contratadas (CEIS e CNEP), pelo CNPJ. Falha de rede não para a rodada:
+    # sem o arquivo, o site diz "não consultado", nunca "sem sanção".
+    cnpjs = {so_digitos(c["fornecedor"][1]) for o in saida for c in o["contratos"]}
+    sanc, sanc_data = sancoes(cnpjs)
+    for o in saida:
+        for c in o["contratos"]:
+            c["sancoes"] = None if sanc is None else sanc.get(so_digitos(c["fornecedor"][1]), [])
+
     # Sanidade (aborta sem gravar): a ligação conferida tem de valer para quase todos.
     total_lig = sum(len(v) for v in por_obra.values())
     if sum(fora.values()) > 0.05 * total_lig:
@@ -461,6 +599,7 @@ def main():
         "_uf": uf,
         "_obrasgovAtualizado": atualizado,
         # data do arquivo da CGU (Last-Modified), em ISO
+        "_sancoes": sanc_data,   # data do arquivo CEIS/CNEP da CGU; None = não consultado
         "_emendasCgu": parsedate_to_datetime(emendas["_versao"]).date().isoformat() if emendas.get("_versao") else None,
         "_geradoEm": datetime.now(BRASILIA).isoformat(timespec="minutes"),
         "_cobertura": {"obrasNaUf": len(obras), "obrasComContrato": len(saida),
@@ -503,6 +642,20 @@ def main():
           f"p90 {q(.9):.1f}% · máx {pct[-1]:.1f}% · sem variação {sum(1 for p in pct if abs(p) < .01)}")
     print(f"Histórico que fecha com o registro: {sum(c['fecha'] for c in cont)} de {len(cont)}")
     print(f"Contratos ligados a mais de uma obra: {sum(1 for c in cont if c['outrasObras'])}")
+    comp = Counter()
+    for c in cont:
+        comp.update(c["composicao"])
+    cresc_total = sum(c["atual"] - c["inicial"] for c in cont)
+    print("Natureza do aumento, pelo texto dos termos (R$ mi): " +
+          " · ".join(f"{n} {v / 1e6:.1f}" for n, v in comp.most_common()) +
+          f" · sem natureza conferida {(cresc_total - sum(comp.values())) / 1e6:.1f} (de {cresc_total / 1e6:.1f})")
+    diverge = sum(1 for c in cont for t in c["termos"]
+                  if "REAJUSTE" in t["qual"] and t["nat"] and "reajuste" not in t["nat"])
+    print(f"Termos que o sistema chama de reajuste e o texto não: {diverge}")
+    print(f"Contratos com responsáveis cadastrados: {sum(1 for c in cont if c['responsaveis'])} de {len(cont)} · "
+          f"com gestor: {sum(1 for c in cont if any((r['funcao'] or '').startswith('Gestor') for r in c['responsaveis']))}")
+    print(f"Sanções vigentes (CGU, {sanc_data}): " + ("não consultado" if sanc is None else
+          f"{sum(1 for v in sanc.values() if v)} contratadas de {len(cnpjs)}"))
     print(f"Emendas nos empenhos das obras: {dict(cont_emendas) or 'nenhuma'}")
     cresc = lambda x: x["atual"] > x["inicial"] + 0.5
     print(f"Deputados com emenda em obra acompanhada: {len(por_dep)} · em obra cujo contrato cresceu: "
