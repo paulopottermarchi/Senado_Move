@@ -82,6 +82,8 @@ h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,46px);font-weight:500;lin
 .lei-res{font-size:13px;color:var(--tinta2)}
 .lei-res b{color:var(--tinta);font-weight:600}
 .ementa{font-family:var(--serif);font-size:18px;line-height:1.45;margin-top:8px;max-width:72ch}
+.tempo-lei{font-size:12.5px;color:var(--tinta2);margin-top:6px;max-width:74ch}
+.tempo-lei .caminho{display:block;color:var(--tinta3)}
 .oficial{margin-top:6px;max-width:72ch}
 .oficial summary{cursor:pointer;font-size:12px;color:var(--tinta3);line-height:1.5}
 .oficial summary b{font-weight:500;color:var(--tinta2);text-decoration:underline;text-underline-offset:2px}
@@ -247,6 +249,7 @@ a.pessoa:hover{border-color:#c9ccd1}
         <option value="enquete">Mais respostas na enquete da Câmara</option>
         <option value="senado">Mais votos na consulta do Senado</option>
         <option value="div">Mais votos diferentes do partido</option>
+        <option value="tempo">Mais tempo da apresentação à votação</option>
       </select></label>
       <label class="chk"><input type="checkbox" id="fSoDiv"> Só leis com voto diferente do partido</label>
       <button class="limpar" id="limpar" hidden>Limpar filtros</button>
@@ -390,11 +393,14 @@ function filtradas(){
     &&(!f.soDiv||l.div.length)
     &&(!dep||dep<0||l.div.some(p=>p.id===dep)));
   const part=l=>l.enq&&l.enq.total!=null?l.enq.total:-1;  // sem enquete vai para o fim
+  // dias da apresentação à votação desta página; sem histórico baixado vai para o fim
+  const espera=l=>l.tramitacao&&l.tramitacao.et&&l.tramitacao.et.length?dias(l.tramitacao.et[0][1],l.data):-1;
   const partSF=l=>l.sf&&l.sf.sim!=null?l.sf.sim+l.sf.nao:-1;
   const k={data:(a,b)=>b.data.localeCompare(a.data), margem:(a,b)=>a.margem-b.margem,
            div:(a,b)=>b.div.length-a.div.length, nominais:(a,b)=>b.nom.length-a.nom.length,
            enquete:(a,b)=>part(b)-part(a), senado:(a,b)=>partSF(b)-partSF(a),
-           noto:(a,b)=>(b.noto?b.noto.pct:-1)-(a.noto?a.noto.pct:-1)};
+           noto:(a,b)=>(b.noto?b.noto.pct:-1)-(a.noto?a.noto.pct:-1),
+           tempo:(a,b)=>espera(b)-espera(a)};
   return [...L].sort((a,b)=>k[ordem](a,b)||b.data.localeCompare(a.data));
 }
 
@@ -527,6 +533,32 @@ function textoLei(l){
       <p>${ementa}</p><a href="${esc(l.urlCamara)}" target="_blank" rel="noopener">Ficha e texto integral na Câmara</a></details>`;
 }
 
+// Quanto tempo e por onde passou (tramitacoes.py → "tramitacao"): da apresentação à votação
+// desta página e, se for o caso, à lei. Datas do registro da Câmara.
+const HOJE=new Date().toISOString().slice(0,10);
+const dias=(a,b)=>Math.round((Date.parse(b)-Date.parse(a))/864e5);
+function duracao(n){
+  if(n<1) return 'no mesmo dia';
+  if(n<31) return `${n} dia${n>1?'s':''}`;
+  const m=Math.round(n/30.44); if(m<12) return `${m} ${m>1?'meses':'mês'}`;
+  const a=Math.floor(m/12), r=m%12;
+  return `${a} ano${a>1?'s':''}${r?` e ${r} ${r>1?'meses':'mês'}`:''}`;
+}
+const ROTULO={APRESENTADA:'aguardando distribuição',PLEN:'Plenário',SENADO:'Senado','SANÇÃO':'sanção','PROMULGAÇÃO':'promulgação'};
+// comissão especial: a Câmara grava a sigla da proposição (PEC22804 = PEC 228/04, PL021903 = PL 219/03)
+const especial=s=>{const m=/^(PEC|PLP|PDL|MPV|PL)0*(\d+)(\d{2})$/.exec(s); return m?`comissão especial (${m[1]} ${m[2]}/${m[3]})`:null};
+function tempoLei(l){
+  const tr=l.tramitacao; if(!tr||!tr.et||!tr.et.length) return '';
+  const ini=tr.et[0][1], fim=tr.lei||HOJE;
+  const partes=[`Apresentada em ${dataBR(ini)}; votada nesta página ${duracao(dias(ini,l.data))} depois`];
+  if(tr.lei) partes.push(`virou lei em ${dataBR(tr.lei)}, ${duracao(dias(ini,tr.lei))} depois de apresentada`);
+  const et=tr.et.filter(x=>x[0]!=='LEI');
+  const cam=et.length>1?`<span class="caminho">Caminho: ${et.map((x,i)=>`${esc(ROTULO[x[0]]||especial(x[0])||x[0])} ${duracao(dias(x[1],(et[i+1]&&et[i+1][1])||fim))}`).join(' → ')}${tr.lei?' → lei':''}</span>`:'';
+  const ap=(tr.per||[]).filter(x=>x[0]==='apensada').map(x=>`apensada ao ${esc(x[3])} de ${dataBR(x[1])} a ${x[2]?dataBR(x[2]):'hoje'}`);
+  if(ap.length) partes.push(`esteve ${ap.join(' e ')}`);
+  return `<p class="tempo-lei">${partes.join('; ')}.${cam}</p>`;
+}
+
 function noticiasLei(l){
   const ns=NOTICIAS[l.idProposicao]; if(!ns) return '';
   return `<div class="nots"><span class="nots-rot">Na Agência Câmara</span>${ns.slice(0,3).map(x=>
@@ -542,7 +574,7 @@ function cartao(l,dep){
   return `<article class="lei">
     <div class="lei-cab"><span class="lei-num"><a href="${esc(l.urlCamara)}" target="_blank" rel="noopener">${esc(l.numero)}</a> · votada em ${dataBR(l.data)}</span>
       <span class="lei-res"><b>${nf.format(l.sim)}</b> a favor, <b>${nf.format(l.nao)}</b> contra${res?` — ${res}`:''}</span></div>
-    ${textoLei(l)}${cats}${noticiasLei(l)}
+    ${textoLei(l)}${cats}${tempoLei(l)}${noticiasLei(l)}
     <div class="corpo-lei"><div><p class="placar">Diferença de <b>${nf.format(l.margem)}</b> votos${l.abstencao?`, ${l.abstencao} abstenções`:''}.</p>${med}</div>
       <div>${barraAdesao(l.adesaoPorFaixa)}</div></div>
     ${faixaNotoriedade(l)}

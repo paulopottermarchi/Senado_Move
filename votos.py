@@ -32,6 +32,16 @@ from datetime import datetime
 import coleta  # a allowlist, o status e as faixas são os da Etapa A — nunca duplicar
 from temas import CATEGORIAS, CURTO, classificar  # a mesma classificação da página por tema
 import resumos  # passo 8: resumo do inteiro teor, gerado por resumos.py
+import tramitacoes  # etapas da tramitação; tramitacoes.py baixa, aqui só se lê o cache
+
+
+def _etapas(id_prop, titulo):
+    """Etapas do histórico no cache; números do título ("PL 5809/2025 (Nº Anterior: PL 347/2003)")."""
+    ev = coleta.ler_cache(tramitacoes.CACHE_T / f"{int(id_prop)}.json")
+    if not ev:
+        return None
+    r = tramitacoes.etapas(ev, tramitacoes.numeros_do_titulo(titulo))   # atual e anterior, se renumerada
+    return {k: v for k, v in r.items() if v}
 
 ANOS = range(2023, 2027)  # legislatura atual
 BULK = coleta.CACHE / "bulk"
@@ -407,6 +417,8 @@ def main():
             "numero": (p or {}).get("proposicao_titulo"),
             "titulo": coleta.titulo_curto(ementa),
             "resumo": resumo_de.get(int(id_prop)),  # passo 8: resumos.py (IA, do inteiro teor)
+            # quanto tempo e por onde passou (tramitacoes.py; só se o histórico já estiver no cache)
+            "tramitacao": _etapas(id_prop, (p or {}).get("proposicao_titulo")),
             "ementa": ementa,
             "data": v["data"],
             "autorId": autor_id,
