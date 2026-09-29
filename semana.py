@@ -28,6 +28,7 @@ from datetime import date, datetime, timedelta, timezone
 
 from coleta import BASE, CACHE, TIPOS, e_autor, ler_cache, virou_lei
 from temas import CATEGORIAS, CURTO, classificar
+import resumos
 
 SAIDA = BASE / "semana.json"
 PAUTA = CACHE / "pauta.json"
@@ -70,12 +71,16 @@ def main():
         d = publicado.get(i, {})
         return {"id": i, "nome": d.get("nome"), "partido": d.get("partido"), "uf": d.get("uf")}
 
+    resumo_de = resumos.carregar()
+
     def item(p, det, autores, data):
         st = det.get("statusProposicao") or {}
         ementa = (det.get("ementa") or p.get("ementa") or "").strip()
         return {
             "id": p["id"], "t": p["siglaTipo"], "n": p["numero"], "a": p["ano"],
             "e": ementa,
+            # passo 8: resumo do inteiro teor (resumos.py), quando existe
+            **({"r": resumo_de[p["id"]]} if p["id"] in resumo_de else {}),
             # Categorias pela classificação do site (temas.classificar, a mesma da página
             # do deputado), cada uma com o termo que a disparou e a origem: "e" ementa,
             # "k" indexação. Lista vazia = sem categoria, e a página diz isso.

@@ -60,6 +60,59 @@ jobs:
       - name: Votos (arquivos em lote do ano corrente)
         run: python votos.py --atualizar
 
+      # Quem vota com quem: blocos por semelhança de voto e orientação do Governo, dos mesmos
+      # arquivos em lote (só rebaixa as orientações do ano corrente). Sem API.
+      - name: Blocos de voto
+        run: python blocos.py --atualizar
+
+      # Notoriedade na Câmara de cada lei votada: apensados, votações nominais, placar,
+      # urgência e assinaturas de PEC (índice com componentes sempre visíveis). API, com cache.
+      - name: Notoriedade das leis
+        run: python notoriedade.py || echo "::warning::notoriedade.py falhou; notoriedade.json ficou como estava"
+
+      # Notoriedade dos deputados: leituras do artigo na Wikipédia (90 dias). Liga deputado →
+      # artigo só por identificador; religa quando entra deputado novo.
+      - name: Notoriedade dos deputados (Wikipédia)
+        run: python wikipedia.py || echo "::warning::wikipedia.py falhou; wikipedia.json ficou como estava"
+
+      # Notícias da Agência Câmara sobre PEC e PL (RSS), ligadas pelo link da notícia para a
+      # ficha. Confere a regra de reprodução no rodapé de cada notícia.
+      - name: Notícias da Agência Câmara
+        run: python noticias.py || echo "::warning::noticias.py falhou; noticias.json ficou como estava"
+
+      # Canal oficial de cada deputado no YouTube: inscritos como o YouTube informa (sem
+      # ranking nem soma). Com o segredo YOUTUBE_API_KEY; sem ele, só os links.
+      - name: Canais oficiais no YouTube
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python youtube.py || echo "::warning::youtube.py falhou; youtube.json ficou como estava"
+
+      # Enquete de cada lei votada, na página de resultado do site da Câmara (não há API).
+      # Só as abertas e as novas são consultadas de novo. Falha de rede não para a rodada;
+      # página em formato inesperado sai com erro e o enquetes.json do dia anterior fica.
+      - name: Enquetes da Câmara
+        run: python enquetes.py || echo "::warning::enquetes.py falhou; enquetes.json ficou como estava"
+
+      # Consulta pública do Senado (e-Cidadania), ligada pelo número único Câmara–Senado e
+      # confirmada nos Dados Abertos do Senado. Mesma regra: falha não para a rodada.
+      - name: Consulta pública do Senado
+        run: python ecidadania.py || echo "::warning::ecidadania.py falhou; ecidadania.json ficou como estava"
+
+      # Passo 8: resumo de cada PL e PEC a partir do texto integral, por IA, em lote.
+      # Só gera com o segredo ANTHROPIC_API_KEY cadastrado no repositório; sem ele, apenas
+      # aplica os resumos já existentes. Espera até 60 min; o que não terminar é coletado
+      # na rodada seguinte (nunca reenviado). Falha não para a rodada.
+      - name: Resumos (IA, a partir do inteiro teor)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python resumos.py --esperar 60 || echo "::warning::resumos.py falhou; resumos.json ficou como estava"
+
+      # Obras com contrato federal (ObrasGov + Contratos.gov.br + emendas da CGU), só SP por ora.
+      # APIs públicas sem chave, uma requisição por segundo; contratos relidos a cada 7 dias.
+      # Falha não para a rodada: obras.json fica como estava.
+      - name: Obras e contratos
+        run: python obras.py || echo "::warning::obras.py falhou; obras.json ficou como estava"
+
       - name: Temas e frase-resumo
         run: python temas.py
 
@@ -81,14 +134,24 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           git add deputados.json proposicoes.json semana.json legislaturas.json temas
+          # gerados por passos que podem falhar sem parar a rodada: só entram se existirem
+          for f in blocos.json notoriedade.json wikipedia.json noticias.json youtube.json enquetes.json \
+                   ecidadania.json obras.json obras_deputados.json resumos.json resumos_lotes.json; do
+            if [ -e "$f" ]; then git add "$f"; fi
+          done
           git diff --cached --quiet || git commit -m "Dados de $(date +%F)"
           git push
 
       - name: Montar o site
         run: |
           mkdir -p _site
-          cp index.html prototipo.html deputado.html deputados.json proposicoes.json \
+          cp index.html prototipo.html deputado.html leis.html blocos.html obras.html deputados.json proposicoes.json \
              semana.json legislaturas.json LICENSE .nojekyll _site/
+          # opcionais: a página que lê cada um trata a ausência (cai no "sem dado")
+          for f in blocos.json notoriedade.json wikipedia.json noticias.json youtube.json enquetes.json \
+                   ecidadania.json obras.json obras_deputados.json; do
+            if [ -e "$f" ]; then cp "$f" _site/; fi
+          done
           cp -r temas _site/
 
       - uses: actions/upload-pages-artifact@v3
