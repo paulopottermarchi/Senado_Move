@@ -203,6 +203,7 @@ a{color:var(--link)}
     <a class="marca" href="prototipo.html">Câmara Aberta</a>
     <nav class="nav" aria-label="Seções do site">
       <a href="prototipo.html#deputados">Deputados</a>
+      <a href="senadores.html">Senadores</a>
       <a href="prototipo.html#semana">Esta semana</a>
       <a href="prototipo.html#votacoes">Votações</a>
       <a href="leis.html">Leis votadas</a>
@@ -538,10 +539,12 @@ function duracao(n){
   const a=Math.floor(m/12), r=m%12;
   return `${a} ano${a>1?'s':''}${r?` e ${r} ${r>1?'meses':'mês'}`:''}`;
 }
-const ROTULO={APRESENTADA:'aguardando distribuição',PLEN:'Plenário',SENADO:'Senado','SANÇÃO':'sanção','PROMULGAÇÃO':'promulgação'};
+const ROTULO={APRESENTADA:'aguardando distribuição',DESPACHO:'aguardando despacho',PLEN:'Plenário',SENADO:'Senado','SANÇÃO':'sanção','PROMULGAÇÃO':'promulgação'};
+// "APENSADA:PL 5/1999" (tramitacoes.py): o trecho em que andou junto com a principal
+const apensada=s=>s.startsWith('APENSADA:')?`apensada ao ${s.slice(9)}`:null;
 // comissão especial: a Câmara grava a sigla da proposição (PEC22804 = PEC 228/04, PL021903 = PL 219/03)
 const especial=s=>{const m=/^(PEC|PLP|PDL|MPV|PL)0*(\d+)(\d{2})$/.exec(s); return m?`comissão especial (${m[1]} ${m[2]}/${m[3]})`:null};
-const rotulo=s=>ROTULO[s]||especial(s)||s;                 // comissão: a sigla como a Câmara grava (CCJC, CSAUDE…)
+const rotulo=s=>ROTULO[s]||apensada(s)||especial(s)||s;                 // comissão: a sigla como a Câmara grava (CCJC, CSAUDE…)
 // arquivamento automático no fim da legislatura (RICD, art. 105): 31 de janeiro do ano de troca
 const fimLegislatura=d=>/-01-31$/.test(d)&&(+d.slice(0,4)-1995)%4===0;
 function tempo(p){

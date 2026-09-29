@@ -371,6 +371,8 @@ def main():
 
     # ------------------------------------------------ por votação
     resumo_de = resumos.carregar()
+    # autores senadores das votações de origem no Senado (senado.py); vazio se ainda não rodou
+    senadores_autores = coleta.ler_cache(coleta.CACHE / "senado" / "senadores" / "autores_leis.json") or {}
     saida = []
     sem_score_total = Counter()
     motivos_autor = Counter()
@@ -398,8 +400,22 @@ def main():
         autor_partido = partido_na_data(historico.get(str(autor_id)),
                                         instante(v["dataHoraRegistro"])) if autor_id else None
         autor_score = (ideologia.get(autor_partido) or {}).get("score") if autor_partido else None
+        # Autor senador (senado.py → cache/senado/autores_leis.json, ligado por identificador):
+        # partido NA DATA DA VOTAÇÃO pelas filiações do Senado, score do mesmo ideologia.json.
+        senador = senadores_autores.get(str(id_prop)) if a and not autor_id else None
+        if senador:
+            dia = (v["data"] or "")[:10]
+            autor_partido = next((s for s, ini, fim in senador["filiacoes"]
+                                  if (ini or "") <= dia and (fim is None or dia <= fim)), None)
+            autor_score = (ideologia.get(autor_partido) or {}).get("score") if autor_partido else None
         if a is None:
             motivo = "autor não encontrado em proposicoesAutores"
+        elif senador and autor_partido is None:
+            motivo = "senador sem filiação registrada na data da votação"
+        elif senador and autor_score is None:
+            motivo = f"partido do autor sem score ({autor_partido})"
+        elif senador:
+            motivo = None
         elif autor_id is None:
             motivo = f"autor não é deputado ({a['tipoAutor']})"
         elif autor_partido is None:
@@ -422,6 +438,7 @@ def main():
             "ementa": ementa,
             "data": v["data"],
             "autorId": autor_id,
+            "autorSenador": senador["codigo"] if senador else None,   # código no Senado (senadores.html?id=)
             "autorNome": a["nomeAutor"] if a else None,
             "autorPartido": autor_partido,
             "autorScore": autor_score,

@@ -115,6 +115,10 @@ jobs:
 
       # Histórico de tramitação (quanto tempo e por onde passou), uma chamada por proposição.
       # Rebaixa só as que andaram; com o cache vazio, no máximo 12 mil por rodada (~1 h).
+      # Senadores (Dados Abertos do Senado, sem chave): autoria, leis, relatorias e votos.
+      - name: Senadores
+        run: python senado.py || echo "::warning::senado.py falhou; senadores.json ficou como estava"
+
       - name: Tramitações
         run: python tramitacoes.py --limite 12000 || echo "::warning::tramitacoes.py falhou; temas.py usa o que houver no cache"
 
@@ -141,7 +145,7 @@ jobs:
           git add deputados.json proposicoes.json semana.json legislaturas.json temas
           # gerados por passos que podem falhar sem parar a rodada: só entram se existirem
           for f in blocos.json notoriedade.json wikipedia.json noticias.json youtube.json enquetes.json \
-                   ecidadania.json obras.json obras_deputados.json resumos.json resumos_lotes.json; do
+                   ecidadania.json obras.json obras_deputados.json senadores.json resumos.json resumos_lotes.json; do
             if [ -e "$f" ]; then git add "$f"; fi
           done
           git diff --cached --quiet || git commit -m "Dados de $(date +%F)"
@@ -150,11 +154,11 @@ jobs:
       - name: Montar o site
         run: |
           mkdir -p _site
-          cp index.html prototipo.html deputado.html leis.html blocos.html obras.html deputados.json proposicoes.json \
+          cp index.html prototipo.html deputado.html leis.html blocos.html obras.html senadores.html deputados.json proposicoes.json \
              semana.json legislaturas.json LICENSE .nojekyll _site/
           # opcionais: a página que lê cada um trata a ausência (cai no "sem dado")
           for f in blocos.json notoriedade.json wikipedia.json noticias.json youtube.json enquetes.json \
-                   ecidadania.json obras.json obras_deputados.json; do
+                   ecidadania.json obras.json obras_deputados.json senadores.json; do
             if [ -e "$f" ]; then cp "$f" _site/; fi
           done
           cp -r temas _site/

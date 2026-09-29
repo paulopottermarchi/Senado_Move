@@ -189,6 +189,7 @@ a.pessoa:hover{border-color:#c9ccd1}
     <a class="marca" href="prototipo.html">Câmara Aberta</a>
     <nav class="nav" aria-label="Seções do site">
       <a href="prototipo.html#deputados">Deputados</a>
+      <a href="senadores.html">Senadores</a>
       <a href="prototipo.html#semana">Esta semana</a>
       <a class="aqui" href="leis.html" aria-current="page">Leis votadas</a>
       <a href="blocos.html">Quem vota com quem</a>
@@ -544,7 +545,9 @@ function duracao(n){
   const a=Math.floor(m/12), r=m%12;
   return `${a} ano${a>1?'s':''}${r?` e ${r} ${r>1?'meses':'mês'}`:''}`;
 }
-const ROTULO={APRESENTADA:'aguardando distribuição',PLEN:'Plenário',SENADO:'Senado','SANÇÃO':'sanção','PROMULGAÇÃO':'promulgação'};
+const ROTULO={APRESENTADA:'aguardando distribuição',DESPACHO:'aguardando despacho',PLEN:'Plenário',SENADO:'Senado','SANÇÃO':'sanção','PROMULGAÇÃO':'promulgação'};
+// "APENSADA:PL 5/1999" (tramitacoes.py): o trecho em que andou junto com a principal
+const apensada=s=>s.startsWith('APENSADA:')?`apensada ao ${s.slice(9)}`:null;
 // comissão especial: a Câmara grava a sigla da proposição (PEC22804 = PEC 228/04, PL021903 = PL 219/03)
 const especial=s=>{const m=/^(PEC|PLP|PDL|MPV|PL)0*(\d+)(\d{2})$/.exec(s); return m?`comissão especial (${m[1]} ${m[2]}/${m[3]})`:null};
 function tempoLei(l){
@@ -553,7 +556,7 @@ function tempoLei(l){
   const partes=[`Apresentada em ${dataBR(ini)}; votada nesta página ${duracao(dias(ini,l.data))} depois`];
   if(tr.lei) partes.push(`virou lei em ${dataBR(tr.lei)}, ${duracao(dias(ini,tr.lei))} depois de apresentada`);
   const et=tr.et.filter(x=>x[0]!=='LEI');
-  const cam=et.length>1?`<span class="caminho">Caminho: ${et.map((x,i)=>`${esc(ROTULO[x[0]]||especial(x[0])||x[0])} ${duracao(dias(x[1],(et[i+1]&&et[i+1][1])||fim))}`).join(' → ')}${tr.lei?' → lei':''}</span>`:'';
+  const cam=et.length>1?`<span class="caminho">Caminho: ${et.map((x,i)=>`${esc(ROTULO[x[0]]||apensada(x[0])||especial(x[0])||x[0])} ${duracao(dias(x[1],(et[i+1]&&et[i+1][1])||fim))}`).join(' → ')}${tr.lei?' → lei':''}</span>`:'';
   const ap=(tr.per||[]).filter(x=>x[0]==='apensada').map(x=>`apensada ao ${esc(x[3])} de ${dataBR(x[1])} a ${x[2]?dataBR(x[2]):'hoje'}`);
   if(ap.length) partes.push(`esteve ${ap.join(' e ')}`);
   return `<p class="tempo-lei">${partes.join('; ')}.${cam}</p>`;
