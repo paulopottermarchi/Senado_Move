@@ -155,8 +155,24 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           git add site/dados entradas
-          git diff --cached --quiet || git commit -m "Dados de $(date +%F)"
-          git push
+          if git diff --cached --quiet; then echo "Sem mudança nos dados."; exit 0; fi
+          git commit -q -m "Dados de $(date +%F)"
+          # A rodada leva de minutos a horas: se a main andou nesse meio-tempo (um PR aceito), o
+          # push direto é recusado — foi o que derrubou a rodada de 30/9/2026, depois de 4h40 de
+          # coleta. Reaplica o commit de dados sobre a main nova; num conflito em site/dados/ ou
+          # entradas/, vale o dado desta rodada (o mais recente). PR de código não traz dados.
+          R="${GITHUB_REF_NAME}"
+          for i in 1 2 3; do
+            if git pull -q --rebase -X theirs origin "$R"; then
+              git push -q origin "HEAD:$R" && exit 0
+            else
+              git rebase --abort 2>/dev/null || true
+            fi
+            echo "::warning title=Versionar os dados::envio para $R recusado (tentativa $i de 3); tentando de novo"
+            sleep 15
+          done
+          echo "::error title=Versionar os dados::não consegui enviar os dados para $R depois de 3 tentativas"
+          exit 1
 
       # site/ é exatamente o que vai ao ar: páginas, estilo, ícone e site/dados/. Nada de
       # cache/, scripts/ ou entradas/ é publicado.

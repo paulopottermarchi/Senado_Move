@@ -182,94 +182,114 @@ def calcular_votacao(v, votos_da_votacao, ideologia):
     }
 
 
-# ---------------------------------------------------------------- divergência
+# ---------------------------------------------------------------- orientação da bancada
 
-MIN_GRUPO = 5         # votantes Sim/Não do grupo, sem contar o próprio deputado
+# "Votou diferente da orientação da própria bancada": o voto nominal do deputado contra a
+# orientação REGISTRADA pela liderança dele (votacoesOrientacoes-{ano}, da Câmara). Registro,
+# não estimativa — substitui a medida antiga, que inferia a "maioria do próprio partido".
+#
+# A Câmara registra a orientação por liderança: partido ("PL"), federação ("Fdr PT-PCdoB-PV") ou
+# bloco ("Bl MdbPsdRepPode"). A própria bancada é a liderança MAIS ESTREITA que orientou e que
+# contém o partido do deputado NA DATA DO VOTO: partido, senão federação, senão bloco. Medido
+# (2023–2026, Plenário): 263 mil votos comparáveis; 49% contra orientação de bloco, 27% de
+# federação, 24% do próprio partido — MDB, PSD, Republicanos, União e PP quase só orientam por bloco.
+#
+# Blocos: nem o arquivo nem a API dão o identificador do bloco; a sigla registrada é a abreviação
+# dos partidos ("MdbPsdRepPode") e às vezes vem cortada ("UniPpFdrPsdbCid..."). A tabela abaixo
+# lista, para cada sigla que aparece no Plenário, só os partidos VISÍVEIS nela: partido escondido
+# no "..." não é atribuído ao bloco, e aquele voto não conta. Sigla nova (bloco formado depois)
+# não conta até entrar na tabela — o relatório avisa.
+NAO_BANCADA = {"Governo", "Oposição", "Maioria", "Minoria"}   # não são a bancada de ninguém
+ORIENTA_PARTIDO = {"Solidaried": "SOLIDARIEDADE", "Republican": "REPUBLICANOS", "Podemos": "PODE"}
+FEDERACOES = {"Fdr PT-PCdoB-PV": {"PT", "PCdoB", "PV"}, "Fdr PSOL-REDE": {"PSOL", "REDE"},
+              "Fdr PSDB-CIDADAN": {"PSDB", "CIDADANIA"}, "Fdr PSDB-CIDADANIA": {"PSDB", "CIDADANIA"}}
+BLOCOS = {
+    "Bl MdbPsdRepPode": {"MDB", "PSD", "REPUBLICANOS", "PODE"},
+    "Bl MdbPsdRepPodePsc": {"MDB", "PSD", "REPUBLICANOS", "PODE", "PSC"},
+    "Bl UniPpFdrPsdbCid...": {"UNIÃO", "PP", "PSDB", "CIDADANIA"},
+    "Bl UniPpPsd...": {"UNIÃO", "PP", "PSD"},
+    "Bl AvanSolidPrd...": {"AVANTE", "SOLIDARIEDADE", "PRD"},
+    "Bl PlUniPpPsd...": {"PL", "UNIÃO", "PP", "PSD"},
+    "Bl PlFdrPtUniPp...": {"PL", "PT", "PCdoB", "PV", "UNIÃO", "PP"},
+    "Bl PlFdrPTUniPp...": {"PL", "PT", "PCdoB", "PV", "UNIÃO", "PP"},
+}
 MIN_COMPARAVEIS = 50  # abaixo disso o número não é publicado
-# Só há posição a contrariar quando o grupo votou junto: pelo menos 70% dos OUTROS
-# membros no mesmo lado. Partido rachado 55/45 não tem "maioria" — ninguém diverge.
-# Medido: mediana da medida por partido cai de 6,6% (maioria simples) para 3,5%.
-# Na faixa, o limite NÃO resolve o artefato: o NOVO segue no topo (58–60%), porque o
-# REPUBLICANOS vota coeso com mais de 70% da faixa "direita".
-MAIORIA_MINIMA = 0.70
+NIVEIS = ("partido", "federacao", "bloco")
 
 
-def divergencia(ids_votacoes, votos, ideologia, listar=()):
-    """Quantas vezes cada deputado votou diferente da maioria do próprio grupo, em
-    votações nominais do Plenário. Dois grupos: a faixa do espectro (pelo partido na
-    data do voto) e o próprio partido.
+def bancada(partido, orientacoes):
+    """(nível, sigla registrada, orientação) da própria bancada, ou None."""
+    for sigla, o in orientacoes.items():
+        if ORIENTA_PARTIDO.get(sigla, sigla).upper() == partido.upper():
+            return "partido", sigla, o
+    for sigla, o in orientacoes.items():
+        if partido in FEDERACOES.get(sigla, ()):
+            return "federacao", sigla, o
+    for sigla, o in orientacoes.items():
+        if partido in BLOCOS.get(sigla, ()):
+            return "bloco", sigla, o
+    return None
 
-    Mede frequência, não motivo: divergir pode ser convicção, compromisso com a base,
-    acordo de bancada ou engano no painel. O site não chama ninguém de fiel ou infiel.
 
-    O site publica a medida POR PARTIDO. A por faixa fica no JSON mas não é exibida: a
-    faixa junta partidos de lados opostos no eixo governo × oposição (NOVO e REPUBLICANOS
-    na "direita"; PL, PSD e PP na "centro-direita"), e a maioria da faixa vira a linha do
-    partido maior. Medido: a bancada inteira do NOVO aparecia como "a mais divergente"
-    (53–60%) por estar na faixa do REPUBLICANOS — artefato do agrupamento, não conduta
-    individual. Ver CLAUDE.md, "Divergência".
+def dif_orientacao(ids_votacoes, votos, orientacoes, listar=()):
+    """Quantas vezes cada deputado votou diferente da orientação da própria bancada, nas
+    votações nominais do Plenário.
 
-    Regras (conservadoras — na dúvida, a votação não conta):
-    - só Sim e Não; abstenção, obstrução e "Artigo 17" não são divergência;
-    - a maioria é dos OUTROS membros do grupo (sem o voto do próprio deputado, que
-      senão puxaria a maioria para si);
-    - menos de MIN_GRUPO outros votantes Sim/Não no grupo, ou grupo sem maioria de
-      MAIORIA_MINIMA (partido dividido): não conta;
-    - sem posição no espectro (partido sem score), não há faixa — o partido ainda conta.
+    Mede frequência, não motivo: votar diferente da orientação pode ser convicção,
+    compromisso com o estado ou acordo. O site não chama ninguém de fiel, infiel ou traidor.
 
-    `listar`: ids de votação (as 164 finais de texto-base) para as quais também se
-    devolve QUEM votou diferente da maioria do próprio partido — a lista de nomes da
-    página das leis. Mesma regra da estatística, para as duas nunca discordarem.
+    Regras (na dúvida, a votação não conta):
+    - só voto Sim ou Não contra orientação Sim ou Não; orientação "Liberado", "Obstrução" ou em
+      branco não conta, nem abstenção, obstrução e "Artigo 17" do deputado;
+    - Governo, Oposição, Maioria e Minoria não são bancada de ninguém;
+    - partido na data do voto (vem no próprio registro); sem bancada que orientou, não conta.
+
+    `listar`: ids de votação (as 164 finais de texto-base) para as quais também se devolve QUEM
+    votou diferente — a lista da página das leis. Mesma regra da estatística.
     """
     listar = set(listar)
     por_votacao = defaultdict(list)
-    acum = defaultdict(lambda: {"faixa": [0, 0], "partido": [0, 0]})  # [comparáveis, diferentes]
+    acum = defaultdict(lambda: {n: [0, 0] for n in NIVEIS})   # nível → [comparáveis, diferentes]
+    motivos, sem_regra = Counter(), Counter()
     for idv in ids_votacoes:
-        linhas = [r for r in votos[idv] if r["voto"] in (SIM, NAO)]
-        grupos = {"faixa": defaultdict(Counter), "partido": defaultdict(Counter)}
-        chave = {}
-        for r in linhas:
-            sigla = r["deputado_siglaPartido"]
-            score = (ideologia.get(sigla) or {}).get("score")
-            faixa = coleta.classificar(score) if score is not None else None
-            chave[id(r)] = {"faixa": faixa, "partido": sigla if sigla != "S.PART." else None}
-            for g, k in chave[id(r)].items():
-                if k is not None:
-                    grupos[g][k][r["voto"]] += 1
-        for r in linhas:
+        ori = {s: o for s, o in (orientacoes.get(idv) or {}).items() if s not in NAO_BANCADA}
+        if not ori:
+            motivos["votação sem orientação registrada"] += 1
+            continue
+        for s in ori:
+            if (s.startswith("Bl") and s not in BLOCOS) or (s.startswith("Fdr") and s not in FEDERACOES):
+                sem_regra[s] += 1
+        for r in votos[idv]:
+            if r["voto"] not in (SIM, NAO):
+                continue
+            achou = bancada(r["deputado_siglaPartido"], ori)
+            if achou is None:
+                motivos["partido sem bancada que orientou"] += 1
+                continue
+            nivel, sigla, o = achou
+            if o not in (SIM, NAO):
+                motivos[f"orientação {o or 'em branco'}"] += 1
+                continue
+            motivos["comparável"] += 1
             dep = int(r["deputado_id"])
-            for g, k in chave[id(r)].items():
-                if k is None:
-                    continue
-                c = grupos[g][k]
-                sim = c[SIM] - (r["voto"] == SIM)
-                nao = c[NAO] - (r["voto"] == NAO)
-                if sim + nao < MIN_GRUPO or max(sim, nao) < MAIORIA_MINIMA * (sim + nao):
-                    continue
-                maioria = SIM if sim > nao else NAO
-                acum[dep][g][0] += 1
-                acum[dep][g][1] += r["voto"] != maioria
-                if g == "partido" and idv in listar and r["voto"] != maioria:
-                    # Compacto (3.573 entradas): [id, nome, partido, uf, voto, coesão].
-                    # A maioria é sempre o outro lado (só Sim/Não entram); coesão = parcela
-                    # dos colegas de partido que votou com a maioria.
-                    por_votacao[idv].append([dep, r["deputado_nome"], k, r["deputado_siglaUf"],
-                                             r["voto"], round(max(sim, nao) / (sim + nao), 2)])
+            acum[dep][nivel][0] += 1
+            if r["voto"] != o:
+                acum[dep][nivel][1] += 1
+                if idv in listar:
+                    # [id, nome, partido, uf, voto, orientação, bancada como registrada]
+                    por_votacao[idv].append([dep, r["deputado_nome"], r["deputado_siglaPartido"],
+                                             r["deputado_siglaUf"], r["voto"], o, sigla])
     for lista in por_votacao.values():
-        lista.sort(key=lambda x: (x[2], x[1]))
+        lista.sort(key=lambda x: (x[6], x[2], x[1]))
     saida = {}
     for dep, a in acum.items():
-        res = {}
-        for g in ("faixa", "partido"):
-            n, k = a[g]
-            res[g] = {"comparaveis": n, "diferentes": k} if n >= MIN_COMPARAVEIS else None
-        # Por que não há número — o site mostra o da medida por partido, que é a publicada.
-        n = a["partido"][0]
-        res["nota"] = None if res["partido"] else (
-            f"partido com menos de {MIN_GRUPO + 1} deputados votando: não há maioria para comparar"
-            if n == 0 else f"menos de {MIN_COMPARAVEIS} votos comparáveis")
-        saida[dep] = res
-    return saida, por_votacao
+        n = sum(v[0] for v in a.values())
+        k = sum(v[1] for v in a.values())
+        saida[dep] = {"comparaveis": n, "diferentes": k if n >= MIN_COMPARAVEIS else None,
+                      "niveis": {nv: a[nv] for nv in NIVEIS if a[nv][0]},
+                      "nota": None if n >= MIN_COMPARAVEIS else
+                      f"menos de {MIN_COMPARAVEIS} votações em que a bancada orientou Sim ou Não"}
+    return saida, por_votacao, motivos, sem_regra
 
 
 # ---------------------------------------------------------------- pipeline
@@ -298,6 +318,9 @@ def main():
     rel = defaultdict(list)
     for r in linhas("votacoesProposicoes", ANOS, args.atualizar):
         rel[r["idVotacao"]].append(r)
+    orientacoes = defaultdict(dict)   # votação → {liderança: orientação}
+    for r in linhas("votacoesOrientacoes", ANOS, args.atualizar):
+        orientacoes[r["idVotacao"]][r["siglaBancada"]] = r["orientacao"]
 
     # Por proposição (prefixo do id da votação = proposição onde foi registrada),
     # a votação final do texto-base — a mesma regra da Etapa A. Só entra se nominal:
@@ -483,16 +506,18 @@ def main():
         d["votos"] = {"chamadas": sum(c.values()), "sim": c[SIM], "nao": c[NAO],
                       "abstencao": c[ABST]}
 
-    # Divergência: todas as votações nominais do Plenário, não só as 164 de texto-base.
+    # Orientação da bancada: todas as votações nominais do Plenário, não só as 164 de texto-base.
     plen = [i for i in votos if (votacoes.get(i) or {}).get("siglaOrgao") == "PLEN"]
-    div, divergentes = divergencia(plen, votos, ideologia, listar=ids_sel)
+    difo, dif_por_votacao, motivos_ori, sem_regra = dif_orientacao(plen, votos, orientacoes, listar=ids_sel)
     for d in deputados:
-        d["divergencia"] = div.get(d["id"]) or {"faixa": None, "partido": None,
-                                                "nota": "sem voto Sim/Não no Plenário"}
-    # Página das leis: em cada uma das 164, quem votou diferente da maioria do próprio
-    # partido (mesma regra da estatística) e a categoria, pela classificação de temas.py.
+        d.pop("divergencia", None)   # medida antiga ("maioria do próprio partido"), substituída
+        d["difOrientacao"] = difo.get(d["id"]) or {"comparaveis": 0, "diferentes": None, "niveis": {},
+                                                   "nota": "sem voto Sim/Não contra orientação registrada no Plenário"}
+    # Página das leis: em cada uma das 164, quem votou diferente da orientação da própria
+    # bancada (mesma regra da estatística) e a categoria, pela classificação de temas.py.
     for x in saida:
-        x["divergentes"] = divergentes.get(x["idVotacao"], [])
+        x.pop("divergentes", None)
+        x["difOrientacao"] = dif_por_votacao.get(x["idVotacao"], [])
         x["temas"] = [[CURTO[CATEGORIAS[i]], termo, fonte]
                       for i, termo, fonte in classificar(x["ementa"] or "", "")]
 
@@ -522,13 +547,19 @@ def main():
     print(f"Votações nominais do Plenário por proposição (todas, não só a final): mediana "
           f"{n_nom[len(n_nom) // 2]} · máx {n_nom[-1]} · só a final: {n_nom.count(1)} · "
           f"com nominais antes de {ANOS.start}: {antes}")
-    taxa = lambda x: x["diferentes"] / x["comparaveis"]
-    for g in ("faixa", "partido"):
-        t = sorted(taxa(d["divergencia"][g]) for d in deputados if d["divergencia"][g])
-        if t:
-            print(f"Divergência da maioria da própria {g} (Plenário, {len(plen)} votações nominais): "
-                  f"{len(t)} deputados · mediana {t[len(t)//2]:.1%} · p90 {t[int(len(t)*.9)]:.1%} · "
-                  f"máx {t[-1]:.1%}")
+    print(f"Voto × orientação da própria bancada ({len(plen)} votações nominais do Plenário): "
+          f"{dict(motivos_ori.most_common())}")
+    if sem_regra:
+        aviso = (f"bancada sem regra em BLOCOS/FEDERACOES (votos dos partidos dela não contam): "
+                 f"{dict(sem_regra.most_common())}")
+        print(f"ATENÇÃO: {aviso}")
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            print(f"::warning title=votos.py::{aviso}")
+    t = sorted(d["difOrientacao"]["diferentes"] / d["difOrientacao"]["comparaveis"]
+               for d in deputados if d["difOrientacao"]["diferentes"] is not None)
+    if t:
+        print(f"Votou diferente da orientação da própria bancada: {len(t)} deputados com número · "
+              f"mediana {t[len(t)//2]:.1%} · p90 {t[int(len(t)*.9)]:.1%} · máx {t[-1]:.1%}")
     com = [d for d in deputados if d["votos"]["chamadas"]]
     print(f"\nDeputados com ao menos um voto registrado nessas votações: {len(com)} de "
           f"{len(deputados)}")

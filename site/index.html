@@ -1302,7 +1302,7 @@ async function carregar(){
       apoioCruzado:d.apoioCruzado ?? null,
       votacoesNominais:d.votacoesNominais ?? null,
       votos:d.votos ?? null,
-      divergencia:d.divergencia ?? null,
+      difOrientacao:d.difOrientacao ?? null,
       // Eleição de 2022: resultado do TSE (eleicao.py). Sem par exato, fica null —
       // nunca cai nos VALIDOS_UF aproximados, que são só da demonstração.
       votosRecebidos:d.votosRecebidos ?? null,
@@ -1356,8 +1356,8 @@ async function carregar(){
       apoioCruzado:p.apoioCruzado??null,
       aprovacao:p.aprovacao??null,        // resultado SÓ deste campo, nunca de sim>não
       excluidos:p.excluidosSemScore||0, excluidosPorPartido:p.excluidosPorPartido||{},
-      // quem votou diferente da maioria do próprio partido: [id, nome, partido, uf, voto, coesão]
-      divIds:(p.divergentes||[]).map(x=>x[0]),
+      // quem votou diferente da orientação da própria bancada: [id, nome, partido, uf, voto, orientação, bancada]
+      divIds:(p.difOrientacao||[]).map(x=>x[0]),
       consulta:consultaDe(p.idProposicao)}));
     votosDemo=false;
     DIV_LEIS=new Map();
@@ -1371,7 +1371,7 @@ async function carregar(){
     d._carreira={pecs:d.pecs,leis:d.leis,apresentadas:d.apresentadas,
                  viraramLei:d.viraramLei,aprovadasPlenario:d.aprovadasPlenario};
     d._votos=d.votos;
-    d._div=d.divergencia;
+    d._div=d.difOrientacao;
   });
   // referência para a ficha: a mediana da Câmara, não um ranking
   const taxas=deputados.map(taxaDiv).filter(x=>x!=null).sort((a,b)=>a-b);
@@ -1382,14 +1382,13 @@ async function carregar(){
   desenhar();
 }
 
-// ---------- divergência do próprio partido (votos.py) ----------
-// Mede quantas vezes o deputado votou diferente da maioria do próprio partido, nas
-// votações nominais do Plenário. Frequência, não motivo — e nunca "fiel"/"traidor".
-// A versão por faixa do espectro existe no JSON mas não é exibida: juntava partidos de
-// lados opostos e punha a bancada inteira do NOVO como "divergente" (CLAUDE.md).
-let MEDIANA_DIV=null, DIV_LEIS=new Map();   // id → nº das 164 leis em que divergiu
-const taxaDiv=d=>{const p=d.divergencia&&d.divergencia.partido;
-  return p&&p.comparaveis?p.diferentes/p.comparaveis:null;};
+// ---------- orientação da própria bancada (votos.py) ----------
+// Quantas vezes o deputado votou diferente da orientação REGISTRADA pela própria bancada
+// (partido, federação ou bloco, a liderança que orientou), nas votações nominais do Plenário.
+// Registro, não estimativa. Frequência, não motivo — e nunca "fiel", "infiel" ou "traidor".
+let MEDIANA_DIV=null, DIV_LEIS=new Map();   // id → nº das 164 leis em que votou diferente
+const taxaDiv=d=>{const o=d.difOrientacao;
+  return o&&o.diferentes!=null&&o.comparaveis?o.diferentes/o.comparaveis:null;};
 const pct1=x=>(x*100).toFixed(1).replace('.',',')+'%';
 // Canal oficial no YouTube (youtube.py): o número como o YouTube informa, só na ficha de
 // cada um — sem ranking nem soma, pela política da API.
@@ -1418,23 +1417,27 @@ function notoHTML(d){
     <p class="partic-pe">Mede procura, não aprovação nem trabalho: escândalo também gera leitura.</p>`;
 }
 
+// Quem orientou: a liderança mais estreita que contém o partido na data do voto.
+const NIVEL_ORI={partido:'pelo próprio partido',federacao:'pela federação',bloco:'pelo bloco em que o partido estava'};
 function textoDivergencia(d){
-  const t=taxaDiv(d);
-  if(t==null) return d.divergencia&&d.divergencia.nota
-    ? `Votos diferentes da maioria do próprio partido: sem número (${d.divergencia.nota}).` : '';
-  const p=d.divergencia.partido;
-  // O enquadramento vem antes do número: lido rápido, "votou contra o partido" vira
+  const t=taxaDiv(d), o=d.difOrientacao;
+  if(t==null) return o&&o.nota
+    ? `Votos diferentes da orientação da própria bancada: sem número (${o.nota}).` : '';
+  // O enquadramento vem antes do número: lido rápido, "votou contra a orientação" vira
   // "traidor", e isso raramente é verdade.
-  return 'Votar diferente do próprio partido pode ser convicção, pauta do estado ou questão '+
-    'liberada pela bancada. Nesta legislatura, fez isso em '+
-    `${pct1(t)} das ${nfBR(p.comparaveis)} votações nominais do Plenário em que o partido votou `+
-    `unido (70% ou mais dos colegas no mesmo lado)`+
-    (MEDIANA_DIV!=null?`; na Câmara, a mediana é ${pct1(MEDIANA_DIV)}`:'')+'.';
+  const niveis=Object.entries(o.niveis||{}).filter(([,v])=>v[0])
+    .map(([k,[n,x]])=>`${NIVEL_ORI[k]||k} em ${nfBR(n)} (diferente em ${nfBR(x)})`);
+  return 'Votar diferente da orientação da própria bancada pode ser convicção, pauta do estado ou '+
+    'acordo; o número mede quantas vezes, não por quê. Nesta legislatura, fez isso em '+
+    `${pct1(t)} das ${nfBR(o.comparaveis)} votações nominais do Plenário em que a bancada orientou Sim ou Não`+
+    (MEDIANA_DIV!=null?`; na Câmara, a mediana é ${pct1(MEDIANA_DIV)}`:'')+'. '+
+    (niveis.length?`Orientação registrada ${niveis.join('; ')}. `:'')+
+    'Votações com orientação liberada não contam.';
 }
 function linkLeisDivergentes(d){
   const n=DIV_LEIS.get(d.id)||0;
   return n?`<a class="ver-temas" href="leis.html?dep=${encodeURIComponent(d.id)}">Ver as ${n} `+
-    `${n===1?'lei':'leis'} em que votou diferente do partido</a>`:'';
+    `${n===1?'lei':'leis'} em que votou diferente da orientação da bancada</a>`:'';
 }
 
 // ---------- ficha: mandatos e eleição ----------
@@ -1500,7 +1503,7 @@ function aplicarMandato(){
     // votos registrados e divergência (Etapa B) existem só para a legislatura atual
     const atual=!mandato||mandato===LEG_ATUAL();
     d.votos=atual?d._votos:null;
-    d.divergencia=atual?d._div:null;
+    d.difOrientacao=atual?d._div:null;
   });
 }
 function montarFiltros(){
@@ -2067,7 +2070,7 @@ const COLS=[
   {k:'viraramLei',     t:'Viraram lei',        col:'c-lei', ord:true},
   {k:'taxa',           t:'Conversão',          col:'c-con', ord:true},
   {k:'abs',            t:'Abstenções',         col:'c-abs', ord:true},
-  {k:'div',            t:'Diferente do partido', col:'c-div', ord:true},
+  {k:'div',            t:'Diferente da orientação', col:'c-div', ord:true},
   {k:'wiki',           t:'Notoriedade',        col:'c-wik', ord:true}
   // Sem coluna de apoio cruzado por deputado: só 15 dos 513 têm amostra (CLAUDE.md).
   // Ele existe por votação, no bloco "Como a Câmara se dividiu".
@@ -2155,7 +2158,7 @@ function rankDesenhar(){
         :`${(t*100).toFixed(1)}%<span class="mini"><i style="width:${
            Math.min(100,t*100*3).toFixed(0)}%"></i></span>`}</td>
       <td class="num">${a==null?'<span class="sem">—</span>':(a*100).toFixed(1)+'%'}</td>
-      <td class="num">${taxaDiv(d)==null?`<span class="sem" title="${(d.divergencia&&d.divergencia.nota)||''}">—</span>`
+      <td class="num">${taxaDiv(d)==null?`<span class="sem" title="${(d.difOrientacao&&d.difOrientacao.nota)||''}">—</span>`
         :pct1(taxaDiv(d))}</td>
       ${!temWiki()?'':`<td class="num cel2">${wikiDe(d)==null?'<span class="sem" title="Sem artigo na Wikipédia ligado pelo identificador da Câmara">—</span>'
         :`${nf.format(wikiDe(d))}<em>leituras</em>`}</td>`}
@@ -2188,12 +2191,13 @@ function rankDesenhar(){
     'voto individual, em que o voto do deputado aparece. Não é taxa de presença: quem assumiu no '+
     'meio do mandato, esteve de licença ou em missão oficial tem menos registros sem ter faltado, '+
     'e o dado aberto não distingue esses casos. Conversão é a parcela das propostas apresentadas '+
-    'que virou lei. Diferente do partido: votar diferente do próprio partido não é medida de '+
-    'lealdade nem de mérito — pode ser convicção, pauta do estado ou questão liberada pela bancada. '+
-    'A coluna mostra a parcela dos votos Sim ou Não, nas votações nominais do Plenário desde 2023, '+
-    'em que o deputado votou ao contrário dos colegas do próprio partido naquele dia, contando só '+
-    'quando o partido votou unido (70% ou mais no mesmo lado); abstenção e obstrução não contam, e '+
-    'partido com menos de seis deputados votando não tem maioria para comparar. '+
+    'que virou lei. Diferente da orientação: votar diferente da orientação da própria bancada não é '+
+    'medida de lealdade nem de mérito — pode ser convicção, pauta do estado ou acordo. A coluna mostra a '+
+    'parcela dos votos Sim ou Não, nas votações nominais do Plenário desde 2023, em que o deputado votou '+
+    'ao contrário da orientação registrada pela liderança da própria bancada: o partido, a federação ou o '+
+    'bloco em que o partido estava naquele dia (a mais estreita que orientou). Orientação liberada, '+
+    'obstrução e em branco não contam, nem as de Governo, Oposição, Maioria e Minoria; com menos de 50 '+
+    'votações comparáveis, não há número. '+
     (!temWiki()?'':
     'Notoriedade: quantas vezes o artigo do deputado na Wikipédia em português foi lido nos últimos 90 dias, '+
     'por leitores humanos, somando os redirecionamentos. Mede procura, não aprovação nem trabalho: escândalo '+
