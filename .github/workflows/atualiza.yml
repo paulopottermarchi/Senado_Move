@@ -21,9 +21,10 @@ concurrency:
 
 jobs:
   atualizar:
-    # Windows de propósito: o servidor da Câmara não envia o certificado intermediário.
-    # No Windows o truststore completa a cadeia pelo sistema, como na máquina de
-    # desenvolvimento; no Linux a verificação provavelmente falha. Nunca verify=False.
+    # Windows, como a máquina de desenvolvimento. (O motivo antigo — "a Câmara não envia o
+    # certificado intermediário" — era o antivírus daquela máquina; o teste de conexão de 30/9/2026
+    # alcançou todas as APIs também no Linux.) Nunca verify=False.
+    # Cada passo roda por scripts/passo.py: se falhar, o motivo vira anotação no resumo da rodada.
     runs-on: windows-latest
     timeout-minutes: 350    # a primeira rodada, sem cache, refaz a coleta inteira (~3 h)
     environment:
@@ -52,51 +53,61 @@ jobs:
           restore-keys: cache-api-
 
       - name: Atualizar pela API (só o que mudou)
-        run: python scripts/atualiza.py
+        run: python scripts/passo.py atualiza.py
 
       - name: Regerar deputados.json
-        run: python scripts/coleta.py --limite 513
+        run: python scripts/passo.py coleta.py --limite 513
+
+      # Com o cache vazio (1ª rodada, ou cache despejado) a coleta leva ~3 h e a rodada inteira
+      # chega perto do limite de 350 min. Guardar aqui garante que essas horas não se percam se a
+      # rodada estourar o tempo ou falhar adiante; a próxima restaura o cache mais recente.
+      - name: Guardar o cache (depois da coleta)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: cache
+          key: cache-api-${{ github.run_id }}-coleta
 
       - name: Votos (arquivos em lote do ano corrente)
-        run: python scripts/votos.py --atualizar
+        run: python scripts/passo.py votos.py --atualizar
 
       # Quem vota com quem: blocos por semelhança de voto e orientação do Governo, dos mesmos
       # arquivos em lote (só rebaixa as orientações do ano corrente). Sem API.
       - name: Blocos de voto
-        run: python scripts/blocos.py --atualizar
+        run: python scripts/passo.py blocos.py --atualizar
 
       # Notoriedade na Câmara de cada lei votada: apensados, votações nominais, placar,
       # urgência e assinaturas de PEC (índice com componentes sempre visíveis). API, com cache.
       - name: Notoriedade das leis
-        run: python scripts/notoriedade.py || echo "::warning::notoriedade.py falhou; notoriedade.json ficou como estava"
+        run: python scripts/passo.py --opcional notoriedade.py
 
       # Notoriedade dos deputados: leituras do artigo na Wikipédia (90 dias). Liga deputado →
       # artigo só por identificador; religa quando entra deputado novo.
       - name: Notoriedade dos deputados (Wikipédia)
-        run: python scripts/wikipedia.py || echo "::warning::wikipedia.py falhou; wikipedia.json ficou como estava"
+        run: python scripts/passo.py --opcional wikipedia.py
 
       # Notícias da Agência Câmara sobre PEC e PL (RSS), ligadas pelo link da notícia para a
       # ficha. Confere a regra de reprodução no rodapé de cada notícia.
       - name: Notícias da Agência Câmara
-        run: python scripts/noticias.py || echo "::warning::noticias.py falhou; noticias.json ficou como estava"
+        run: python scripts/passo.py --opcional noticias.py
 
       # Canal oficial de cada deputado no YouTube: inscritos como o YouTube informa (sem
       # ranking nem soma). Com o segredo YOUTUBE_API_KEY; sem ele, só os links.
       - name: Canais oficiais no YouTube
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-        run: python scripts/youtube.py || echo "::warning::youtube.py falhou; youtube.json ficou como estava"
+        run: python scripts/passo.py --opcional youtube.py
 
       # Enquete de cada lei votada, na página de resultado do site da Câmara (não há API).
       # Só as abertas e as novas são consultadas de novo. Falha de rede não para a rodada;
       # página em formato inesperado sai com erro e o enquetes.json do dia anterior fica.
       - name: Enquetes da Câmara
-        run: python scripts/enquetes.py || echo "::warning::enquetes.py falhou; enquetes.json ficou como estava"
+        run: python scripts/passo.py --opcional enquetes.py
 
       # Consulta pública do Senado (e-Cidadania), ligada pelo número único Câmara–Senado e
       # confirmada nos Dados Abertos do Senado. Mesma regra: falha não para a rodada.
       - name: Consulta pública do Senado
-        run: python scripts/ecidadania.py || echo "::warning::ecidadania.py falhou; ecidadania.json ficou como estava"
+        run: python scripts/passo.py --opcional ecidadania.py
 
       # Passo 8: resumo de cada PL e PEC a partir do texto integral, por IA, em lote.
       # Só gera com o segredo ANTHROPIC_API_KEY cadastrado no repositório; sem ele, apenas
@@ -105,28 +116,28 @@ jobs:
       - name: Resumos (IA, a partir do inteiro teor)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python scripts/resumos.py --esperar 60 || echo "::warning::resumos.py falhou; resumos.json ficou como estava"
+        run: python scripts/passo.py --opcional resumos.py --esperar 60
 
       # Obras com contrato federal (ObrasGov + Contratos.gov.br + emendas da CGU), só SP por ora.
       # APIs públicas sem chave, uma requisição por segundo; contratos relidos a cada 7 dias.
       # Falha não para a rodada: obras.json fica como estava.
       - name: Obras e contratos
-        run: python scripts/obras.py || echo "::warning::obras.py falhou; obras.json ficou como estava"
+        run: python scripts/passo.py --opcional obras.py
 
       # Senadores (Dados Abertos do Senado, sem chave): autoria, leis, relatorias e votos.
       - name: Senadores
-        run: python scripts/senado.py || echo "::warning::senado.py falhou; senadores.json ficou como estava"
+        run: python scripts/passo.py --opcional senado.py
 
       # Histórico de tramitação (quanto tempo e por onde passou), uma chamada por proposição.
       # Rebaixa só as que andaram; com o cache vazio, no máximo 12 mil por rodada (~1 h).
       - name: Tramitações
-        run: python scripts/tramitacoes.py --limite 12000 || echo "::warning::tramitacoes.py falhou; temas.py usa o que houver no cache"
+        run: python scripts/passo.py --opcional tramitacoes.py --limite 12000
 
       - name: Temas e frase-resumo
-        run: python scripts/temas.py
+        run: python scripts/passo.py temas.py
 
       - name: Esta semana na Câmara
-        run: python scripts/semana.py
+        run: python scripts/passo.py semana.py
 
       # Salva mesmo se algo falhou: o que foi baixado não precisa ser baixado de novo.
       - name: Guardar o cache para a próxima rodada

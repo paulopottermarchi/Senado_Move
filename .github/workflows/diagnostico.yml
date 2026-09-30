@@ -1,0 +1,67 @@
+# Diagnóstico de conexão: as máquinas do GitHub alcançam cada API que a rodada diária usa?
+# Criado depois que a 1ª rodada agendada (29/9/2026) passou 7 min sem resposta da Câmara.
+# Roda sozinho quando este arquivo muda, ou à mão (Actions → Diagnóstico de conexão → Run workflow).
+# O resultado sai como anotação em cada máquina: ok (código HTTP e tempo) ou o erro.
+
+name: Diagnóstico de conexão
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/diagnostico.yml
+
+permissions:
+  contents: read
+
+jobs:
+  conexao:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - run: pip install requests truststore
+
+      - name: Testar as APIs
+        run: |
+          python - <<'EOF'
+          import socket, time, requests, truststore
+          truststore.inject_into_ssl()   # o mesmo que os scripts usam
+          ALVOS = {
+            "Camara API":      "https://dadosabertos.camara.leg.br/api/v2/referencias/proposicoes/siglaTipo",
+            "Camara arquivos": "https://dadosabertos.camara.leg.br/arquivos/legislaturas/json/legislaturas.json",
+            "Camara site":     "https://www.camara.leg.br/enquetes",
+            "Senado API":      "https://legis.senado.leg.br/dadosabertos/senador/lista/atual",
+            "e-Cidadania":     "https://www12.senado.leg.br/ecidadania",
+            "ObrasGov":        "https://api-publica.obrasgov.gestao.gov.br/obras/docs",
+            "Contratos.gov":   "https://contratos.comprasnet.gov.br/api/docs",
+            "CGU downloads":   "https://dadosabertos-download.cgu.gov.br/",
+            "Wikipedia":       "https://pt.wikipedia.org/w/api.php?action=query&meta=siteinfo&format=json",
+          }
+          UA = {"User-Agent": "CamaraAberta/1.0 (https://github.com/paulopottermarchi/Senado_Move)"}
+          for nome, url in ALVOS.items():
+              host = url.split("/")[2]
+              t0 = time.monotonic()
+              try:
+                  socket.create_connection((host, 443), timeout=15).close()
+                  tcp = f"TCP {time.monotonic() - t0:.1f}s"
+              except OSError as e:
+                  print(f"::warning title={nome}::SEM CONEXAO TCP a {host} em {time.monotonic() - t0:.0f}s ({type(e).__name__}: {e})")
+                  continue
+              t1 = time.monotonic()
+              try:
+                  r = requests.get(url, headers=UA, timeout=30, stream=True)
+                  print(f"::notice title={nome}::ok HTTP {r.status_code} em {time.monotonic() - t1:.1f}s ({tcp})")
+              except Exception as e:
+                  print(f"::warning title={nome}::ERRO {type(e).__name__} em {time.monotonic() - t1:.0f}s ({tcp}): {str(e)[:160]}")
+          EOF
