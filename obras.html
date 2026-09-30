@@ -4,156 +4,112 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Obras: quanto o contrato cresceu | Câmara Aberta</title>
+<meta name="description" content="Obras federais em São Paulo com contrato no Contratos.gov.br: quanto o contrato cresceu, termo a termo, com os documentos oficiais.">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Câmara Aberta">
+<meta property="og:title" content="Obras: quanto o contrato cresceu | Câmara Aberta">
+<meta property="og:description" content="Obras federais em São Paulo com contrato no Contratos.gov.br: quanto o contrato cresceu, termo a termo, com os documentos oficiais.">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Cpath d='M8 13.5h16a8 8 0 0 1-16 0z' fill='%232dd4bf'/%3E%3Crect x='7' y='23.5' width='18' height='2' rx='1' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+<script src="site.js" defer></script>
 <style>
-:root{
-  --tinta:#16181b; --tinta2:#4a4e55; --tinta3:#80858d;
-  --linha:#e4e5e8; --linha2:#f0f1f3; --fundo:#f6f6f4; --papel:#fff;
-  --raio:14px; --raio-p:8px;
-  --sombra:0 1px 2px rgba(16,18,22,.04),0 6px 24px rgba(16,18,22,.05);
-  --serif:'Newsreader',Georgia,'Times New Roman',serif;
-  --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  /* obras: tinta neutra — valor não tem ideologia, nada da paleta do espectro */
-  --base:#c9ccd1; --cresce:#2b2f35;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
-body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);font-size:15px;line-height:1.55;
-     -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
-.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
-:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
-a{color:inherit}
-
-.topo{position:sticky;top:0;z-index:80;background:rgba(246,246,244,.86);
-      backdrop-filter:saturate(160%) blur(12px);-webkit-backdrop-filter:saturate(160%) blur(12px);
-      border-bottom:1px solid var(--linha)}
-.topo-in{max-width:1080px;margin:0 auto;padding:0 22px;height:56px;display:flex;align-items:center;
-         justify-content:space-between;gap:20px}
-.marca{font-family:var(--serif);font-size:19px;font-weight:600;text-decoration:none;white-space:nowrap}
-.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
-.nav::-webkit-scrollbar{display:none}
-.nav a{font-size:13.5px;color:var(--tinta2);text-decoration:none;padding:7px 11px;border-radius:999px;white-space:nowrap}
-.nav a:hover{background:var(--linha2);color:var(--tinta)}
-.nav a.aqui{background:var(--tinta);color:#fff}
-
-.capa{padding:52px 0 8px}
-.kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta3);margin-bottom:10px}
-h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,46px);font-weight:500;line-height:1.08;letter-spacing:-.015em;max-width:20ch}
-.chamada{font-size:clamp(15.5px,1.8vw,17.5px);color:var(--tinta2);margin-top:14px;max-width:64ch}
-.aviso{margin-top:24px;background:var(--papel);border:1px solid var(--linha);border-left:3px solid var(--tinta);
-       border-radius:var(--raio-p);padding:16px 20px;max-width:78ch}
-.aviso b{font-weight:600}
-.aviso p{font-size:14px;line-height:1.65;color:var(--tinta2)}
-.aviso p+p{margin-top:8px}
+:root{--base:var(--linha-forte); --cresce:#1e293b}
 
 .painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
-        padding:24px 28px;margin-top:26px}
-h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2}
-.sub{font-size:14px;color:var(--tinta2);margin-top:6px;max-width:72ch}
-.sub b{font-weight:600;color:var(--tinta)}
+        padding:24px 28px;margin-top:28px}
 
 /* controles */
-.ctl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:18px}
-.texto,.sel{font:inherit;font-size:14px;border:1px solid var(--linha);border-radius:999px;background:var(--papel);
-       color:var(--tinta);padding:8px 16px}
-.texto{width:320px;max-width:100%}
-.sel{padding:8px 12px}
-.texto:focus,.sel:focus{outline:none;border-color:var(--tinta2);box-shadow:0 0 0 4px rgba(22,24,27,.06)}
-.chk{font-size:13.5px;color:var(--tinta2);display:flex;gap:6px;align-items:center;cursor:pointer}
-.conta{font-size:13px;color:var(--tinta3);margin-top:10px}
+.ctl{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:20px}
+
+.conta{font-size:13px;color:var(--tinta3);margin-top:12px}
 
 /* lista */
-.lista{margin-top:10px}
+.lista{margin-top:12px}
 .ob{border-top:1px solid var(--linha2)}
 .ob-cab{display:grid;grid-template-columns:34px minmax(0,1fr) 200px;gap:12px;align-items:center;width:100%;
         background:none;border:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:12px 4px 4px}
 .ob-cab:hover .ob-nome{text-decoration:underline;text-underline-offset:3px}
-.ob-pos{font-size:12.5px;color:var(--tinta3);text-align:right}
-.ob-nome{display:block;font-size:14.5px;font-weight:500;line-height:1.3}
-.ob-txt small{display:block;font-size:12.5px;color:var(--tinta3);margin-top:2px}
+.ob-pos{font-size:13px;color:var(--tinta3);text-align:right}
+.ob-nome{display:block;font-size:15px;font-weight:500;line-height:1.3}
+.ob-txt small{display:block;font-size:13px;color:var(--tinta3);margin-top:2px}
 .ob-num{text-align:right;line-height:1.25}
-.ob-num b{font-family:var(--serif);font-size:22px;font-weight:600}
+.ob-num b{font-family:var(--serif);font-size:24px;font-weight:600}
 .ob-num small{display:block;font-size:12px;color:var(--tinta2)}
-.ob-barra{margin:6px 4px 12px 50px;height:8px;border-radius:4px;background:var(--linha2);overflow:hidden;display:flex}
+.ob-barra{margin:8px 4px 12px 52px;height:8px;border-radius:4px;background:var(--linha2);overflow:hidden;display:flex}
 .ob-barra i{display:block;height:100%}
 .ob-barra .b0{background:var(--base)}
 .ob-barra .b1{background:var(--cresce)}
 .ob-barra .b2{background:repeating-linear-gradient(45deg,var(--base) 0 3px,transparent 3px 6px)}
-.selos{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
-.selo{font-size:11.5px;border:1px solid var(--linha);border-radius:999px;padding:0 8px;color:var(--tinta2);white-space:nowrap}
+.selos{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.selo{font-size:12px;border:1px solid var(--linha);border-radius:999px;padding:0 8px;color:var(--tinta2);white-space:nowrap}
 .selo.forte{border-color:var(--tinta2);color:var(--tinta)}
-.mais{display:block;margin:16px auto 0;font:inherit;font-size:14px;background:var(--papel);border:1px solid var(--linha);border-radius:999px;padding:9px 20px;cursor:pointer}
-.mais[hidden]{display:none}
 
 /* detalhe */
-.det{margin:0 4px 18px 50px;border:1px solid var(--linha);border-radius:var(--raio-p);padding:18px 20px}
+.det{margin:0 4px 20px 52px;border:1px solid var(--linha);border-radius:var(--raio-p);padding:20px 20px}
 .det[hidden]{display:none}
 .det h3{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3);
-        margin-top:20px;padding-bottom:6px;border-bottom:1px solid var(--linha)}
+        margin-top:20px;padding-bottom:8px;border-bottom:1px solid var(--linha)}
 .det h3:first-child{margin-top:0}
 .det p{font-size:14px;line-height:1.6;max-width:74ch}
-.det p+p{margin-top:6px}
+.det p+p{margin-top:8px}
 .nota{font-size:12.5px!important;color:var(--tinta3)}
-.ids{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px 18px;margin-top:10px;font-size:13.5px}
-.ids dt{font-size:11.5px;color:var(--tinta3)}
+.ids{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px 20px;margin-top:12px;font-size:14px}
+.ids dt{font-size:12px;color:var(--tinta3)}
 .ids dd{font-weight:500;line-height:1.35}
 
 /* cascata financeira */
-.casc{margin-top:10px}
-.cx{display:grid;grid-template-columns:96px minmax(0,1fr) 150px;gap:10px;padding:7px 0;border-bottom:1px solid var(--linha2);font-size:13.5px;align-items:baseline}
-.cx .d{color:var(--tinta3);font-size:12.5px}
+.casc{margin-top:12px}
+.cx{display:grid;grid-template-columns:96px minmax(0,1fr) 184px;gap:12px;padding:8px 0;border-bottom:1px solid var(--linha2);font-size:14px;align-items:baseline}
+.cx .d{color:var(--tinta3);font-size:13px}
 .cx .v{text-align:right;font-weight:600;white-space:nowrap}
-.cx .v small{display:block;font-weight:400;font-size:12px;color:var(--tinta2)}
+.cx .v small{display:block;font-weight:400;font-size:12px;line-height:1.4;color:var(--tinta2);white-space:normal}  /* a nota quebra; o valor não */
 .cx .t b{font-weight:600}
-.cx .t small{display:block;color:var(--tinta2);font-size:12.5px;line-height:1.45;margin-top:2px}
-.cx .t a{font-size:12.5px}
+.cx .t small{display:block;color:var(--tinta2);font-size:13px;line-height:1.45;margin-top:2px}
+.cx .t a{font-size:13px}
 .cx.total{border-bottom:2px solid var(--tinta);font-size:14px}
 .cx.pago .v{color:var(--tinta2)}
-.contrato+.contrato{margin-top:18px}
+.contrato+.contrato{margin-top:20px}
 .c-cab{font-size:14px;margin-top:12px}
 .c-cab b{font-weight:600}
-.c-cab small{display:block;font-size:12.5px;color:var(--tinta2)}
+.c-cab small{display:block;font-size:13px;color:var(--tinta2)}
 
 /* linha do tempo */
 .tempo{list-style:none;margin-top:12px;position:relative}
 .tempo::before{content:"";position:absolute;left:79px;top:6px;bottom:6px;width:1px;background:var(--linha)}
-.ev{display:grid;grid-template-columns:70px 20px minmax(0,1fr);gap:0 0;padding:6px 0;font-size:13.5px}
-.ev .d{font-size:12.5px;color:var(--tinta3);text-align:right;padding-right:10px;padding-top:1px}
+.ev{display:grid;grid-template-columns:70px 20px minmax(0,1fr);gap:0 0;padding:8px 0;font-size:14px}
+.ev .d{font-size:13px;color:var(--tinta3);text-align:right;padding-right:12px;padding-top:1px}
 .ev .p{position:relative}
 .ev .p::before{content:"";position:absolute;left:5px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--papel);border:2px solid var(--tinta2)}
 .ev.dinheiro .p::before{background:var(--cresce);border-color:var(--cresce)}
 .ev.alerta .p::before{border-color:var(--tinta);background:repeating-linear-gradient(45deg,var(--tinta) 0 2px,var(--papel) 2px 4px)}
 .ev .x b{font-weight:600}
-.ev .x .tipo{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta3);margin-right:6px}
-.ev .x small{display:block;color:var(--tinta2);font-size:12.5px;line-height:1.45}
-.ev .x a{font-size:12.5px}
+.ev .x .tipo{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta3);margin-right:8px}
+.ev .x small{display:block;color:var(--tinta2);font-size:13px;line-height:1.45}
+.ev .x a{font-size:13px}
 
-.pessoas{margin-top:10px}
-.pe{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:10px;padding:7px 0;border-bottom:1px solid var(--linha2);font-size:13.5px}
+.pessoas{margin-top:12px}
+.pe{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:12px;padding:8px 0;border-bottom:1px solid var(--linha2);font-size:14px}
 .pe b{font-weight:600}
-.pe small{display:block;color:var(--tinta2);font-size:12.5px}
+.pe small{display:block;color:var(--tinta2);font-size:13px}
 .pe .v{text-align:right;font-weight:600}
-.fontes{margin-top:8px;padding-left:18px;font-size:13px;line-height:1.7}
+.fontes{margin-top:8px;padding-left:20px;font-size:13px;line-height:1.7}
 .sist{font-weight:400;color:var(--tinta3);font-size:12px}
 
 .vazio{padding:28px 0;color:var(--tinta2);font-size:14px}
-.erro{padding:18px;border:1px solid var(--linha);border-radius:var(--raio-p);margin-top:18px;font-size:14px}
-
-.rodape-site{margin-top:56px;border-top:1px solid var(--linha);background:var(--papel);padding:36px 0 44px}
-.rodape-site h2{font-size:18px;font-weight:600;margin-bottom:8px}
-.rodape-site p{font-size:13.5px;line-height:1.7;color:var(--tinta2);max-width:78ch}
-.rodape-site p+p{margin-top:10px}
+.erro{padding:20px;border:1px solid var(--linha);border-radius:var(--raio-p);margin-top:20px;font-size:14px}
 
 @media(max-width:760px){
-  .painel{padding:18px}
+  .painel{padding:20px}
   .ob-cab{grid-template-columns:26px minmax(0,1fr);gap:8px}
-  .ob-num{grid-column:2;text-align:left;display:flex;gap:10px;align-items:baseline}
+  .ob-num{grid-column:2;text-align:left;display:flex;gap:12px;align-items:baseline}
   .ob-num small{display:inline}
-  .ob-barra{margin-left:38px}
-  .det{margin-left:0;margin-right:0;padding:14px}
+  .ob-barra{margin-left:40px}
+  .det{margin-left:0;margin-right:0;padding:16px}
   .cx{grid-template-columns:78px minmax(0,1fr);}
   .cx .v{grid-column:2;text-align:left}
   .tempo::before{left:61px}
@@ -161,28 +117,25 @@ h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2}
   .pe{grid-template-columns:1fr}
   .pe .v{text-align:left}
 }
-@media(max-width:520px){ .topo .marca{display:none} }
+
 </style>
 </head>
 <body>
 
 <header class="topo">
   <div class="topo-in">
-    <a class="marca" href="prototipo.html">Câmara Aberta</a>
-    <nav class="nav" aria-label="Seções do site">
+    <a class="marca" href="prototipo.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+    <nav class="nav" aria-label="Páginas do site">
       <a href="prototipo.html#deputados">Deputados</a>
+      <a href="senadores.html">Senadores</a>
       <a href="prototipo.html#semana">Esta semana</a>
       <a href="leis.html">Leis votadas</a>
       <a href="blocos.html">Quem vota com quem</a>
-      <a class="aqui" href="obras.html" aria-current="page">Obras</a>
+      <a href="obras.html" aria-current="page">Obras</a>
       <a href="prototipo.html#sobre">Sobre os dados</a>
     </nav>
   </div>
 </header>
-<script>
-// No celular a barra rola de lado: abre já mostrando o item da página atual.
-(()=>{const a=document.querySelector('.nav a.aqui'); if(a) a.parentElement.scrollLeft=a.offsetLeft-16;})();
-</script>
 
 <main class="wrap">
   <div class="capa">
@@ -248,6 +201,41 @@ h2{font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2}
        menção em proposição, discurso ou notícia não entra, porque nomes de obra se repetem ("Linha 17",
        "Hospital Regional") e o mesmo vale para nomes de gente.</p>
     <p id="rodapeData"></p>
+  </div>
+</footer>
+<footer class="rodape-global">
+  <div class="wrap">
+    <div class="rg">
+      <div class="rg-sobre">
+        <a class="marca" href="prototipo.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+        <p>O que o Congresso propõe, aprova e vota, a partir de dados públicos oficiais atualizados todos os dias.</p>
+      </div>
+      <nav class="rg-col" aria-label="Páginas">
+        <h2>Páginas</h2>
+        <a href="prototipo.html#deputados">Deputados</a>
+        <a href="senadores.html">Senadores</a>
+        <a href="leis.html">Leis votadas</a>
+        <a href="blocos.html">Quem vota com quem</a>
+        <a href="obras.html">Obras</a>
+      </nav>
+      <div class="rg-col">
+        <h2>Fontes</h2>
+        <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Câmara dos Deputados</a>
+        <a href="https://legis.senado.leg.br/dadosabertos/" target="_blank" rel="noopener">Senado Federal</a>
+        <a href="https://www.tse.jus.br" target="_blank" rel="noopener">Tribunal Superior Eleitoral</a>
+        <a href="https://dataverse.harvard.edu/dataverse/bls" target="_blank" rel="noopener">Brazilian Legislative Survey</a>
+        <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a>
+      </div>
+      <div class="rg-col">
+        <h2>Projeto</h2>
+        <a href="prototipo.html#sobre">Sobre os dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">Código e dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/issues" target="_blank" rel="noopener">Informar um erro</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a>
+      </div>
+    </div>
+    <div class="rg-pe"><p>Site independente, sem vínculo com a Câmara dos Deputados, o Senado Federal ou o TSE.
+      Os números vêm das fontes oficiais citadas; as escolhas de método estão escritas em cada página.</p></div>
   </div>
 </footer>
 

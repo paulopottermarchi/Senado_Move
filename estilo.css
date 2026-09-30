@@ -1,0 +1,199 @@
+/* =====================================================================
+   Câmara Aberta — estilo comum a todas as páginas.
+   Carregado ANTES do <style> de cada página: aqui ficam tokens, barra,
+   rodapé e os componentes repetidos; a página só acrescenta o que é dela.
+   Sem dependências (o briefing manda HTML estático). Escala de espaço em
+   múltiplos de 4/8 px; cantos de 12–16 px; sombras suaves e difusas;
+   transições de 300 ms em ease-in-out.
+   ===================================================================== */
+
+:root{
+  /* Espectro — SÓ para ideologia (CLAUDE.md). Nenhum outro uso. */
+  --esq:#d85a30; --cesq:#b88f5a; --cen:#888780; --cdir:#4a7a9f; --dir:#0c447c; --sem:#c8cace;
+
+  /* Paleta "confiança e tecnologia": tinta ardósia (principal), petróleo (destaque) e
+     neutros frios. Sem azul de propósito: aqui azul quer dizer "direita" no espectro, e uma
+     interface azul faria o site parecer de um lado. O petróleo fica só na interface (links,
+     rótulos, item atual, foco, marca) — nunca em gráfico nem em dado. */
+  --tinta:#0f172a;  --tinta2:#334155;  --tinta3:#566376;       /* 17,9 · 10,4 · 6,1 : 1 no branco */
+  --destaque:#0f766e;                                          /* texto e links: 5,5 : 1 no branco */
+  --destaque-forte:#115e59;                                    /* hover: 7,6 : 1 */
+  --destaque-vivo:#0d9488;                                     /* traços e indicadores: 3,7 : 1 */
+  --destaque-claro:#2dd4bf;                                    /* sobre fundo escuro: 9,6 : 1 */
+  --destaque-fundo:#e6f4f2;
+  --linha:#e2e8f0;  --linha2:#eef2f6;  --linha-forte:#cbd5e1;
+  --fundo:#f5f7fa;  --papel:#fff;      --papel2:#f9fafb;
+  --link:var(--destaque);
+
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  /* escala tipográfica (px): 11 · 12 · 13 · 14 · 15 · 16 · 18 · 20 · 24 · 30 · 36 · 48 */
+
+  --raio:16px;      /* cartões (2xl) */
+  --raio-p:12px;    /* blocos internos e controles (xl) */
+  --raio-c:8px;     /* peças pequenas */
+  --sombra:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.05);               /* sm */
+  --sombra-md:0 8px 16px -4px rgba(15,23,42,.08),0 2px 6px -2px rgba(15,23,42,.05); /* md */
+  --sombra-lg:0 32px 64px -16px rgba(15,23,42,.28),0 8px 24px -8px rgba(15,23,42,.12);
+  --anel:0 0 0 4px rgba(13,148,136,.18);
+  --curva:cubic-bezier(.4,0,.2,1);
+  --t:300ms var(--curva);
+}
+
+/* ---------- base ---------- */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+[id]{scroll-margin-top:88px}
+body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);font-size:15px;line-height:1.6;
+     -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-variant-numeric:tabular-nums;
+     padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px;
+  transition:color var(--t),text-decoration-color var(--t),background-color var(--t),border-color var(--t)}
+:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:2px;border-radius:4px}
+::selection{background:var(--destaque-fundo)}
+button{transition:color var(--t),background-color var(--t),border-color var(--t),box-shadow var(--t),transform var(--t)}
+
+/* ---------- barra do site ---------- */
+.topo{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);
+      backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);
+      border-bottom:1px solid var(--linha)}
+.topo-in{max-width:1120px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:32px}
+.marca{display:inline-flex;align-items:center;gap:12px;font-family:var(--serif);font-size:20px;font-weight:600;
+       letter-spacing:-.01em;line-height:1;color:var(--tinta);text-decoration:none;white-space:nowrap;flex-shrink:0}
+.marca-ico{width:32px;height:32px;display:block;flex-shrink:0;transition:transform var(--t)}
+.marca-ico .fundo{fill:var(--tinta)}
+.marca:hover .marca-ico{transform:translateY(-1px) scale(1.04)}
+.nav{align-self:stretch;display:flex;align-items:stretch;gap:4px;margin-left:auto;min-width:0;
+     overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{position:relative;display:flex;align-items:center;padding:0 12px;font-size:14px;font-weight:500;
+       color:var(--tinta3);text-decoration:none;white-space:nowrap}
+.nav a::after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:2px;border-radius:2px;
+              background:var(--linha-forte);transform:scaleX(0);transition:transform var(--t),background-color var(--t)}
+.nav a:hover{color:var(--tinta)}
+.nav a:hover::after{transform:scaleX(1)}
+.nav a[aria-current]{color:var(--tinta)}
+.nav a[aria-current]::after{transform:scaleX(1);background:var(--destaque-vivo)}
+.nav a:focus-visible{outline-offset:-4px}
+
+/* ---------- abertura das páginas ---------- */
+.capa{padding:64px 0 16px}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.1em;line-height:1.4;text-transform:uppercase;
+        color:var(--destaque);margin-bottom:12px}
+h1{font-family:var(--serif);font-size:clamp(32px,4.8vw,48px);font-weight:500;line-height:1.1;
+   letter-spacing:-.02em;max-width:20ch;text-wrap:balance}
+.chamada{font-size:clamp(16px,1.8vw,18px);line-height:1.625;color:var(--tinta2);margin-top:16px;max-width:64ch}
+
+/* enquadramento que vem antes dos números */
+.aviso{position:relative;overflow:hidden;margin-top:24px;background:var(--papel);border:1px solid var(--linha);
+       border-radius:var(--raio-p);box-shadow:var(--sombra);padding:16px 24px;max-width:78ch}
+.aviso::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--destaque-vivo)}
+.aviso b{font-weight:600}
+.aviso p{font-size:14px;line-height:1.7;color:var(--tinta2)}
+.aviso p+p{margin-top:8px}
+
+/* ---------- cartões ---------- */
+.painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
+        padding:32px;margin-top:32px}
+h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;letter-spacing:-.01em;text-wrap:balance}
+.sub{font-size:15px;line-height:1.625;color:var(--tinta2);margin-top:8px;max-width:72ch}
+.sub b{font-weight:600;color:var(--tinta)}
+
+/* ---------- controles ---------- */
+.campo{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--tinta3)}
+.texto,.sel{font:inherit;font-size:14px;line-height:1.4;color:var(--tinta);background-color:var(--papel);
+            border:1px solid var(--linha);border-radius:var(--raio-p);padding:8px 16px;max-width:100%;
+            transition:border-color var(--t),box-shadow var(--t)}
+.texto{width:320px}
+.texto::placeholder{color:var(--tinta3)}
+.texto:hover,.sel:hover{border-color:var(--linha-forte)}
+.texto:focus,.sel:focus{outline:none;border-color:var(--destaque-vivo);box-shadow:var(--anel)}
+.sel{appearance:none;-webkit-appearance:none;padding-right:36px;cursor:pointer;text-overflow:ellipsis;
+     background:var(--papel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23566376' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 16px center}
+.chk{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--tinta2);cursor:pointer}
+.chk input{width:16px;height:16px;accent-color:var(--tinta);cursor:pointer}
+
+.pino{font:inherit;font-size:13px;font-weight:500;line-height:1.25;padding:8px 16px;border:1px solid var(--linha);
+      background:var(--papel);color:var(--tinta2);border-radius:var(--raio-p);cursor:pointer;white-space:nowrap}
+.pino:hover{border-color:var(--linha-forte);color:var(--tinta);box-shadow:var(--sombra)}
+.pino.on{background:var(--tinta);border-color:var(--tinta);color:#fff;box-shadow:none}
+
+/* grupo segmentado */
+.seg{display:inline-flex;align-items:center;gap:4px;padding:4px;background:var(--linha2);border-radius:var(--raio-p)}
+.seg .pino{border:none;background:transparent;border-radius:var(--raio-c);padding:8px 12px;color:var(--tinta3)}
+.seg .pino:hover{color:var(--tinta);background:rgba(255,255,255,.6);box-shadow:none}
+.seg .pino.on{background:var(--papel);color:var(--tinta);box-shadow:0 1px 2px rgba(15,23,42,.08),0 1px 3px rgba(15,23,42,.06)}
+
+.limpar{font:inherit;font-size:13px;font-weight:500;color:var(--tinta);background:none;border:none;cursor:pointer;
+        padding:8px 4px;text-decoration:underline;text-decoration-color:var(--linha-forte);text-underline-offset:4px}
+.limpar:hover{text-decoration-color:var(--tinta)}
+.limpar[hidden]{display:none}
+
+.mais{display:block;margin:24px auto 0;font:inherit;font-size:14px;font-weight:500;color:var(--tinta);
+      background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio-p);padding:12px 24px;
+      cursor:pointer;box-shadow:var(--sombra)}
+.mais:hover{border-color:var(--linha-forte);box-shadow:var(--sombra-md);transform:translateY(-1px)}
+.mais[hidden]{display:none}
+
+/* ---------- método (fim de cada página) ---------- */
+.rodape-site{margin-top:64px;border-top:1px solid var(--linha);background:var(--papel);padding:48px 0}
+.rodape-site h2{font-family:var(--serif);font-size:20px;font-weight:500;margin-bottom:12px}
+.rodape-site p{font-size:14px;line-height:1.75;color:var(--tinta2);max-width:78ch}
+.rodape-site p+p{margin-top:12px}
+.rodape-site a{color:var(--destaque);text-decoration-color:rgba(15,118,110,.35)}
+.rodape-site a:hover{color:var(--destaque-forte);text-decoration-color:currentColor}
+
+/* ---------- rodapé do site ---------- */
+.rodape-site+.rodape-global{margin-top:0}
+.rodape-global{margin-top:64px;background:var(--tinta);color:#a3b1c2;padding:56px 0 32px;font-size:14px;line-height:1.6}
+.rg{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr));gap:32px 48px}
+.rg .marca{color:#fff;font-size:20px}
+.rg .marca-ico .fundo{fill:#1e293b}
+.rg-sobre p{margin-top:16px;max-width:36ch}
+.rg-col{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.rg-col h2{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--destaque-claro);margin-bottom:4px}
+.rg-col a{color:#cbd5e1;text-decoration:none}
+.rg-col a:hover{color:#fff;text-decoration:underline;text-decoration-color:var(--destaque-claro)}
+.rg-pe{margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;color:#94a3b8}
+.rg-pe p{max-width:90ch}
+
+/* ---------- entrada suave (site.js marca; sem JS, tudo aparece normal) ---------- */
+@keyframes surgir{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.revela{opacity:0}
+.revela.visivel{animation:surgir .6s var(--curva) both}
+
+/* ---------- telas menores ---------- */
+@media(max-width:1000px){
+  .topo-in{gap:16px}
+  /* a barra rola de lado: esmaece as duas pontas para mostrar que há mais */
+  .nav{-webkit-mask-image:linear-gradient(90deg,transparent,#000 20px,#000 calc(100% - 32px),transparent);
+       mask-image:linear-gradient(90deg,transparent,#000 20px,#000 calc(100% - 32px),transparent);
+       padding:0 24px 0 16px}
+}
+@media(max-width:860px){
+  .rg{grid-template-columns:1fr 1fr}
+  .rg-sobre{grid-column:1/-1}
+}
+@media(max-width:640px){
+  .wrap{padding:0 16px}
+  .topo-in{padding:0 0 0 16px;height:56px;gap:8px}
+  .marca span{display:none}              /* no celular: só o símbolo, e as seções ao lado */
+  .capa{padding:40px 0 8px}
+  .painel{padding:20px;border-radius:var(--raio-p)}
+  .texto{width:100%}
+  [id]{scroll-margin-top:72px}
+  .rg{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .revela{opacity:1}
+}
+@media print{
+  .topo,.rodape-global{display:none}
+  .revela{opacity:1!important;animation:none!important}
+  body{background:#fff}
+}
