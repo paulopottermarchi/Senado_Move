@@ -14,7 +14,7 @@ dos Deputados, o Senado Federal ou o TSE.
 | **Início** (`index.html`) | Onde cada um dos 513 deputados está no espectro político e quanto propôs — com alternância entre proposições *apresentadas* e as que *viraram lei*. Ranking, o que aconteceu na semana, as votações mais disputadas e mais consensuais, e o espectro por região. |
 | **Perfil do deputado** (`deputado.html?id=…`) | Todas as PEC e PL de autoria, por tema, com o tempo e o caminho de cada uma na Câmara; com quem vota; leituras na Wikipédia; obras com emenda dele. |
 | **Senadores** (`senadores.html`) | Os 81 senadores no mesmo gráfico: autoria, leis, relatorias e votos no Plenário. |
-| **Leis votadas** (`leis.html`) | As votações finais nominais desde 2023: placar, posição média de quem votou sim e não, adesão por faixa do espectro, quem votou diferente do próprio partido, enquete da Câmara e consulta do Senado. |
+| **Leis votadas** (`leis.html`) | As votações finais nominais desde 2023: placar, posição média de quem votou sim e não, adesão por faixa do espectro, quem votou diferente da orientação da própria bancada, enquete da Câmara e consulta do Senado. |
 | **Quem vota com quem** (`blocos.html`) | Os blocos que se formam pela semelhança dos votos, sem olhar o partido. |
 | **Obras** (`obras.html`) | Obras federais em São Paulo com contrato no Contratos.gov.br: quanto o contrato cresceu, termo a termo, com os documentos oficiais. |
 
@@ -26,7 +26,7 @@ dos Deputados, o Senado Federal ou o TSE.
   mostra "—" e o motivo. Nada é estimado ou preenchido.
 - **Sem índice de "qualidade".** Quem escolhe os pesos escolhe o ranking. O site mostra volume
   (apresentadas) ao lado de resultado (viraram lei) e deixa a comparação para quem lê.
-- **Enquadramento antes do número.** Votar diferente do partido não é traição por definição; aditivo
+- **Enquadramento antes do número.** Votar diferente da orientação da própria bancada não é traição por definição; aditivo
   de contrato não é irregularidade; leitura na Wikipédia mede procura, não aprovação.
 - **As cores do espectro só representam ideologia.** Tema, bloco de voto e valor de obra usam
   tinta neutra ou cores fora dessa paleta.
@@ -54,6 +54,10 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
   votação simbólica não registra o voto de cada deputado.
 - **Apoio cruzado**, por votação: distância entre a posição do autor e a posição média de quem
   votou sim, sempre normalizada pelo tamanho de cada bancada.
+- **Votou diferente da orientação da própria bancada**: o voto Sim ou Não contra a orientação Sim ou
+  Não **registrada** pela liderança — na Câmara, a mais estreita que orientou e inclui o partido do
+  deputado naquele dia (o partido, a federação ou o bloco); no Senado, o partido. Orientação liberada
+  não conta, nem as de Governo, Oposição, Maioria e Minoria. É registro das duas Casas, não estimativa.
 - **Presença** é contagem de votos registrados, nunca taxa: sem o período de exercício de cada um, a
   conta trataria licença e suplência como falta.
 - **Obras**: crescimento = valor global atual − valor inicial, os dois campos do registro do contrato;

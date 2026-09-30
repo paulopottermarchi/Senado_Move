@@ -107,6 +107,9 @@ tbody tr{transition:background-color var(--t)}
          escala de 1, esquerda, a 10, direita. Partido sem posição na pesquisa aparece à parte, em cinza.</p>
       <p><b>Apresentar projeto custa pouco</b>; o que diz mais é o que virou lei. <b>Relatoria</b> é designação do
          presidente da comissão, sinal de confiança dos pares — entra na ficha como contexto, nunca como nota.</p>
+      <p><b>Votar diferente da orientação da própria bancada não é traição nem incoerência por definição.</b>
+         Pode ser convicção, compromisso com o estado ou acordo; a página mostra quantas vezes, não por quê. A
+         orientação é a que o partido registrou no Senado em cada votação — registro, não estimativa.</p>
     </div>
   </div>
 
@@ -150,6 +153,10 @@ tbody tr{transition:background-color var(--t)}
        cada um e fica de fora). O Senado registra todo senador em cada votação e, quando não votou, o motivo oficial —
        atividade parlamentar, licença, missão, presidindo a sessão, não compareceu. A ficha mostra isso como vem; não há
        taxa nem ranking de presença.</p>
+    <p><b>Diferente da orientação</b>: o voto Sim ou Não do senador contra a orientação SIM ou NÃO registrada pelo
+       partido dele, no dia do voto, no registro de orientação de bancada do Senado. Orientação liberada ("livre"),
+       obstrução e partido que não orientou não contam, nem as orientações de Governo, Oposição, Maioria, Minoria e
+       Bancada Feminina, que não são a bancada de ninguém. Com menos de 30 votações comparáveis, não há número.</p>
     <p id="rodapeData"></p>
   </div>
 </footer>
@@ -238,6 +245,15 @@ function motivos(o){
   const e=Object.entries(o||{}).sort((a,b)=>b[1]-a[1]); if(!e.length) return '';
   return `; nas demais, o registro do Senado diz: ${e.map(([k,n])=>`${esc(MOTIVO[k]||k)} ${nf.format(n)}`).join(', ')}`;
 }
+// O enquadramento vem antes do número: lido rápido, "votou contra a orientação" vira "traidor".
+function textoOrientacao(s){
+  const t=taxaOri(s), o=s.difOrientacao||{};
+  if(t==null) return o.nota?`<p class="f-txt">Votos diferentes da orientação da própria bancada: sem número (${esc(o.nota)}).</p>`:'';
+  return `<p class="f-txt">Votar diferente da orientação da própria bancada pode ser convicção, pauta do estado ou acordo;
+    o número mede quantas vezes, não por quê. Nas votações nominais abertas do Plenário desde 2023, votou diferente da
+    orientação registrada pelo próprio partido em <b>${pct1(t)}</b> das ${nf.format(o.comparaveis)} em que o partido orientou
+    Sim ou Não${MEDIANA_ORI!=null?`; no Senado, a mediana é ${pct1(MEDIANA_ORI)}`:''}. Votações com orientação liberada não contam.</p>`;
+}
 function iniciais(n){return n.split(' ').filter(Boolean).slice(0,2).map(p=>p[0]).join('')}
 // Foto oficial do Senado. O endereço que a API dá (www…/senadorNNNN.jpg) redireciona duas vezes até
 // legis.senado.leg.br/senadores/fotos-oficiais/NNNN: pede o destino direto e, se falhar, o da API.
@@ -270,14 +286,20 @@ function abrir(id){
     <p class="f-txt">Nesta legislatura, apresentou <b>${nf.format(n.apresentadas||0)}</b> PEC e PL; ${n.viraramLei?`<b>${nf.format(n.viraramLei)}</b> já ${n.viraramLei>1?'viraram':'virou'} lei`:'nenhum virou lei ainda'}.
       ${s.score!=null?`Posição do partido no espectro: <b>${s.score.toFixed(1)} de 10</b> — média das respostas da wave 2021 do Brazilian Legislative Survey, calculada por este site.`:`Sem posição no espectro: ${esc(s.scoreNota)}.`}
       ${v.votacoes?`Nas ${nf.format(v.votacoes)} votações nominais abertas do Plenário desde 2023: ${nf.format(v.sim||0)} Sim, ${nf.format(v.nao||0)} Não, ${nf.format(v.abstencao||0)} ${v.abstencao===1?'abstenção':'abstenções'}${motivos(v.outros)}.`:''}</p>
+    ${textoOrientacao(s)}
     ${leis?`<p class="f-txt"><b>O que virou lei</b> (primeiro autor):</p><ul class="leis">${leis}</ul>`:''}`;
   grafico();
   $('#ficha').scrollIntoView({block:'nearest'});
 }
 
 const COLS=[['nome','Senador','esq'],['partido','Partido','esq'],['apresentadas','Apresentadas'],['viraramLei','Viraram lei'],
-            ['conv','Conversão'],['rel','Relatadas']];
+            ['conv','Conversão'],['rel','Relatadas'],['dif','Diferente da orientação']];
+// Votou diferente da orientação registrada pelo próprio partido (senado.py): parcela, ou null sem amostra.
+const taxaOri=s=>{const o=s.difOrientacao; return o&&o.diferentes!=null&&o.comparaveis?o.diferentes/o.comparaveis:null;};
+const pct1=x=>(x*100).toFixed(1).replace('.',',')+'%';
+let MEDIANA_ORI=null;
 const valorCol=(s,k)=>k==='conv'?(s.apresentadas?s.viraramLei/s.apresentadas:null):k==='rel'?(s.relatorias||{}).processos:
+  k==='dif'?taxaOri(s):
   k==='nome'||k==='partido'?norm(s[k]):s[k];
 function tabela(){
   $('#cab').innerHTML=COLS.map(([k,t,c])=>`<th class="${c||''} ${ordCol===k?'ord':''}" data-k="${k}">${t}${ordCol===k?(ordDesc?' ▼':' ▲'):''}</th>`).join('');
@@ -285,13 +307,16 @@ function tabela(){
     return (x<y?-1:x>y?1:0)*(ordDesc?-1:1)});
   $('#corpo').innerHTML=L.map(s=>`<tr data-id="${s.id}"><td class="esq"><div class="sen">${foto(s)}<div><b>${esc(s.nome)}</b><small>${esc(s.uf)}</small></div></div></td><td class="esq">${esc(s.partido)}</td>
     <td>${nf.format(s.apresentadas)}</td><td>${nf.format(s.viraramLei)}</td><td>${s.apresentadas?(s.viraramLei/s.apresentadas*100).toFixed(1)+'%':'—'}</td>
-    <td>${nf.format((s.relatorias||{}).processos||0)}</td></tr>`).join('');
+    <td>${nf.format((s.relatorias||{}).processos||0)}</td>
+    <td>${taxaOri(s)==null?`<span title="${esc((s.difOrientacao||{}).nota||'')}">—</span>`:pct1(taxaOri(s))}</td></tr>`).join('');
 }
 
 async function carregar(){
   try{ const r=await fetch('dados/senadores.json',{cache:'no-cache'}); if(!r.ok) throw new Error('HTTP '+r.status); S=await r.json(); }
   catch(e){ $('#grafico').innerHTML=`<p class="erro">Não foi possível carregar senadores.json (${esc(e.message)}).</p>`; return }
   $('#kicker').textContent=`Senado Federal · ${S.length} senadores em exercício`;
+  const tx=S.map(taxaOri).filter(x=>x!=null).sort((a,b)=>a-b);
+  MEDIANA_ORI=tx.length?tx[Math.floor(tx.length/2)]:null;
   grafico(); tabela();
   const q=new URLSearchParams(location.search).get('id'); if(q) abrir(+q);
 }

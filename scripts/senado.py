@@ -30,6 +30,12 @@ Regras (as da Câmara, sem reimplementar o que não muda):
     em cada votação e, quando não votou, o motivo oficial (medido: atividade parlamentar 919,
     presente sem registrar voto 957, licença saúde 306, missão 222, presidindo 183, não compareceu
     79). A ficha mostra "votou em N" e o motivo registrado do resto — sem taxa, sem ranking.
+  - Votou diferente da orientação da própria bancada: /plenario/votacao/orientacaoBancada/{ini}/{fim}
+    (não DEPRECATED; conferido em 30/9/2026) traz, por votação, a orientação REGISTRADA de cada
+    partido (SIM, NÃO, LIVRE). Compara o voto Sim/Não do senador com a orientação SIM/NÃO do partido
+    dele NA DATA DO VOTO (o registro do voto traz a sigla). LIVRE (liberada), obstrução, partido que
+    não orientou e as lideranças que não são bancada do senador (Governo, Oposição, Maioria, Minoria,
+    Bancada Feminina) não contam. Registro, não estimativa. Nunca "traidor" ou "infiel".
 """
 
 import argparse
@@ -54,6 +60,14 @@ LEI = ("TRANSFORMADA EM NORMA JURÍDICA", "TRANSFORMADA EM NORMA JURÍDICA COM V
 INICIO_LEGISLATURA = "2023-02-01"
 DELIBERADA = ("Deliberação da matéria", "Matéria deliberada no plenário")
 VALIDADE = timedelta(days=7)
+# Orientação: o registro escreve alguns partidos por extenso; o voto do senador traz a sigla.
+ORIENTA_ALIAS = {"Podemos": "PODE", "Republica": "REPUBLICANOS", "Republicanos": "REPUBLICANOS",
+                 "Progressistas": "PP"}
+NAO_BANCADA = {"Governo", "Oposição", "Maioria", "Minoria", "Banc Fem", "B.Feminina"}
+MIN_ORIENTACAO = 30   # votações comparáveis para publicar o número (medido: mediana de 100 por senador)
+# Requerimento cujo voto por senador vem sem sequencialVotacao: liga pelo número e ano do requerimento
+# e pela data, que precisam apontar uma única votação do registro de orientações.
+REQUERIMENTO = re.compile(r"Requerimento\s+(?:n[ºo°.]*\s*)?([\d.]+)\s*,?\s+de\s+(\d{4})", re.I)
 
 sessao = requests.Session()
 sessao.headers.update({"User-Agent": "CamaraAberta/1.0 (https://github.com/paulopottermarchi/Senado_Move)",
@@ -95,6 +109,39 @@ def buscar(nome, caminho_api, atualizar, validade=VALIDADE, **params):
         c = pedir(caminho_api, **params)
         coleta.gravar_cache(caminho, c if c is not None else [])
     return c or []
+
+
+def orientacoes(atualizar):
+    """Orientação registrada de cada partido em cada votação do Plenário desde 2023.
+    Devolve {sequencialVotacao: {sigla: 'SIM'|'NÃO'|'LIVRE'|…}} e o índice
+    {(data, número do requerimento, ano): [sequenciais]} para o voto que vem sem sequencial."""
+    hoje = datetime.now()
+    por_seq, por_req = {}, {}
+    for ano in range(int(INICIO_LEGISLATURA[:4]), hoje.year + 1):
+        ini = INICIO_LEGISLATURA.replace("-", "") if ano == int(INICIO_LEGISLATURA[:4]) else f"{ano}0101"
+        fim = f"{ano}1231" if ano < hoje.year else hoje.strftime("%Y%m%d")
+        # ano fechado não muda — salvo o anterior, relido por um tempo para pegar o fim do ano
+        validade = timedelta(days=1) if ano >= hoje.year - 1 else timedelta(days=3650)
+        d = buscar(f"orientacoes/{ano}.json", f"/plenario/votacao/orientacaoBancada/{ini}/{fim}",
+                   atualizar, validade)
+        for v in (d.get("votacoes") or []) if isinstance(d, dict) else []:
+            por_seq[v["sequencialVotacao"]] = {
+                ORIENTA_ALIAS.get(o.get("partido"), o.get("partido")): o.get("voto")
+                for o in v.get("orientacoesLideranca") or [] if o.get("partido") not in NAO_BANCADA}
+            if v.get("siglaTipoMateria") == "RQS":
+                chave = ((v.get("dataInicioVotacao") or "")[:10], v.get("numeroMateria"), v.get("anoMateria"))
+                por_req.setdefault(chave, []).append(v["sequencialVotacao"])
+    return por_seq, por_req
+
+
+def sequencial(v, por_req):
+    if v.get("sequencialVotacao") is not None:
+        return v["sequencialVotacao"]
+    m = REQUERIMENTO.search(v.get("descricaoVotacao") or "")
+    if not m:
+        return None
+    achados = por_req.get((v.get("dataSessao"), int(m.group(1).replace(".", "")), int(m.group(2))), [])
+    return achados[0] if len(achados) == 1 else None
 
 
 def autor_principal(cod, p, atualizar):
@@ -172,6 +219,10 @@ def main():
     ideologia = {k: v for k, v in json.loads(coleta.IDEOLOGIA.read_text(encoding="utf-8")).items()
                  if not k.startswith("_")}
     print(f"{len(lista)} senadores em exercício", flush=True)
+    ori_seq, ori_req = orientacoes(args.atualizar)
+    print(f"Orientações de bancada registradas: {len(ori_seq)} votações "
+          f"({sum(1 for o in ori_seq.values() if o)} com orientação de algum partido)", flush=True)
+    motivos_ori = Counter()
 
     saida, votacoes = [], {}
     for n, p in enumerate(lista, 1):
@@ -205,7 +256,7 @@ def main():
         deliberadas = {r.get("idProcesso") for r in rel if r.get("descricaoTipoEncerramento") in DELIBERADA}
 
         vt = buscar(f"votos/{cod}.json", "/votacao", args.atualizar, codigoParlamentar=cod)
-        conta = Counter()
+        conta, dif = Counter(), Counter()
         for v in vt:
             if v.get("votacaoSecreta") in ("S", True) or (v.get("dataSessao") or "") < INICIO_LEGISLATURA:
                 continue
@@ -221,6 +272,21 @@ def main():
                 votacoes.setdefault(v["codigoSessaoVotacao"], {"data": v.get("dataSessao"),
                                                                "identificacao": v.get("identificacao"),
                                                                "votos": {}})["votos"][cod] = [sig, voto.get("siglaPartidoParlamentar")]
+                # Orientação da própria bancada: o partido dele NA DATA DO VOTO, como o registro traz.
+                if sig not in ("Sim", "Não"):
+                    continue
+                seq = sequencial(v, ori_req)
+                ori = ori_seq.get(seq) if seq is not None else None
+                if ori is None:
+                    motivos_ori["votação sem registro de orientação"] += 1
+                    continue
+                o = ori.get(voto.get("siglaPartidoParlamentar"))
+                if o not in ("SIM", "NÃO"):
+                    motivos_ori["partido não orientou" if o is None else f"orientação {o}"] += 1
+                    continue
+                motivos_ori["comparável"] += 1
+                dif["comparaveis"] += 1
+                dif["diferentes"] += (sig == "Sim") != (o == "SIM")
 
         partido = idp.get("SiglaPartidoParlamentar")
         ide = ideologia.get(partido) or {}
@@ -242,6 +308,11 @@ def main():
                        "abstencao": conta["abstencao"],
                        "outros": {k[4:]: v for k, v in conta.items() if k.startswith("reg:")}}
                       if conta else None),
+            "difOrientacao": ({"comparaveis": dif["comparaveis"], "diferentes": dif["diferentes"]}
+                              if dif["comparaveis"] >= MIN_ORIENTACAO else
+                              {"comparaveis": dif["comparaveis"], "diferentes": None,
+                               "nota": f"menos de {MIN_ORIENTACAO} votações em que o partido orientou Sim ou Não"
+                                       if dif["comparaveis"] else "o partido não orientou Sim ou Não em nenhuma votação em que votou"}),
             "leisLista": [[x["identificacao"], (x.get("ementa") or "")[:220], x.get("dataApresentacao"),
                            x.get("situacaoAtual"), x.get("codigoMateria")] for x in sorted(leis, key=lambda x: x.get("dataApresentacao") or "", reverse=True)[:12]],
         })
@@ -260,6 +331,12 @@ def main():
     rp = sorted(s["relatorias"]["processos"] for s in saida)
     print(f"Relatorias (processos distintos): mediana {rp[len(rp) // 2]} · máx {rp[-1]}")
     print(f"Votações nominais do Plenário desde {INICIO_LEGISLATURA} com voto de senador atual: {len(votacoes)}")
+    print(f"Voto × orientação da própria bancada: {dict(motivos_ori.most_common())}")
+    tx = sorted(s["difOrientacao"]["diferentes"] / s["difOrientacao"]["comparaveis"]
+                for s in saida if s["difOrientacao"]["diferentes"] is not None)
+    if tx:
+        print(f"Votou diferente da orientação da própria bancada: {len(tx)} senadores com número · "
+              f"mediana {tx[len(tx) // 2]:.1%} · p90 {tx[int(len(tx) * .9)]:.1%} · máx {tx[-1]:.1%}")
     print(f"{SAIDA.name} gravado ({SAIDA.stat().st_size // 1024} kB).")
     autores_de_leis(args.atualizar)
 

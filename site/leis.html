@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Leis votadas | Câmara Aberta</title>
-<meta name="description" content="As votações finais nominais da Câmara desde 2023: placar, posição média de quem votou sim e não, e quem votou diferente da maioria do próprio partido.">
+<meta name="description" content="As votações finais nominais da Câmara desde 2023: placar, posição média de quem votou sim e não, e quem votou diferente da orientação da própria bancada.">
 <meta name="theme-color" content="#ffffff">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Câmara Aberta">
 <meta property="og:title" content="Leis votadas | Câmara Aberta">
-<meta property="og:description" content="As votações finais nominais da Câmara desde 2023: placar, posição média de quem votou sim e não, e quem votou diferente da maioria do próprio partido.">
+<meta property="og:description" content="As votações finais nominais da Câmara desde 2023: placar, posição média de quem votou sim e não, e quem votou diferente da orientação da própria bancada.">
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Cpath d='M8 13.5h16a8 8 0 0 1-16 0z' fill='%232dd4bf'/%3E%3Crect x='7' y='23.5' width='18' height='2' rx='1' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -160,17 +160,18 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
 <main class="wrap">
   <div class="capa">
     <p class="kicker">Leis votadas · 2023 a 2026</p>
-    <h1>O que a Câmara votou, e quem votou diferente do próprio partido</h1>
+    <h1>O que a Câmara votou, e quem votou diferente da orientação da própria bancada</h1>
     <p class="chamada" id="chamada">As votações finais de texto-base com voto registrado de cada
        deputado, da mais recente para a mais antiga.</p>
 
     <div class="aviso" role="note">
-      <p><b>Votar diferente do próprio partido não é traição nem incoerência por definição.</b>
-         Pode ser convicção pessoal, compromisso com o estado ou a região, ou uma questão que a
-         bancada liberou para cada um votar como quiser. Esta página mostra quem fez isso, não por quê.</p>
-      <p>Só conta quando o partido votou unido: pelo menos 70% dos colegas no mesmo lado. Se o
-         partido rachou, não havia posição a contrariar e ninguém aparece. Entram apenas os votos
-         Sim e Não; abstenção e obstrução ficam de fora. O partido é o que o deputado tinha no dia do voto.</p>
+      <p><b>Votar diferente da orientação da própria bancada não é traição nem incoerência por definição.</b>
+         Pode ser convicção pessoal, compromisso com o estado ou a região, ou acordo. Esta página mostra
+         quem fez isso, não por quê.</p>
+      <p>A orientação é a que a Câmara registrou em cada votação, não uma estimativa. A bancada é a liderança
+         que orientou e que inclui o partido do deputado naquele dia — o próprio partido, a federação ou o
+         bloco em que o partido estava, nessa ordem. Orientação liberada, obstrução ou em branco não conta,
+         nem a de Governo, Oposição, Maioria e Minoria. Entram apenas os votos Sim e Não.</p>
       <p><b>Enquete e consulta pública não são pesquisa de opinião.</b> Cada lei traz três registros do
          peso que teve, lado a lado e nunca somados numa nota: quantas vezes o Plenário votou nome a nome
          sobre ela (a disputa entre os deputados), quantas pessoas responderam à enquete da Câmara e quantas
@@ -190,7 +191,7 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
       <label class="campo"><span>Buscar</span>
         <input class="texto" id="fTexto" type="search" placeholder="Número ou assunto" autocomplete="off"></label>
       <label class="campo"><span>Deputado</span>
-        <input class="texto" id="fDep" type="search" list="listaDep" placeholder="Nome de quem divergiu" autocomplete="off"></label>
+        <input class="texto" id="fDep" type="search" list="listaDep" placeholder="Nome de quem votou diferente" autocomplete="off"></label>
       <datalist id="listaDep"></datalist>
       <label class="campo"><span>Tema</span><select class="sel" id="fTema"><option value="">Todos</option></select></label>
       <label class="campo"><span>Tipo</span><select class="sel" id="fTipo"><option value="">Todos</option></select></label>
@@ -203,10 +204,10 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
         <option value="nominais">Mais votações nominais</option>
         <option value="enquete">Mais respostas na enquete da Câmara</option>
         <option value="senado">Mais votos na consulta do Senado</option>
-        <option value="div">Mais votos diferentes do partido</option>
+        <option value="div">Mais votos diferentes da orientação</option>
         <option value="tempo">Mais tempo da apresentação à votação</option>
       </select></label>
-      <label class="chk"><input type="checkbox" id="fSoDiv"> Só leis com voto diferente do partido</label>
+      <label class="chk"><input type="checkbox" id="fSoDiv"> Só leis com voto diferente da orientação</label>
       <button class="limpar" id="limpar" hidden>Limpar filtros</button>
       <span class="contagem" id="contagem"></span>
     </div>
@@ -301,7 +302,7 @@ const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(
 const cap=s=>s?s.charAt(0).toUpperCase()+s.slice(1):s;
 const dataBR=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)}`:'';
 
-let LEIS=[], ATUAIS=new Set(), ENQ={}, ECID={}, NOT={}, NOTICIAS={}, limite=PASSO, ordem='data';
+let LEIS=[], SEM_DIF=false, ATUAIS=new Set(), ENQ={}, ECID={}, NOT={}, NOTICIAS={}, limite=PASSO, ordem='data';
 const f={texto:'',dep:'',tema:'',tipo:'',soDiv:false};
 
 function iniciais(nome){
@@ -314,8 +315,11 @@ function retrato(id,nome,px){
     `<img src="https://www.camara.leg.br/internet/deputado/bandep/${id}.jpg" alt="" loading="lazy" onerror="this.classList.add('falhou')"></span>`;
 }
 
-// Divergentes gravados compactos por votos.py: [id, nome, partido, uf, voto, coesão].
-const pessoa=([id,nome,partido,uf,voto,coesao])=>({id,nome,partido,uf,voto,coesao});
+// Quem votou diferente da orientação, gravado compacto por votos.py:
+// [id, nome, partido, uf, voto, orientação, bancada como a Câmara registrou].
+const pessoa=([id,nome,partido,uf,voto,orientacao,bancada])=>({id,nome,partido,uf,voto,orientacao,bancada});
+// "Fdr PT-PCdoB-PV" → "Federação PT-PCdoB-PV"; "Bl MdbPsdRepPode" → "Bloco MdbPsdRepPode" (sigla registrada).
+const rotuloBancada=b=>b.startsWith('Fdr ')?'Federação '+b.slice(4):b.startsWith('Bl ')?'Bloco '+b.slice(3):b;
 
 async function carregar(){
   const [rp,rr,re,rs,rn]=await Promise.all([fetch('dados/proposicoes.json',{cache:'no-cache'}),
@@ -331,7 +335,7 @@ async function carregar(){
   // notícias da Agência Câmara por proposição (noticias.py), pelo link da notícia para a ficha
   try{ const r=await fetch('dados/noticias.json',{cache:'no-cache'}); if(r.ok){ const n=await r.json();
     (n.itens||[]).forEach(x=>x.p.forEach(([id])=>{(NOTICIAS[id]=NOTICIAS[id]||[]).push(x);})); } }catch(e){}
-  LEIS=(await rp.json()).map(p=>({...p, tipo:(p.numero||'').split(' ')[0], div:(p.divergentes||[]).map(pessoa),
+  LEIS=(await rp.json()).map(p=>({...p, tipo:(p.numero||'').split(' ')[0], div:(p.difOrientacao||[]).map(pessoa),
                                   nom:p.nominaisPlenario||[], enq:ENQ[String(p.idProposicao)]||null, sf:ECID[String(p.idProposicao)]||null, noto:NOT[String(p.idProposicao)]||null,
                                   _num:norm(p.numero), _ementa:norm((p.ementa||'')+' '+(p.resumo||''))}));
   // quem tem página por tema: deputados em exercício (temas/resumo.json traz as frases por id)
@@ -345,9 +349,12 @@ async function carregar(){
   listaDep.innerHTML=[...nomes.values()].sort((a,b)=>a.localeCompare(b)).map(n=>`<option value="${esc(n)}">`).join('');
 
   const total=LEIS.reduce((s,l)=>s+l.div.length,0);
-  chamada.textContent=`As ${LEIS.length} votações finais de texto-base com voto registrado de cada deputado, `+
-    `de 2023 a 2026. Em ${LEIS.filter(l=>l.div.length).length} delas alguém votou diferente da maioria do `+
-    `próprio partido — ${nf.format(total)} votos ao todo.`;
+  // proposicoes.json gerado antes da medida pela orientação: não afirma "ninguém votou diferente"
+  SEM_DIF=!LEIS.some(l=>'difOrientacao' in l);
+  chamada.textContent=SEM_DIF?`As ${LEIS.length} votações finais de texto-base com voto registrado de cada deputado, de 2023 a 2026.`:
+    `As ${LEIS.length} votações finais de texto-base com voto registrado de cada deputado, `+
+    `de 2023 a 2026. Em ${LEIS.filter(l=>l.div.length).length} delas alguém votou diferente da orientação `+
+    `da própria bancada — ${nf.format(total)} votos ao todo.`;
 
   // ?dep=ID vem da ficha do deputado na página principal
   const q=new URLSearchParams(location.search);
@@ -403,14 +410,14 @@ function barraAdesao(a){
 }
 
 function blocoDivergentes(l,dep){
-  if(!l.div.length) return `<p class="nenhum">Ninguém votou diferente da maioria do próprio partido nesta votação, entre os partidos que votaram unidos.</p>`;
-  const porPartido=new Map();
-  l.div.forEach(p=>{ if(!porPartido.has(p.partido)) porPartido.set(p.partido,[]); porPartido.get(p.partido).push(p); });
-  const grupos=[...porPartido].sort((a,b)=>b[1].length-a[1].length).map(([partido,ps])=>{
-    const maioria=ps[0].voto==='Sim'?'Não':'Sim';
-    const coesao=Math.round(Math.max(...ps.map(p=>p.coesao))*100);
-    return `<div class="grupo"><h4>${esc(partido)} <span>· ${ps.length} ${ps.length===1?'deputado':'deputados'} ·
-      o partido votou ${coesao}% ${maioria}</span></h4><div class="pessoas">${ps.map(p=>{
+  if(SEM_DIF) return '';
+  if(!l.div.length) return `<p class="nenhum">Ninguém votou diferente da orientação da própria bancada nesta votação.</p>`;
+  // agrupado pela liderança que orientou: todos do grupo contrariaram a mesma orientação
+  const porBancada=new Map();
+  l.div.forEach(p=>{ if(!porBancada.has(p.bancada)) porBancada.set(p.bancada,[]); porBancada.get(p.bancada).push(p); });
+  const grupos=[...porBancada].sort((a,b)=>b[1].length-a[1].length).map(([bancada,ps])=>{
+    return `<div class="grupo"><h4>${esc(rotuloBancada(bancada))} <span>· orientou ${esc(ps[0].orientacao)} ·
+      ${ps.length} ${ps.length===1?'deputado votou':'deputados votaram'} diferente</span></h4><div class="pessoas">${ps.map(p=>{
         const tag=ATUAIS.has(p.id)?'a':'div', href=ATUAIS.has(p.id)?` href="deputado.html?id=${p.id}"`:'';
         return `<${tag} class="pessoa${p.id===dep?' destaque':''}"${href}>${retrato(p.id,p.nome,34)}
           <span class="pessoa-txt"><b>${esc(p.nome)}</b><small>${esc(p.partido)}-${esc(p.uf)}</small></span>
@@ -419,7 +426,7 @@ function blocoDivergentes(l,dep){
   }).join('');
   const aberto=dep||l.div.length<=8?' open':'';
   return `<details class="div"${aberto}><summary>${l.div.length} ${l.div.length===1?'deputado votou':'deputados votaram'}
-    diferente da maioria do próprio partido <em>· ver nomes</em></summary>${grupos}</details>`;
+    diferente da orientação da própria bancada <em>· ver nomes</em></summary>${grupos}</details>`;
 }
 
 // Quantas vezes o Plenário votou nome a nome sobre a proposição. Registro de disputa,
@@ -589,12 +596,12 @@ function desenhar(){
     const p=LEIS.flatMap(l=>l.div).find(x=>x.id===dep);
     const n=LEIS.filter(l=>l.div.some(x=>x.id===dep)).length;
     resumoDep.hidden=false;
-    resumoDep.innerHTML=`<b>${esc(p.nome)}</b> (${esc(p.partido)}-${esc(p.uf)}) votou diferente da maioria do próprio partido em
+    resumoDep.innerHTML=`<b>${esc(p.nome)}</b> (${esc(p.partido)}-${esc(p.uf)}) votou diferente da orientação da própria bancada em
       <b>${n}</b> das ${LEIS.length} votações finais desta página. A proporção sobre todas as votações nominais
       do Plenário está na ficha do deputado.`;
   }else if(f.depSemDiv){
     resumoDep.hidden=false;
-    resumoDep.textContent='Este deputado não votou diferente da maioria do próprio partido em nenhuma das votações desta página.';
+    resumoDep.textContent='Este deputado não votou diferente da orientação da própria bancada em nenhuma das votações desta página.';
   }else if(dep===-1){
     resumoDep.hidden=false; resumoDep.textContent='Mais de um deputado com esse nome: escolha na lista.';
   }else resumoDep.hidden=true;
