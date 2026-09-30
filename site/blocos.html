@@ -138,15 +138,15 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
 
 <header class="topo">
   <div class="topo-in">
-    <a class="marca" href="prototipo.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+    <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
     <nav class="nav" aria-label="Páginas do site">
-      <a href="prototipo.html#deputados">Deputados</a>
+      <a href="index.html#deputados">Deputados</a>
       <a href="senadores.html">Senadores</a>
-      <a href="prototipo.html#semana">Esta semana</a>
+      <a href="index.html#semana">Esta semana</a>
       <a href="leis.html">Leis votadas</a>
       <a href="blocos.html" aria-current="page">Quem vota com quem</a>
       <a href="obras.html">Obras</a>
-      <a href="prototipo.html#sobre">Sobre os dados</a>
+      <a href="index.html#sobre">Sobre os dados</a>
     </nav>
   </div>
 </header>
@@ -225,12 +225,12 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
   <div class="wrap">
     <div class="rg">
       <div class="rg-sobre">
-        <a class="marca" href="prototipo.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+        <a class="marca" href="index.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
         <p>O que o Congresso propõe, aprova e vota, a partir de dados públicos oficiais atualizados todos os dias.</p>
       </div>
       <nav class="rg-col" aria-label="Páginas">
         <h2>Páginas</h2>
-        <a href="prototipo.html#deputados">Deputados</a>
+        <a href="index.html#deputados">Deputados</a>
         <a href="senadores.html">Senadores</a>
         <a href="leis.html">Leis votadas</a>
         <a href="blocos.html">Quem vota com quem</a>
@@ -246,7 +246,7 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
       </div>
       <div class="rg-col">
         <h2>Projeto</h2>
-        <a href="prototipo.html#sobre">Sobre os dados</a>
+        <a href="index.html#sobre">Sobre os dados</a>
         <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">Código e dados</a>
         <a href="https://github.com/paulopottermarchi/Senado_Move/issues" target="_blank" rel="noopener">Informar um erro</a>
         <a href="https://github.com/paulopottermarchi/Senado_Move/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a>
@@ -282,7 +282,7 @@ const nomeBloco=i=>B.blocos[i].medianaGoverno>=.5?'Acompanha o Governo':'Vota co
 const corBloco=i=>`var(--b${Math.min(i,1)})`;
 
 async function carregar(){
-  B=await (await fetch('blocos.json',{cache:'no-cache'})).json();
+  B=await (await fetch('dados/blocos.json',{cache:'no-cache'})).json();
   const c=B.corte, nb=B.blocos.length;
   chamada.textContent=`Agrupando os ${nf.format(Object.keys(B.deputados).length)} deputados só pela semelhança dos votos, `+
     `sem olhar o partido, aparecem ${nb} blocos. Dentro de cada um, os deputados votam igual em ${pc(c.concordanciaDentro)} `+

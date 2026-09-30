@@ -2,8 +2,8 @@
 Câmara Aberta — enquete da Câmara sobre cada lei votada (consulta pública).
 
 Uso:
-    python enquetes.py           # consulta as que faltam e as ainda abertas
-    python enquetes.py --todas   # consulta de novo todas
+    python scripts/enquetes.py           # consulta as que faltam e as ainda abertas
+    python scripts/enquetes.py --todas   # consulta de novo todas
 
 Rodar DEPOIS de votos.py: lê proposicoes.json (as votações finais de texto-base) e
 grava enquetes.json, lido por leis.html e pelo gráfico 2 do protótipo.
@@ -40,8 +40,8 @@ from semana import BRASILIA
 
 URL = "https://www.camara.leg.br/enquetes/{id}/resultados"
 CACHE_ENQ = coleta.CACHE / "enquetes"
-PROPOSICOES = coleta.BASE / "proposicoes.json"
-SAIDA = coleta.BASE / "enquetes.json"
+PROPOSICOES = coleta.DADOS / "proposicoes.json"
+SAIDA = coleta.DADOS / "enquetes.json"
 INTERVALO = 1.0  # segundos entre requisições: é o site, não a API
 OPCOES = ["Concordo totalmente", "Concordo na maior parte", "Estou indeciso",
           "Discordo na maior parte", "Discordo totalmente"]

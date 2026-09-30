@@ -3,8 +3,8 @@ Câmara Aberta — notoriedade na Câmara de cada lei votada: o quanto o assunto
 DENTRO da Câmara. Não mede importância nem mérito, e não mede o público.
 
 Uso:
-    python notoriedade.py              # depois de votos.py; grava notoriedade.json
-    python notoriedade.py --atualizar  # pede de novo detalhe, autores e tramitações
+    python scripts/notoriedade.py              # depois de votos.py; grava notoriedade.json
+    python scripts/notoriedade.py --atualizar  # pede de novo detalhe, autores e tramitações
 
 É um índice composto — o briefing só o admite com três condições, todas cumpridas aqui:
 (1) pesos publicados (iguais, média simples); (2) cada componente sempre visível ao lado da
@@ -39,8 +39,8 @@ from datetime import datetime
 
 import coleta
 
-PROPOSICOES = coleta.BASE / "proposicoes.json"
-SAIDA = coleta.BASE / "notoriedade.json"
+PROPOSICOES = coleta.DADOS / "proposicoes.json"
+SAIDA = coleta.DADOS / "notoriedade.json"
 CACHE_NOT = coleta.CACHE / "notoriedade"
 CADEIRAS = 513
 MIN_PEC = 171   # CF, art. 60, I: um terço da Câmara

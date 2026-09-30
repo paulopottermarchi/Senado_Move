@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="estilo.css">
 <script src="site.js" defer></script>
 <style>
-/* Mesmos tokens do prototipo.html. As cores do espectro NÃO aparecem nesta página:
+/* Mesmos tokens do index.html. As cores do espectro NÃO aparecem nesta página:
    tema não tem ideologia, e colorir categorias com a paleta do eixo X sugeriria que tem. */
 
 .volta{display:inline-block;margin-top:28px;font-size:13px;color:var(--tinta2);text-decoration:none}
@@ -179,20 +179,20 @@
 <body>
 <header class="topo">
   <div class="topo-in">
-    <a class="marca" href="prototipo.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+    <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
     <nav class="nav" aria-label="Páginas do site">
-      <a href="prototipo.html#deputados" aria-current="true">Deputados</a>
+      <a href="index.html#deputados" aria-current="true">Deputados</a>
       <a href="senadores.html">Senadores</a>
-      <a href="prototipo.html#semana">Esta semana</a>
+      <a href="index.html#semana">Esta semana</a>
       <a href="leis.html">Leis votadas</a>
       <a href="blocos.html">Quem vota com quem</a>
       <a href="obras.html">Obras</a>
-      <a href="prototipo.html#sobre">Sobre os dados</a>
+      <a href="index.html#sobre">Sobre os dados</a>
     </nav>
   </div>
 </header>
 <div class="wrap">
-  <a class="volta" href="prototipo.html#deputados">← Voltar aos 513 deputados</a>
+  <a class="volta" href="index.html#deputados">← Voltar aos 513 deputados</a>
   <main id="raiz" aria-live="polite"></main>
 </div>
 
@@ -200,12 +200,12 @@
   <div class="wrap">
     <div class="rg">
       <div class="rg-sobre">
-        <a class="marca" href="prototipo.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+        <a class="marca" href="index.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
         <p>O que o Congresso propõe, aprova e vota, a partir de dados públicos oficiais atualizados todos os dias.</p>
       </div>
       <nav class="rg-col" aria-label="Páginas">
         <h2>Páginas</h2>
-        <a href="prototipo.html#deputados">Deputados</a>
+        <a href="index.html#deputados">Deputados</a>
         <a href="senadores.html">Senadores</a>
         <a href="leis.html">Leis votadas</a>
         <a href="blocos.html">Quem vota com quem</a>
@@ -221,7 +221,7 @@
       </div>
       <div class="rg-col">
         <h2>Projeto</h2>
-        <a href="prototipo.html#sobre">Sobre os dados</a>
+        <a href="index.html#sobre">Sobre os dados</a>
         <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">Código e dados</a>
         <a href="https://github.com/paulopottermarchi/Senado_Move/issues" target="_blank" rel="noopener">Informar um erro</a>
         <a href="https://github.com/paulopottermarchi/Senado_Move/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a>
@@ -270,25 +270,25 @@ async function iniciar(){
   const id=q.get('id');
   if(!id||!/^\d+$/.test(id)){
     aviso('Escolha um deputado','<p>Esta página mostra as proposições de um deputado por tema. '+
-      'Abra a ficha de alguém no <a href="prototipo.html">gráfico</a> e siga o link '+
+      'Abra a ficha de alguém no <a href="index.html">gráfico</a> e siga o link '+
       '“Ver as proposições por tema”.</p>');
     return;
   }
   try{
     const [rt,rd]=await Promise.all([
-      fetch('temas/taxonomia.json',{cache:'no-cache'}),
-      fetch(`temas/${id}.json`,{cache:'no-cache'})]);
+      fetch('dados/temas/taxonomia.json',{cache:'no-cache'}),
+      fetch(`dados/temas/${id}.json`,{cache:'no-cache'})]);
     if(!rt.ok) throw {falta:'taxonomia'};
     if(!rd.ok) throw {falta:'deputado'};
     tax=await rt.json(); dep=await rd.json();
   }catch(e){
     if(e&&e.falta==='deputado'){
-      aviso('Deputado sem dados de tema','<p>Não há arquivo <code>temas/'+esc(id)+'.json</code>. '+
-        'Confira o link ou rode <code>python temas.py</code> para gerar os arquivos.</p>');
+      aviso('Deputado sem dados de tema','<p>Não há arquivo <code>dados/temas/'+esc(id)+'.json</code>. '+
+        'Confira o link ou rode <code>python scripts/temas.py</code> para gerar os arquivos.</p>');
     }else{
-      aviso('Não foi possível ler os dados','<p>Rode <code>python temas.py</code> para gerar a pasta '+
-        '<code>temas/</code>. Se a pasta existe, sirva o projeto com '+
-        '<code>python -m http.server 8000 --bind 127.0.0.1</code> e abra '+
+      aviso('Não foi possível ler os dados','<p>Rode <code>python scripts/temas.py</code> para gerar a pasta '+
+        '<code>site/dados/temas/</code>. Se a pasta existe, sirva o site com '+
+        '<code>python -m http.server 8000 --bind 127.0.0.1 --directory site</code> e abra '+
         '<code>http://localhost:8000/deputado.html?id='+esc(id)+'</code>; '+
         'o navegador não lê arquivos locais abertos direto do disco.</p>');
     }
@@ -303,7 +303,7 @@ async function iniciar(){
 // Com quem vota (blocos.py → blocos.json). Mede apoio ao governo do momento e semelhança
 // de voto, não ideologia: por isso fica separado do espectro e diz isso antes do número.
 async function comQuemVota(id){
-  let B; try{ const r=await fetch('blocos.json',{cache:'no-cache'}); if(!r.ok) return; B=await r.json(); }catch(e){ return; }
+  let B; try{ const r=await fetch('dados/blocos.json',{cache:'no-cache'}); if(!r.ok) return; B=await r.json(); }catch(e){ return; }
   const d=B.deputados[String(id)], el=document.getElementById('cqv');
   if(!d||!el) return;
   const N=i=>B.nomes[i]||['?','?','?'], p=N(String(id))[1], hoje=N(String(id))[4];
@@ -333,14 +333,14 @@ async function comQuemVota(id){
 // da lista ganham a linha "Notícia" quando a notícia linka a ficha da proposição.
 let NOTICIAS={};
 async function carregarNoticias(){
-  try{ const r=await fetch('noticias.json',{cache:'no-cache'}); if(!r.ok) return; const n=await r.json();
+  try{ const r=await fetch('dados/noticias.json',{cache:'no-cache'}); if(!r.ok) return; const n=await r.json();
     (n.itens||[]).forEach(x=>x.p.forEach(([id])=>{(NOTICIAS[id]=NOTICIAS[id]||[]).push(x);})); }catch(e){}
 }
 
 async function notoriedade(id){
   let W={}, Y={};
-  try{ const r=await fetch('wikipedia.json',{cache:'no-cache'}); if(r.ok) W=await r.json(); }catch(e){}
-  try{ const r=await fetch('youtube.json',{cache:'no-cache'}); if(r.ok) Y=await r.json(); }catch(e){}
+  try{ const r=await fetch('dados/wikipedia.json',{cache:'no-cache'}); if(r.ok) W=await r.json(); }catch(e){}
+  try{ const r=await fetch('dados/youtube.json',{cache:'no-cache'}); if(r.ok) Y=await r.json(); }catch(e){}
   const el=document.getElementById('noto'), w=W[String(id)], y=Y[String(id)];
   // canal oficial (cadastro da Câmara): número como o YouTube informa, sem ranking nem soma
   const yt=!y?'':`<p class="cqv-txt">${y.inscritos!=null?`<b>${NF.format(y.inscritos)}</b> inscritos no canal oficial no YouTube`
@@ -370,7 +370,7 @@ async function notoriedade(id){
 // há emenda dele e o contrato cresceu — com o enquadramento antes: emenda manda dinheiro, não
 // assina contrato nem aditivo. Só aparece para quem tem emenda ou é da UF coberta.
 async function obrasDoDeputado(id,uf){
-  let O; try{ const r=await fetch('obras_deputados.json',{cache:'no-cache'}); if(!r.ok) return; O=await r.json(); }catch(e){ return; }
+  let O; try{ const r=await fetch('dados/obras_deputados.json',{cache:'no-cache'}); if(!r.ok) return; O=await r.json(); }catch(e){ return; }
   const lista=(O.deputados||{})[String(id)]||[], el=document.getElementById('obrasDep');
   if(!el||(!lista.length&&uf!==O._uf)) return;
   const REAIS=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});

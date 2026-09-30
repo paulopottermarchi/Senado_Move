@@ -2,7 +2,7 @@
 Câmara Aberta — resultado da eleição de 2022 para deputado federal (TSE).
 
 Uso:
-    python eleicao.py   # baixa (uma vez, com cache) e grava eleicao2022.json
+    python scripts/eleicao.py   # baixa (uma vez, com cache) e grava eleicao2022.json
 
 Roda uma vez: o resultado de 2022 não muda. Gera eleicao2022.json, tabela estática
 que vai para o repositório e que coleta.py junta a cada deputado (como faz com
@@ -33,7 +33,7 @@ UFS = ("AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC 
 URL = ("https://resultados.tse.jus.br/oficial/ele2022/546/dados-simplificados/"
        "{uf}/{uf}-c0006-e000546-r.json")
 CACHE_TSE = coleta.CACHE / "tse"
-SAIDA = coleta.BASE / "eleicao2022.json"
+SAIDA = coleta.ENTRADAS / "eleicao2022.json"
 TOTAL_VAGAS = 513
 
 

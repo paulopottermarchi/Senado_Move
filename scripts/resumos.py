@@ -3,10 +3,10 @@ Câmara Aberta — passo 8: resumo em linguagem comum de cada PL e PEC, a partir
 inteiro teor (texto integral), por modelo de linguagem, em lote.
 
 Uso:
-    python resumos.py --simular                 # extrai os textos e estima custo; não chama o modelo
-    python resumos.py                           # escopo padrão: leis votadas + apresentadas nos últimos 30 dias
-    python resumos.py --escopo todas            # as ~35.800 das páginas dos deputados (caro: rodar --simular antes)
-    python resumos.py --esperar 60              # espera até 60 min o lote terminar (padrão: não espera)
+    python scripts/resumos.py --simular                 # extrai os textos e estima custo; não chama o modelo
+    python scripts/resumos.py                           # escopo padrão: leis votadas + apresentadas nos últimos 30 dias
+    python scripts/resumos.py --escopo todas            # as ~35.800 das páginas dos deputados (caro: rodar --simular antes)
+    python scripts/resumos.py --esperar 60              # espera até 60 min o lote terminar (padrão: não espera)
 
 Precisa de ANTHROPIC_API_KEY no ambiente (nunca no código nem no repositório). Sem a chave,
 só aplica os resumos já gerados e sai sem erro.
@@ -38,14 +38,14 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parent
-ARQUIVO = BASE / "resumos.json"
+BASE = Path(__file__).resolve().parent.parent     # raiz do repositório (este arquivo fica em scripts/)
+ARQUIVO = BASE / "entradas" / "resumos.json"
 CACHE = BASE / "cache"
 CACHE_TEOR = CACHE / "teor"
 # No repositório, não em cache/: o cache do Actions pode ser apagado, e um lote pago cujo id
 # se perdesse nunca seria coletado.
-LOTES = BASE / "resumos_lotes.json"
-PROPOSICOES = BASE / "proposicoes.json"
+LOTES = BASE / "entradas" / "resumos_lotes.json"
+PROPOSICOES = BASE / "site" / "dados" / "proposicoes.json"
 
 VERSAO = "1"              # sobe a cada mudança no PROMPT ou no esquema: tudo é refeito
 MODELO = os.environ.get("RESUMO_MODELO", "claude-opus-5-5")

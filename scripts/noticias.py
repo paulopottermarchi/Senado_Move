@@ -2,7 +2,7 @@
 Câmara Aberta — últimas notícias da Agência Câmara sobre PEC e PL, pelos feeds RSS.
 
 Uso:
-    python noticias.py     # lê os feeds, abre cada notícia nova uma vez, grava noticias.json
+    python scripts/noticias.py     # lê os feeds, abre cada notícia nova uma vez, grava noticias.json
 
 Fonte: os feeds RSS da Agência Câmara de Notícias (camara.leg.br/noticias/rss): "últimas
 notícias" e os 21 temas. A lista de feeds é lida da própria página a cada rodada.
@@ -35,7 +35,7 @@ import requests
 
 import coleta
 
-SAIDA = coleta.BASE / "noticias.json"
+SAIDA = coleta.DADOS / "noticias.json"
 CACHE_N = coleta.CACHE / "noticias"
 HISTORICO = CACHE_N / "historico.json"
 PAGINA_RSS = "https://www.camara.leg.br/noticias/rss"

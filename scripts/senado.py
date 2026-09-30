@@ -2,8 +2,8 @@
 Câmara Aberta — senadores: o que cada um propôs, o que virou lei, o que relatou e como votou.
 
 Uso:
-    python senado.py              # os 81 senadores em exercício; grava senadores.json
-    python senado.py --atualizar  # rebaixa autorias, relatorias e votos (o detalhe dos processos fica)
+    python scripts/senado.py              # os 81 senadores em exercício; grava senadores.json
+    python scripts/senado.py --atualizar  # rebaixa autorias, relatorias e votos (o detalhe dos processos fica)
 
 Fonte: Dados Abertos do Senado (legis.senado.leg.br/dadosabertos), sem chave. Conferido em
 29/9/2026 contra a API (a especificação está em /dadosabertos/v3/api-docs):
@@ -47,7 +47,7 @@ import coleta
 
 API = "https://legis.senado.leg.br/dadosabertos"
 CACHE_S = coleta.CACHE / "senado" / "senadores"
-SAIDA = coleta.BASE / "senadores.json"
+SAIDA = coleta.DADOS / "senadores.json"
 TIPOS = ("PEC", "PL")
 TIPOS_RELATORIA = ("PEC", "PL", "PLP", "MPV", "PDL", "PRS", "PLN")
 LEI = ("TRANSFORMADA EM NORMA JURÍDICA", "TRANSFORMADA EM NORMA JURÍDICA COM VETO PARCIAL")
@@ -117,7 +117,7 @@ def autores_de_leis(atualizar=False):
     identificação (casa iniciadora) → autor de ORDEM 1 pelo código. O nome que a Câmara grava
     ("Senado Federal - Flávio Arns") só confere; se não bater, fica de fora. Grava as filiações com
     datas: o votos.py pega o partido NA DATA DA VOTAÇÃO, como faz com os deputados."""
-    P = json.loads((coleta.BASE / "proposicoes.json").read_text(encoding="utf-8"))
+    P = json.loads((coleta.DADOS / "proposicoes.json").read_text(encoding="utf-8"))
     saida, conta = {}, Counter()
     for p in P:
         nome_camara = p.get("autorNome") or ""

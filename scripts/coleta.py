@@ -2,8 +2,8 @@
 Câmara Aberta — coleta, Etapa A (deputados e proposições via API).
 
 Uso:
-    python coleta.py              # 10 primeiros deputados (validação)
-    python coleta.py --limite 513 # todos — só depois de validar os 10
+    python scripts/coleta.py              # 10 primeiros deputados (validação)
+    python scripts/coleta.py --limite 513 # todos — só depois de validar os 10
 
 Cache em disco (cache/): pode interromper com Ctrl+C e rodar de novo; o que já
 foi baixado não é pedido outra vez. O cache guarda só respostas cruas da API —
@@ -63,13 +63,18 @@ FEDERACOES = {
 # fonte validada, gravamos null — nunca um número de cobertura desconhecida.
 RELATORIAS = None
 
-BASE = Path(__file__).resolve().parent
+# Estrutura: scripts/ (este arquivo), site/ (o que o GitHub Pages publica), site/dados/ (os JSON
+# que as páginas leem), entradas/ (tabelas fixas e resumos pagos: versionados, não publicados),
+# cache/ (respostas cruas das APIs, fora do git). Todo caminho sai daqui, não do diretório atual.
+BASE = Path(__file__).resolve().parent.parent
+DADOS = BASE / "site" / "dados"
+ENTRADAS = BASE / "entradas"
 CACHE = BASE / "cache"
-SAIDA = BASE / "deputados.json"
-IDEOLOGIA = BASE / "ideologia.json"
-ELEICAO = BASE / "eleicao2022.json"          # gerado por eleicao.py (TSE), estático
+SAIDA = DADOS / "deputados.json"
+IDEOLOGIA = ENTRADAS / "ideologia.json"
+ELEICAO = ENTRADAS / "eleicao2022.json"          # gerado por eleicao.py (TSE), estático
 RESUMOS = {}  # passo 8: {id da proposição: resumo}, de resumos.json — carregado em main()
-LEGISLATURAS = BASE / "legislaturas.json"    # datas dos mandatos, para o filtro do site
+LEGISLATURAS = DADOS / "legislaturas.json"    # datas dos mandatos, para o filtro do site
 FAIXAS = ("esquerda", "centro-esquerda", "centro", "centro-direita", "direita")
 
 

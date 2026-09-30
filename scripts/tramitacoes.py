@@ -2,8 +2,8 @@
 Câmara Aberta — histórico de tramitação de cada PEC e PL: quanto tempo levou e por onde passou.
 
 Uso:
-    python tramitacoes.py              # baixa o que falta ou mudou; grava cache/tramitacoes/{id}.json
-    python tramitacoes.py --so-medir   # não baixa nada; mede o que já está no cache
+    python scripts/tramitacoes.py              # baixa o que falta ou mudou; grava cache/tramitacoes/{id}.json
+    python scripts/tramitacoes.py --so-medir   # não baixa nada; mede o que já está no cache
 
 Fonte: /proposicoes/{id}/tramitacoes (Dados Abertos da Câmara), uma chamada por proposição, a
 10 req/s como o resto da coleta. Universo: as PEC e PL de autoria dos 513 (temas/) mais as 164
@@ -175,10 +175,10 @@ def etapas(ev, numeros=()):
 
 def universo():
     ids = set()
-    for f in (coleta.BASE / "temas").glob("*.json"):
+    for f in (coleta.DADOS / "temas").glob("*.json"):
         if f.stem.isdigit():
             ids |= {p["id"] for p in json.loads(f.read_text(encoding="utf-8"))["props"]}
-    for p in json.loads((coleta.BASE / "proposicoes.json").read_text(encoding="utf-8")):
+    for p in json.loads((coleta.DADOS / "proposicoes.json").read_text(encoding="utf-8")):
         if p.get("idProposicao"):
             ids.add(int(p["idProposicao"]))
     return sorted(ids)

@@ -2,9 +2,9 @@
 Câmara Aberta — obras públicas: quanto o contrato cresceu, termo a termo, com o documento de cada passo.
 
 Uso:
-    python obras.py                  # obras de SP; contrato e obra no cache são relidos a cada 7–13 dias
-    python obras.py --atualizar      # relê todos os contratos e obras
-    python obras.py --uf MG          # outra UF (o site hoje publica só SP)
+    python scripts/obras.py                  # obras de SP; contrato e obra no cache são relidos a cada 7–13 dias
+    python scripts/obras.py --atualizar      # relê todos os contratos e obras
+    python scripts/obras.py --uf MG          # outra UF (o site hoje publica só SP)
 
 Fontes — todas ligadas por IDENTIFICADOR, nunca por nome:
   1. ObrasGov.br, API pública (api-publica.obrasgov.gestao.gov.br/obras): a obra, pelo id do Cadastro
@@ -64,8 +64,8 @@ import requests
 
 import coleta  # truststore (TLS), caminhos, ler/gravar cache
 
-SAIDA = coleta.BASE / "obras.json"
-SAIDA_DEP = coleta.BASE / "obras_deputados.json"   # para o perfil: obras com emenda de cada deputado
+SAIDA = coleta.DADOS / "obras.json"
+SAIDA_DEP = coleta.DADOS / "obras_deputados.json"   # para o perfil: obras com emenda de cada deputado
 CACHE_O = coleta.CACHE / "obras"
 OG = "https://api-publica.obrasgov.gestao.gov.br/obras"
 CT = "https://contratos.comprasnet.gov.br/api"
