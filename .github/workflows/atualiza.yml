@@ -154,7 +154,8 @@ jobs:
       - name: Montar o site
         run: |
           mkdir -p _site
-          cp index.html prototipo.html deputado.html leis.html blocos.html obras.html senadores.html deputados.json proposicoes.json \
+          cp index.html prototipo.html deputado.html leis.html blocos.html obras.html senadores.html estilo.css site.js favicon.ico \
+             deputados.json proposicoes.json \
              semana.json legislaturas.json LICENSE .nojekyll _site/
           # opcionais: a página que lê cada um trata a ausência (cai no "sem dado")
           for f in blocos.json notoriedade.json wikipedia.json noticias.json youtube.json enquetes.json \

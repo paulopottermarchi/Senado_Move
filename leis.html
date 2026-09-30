@@ -4,124 +4,91 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Leis votadas | Câmara Aberta</title>
+<meta name="description" content="As votações finais nominais da Câmara desde 2023: placar, posição média de quem votou sim e não, e quem votou diferente da maioria do próprio partido.">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Câmara Aberta">
+<meta property="og:title" content="Leis votadas | Câmara Aberta">
+<meta property="og:description" content="As votações finais nominais da Câmara desde 2023: placar, posição média de quem votou sim e não, e quem votou diferente da maioria do próprio partido.">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Cpath d='M8 13.5h16a8 8 0 0 1-16 0z' fill='%232dd4bf'/%3E%3Crect x='7' y='23.5' width='18' height='2' rx='1' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+<script src="site.js" defer></script>
 <style>
-:root{
-  --tinta:#16181b; --tinta2:#4a4e55; --tinta3:#80858d;
-  --linha:#e4e5e8; --linha2:#f0f1f3; --fundo:#f6f6f4; --papel:#fff;
-  --raio:14px; --raio-p:8px;
-  --sombra:0 1px 2px rgba(16,18,22,.04),0 6px 24px rgba(16,18,22,.05);
-  --serif:'Newsreader',Georgia,'Times New Roman',serif;
-  --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
-body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);font-size:15px;line-height:1.55;
-     -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
-.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
-:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
-a{color:inherit}
 
 /* barra fixa — igual à página principal */
-.topo{position:sticky;top:0;z-index:80;background:rgba(246,246,244,.86);
-      backdrop-filter:saturate(160%) blur(12px);-webkit-backdrop-filter:saturate(160%) blur(12px);
-      border-bottom:1px solid var(--linha)}
-.topo-in{max-width:1080px;margin:0 auto;padding:0 22px;height:56px;display:flex;align-items:center;
-         justify-content:space-between;gap:20px}
-.marca{font-family:var(--serif);font-size:19px;font-weight:600;text-decoration:none;white-space:nowrap}
-.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
-.nav::-webkit-scrollbar{display:none}
-.nav a{font-size:13.5px;color:var(--tinta2);text-decoration:none;padding:7px 11px;border-radius:999px;white-space:nowrap}
-.nav a:hover{background:var(--linha2);color:var(--tinta)}
-.nav a.aqui{background:var(--tinta);color:#fff}
 
 /* abertura */
-.capa{padding:52px 0 8px}
-.kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta3);margin-bottom:10px}
-h1{font-family:var(--serif);font-size:clamp(30px,4.6vw,46px);font-weight:500;line-height:1.08;
-   letter-spacing:-.015em;max-width:20ch}
-.chamada{font-size:clamp(15.5px,1.8vw,17.5px);color:var(--tinta2);margin-top:14px;max-width:62ch}
 
 /* o enquadramento vem ANTES de qualquer número */
-.aviso{margin-top:24px;background:var(--papel);border:1px solid var(--linha);border-left:3px solid var(--tinta);
-       border-radius:var(--raio-p);padding:16px 20px;max-width:78ch}
-.aviso b{font-weight:600}
-.aviso p{font-size:14px;line-height:1.65;color:var(--tinta2)}
-.aviso p+p{margin-top:8px}
 
 /* controles */
 .painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
-        padding:22px 26px;margin-top:26px}
-.ctl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
-.campo{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--tinta3)}
-.texto,.sel{font:inherit;font-size:13.5px;border:1px solid var(--linha);border-radius:999px;background:var(--papel);
-            color:var(--tinta);padding:7px 14px}
-.texto{width:260px;max-width:100%}
-.sel{max-width:250px;text-overflow:ellipsis}
-.texto:focus,.sel:focus{outline:none;border-color:var(--tinta2);box-shadow:0 0 0 4px rgba(22,24,27,.06)}
-.sel{appearance:none;-webkit-appearance:none;padding-right:30px;cursor:pointer;
-     background:var(--papel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2380858d' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center}
-.chk{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--tinta2);cursor:pointer}
-.chk input{width:16px;height:16px;accent-color:var(--tinta)}
+        padding:24px 28px;margin-top:28px}
+.ctl{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center}
+
 .linha2{margin-top:12px;padding-top:12px;border-top:1px solid var(--linha2)}
 .contagem{font-size:13px;color:var(--tinta3);margin-left:auto}
-.limpar{font:inherit;font-size:13px;background:none;border:none;text-decoration:underline;
-        text-underline-offset:3px;cursor:pointer;color:var(--tinta)}
-.limpar[hidden]{display:none}
-.resumo-dep{margin-top:14px;font-size:14.5px;line-height:1.55}
+
+.resumo-dep{margin-top:16px;font-size:15px;line-height:1.55}
 .resumo-dep[hidden]{display:none}
 
+.sel{max-width:260px}
+
 /* lista */
-.lei{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);padding:22px 26px;margin-top:14px}
-.lei-cab{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
+.lei{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);padding:24px 28px;margin-top:16px;
+     box-shadow:var(--sombra);transition:box-shadow var(--t),border-color var(--t)}
+.lei:hover{box-shadow:var(--sombra-md);border-color:var(--linha-forte)}
+.lei-cab{display:flex;justify-content:space-between;gap:16px;align-items:baseline;flex-wrap:wrap}
 .lei-num{font-size:13px;color:var(--tinta3)}
 .lei-num a{color:var(--tinta);font-weight:600;text-decoration:none;border-bottom:1px dotted var(--tinta3)}
 .lei-res{font-size:13px;color:var(--tinta2)}
 .lei-res b{color:var(--tinta);font-weight:600}
 .ementa{font-family:var(--serif);font-size:18px;line-height:1.45;margin-top:8px;max-width:72ch}
-.tempo-lei{font-size:12.5px;color:var(--tinta2);margin-top:6px;max-width:74ch}
+.tempo-lei{font-size:13px;color:var(--tinta2);margin-top:8px;max-width:74ch}
 .tempo-lei .caminho{display:block;color:var(--tinta3)}
-.oficial{margin-top:6px;max-width:72ch}
+.oficial{margin-top:8px;max-width:72ch}
 .oficial summary{cursor:pointer;font-size:12px;color:var(--tinta3);line-height:1.5}
 .oficial summary b{font-weight:500;color:var(--tinta2);text-decoration:underline;text-underline-offset:2px}
-.oficial p{font-size:13.5px;color:var(--tinta2);margin-top:6px;line-height:1.5}
-.oficial a{font-size:12.5px;color:var(--tinta2)}
-.cats{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.oficial p{font-size:14px;color:var(--tinta2);margin-top:8px;line-height:1.5}
+.oficial a{font-size:13px;color:var(--tinta2)}
+.cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
 .cats span{font-size:11px;color:var(--tinta2);border:1px solid var(--linha);border-radius:999px;padding:0 8px;cursor:help}
-.corpo-lei{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:22px;margin-top:14px;align-items:start}
+.corpo-lei{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:24px;margin-top:16px;align-items:start}
 .placar{font-size:14px;line-height:1.6}
 .placar b{font-weight:600}
 .med{font-size:13px;color:var(--tinta2);margin-top:4px}
 .ades{display:flex;gap:4px;align-items:flex-end;height:44px;position:relative}
 .ades div{flex:1;height:100%;background:var(--linha2);border-radius:2px;position:relative}
 .ades i{position:absolute;bottom:0;left:0;right:0;border-radius:2px;display:block}
-.ades .meia{position:absolute;left:0;right:0;top:50%;height:1px;background:#c9ccd0;z-index:1}
-.ades-leg{font-size:11px;color:var(--tinta3);margin-top:5px;text-align:center}
+.ades .meia{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--linha-forte);z-index:1}
+.ades-leg{font-size:11px;color:var(--tinta3);margin-top:4px;text-align:center}
 
-.div{margin-top:16px;padding-top:14px;border-top:1px solid var(--linha2)}
-.div summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px;font-size:14px;font-weight:500}
+.div{margin-top:16px;padding-top:16px;border-top:1px solid var(--linha2)}
+.div summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500}
 .div summary::-webkit-details-marker{display:none}
 .div summary::before{content:"";width:7px;height:7px;border-right:1.6px solid currentColor;
-  border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform .15s;flex-shrink:0}
+  border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform 300ms var(--curva);flex-shrink:0}
 .div[open] summary::before{transform:rotate(45deg)}
 .div summary em{font-style:normal;font-weight:400;color:var(--tinta3);font-size:13px}
-.nenhum{font-size:13.5px;color:var(--tinta3);margin-top:14px;padding-top:14px;border-top:1px solid var(--linha2)}
-.grupo{margin-top:14px}
+.nenhum{font-size:14px;color:var(--tinta3);margin-top:16px;padding-top:16px;border-top:1px solid var(--linha2)}
+.grupo{margin-top:16px}
 .grupo h4{font-size:13px;font-weight:600;color:var(--tinta)}
 .grupo h4 span{font-weight:400;color:var(--tinta3)}
 .pessoas{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:8px}
-.pessoa{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--linha2);
+.pessoa{display:flex;align-items:center;gap:12px;padding:8px 12px;border:1px solid var(--linha2);
         border-radius:var(--raio-p);text-decoration:none;color:inherit;min-width:0}
-a.pessoa:hover{border-color:#c9ccd1}
-.pessoa.destaque{border-color:var(--tinta);background:#fafaf8}
-.pessoa-txt{min-width:0}
-.pessoa b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-          font-size:13.5px;font-weight:500;line-height:1.25}
+a.pessoa{transition:border-color var(--t),box-shadow var(--t),transform var(--t)}
+a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transform:translateY(-1px)}
+.pessoa.destaque{border-color:var(--tinta);background:var(--papel2)}
+.pessoa-txt{min-width:0;flex:1}
+/* nome inteiro, em quantas linhas precisar (antes cortava na segunda) */
+.pessoa b{display:block;overflow-wrap:anywhere;font-size:14px;font-weight:500;line-height:1.25}
 .pessoa small{font-size:12px;color:var(--tinta3)}
-.voto{font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;margin-left:auto;flex-shrink:0}
+.voto{font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;margin-left:auto;flex-shrink:0}
 .v-sim{background:#e2efe6;color:#1d5c37}
 .v-nao{background:#f5e0e0;color:#862929}
 
@@ -135,73 +102,60 @@ a.pessoa:hover{border-color:#c9ccd1}
 .nots{margin-top:8px;font-size:13px;line-height:1.5;max-width:72ch}
 .nots-rot{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3)}
 .nots small{color:var(--tinta3)}
-.noto{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:16px;padding:10px 14px;
-      background:#fafaf8;border:1px solid var(--linha2);border-radius:var(--raio-p);cursor:help}
+.noto{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:16px;padding:12px 16px;
+      background:var(--papel2);border:1px solid var(--linha2);border-radius:var(--raio-p);cursor:help}
 .noto-rot{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3)}
-.noto b{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1}
+.noto b{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1}
 .noto-barra{width:90px;height:6px;border-radius:3px;background:var(--linha);overflow:hidden}
 .noto-barra i{display:block;height:100%;background:var(--tinta2)}
-.noto-fatos{font-size:12.5px;color:var(--tinta2)}
+.noto-fatos{font-size:13px;color:var(--tinta2)}
 .sinais{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
-.sinal{border:1px solid var(--linha2);border-radius:var(--raio-p);padding:12px 14px;min-width:0}
+.sinal{border:1px solid var(--linha2);border-radius:var(--raio-p);padding:12px 16px;min-width:0}
 .sinal h5{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3)}
-.sinal .n{font-family:var(--serif);font-size:25px;font-weight:600;line-height:1.1;margin-top:5px}
+.sinal .n{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.1;margin-top:4px}
 .sinal .n small{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--tinta2);margin-left:4px}
-.sinal p{font-size:12.5px;color:var(--tinta2);margin-top:5px;line-height:1.5}
+.sinal p{font-size:13px;color:var(--tinta2);margin-top:4px;line-height:1.5}
 .sinal p a{color:var(--tinta2)}
 .sinal .fraca{color:#8a5a00}
 .sinal .sem{font-size:13px;color:var(--tinta3);margin-top:8px}
-.enq{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--linha2);margin-top:9px}
+.enq{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--linha2);margin-top:8px}
 .enq i{display:block;height:100%}
-.nominais{list-style:none;margin-top:10px}
+.nominais{list-style:none;margin-top:12px}
 .nominais li{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:12px;font-size:13px;
-             padding:7px 0;border-top:1px solid var(--linha2);line-height:1.45}
+             padding:8px 0;border-top:1px solid var(--linha2);line-height:1.45}
 .nominais .d{color:var(--tinta3)}
 .nominais .pl{color:var(--tinta2);white-space:nowrap}
-.nominais .d small{display:block;font-size:10.5px;font-weight:600;color:var(--tinta);line-height:1.3}
+.nominais .d small{display:block;font-size:11px;font-weight:600;color:var(--tinta);line-height:1.3}
 .sinal p b{color:var(--tinta);font-weight:600}
 
-.mais{display:block;margin:22px auto 0;font:inherit;font-size:14px;background:var(--papel);border:1px solid var(--linha);
-      border-radius:999px;padding:10px 22px;cursor:pointer}
-.mais:hover{border-color:#c9ccd1}
-.mais[hidden]{display:none}
-.vazio{margin-top:18px;font-size:14.5px;color:var(--tinta2)}
-
-.rodape-site{margin-top:56px;border-top:1px solid var(--linha);background:var(--papel);padding:36px 0 44px}
-.rodape-site h2{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:8px}
-.rodape-site p{font-size:13.5px;line-height:1.7;color:var(--tinta2);max-width:78ch}
-.rodape-site p+p{margin-top:10px}
+.vazio{margin-top:20px;font-size:15px;color:var(--tinta2)}
 
 @media(max-width:760px){
   .corpo-lei,.sinais{grid-template-columns:1fr}
   .nominais li{grid-template-columns:minmax(0,1fr) auto}
   .nominais .d{grid-column:1/-1}
-  .lei,.painel{padding:18px}
+  .lei,.painel{padding:20px}
   .contagem{margin-left:0;width:100%}
 }
-@media(max-width:520px){ .topo .marca{display:none} .texto{width:100%} }
+
 </style>
 </head>
 <body>
 
 <header class="topo">
   <div class="topo-in">
-    <a class="marca" href="prototipo.html">Câmara Aberta</a>
-    <nav class="nav" aria-label="Seções do site">
+    <a class="marca" href="prototipo.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+    <nav class="nav" aria-label="Páginas do site">
       <a href="prototipo.html#deputados">Deputados</a>
       <a href="senadores.html">Senadores</a>
       <a href="prototipo.html#semana">Esta semana</a>
-      <a class="aqui" href="leis.html" aria-current="page">Leis votadas</a>
+      <a href="leis.html" aria-current="page">Leis votadas</a>
       <a href="blocos.html">Quem vota com quem</a>
       <a href="obras.html">Obras</a>
       <a href="prototipo.html#sobre">Sobre os dados</a>
     </nav>
   </div>
 </header>
-<script>
-// No celular a barra rola de lado: abre já mostrando o item da página atual.
-(()=>{const a=document.querySelector('.nav a.aqui'); if(a) a.parentElement.scrollLeft=a.offsetLeft-16;})();
-</script>
 
 <main class="wrap">
   <div class="capa">
@@ -295,6 +249,41 @@ a.pessoa:hover{border-color:#c9ccd1}
        urgência) e, só nas PEC de deputados com o registro completo, assinaturas (deputados que assinaram ÷ 513).
        Apensados e urgência saem das tramitações da Câmara; assinaturas, dos autores registrados. Mede o quanto
        se falou do assunto dentro da Câmara, não a importância da lei.</p>
+  </div>
+</footer>
+<footer class="rodape-global">
+  <div class="wrap">
+    <div class="rg">
+      <div class="rg-sobre">
+        <a class="marca" href="prototipo.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+        <p>O que o Congresso propõe, aprova e vota, a partir de dados públicos oficiais atualizados todos os dias.</p>
+      </div>
+      <nav class="rg-col" aria-label="Páginas">
+        <h2>Páginas</h2>
+        <a href="prototipo.html#deputados">Deputados</a>
+        <a href="senadores.html">Senadores</a>
+        <a href="leis.html">Leis votadas</a>
+        <a href="blocos.html">Quem vota com quem</a>
+        <a href="obras.html">Obras</a>
+      </nav>
+      <div class="rg-col">
+        <h2>Fontes</h2>
+        <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Câmara dos Deputados</a>
+        <a href="https://legis.senado.leg.br/dadosabertos/" target="_blank" rel="noopener">Senado Federal</a>
+        <a href="https://www.tse.jus.br" target="_blank" rel="noopener">Tribunal Superior Eleitoral</a>
+        <a href="https://dataverse.harvard.edu/dataverse/bls" target="_blank" rel="noopener">Brazilian Legislative Survey</a>
+        <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a>
+      </div>
+      <div class="rg-col">
+        <h2>Projeto</h2>
+        <a href="prototipo.html#sobre">Sobre os dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">Código e dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/issues" target="_blank" rel="noopener">Informar um erro</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a>
+      </div>
+    </div>
+    <div class="rg-pe"><p>Site independente, sem vínculo com a Câmara dos Deputados, o Senado Federal ou o TSE.
+      Os números vêm das fontes oficiais citadas; as escolhas de método estão escritas em cada página.</p></div>
   </div>
 </footer>
 
