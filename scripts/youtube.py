@@ -2,7 +2,7 @@
 Câmara Aberta — inscritos do canal OFICIAL de cada deputado no YouTube, como o YouTube informa.
 
 Uso:
-    python youtube.py      # precisa de YOUTUBE_API_KEY no ambiente para os números
+    python scripts/youtube.py      # precisa de YOUTUBE_API_KEY no ambiente para os números
 
 O canal vem do cadastro da Câmara (/deputados/{id}, campo redeSocial), nunca de busca por
 nome. A resposta da Câmara traz também o CPF: só redeSocial é guardado.
@@ -30,7 +30,7 @@ import requests
 
 import coleta
 
-SAIDA = coleta.BASE / "youtube.json"
+SAIDA = coleta.DADOS / "youtube.json"
 CACHE_REDES = coleta.CACHE / "redes"
 API_YT = "https://www.googleapis.com/youtube/v3/channels"
 VALIDADE_DIAS = 30

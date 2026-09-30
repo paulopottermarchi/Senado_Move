@@ -2,8 +2,8 @@
 Câmara Aberta — quem vota junto com quem: os blocos que existem de fato no Plenário.
 
 Uso:
-    python blocos.py               # depois de votos.py; lê cache/bulk/, grava blocos.json
-    python blocos.py --atualizar   # rebaixa as orientações do ano corrente (rodada diária)
+    python scripts/blocos.py               # depois de votos.py; lê cache/bulk/, grava blocos.json
+    python scripts/blocos.py --atualizar   # rebaixa as orientações do ano corrente (rodada diária)
 
 Nenhuma chamada à API. Fontes: votacoes-{ano}, votacoesVotos-{ano} e
 votacoesOrientacoes-{ano} (Dados Abertos da Câmara, os mesmos arquivos de votos.py).
@@ -37,7 +37,7 @@ from datetime import datetime
 import coleta
 import votos
 
-SAIDA = coleta.BASE / "blocos.json"
+SAIDA = coleta.DADOS / "blocos.json"
 MIN_VOTOS = 100      # votos Sim/Não no Plenário para o deputado entrar
 MIN_COMUNS = 100     # votações em comum para um par contar
 DIST_OPOSTOS = 4.0   # pontos na escala 1–10 para dois partidos serem "de lados opostos"

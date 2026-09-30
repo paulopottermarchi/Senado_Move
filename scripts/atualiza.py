@@ -2,14 +2,14 @@
 Câmara Aberta — atualização diária incremental, via API.
 
 Uso:
-    python atualiza.py            # desde a última atualização bem-sucedida
-    python atualiza.py --dias 7   # força a janela dos últimos 7 dias
+    python scripts/atualiza.py            # desde a última atualização bem-sucedida
+    python scripts/atualiza.py --dias 7   # força a janela dos últimos 7 dias
 
 Depois dele, na ordem (é o que o workflow do GitHub Actions roda):
-    python coleta.py --limite 513   # regrava deputados.json a partir do cache (~16 s)
-    python votos.py --atualizar     # rebaixa só os arquivos em lote do ano corrente
-    python temas.py
-    python semana.py
+    python scripts/coleta.py --limite 513   # regrava deputados.json a partir do cache (~16 s)
+    python scripts/votos.py --atualizar     # rebaixa só os arquivos em lote do ano corrente
+    python scripts/temas.py
+    python scripts/semana.py
 
 Por que existe: coleta.py nunca pergunta de novo o que já está no cache. Isso é
 ótimo para retomar uma coleta interrompida e péssimo para acompanhar a Câmara: a

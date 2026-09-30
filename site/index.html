@@ -1277,7 +1277,7 @@ function posicionar(){
 let FRASES={}, INICIO_LEG=null;
 async function carregarFrases(){
   try{
-    const r=await fetch('temas/resumo.json',{cache:'no-cache'});
+    const r=await fetch('dados/temas/resumo.json',{cache:'no-cache'});
     if(!r.ok) return;
     const j=await r.json(); FRASES=j.frases||{}; INICIO_LEG=j.inicioLegislatura||null;
   }catch(e){}
@@ -1285,7 +1285,7 @@ async function carregarFrases(){
 
 async function carregar(){
   try{
-    const r=await fetch('deputados.json',{cache:'no-cache'});
+    const r=await fetch('dados/deputados.json',{cache:'no-cache'});
     if(!r.ok) throw 0;
     const reais=await r.json();
     if(!Array.isArray(reais)||!reais.length) throw 0;
@@ -1319,11 +1319,11 @@ async function carregar(){
     }));
     demo=false;
     try{
-      const rl=await fetch('legislaturas.json',{cache:'no-cache'});
+      const rl=await fetch('dados/legislaturas.json',{cache:'no-cache'});
       if(rl.ok) LEGISLATURAS=await rl.json();
-      const rw=await fetch('wikipedia.json',{cache:'no-cache'}).catch(()=>null);
+      const rw=await fetch('dados/wikipedia.json',{cache:'no-cache'}).catch(()=>null);
       if(rw&&rw.ok) WIKI=await rw.json();
-      const ry=await fetch('youtube.json',{cache:'no-cache'}).catch(()=>null);
+      const ry=await fetch('dados/youtube.json',{cache:'no-cache'}).catch(()=>null);
       if(ry&&ry.ok) YT=await ry.json();
     }catch(e){}
   }catch(e){ deputados=montarDemo(); demo=true; }
@@ -1331,13 +1331,13 @@ async function carregar(){
   // Gráfico 2: proposicoes.json (votos.py). Independente do deputados.json — se
   // faltar, só este bloco cai na demonstração.
   try{
-    const r=await fetch('proposicoes.json',{cache:'no-cache'});
+    const r=await fetch('dados/proposicoes.json',{cache:'no-cache'});
     if(!r.ok) throw 0;
     const ps=await r.json();
     if(!Array.isArray(ps)||!ps.length) throw 0;
     // enquetes.json (enquetes.py): se faltar, a coluna diz "não consultada", sem inventar
     let enq={};
-    try{ const re=await fetch('enquetes.json',{cache:'no-cache'}); if(re.ok) enq=await re.json(); }catch(e){}
+    try{ const re=await fetch('dados/enquetes.json',{cache:'no-cache'}); if(re.ok) enq=await re.json(); }catch(e){}
     const consultaDe=id=>{
       const e=enq[String(id)];
       if(!e) return {ausente:'enquete não consultada nesta atualização'};
@@ -1548,8 +1548,8 @@ function textos(){
   leituraTexto();
   document.getElementById('rodape').innerHTML = demo
     ? '<strong>Demonstração.</strong> Os 513 pontos são sintéticos, com as bancadas reais da '+
-      'Câmara, para testar a legibilidade. Gere <code>deputados.json</code> e sirva a pasta com '+
-      '<code>python -m http.server</code> para ver os dados verdadeiros. Posição no espectro: '+FONTE
+      'Câmara, para testar a legibilidade. Gere <code>site/dados/deputados.json</code> e sirva o site com '+
+      '<code>python -m http.server --directory site</code> para ver os dados verdadeiros. Posição no espectro: '+FONTE
     : (semScoreNenhum
         ? '<strong>Falta o ideologia.json.</strong> Sem os scores do BLS nenhum deputado tem '+
           'posição no espectro, então todos aparecem na faixa cinza à direita e o eixo horizontal '+
@@ -2497,9 +2497,9 @@ function blocoNoticias(n){
 
 async function carregarSemana(){
   let s, noticias=null;
-  try{ const rn=await fetch('noticias.json',{cache:'no-cache'}); if(rn.ok) noticias=await rn.json(); }catch(e){}
+  try{ const rn=await fetch('dados/noticias.json',{cache:'no-cache'}); if(rn.ok) noticias=await rn.json(); }catch(e){}
   try{
-    const r=await fetch('semana.json',{cache:'no-cache'});
+    const r=await fetch('dados/semana.json',{cache:'no-cache'});
     if(!r.ok) return;
     s=await r.json();
   }catch(e){ return; }

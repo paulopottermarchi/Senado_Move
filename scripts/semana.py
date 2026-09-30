@@ -2,8 +2,8 @@
 Câmara Aberta — bloco "Esta semana na Câmara" (semana.json).
 
 Uso:
-    python semana.py                  # 7 dias terminando hoje
-    python semana.py --ate 2026-09-27 # 7 dias terminando nessa data
+    python scripts/semana.py                  # 7 dias terminando hoje
+    python scripts/semana.py --ate 2026-09-27 # 7 dias terminando nessa data
 
 Lê o cache (depois de atualiza.py) e deputados.json. Não chama a API.
 
@@ -26,11 +26,11 @@ import sys
 from collections import Counter
 from datetime import date, datetime, timedelta, timezone
 
-from coleta import BASE, CACHE, TIPOS, e_autor, ler_cache, virou_lei
+from coleta import CACHE, DADOS, TIPOS, e_autor, ler_cache, virou_lei
 from temas import CATEGORIAS, CURTO, classificar
 import resumos
 
-SAIDA = BASE / "semana.json"
+SAIDA = DADOS / "semana.json"
 PAUTA = CACHE / "pauta.json"
 APRESENTACAO = "Apresentação de Proposição"
 MAX_ITENS = 12   # por lista; o total vai sempre junto
@@ -50,7 +50,7 @@ def main():
     janela = (de.isoformat(), ate.isoformat())
 
     lista = ler_cache(CACHE / "deputados_lista.json")
-    publicado = {d["id"]: d for d in (ler_cache(BASE / "deputados.json") or [])}
+    publicado = {d["id"]: d for d in (ler_cache(DADOS / "deputados.json") or [])}
     if not lista or not publicado:
         sys.exit("Falta cache/deputados_lista.json ou deputados.json. Rode coleta.py antes.")
     em_exercicio = {d["id"] for d in lista}

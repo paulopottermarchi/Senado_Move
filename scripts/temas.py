@@ -2,8 +2,8 @@
 Câmara Aberta — temas das proposições, para a página do deputado (deputado.html).
 
 Uso:
-    python temas.py              # depois de coleta.py (e de votos.py, se for rodar)
-    python temas.py --auditoria  # grava também cache/temas_auditoria.csv
+    python scripts/temas.py              # depois de coleta.py (e de votos.py, se for rodar)
+    python scripts/temas.py --auditoria  # grava também cache/temas_auditoria.csv
 
 Lê só o cache/ da Etapa A. Não chama a API e não altera deputados.json.
 Grava temas/taxonomia.json e temas/{id}.json, um arquivo por deputado, para que a
@@ -29,7 +29,7 @@ import unicodedata
 from collections import Counter
 from datetime import date
 
-from coleta import BASE, CACHE, TIPOS, e_autor, ler_cache, virou_lei
+from coleta import CACHE, DADOS, TIPOS, e_autor, ler_cache, virou_lei
 import resumos  # passo 8: resumo do inteiro teor, gerado por resumos.py
 import tramitacoes  # histórico de tramitação → etapas (tramitacoes.py baixa; aqui só se lê o cache)
 
@@ -42,8 +42,8 @@ def tramitacao(pid, det):
     r = tramitacoes.etapas(ev, [(det.get("numero"), det.get("ano"))])
     return {k: v for k, v in r.items() if v}
 
-SAIDA = BASE / "temas"
-DEPUTADOS = BASE / "deputados.json"
+SAIDA = DADOS / "temas"
+DEPUTADOS = DADOS / "deputados.json"
 VERSAO = "2026-09-29.1"   # mudar a cada alteração de regra: vai para a página
 # 57ª legislatura. A frase-resumo e o filtro padrão da página contam só daqui para a
 # frente: a API devolve a carreira inteira, e somar mandatos antigos põe veterano e

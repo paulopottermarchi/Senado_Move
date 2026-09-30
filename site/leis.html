@@ -144,15 +144,15 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
 
 <header class="topo">
   <div class="topo-in">
-    <a class="marca" href="prototipo.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+    <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
     <nav class="nav" aria-label="Páginas do site">
-      <a href="prototipo.html#deputados">Deputados</a>
+      <a href="index.html#deputados">Deputados</a>
       <a href="senadores.html">Senadores</a>
-      <a href="prototipo.html#semana">Esta semana</a>
+      <a href="index.html#semana">Esta semana</a>
       <a href="leis.html" aria-current="page">Leis votadas</a>
       <a href="blocos.html">Quem vota com quem</a>
       <a href="obras.html">Obras</a>
-      <a href="prototipo.html#sobre">Sobre os dados</a>
+      <a href="index.html#sobre">Sobre os dados</a>
     </nav>
   </div>
 </header>
@@ -255,12 +255,12 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
   <div class="wrap">
     <div class="rg">
       <div class="rg-sobre">
-        <a class="marca" href="prototipo.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+        <a class="marca" href="index.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
         <p>O que o Congresso propõe, aprova e vota, a partir de dados públicos oficiais atualizados todos os dias.</p>
       </div>
       <nav class="rg-col" aria-label="Páginas">
         <h2>Páginas</h2>
-        <a href="prototipo.html#deputados">Deputados</a>
+        <a href="index.html#deputados">Deputados</a>
         <a href="senadores.html">Senadores</a>
         <a href="leis.html">Leis votadas</a>
         <a href="blocos.html">Quem vota com quem</a>
@@ -276,7 +276,7 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
       </div>
       <div class="rg-col">
         <h2>Projeto</h2>
-        <a href="prototipo.html#sobre">Sobre os dados</a>
+        <a href="index.html#sobre">Sobre os dados</a>
         <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">Código e dados</a>
         <a href="https://github.com/paulopottermarchi/Senado_Move/issues" target="_blank" rel="noopener">Informar um erro</a>
         <a href="https://github.com/paulopottermarchi/Senado_Move/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a>
@@ -318,18 +318,18 @@ function retrato(id,nome,px){
 const pessoa=([id,nome,partido,uf,voto,coesao])=>({id,nome,partido,uf,voto,coesao});
 
 async function carregar(){
-  const [rp,rr,re,rs,rn]=await Promise.all([fetch('proposicoes.json',{cache:'no-cache'}),
-                                   fetch('temas/resumo.json',{cache:'no-cache'}).catch(()=>null),
-                                   fetch('enquetes.json',{cache:'no-cache'}).catch(()=>null),
-                                   fetch('ecidadania.json',{cache:'no-cache'}).catch(()=>null),
-                                   fetch('notoriedade.json',{cache:'no-cache'}).catch(()=>null)]);
+  const [rp,rr,re,rs,rn]=await Promise.all([fetch('dados/proposicoes.json',{cache:'no-cache'}),
+                                   fetch('dados/temas/resumo.json',{cache:'no-cache'}).catch(()=>null),
+                                   fetch('dados/enquetes.json',{cache:'no-cache'}).catch(()=>null),
+                                   fetch('dados/ecidadania.json',{cache:'no-cache'}).catch(()=>null),
+                                   fetch('dados/notoriedade.json',{cache:'no-cache'}).catch(()=>null)]);
   // enquetes.json (enquetes.py) e ecidadania.json (ecidadania.py): sem eles, a página
   // funciona e diz "não consultada"
   try{ if(re&&re.ok) ENQ=await re.json(); }catch(e){}
   try{ if(rs&&rs.ok) ECID=await rs.json(); }catch(e){}
   try{ if(rn&&rn.ok) NOT=await rn.json(); }catch(e){}
   // notícias da Agência Câmara por proposição (noticias.py), pelo link da notícia para a ficha
-  try{ const r=await fetch('noticias.json',{cache:'no-cache'}); if(r.ok){ const n=await r.json();
+  try{ const r=await fetch('dados/noticias.json',{cache:'no-cache'}); if(r.ok){ const n=await r.json();
     (n.itens||[]).forEach(x=>x.p.forEach(([id])=>{(NOTICIAS[id]=NOTICIAS[id]||[]).push(x);})); } }catch(e){}
   LEIS=(await rp.json()).map(p=>({...p, tipo:(p.numero||'').split(' ')[0], div:(p.divergentes||[]).map(pessoa),
                                   nom:p.nominaisPlenario||[], enq:ENQ[String(p.idProposicao)]||null, sf:ECID[String(p.idProposicao)]||null, noto:NOT[String(p.idProposicao)]||null,

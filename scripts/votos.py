@@ -2,8 +2,8 @@
 Câmara Aberta — Etapa B (votos individuais, via arquivos anuais em bulk).
 
 Uso:
-    python votos.py              # usa o que já está em cache/bulk/
-    python votos.py --atualizar  # baixa de novo os arquivos do ANO CORRENTE (votações
+    python scripts/votos.py              # usa o que já está em cache/bulk/
+    python scripts/votos.py --atualizar  # baixa de novo os arquivos do ANO CORRENTE (votações
                                  # e autores); os anos fechados não mudam
 
 Rodar DEPOIS de coleta.py: lê deputados.json, acrescenta `votos` a cada deputado
@@ -46,7 +46,7 @@ def _etapas(id_prop, titulo):
 ANOS = range(2023, 2027)  # legislatura atual
 BULK = coleta.CACHE / "bulk"
 URL = "https://dadosabertos.camara.leg.br/arquivos/{tipo}/csv/{tipo}-{ano}.csv"
-PROPOSICOES = coleta.BASE / "proposicoes.json"
+PROPOSICOES = coleta.DADOS / "proposicoes.json"
 FAIXAS = coleta.FAIXAS
 
 # Valores de `voto` no CSV. Obstrução e "Artigo 17" (quem preside a sessão não

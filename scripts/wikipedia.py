@@ -2,8 +2,8 @@
 Câmara Aberta — notoriedade de cada deputado: leituras do artigo dele na Wikipédia em português.
 
 Uso:
-    python wikipedia.py              # liga deputado → artigo (com cache) e baixa as visitas
-    python wikipedia.py --religar    # refaz a ligação deputado → artigo
+    python scripts/wikipedia.py              # liga deputado → artigo (com cache) e baixa as visitas
+    python scripts/wikipedia.py --religar    # refaz a ligação deputado → artigo
 
 Mede procura, não aprovação nem trabalho: escândalo também gera leitura. É o único número
 de "notoriedade" do deputado no site — sem índice composto, sem outras fontes somadas.
@@ -37,7 +37,7 @@ import requests
 
 import coleta  # truststore, caminhos, ler/gravar cache
 
-SAIDA = coleta.BASE / "wikipedia.json"
+SAIDA = coleta.DADOS / "wikipedia.json"
 CACHE_WP = coleta.CACHE / "wikipedia"
 MAPA = CACHE_WP / "mapa.json"
 # Formato pedido pela Wikimedia (URL completa e contato): sem ele o cliente cai no limite de

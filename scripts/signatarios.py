@@ -2,8 +2,8 @@
 Câmara Aberta — PILOTO: quem assinou cada contrato e termo de obra, lido do documento assinado.
 
 Uso:
-    python signatarios.py              # lê os contratos de obras.json; grava cache/obras/signatarios.json
-    python signatarios.py --auditoria  # também grava a planilha de conferência (fora do repositório)
+    python scripts/signatarios.py              # lê os contratos de obras.json; grava cache/obras/signatarios.json
+    python scripts/signatarios.py --auditoria  # também grava a planilha de conferência (fora do repositório)
 
 NÃO publica nada: é a medição que decide se a "tabela de evidências" entra no site.
 

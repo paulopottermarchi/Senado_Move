@@ -2,8 +2,8 @@
 Câmara Aberta — consulta pública do Senado (e-Cidadania) sobre cada lei votada.
 
 Uso:
-    python ecidadania.py           # consulta as que faltam e as ainda abertas
-    python ecidadania.py --todas   # consulta de novo todas
+    python scripts/ecidadania.py           # consulta as que faltam e as ainda abertas
+    python scripts/ecidadania.py --todas   # consulta de novo todas
 
 Rodar DEPOIS de votos.py: lê proposicoes.json e grava ecidadania.json, lido por
 leis.html e pelo gráfico 2, ao lado da enquete da Câmara (enquetes.py).
@@ -47,8 +47,8 @@ BUSCA = "https://legis.senado.leg.br/dadosabertos/processo"
 PROCESSO = "https://legis.senado.leg.br/dadosabertos/processo/{id}"
 PAGINA = "https://www12.senado.leg.br/ecidadania/visualizacaomateria?id={codigo}"
 CACHE_SF = coleta.CACHE / "senado"
-PROPOSICOES = coleta.BASE / "proposicoes.json"
-SAIDA = coleta.BASE / "ecidadania.json"
+PROPOSICOES = coleta.DADOS / "proposicoes.json"
+SAIDA = coleta.DADOS / "ecidadania.json"
 INTERVALO = 1.0
 
 sessao = requests.Session()
