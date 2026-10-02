@@ -1,0 +1,29 @@
+{
+  "_fonte": "Tabela curada, uma linha por sigla, para os partidos cujo logo a Câmara não oferece em funcionamento (o endereço oficial devolve 404 em 28 dos 62 registros). Os demais usam o logo oficial da Câmara, achado pela sigla.",
+  "_regra": "Wikidata: o item tem de ter o NOME OFICIAL que a Câmara dá ao partido (/partidos/{id}), ser partido do Brasil e existir durante a legislatura em que a sigla aparece. Arquivo do Commons nomeado: só depois de conferido na imagem. Título de arquivo achado por busca NÃO basta (a busca por 'Partido Progressista Reformador' devolve o partido do Império). Sigla com asterisco (PL*, PP**) é partido homônimo extinto, distinto do de mesma sigla: só tem logo se estiver nesta tabela. 'de' e 'ate' são ids de legislatura (49 a 57) e delimitam quando o logo vale, para siglas que foram de partidos diferentes.",
+  "_nao_ha": "PDC, PMR, PPR, PPB, PRS, PST, PCB, PP** e ARENA: sem logo identificável com segurança (PST foi dois partidos diferentes, de 1988 a 1993 e de 1996 a 2002). S.PART. não é partido. Conferidos na imagem: todos os logos do Commons desta tabela.",
+  "partidos": {
+    "CIDADANIA":     [{"fonte": "commons", "wikidata": "Q2598527"}],
+    "DC":            [{"fonte": "commons", "wikidata": "Q2653287"}],
+    "MDB":           [{"fonte": "commons", "wikidata": "Q1322751", "de": 55}],
+    "MISSÃO":        [{"fonte": "commons", "arquivo": "Partido Missão logo (dark).svg"}],
+    "NOVO":          [{"fonte": "commons", "wikidata": "Q18552710"}],
+    "PATRI":         [{"fonte": "commons", "wikidata": "Q10345629"}],
+    "PATRIOTA":      [{"fonte": "commons", "wikidata": "Q10345629"}],
+    "PDS":           [{"fonte": "commons", "wikidata": "Q1713552"}],
+    "PL*":           [{"fonte": "commons", "arquivo": "Logo do Partido Liberal (1995).svg"}],
+    "PL":            [{"fonte": "commons", "wikidata": "Q2731720"}],
+    "PP":            [{"fonte": "camara", "de": 52}],
+    "PPL":           [{"fonte": "commons", "wikidata": "Q5499876"}],
+    "PRD":           [{"fonte": "commons", "wikidata": "Q115156140"}],
+    "PRN":           [{"fonte": "commons", "arquivo": "PRN logo.png"}],
+    "PRONA":         [{"fonte": "commons", "wikidata": "Q1636064"}],
+    "PSD":           [{"fonte": "camara", "de": 54}],
+    "PSDC":          [{"fonte": "commons", "arquivo": "Logo PSDC.jpg"}],
+    "PSTU":          [{"fonte": "commons", "wikidata": "Q2453869"}],
+    "PTR":           [{"fonte": "commons", "wikidata": "Q531565"}],
+    "REPUBLICANOS":  [{"fonte": "commons", "arquivo": "Republicanos10.jpg"}],
+    "SOLIDARIEDADE": [{"fonte": "commons", "wikidata": "Q20061311"}],
+    "UNIÃO":         [{"fonte": "commons", "wikidata": "Q108837483"}]
+  }
+}

@@ -246,8 +246,13 @@ def dif_orientacao(ids_votacoes, votos, orientacoes, listar=()):
 
     `listar`: ids de votação (as 164 finais de texto-base) para as quais também se devolve QUEM
     votou diferente — a lista da página das leis. Mesma regra da estatística.
+
+    Devolve também, por PARTIDO NA DATA DO VOTO, os mesmos totais (aba "Partidos": coesão da
+    bancada). Não dá para somar o `difOrientacao` dos deputados atuais de um partido: quem trocou de
+    partido levaria os votos do partido antigo para o novo.
     """
     listar = set(listar)
+    por_partido = defaultdict(lambda: {"comparaveis": 0, "diferentes": 0, "niveis": Counter()})
     por_votacao = defaultdict(list)
     acum = defaultdict(lambda: {n: [0, 0] for n in NIVEIS})   # nível → [comparáveis, diferentes]
     motivos, sem_regra = Counter(), Counter()
@@ -271,6 +276,10 @@ def dif_orientacao(ids_votacoes, votos, orientacoes, listar=()):
                 motivos[f"orientação {o or 'em branco'}"] += 1
                 continue
             motivos["comparável"] += 1
+            pp = por_partido[r["deputado_siglaPartido"]]
+            pp["comparaveis"] += 1
+            pp["niveis"][nivel] += 1
+            pp["diferentes"] += r["voto"] != o
             dep = int(r["deputado_id"])
             acum[dep][nivel][0] += 1
             if r["voto"] != o:
@@ -289,7 +298,7 @@ def dif_orientacao(ids_votacoes, votos, orientacoes, listar=()):
                       "niveis": {nv: a[nv] for nv in NIVEIS if a[nv][0]},
                       "nota": None if n >= MIN_COMPARAVEIS else
                       f"menos de {MIN_COMPARAVEIS} votações em que a bancada orientou Sim ou Não"}
-    return saida, por_votacao, motivos, sem_regra
+    return saida, por_votacao, motivos, sem_regra, por_partido
 
 
 # ---------------------------------------------------------------- pipeline
@@ -508,7 +517,11 @@ def main():
 
     # Orientação da bancada: todas as votações nominais do Plenário, não só as 164 de texto-base.
     plen = [i for i in votos if (votacoes.get(i) or {}).get("siglaOrgao") == "PLEN"]
-    difo, dif_por_votacao, motivos_ori, sem_regra = dif_orientacao(plen, votos, orientacoes, listar=ids_sel)
+    difo, dif_por_votacao, motivos_ori, sem_regra, dif_partidos = dif_orientacao(plen, votos, orientacoes,
+                                                                                 listar=ids_sel)
+    # Para partidos.py (aba "Partidos"). Derivado e regerável: fica em cache/, não no site.
+    coleta.gravar_cache(coleta.CACHE / "orientacao_partidos.json",
+                        {"votacoes": len(plen), "partidos": dif_partidos})
     for d in deputados:
         d.pop("divergencia", None)   # medida antiga ("maioria do próprio partido"), substituída
         d["difOrientacao"] = difo.get(d["id"]) or {"comparaveis": 0, "diferentes": None, "niveis": {},

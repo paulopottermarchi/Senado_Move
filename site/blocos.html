@@ -282,6 +282,7 @@ const nomeBloco=i=>B.blocos[i].medianaGoverno>=.5?'Acompanha o Governo':'Vota co
 const corBloco=i=>`var(--b${Math.min(i,1)})`;
 
 async function carregar(){
+  await Bandeiras.carregar();     // logos dos partidos (logos.py); sem o arquivo, só não mostra logo
   B=await (await fetch('dados/blocos.json',{cache:'no-cache'})).json();
   const c=B.corte, nb=B.blocos.length;
   chamada.textContent=`Agrupando os ${nf.format(Object.keys(B.deputados).length)} deputados só pela semelhança dos votos, `+
@@ -324,7 +325,7 @@ function desenharLinhas(){
       return `<button class="pt" data-id="${id}" style="left:${(pctGov(id)*100).toFixed(2)}%;top:${y.toFixed(1)}px;--c:${corBloco(B.deputados[id].bloco)}"
         title="${esc(N(id)[0])} (${esc(rotPartido(id))}): votou como o Governo orientou em ${pc(pctGov(id))} · ${nomeBloco(B.deputados[id].bloco)}"
         aria-label="${esc(N(id)[0])}, ${pc(pctGov(id))}"></button>`;}).join('');
-    return `<div class="lp"><div class="lp-nome">${esc(p)}<small>${ids.length} deputados${B.blocos.length>1&&partes.length>1?' · '+partes.join(' '):''}</small></div>
+    return `<div class="lp"><div class="lp-nome">${Bandeiras.img(p,57,18,{vazio:false})}${esc(p)}<small>${ids.length} deputados${B.blocos.length>1&&partes.length>1?' · '+partes.join(' '):''}</small></div>
       <div class="trilho">${m!=null?`<span class="med" style="left:${(m*100).toFixed(2)}%" title="Mediana do partido: ${pc(m)}"></span>`:''}${pts}</div></div>`;
   }).join('');
   linhas.querySelectorAll('.pt').forEach(b=>b.onclick=()=>selecionar(b.dataset.id,true));
@@ -410,7 +411,8 @@ fDep.onchange=fDep.oninput=()=>{
 };
 limpar.onclick=()=>{ SEL=null; fDep.value=''; limpar.hidden=true; ficha.hidden=true;
   linhas.querySelectorAll('.pt').forEach(b=>b.classList.remove('sel','apaga')); history.replaceState(null,'','blocos.html'); };
-carregar().catch(()=>{ chamada.textContent='Não foi possível carregar blocos.json. Abra o site por um servidor (não direto do disco).'; });
+// site.js é defer: Bandeiras só existe depois do parse
+document.addEventListener('DOMContentLoaded',()=>carregar().catch(()=>{ chamada.textContent='Não foi possível carregar blocos.json. Abra o site por um servidor (não direto do disco).'; }));
 </script>
 </body>
 </html>
