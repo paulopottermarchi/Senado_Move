@@ -702,6 +702,76 @@ table.rank td.dep{white-space:normal;overflow:visible;text-align:left}
   .explora{grid-template-columns:1fr}
   .explora a{padding:20px}
 }
+
+/* ---------- aba Partidos (partidos.py) ---------- */
+table.part{width:100%;border-collapse:collapse;min-width:964px;table-layout:fixed}
+table.part col.p-pos{width:32px}
+table.part col.p-nome{width:164px}
+table.part col.p-aut{width:84px}
+table.part col.p-pro{width:80px}
+table.part col.p-con{width:88px}
+table.part col.p-med{width:92px}
+table.part col.p-sem{width:92px}
+table.part col.p-mai{width:80px}
+table.part col.p-gov{width:88px}
+table.part col.p-coe{width:92px}
+table.part col.p-bls{width:72px}
+table.part th{font-size:12px;font-weight:500;color:var(--tinta3);text-align:right;padding:0 8px 8px;
+              border-bottom:1px solid var(--linha);cursor:pointer;user-select:none;line-height:1.3;vertical-align:bottom}
+table.part th:hover{color:var(--tinta)}
+table.part th.esq,table.part td.esq{text-align:left}
+table.part th.ord{color:var(--tinta);font-weight:600}
+table.part th.sem-ord{cursor:default}
+table.part th .seta{font-size:9px;margin-left:4px}
+table.part td{padding:12px 8px;text-align:right;font-size:13px;border-bottom:1px solid var(--linha2);vertical-align:middle}
+table.part td b{font-weight:600}
+table.part td small{display:block;font-size:12px;line-height:1.3;color:var(--tinta3);margin-top:2px}
+table.part td.pos{color:var(--tinta3);font-size:12px}
+table.part tbody tr:hover td{background:var(--papel2)}
+table.part tr.peq td{color:var(--tinta3)}
+table.part tr.peq td b{font-weight:500;color:var(--tinta2)}
+table.part tr.divisor td{padding:20px 8px 8px;text-align:left;font-size:12px;font-weight:600;letter-spacing:.06em;
+                         text-transform:uppercase;color:var(--tinta3);border-bottom:1px solid var(--linha)}
+table.part tr.divisor:hover td{background:none}
+.ponto{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}
+.part-aviso-p{margin:0}
+.part-grafico{position:relative;margin-top:12px}
+.part-grafico svg{display:block;width:100%;height:auto;overflow:visible}
+.pg-eixo text{font-size:11px;fill:var(--tinta3)}
+.pg-eixo line{stroke:var(--linha)}
+.pg-eixo .zero{stroke:var(--linha-forte)}
+.pg-rotulo{font-size:12px;font-weight:600;fill:var(--tinta);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.pg-rotulo.peq{font-weight:500;fill:var(--tinta3)}
+.pg-lider{stroke:var(--linha-forte);stroke-width:1}
+.pg-pt{transition:r 200ms var(--curva)}
+.pg-pt:hover{r:9}
+.part-rol{margin-top:16px}
+.part-ctl{margin:0 0 16px}
+.part-ctl .campo .sel{min-width:0;text-overflow:ellipsis}
+@media(max-width:720px){
+  .part-ctl{flex-direction:column;align-items:stretch}
+  .part-ctl .campo{display:flex;width:100%}
+  .part-ctl .campo>span{flex:0 0 64px}
+  .part-ctl .campo .sel{flex:1;width:100%}
+}
+.part-sec{margin-top:32px;padding-top:24px;border-top:1px solid var(--linha2)}
+.part-sec h3{font-family:var(--serif);font-size:20px;font-weight:600;line-height:1.25}
+.part-sec[hidden]{display:none}
+/* perfil por tema: tinta neutra, nunca as cores do espectro (tema não tem ideologia) */
+table.perfil{width:100%;border-collapse:separate;border-spacing:3px;min-width:720px;table-layout:fixed}
+table.perfil th{font-size:12px;font-weight:500;color:var(--tinta3);text-align:center;padding:0 4px 6px;line-height:1.3;vertical-align:bottom}
+table.perfil th.esq{text-align:left;width:128px}
+table.perfil th.col{cursor:pointer}
+table.perfil th.col:hover,table.perfil th.col.sel{color:var(--tinta)}
+table.perfil th.col.sel{font-weight:600}
+table.perfil td{height:36px;text-align:center;font-size:12.5px;font-weight:500;border-radius:var(--raio-c);background:var(--papel2)}
+table.perfil td.esq{text-align:left;background:none;font-weight:600;font-size:13px;padding-left:2px}
+@media(max-width:720px){
+  table.perfil td.esq,table.perfil th.esq{position:sticky;left:0;z-index:1;background:var(--papel)}
+  table.part td.esq,table.part th.esq{position:sticky;left:0;z-index:1;background:var(--papel);box-shadow:1px 0 0 var(--linha2)}
+  table.part tbody tr:hover td.esq{background:var(--papel2)}
+  table.part tr.divisor td{position:static;box-shadow:none}
+}
 </style>
 </head>
 <body>
@@ -799,6 +869,7 @@ table.rank td.dep{white-space:normal;overflow:visible;text-align:left}
     <div class="abas">
       <button class="aba on" data-vista="vGrafico">Gráfico</button>
       <button class="aba" data-vista="vRanking">Ranking</button>
+      <button class="aba" data-vista="vPartidos" id="abaPartidos" hidden>Partidos</button>
     </div>
 
     <!-- Filtros comuns ao Gráfico e ao Ranking: o mesmo estado, as duas vistas. -->
@@ -882,6 +953,41 @@ table.rank td.dep{white-space:normal;overflow:visible;text-align:left}
       <details class="nota">
         <summary>Como ler esta tabela</summary>
         <p class="rank-pe" id="rankPe"></p>
+      </details>
+    </div>
+
+    <div class="vista" id="vPartidos">
+      <div class="linha-ctl part-ctl" role="group" aria-label="Período e tema">
+        <label class="campo"><span>Período</span><select class="sel" id="partPeriodo"></select></label>
+        <label class="campo"><span>Tema</span><select class="sel" id="partTema"></select></label>
+        <button class="limpar" id="partLimpar" hidden>Voltar à legislatura atual</button>
+      </div>
+      <p class="leitura" id="partLeitura"></p>
+      <div class="aviso" role="note" id="partAviso"></div>
+      <div class="tabela-rol part-rol">
+        <table class="part" aria-describedby="partLeitura">
+          <colgroup id="partCols"></colgroup>
+          <thead><tr id="partCab"></tr></thead>
+          <tbody id="partCorpo"></tbody>
+        </table>
+      </div>
+      <div class="part-sec" id="partGrafSec">
+        <h3>Espectro × conversão mediana</h3>
+        <p class="leitura" id="partGrafLeitura"></p>
+        <div class="part-grafico" id="partGrafico"></div>
+      </div>
+      <div class="part-sec" id="partPerfilSec">
+        <h3>O que cada partido propõe</h3>
+        <p class="leitura" id="partPerfilLeitura"></p>
+        <div class="tabela-rol part-rol"><table class="perfil" id="partPerfil"></table></div>
+      </div>
+      <details class="nota">
+        <summary>Como cada coluna é calculada</summary>
+        <div class="rank-pe" id="partMetodo"></div>
+      </details>
+      <details class="nota">
+        <summary>De onde vêm os logos</summary>
+        <div class="rank-pe" id="partCreditos"></div>
       </details>
     </div>
   </section>
@@ -1284,6 +1390,7 @@ async function carregarFrases(){
 }
 
 async function carregar(){
+  await Bandeiras.carregar();     // logos dos partidos (logos.py); sem o arquivo, a página só não mostra logo
   try{
     const r=await fetch('dados/deputados.json',{cache:'no-cache'});
     if(!r.ok) throw 0;
@@ -2148,7 +2255,7 @@ function rankDesenhar(){
       <td class="pos">${i+1}</td>
       <td class="dep" title="${esc(d.nome)} (${esc(d.partido)}-${esc(d.uf)})"><div class="dep-cel">${retrato(d,32)}<div class="dep-txt">
         <b><i style="background:${corDoScore(d.score)}"></i>${esc(d.nome)}</b>
-        <em style="display:block;font-style:normal;font-size:12px;color:var(--tinta3)">${esc(d.partido)} de ${esc(d.uf)}</em>
+        <em style="display:block;font-style:normal;font-size:12px;color:var(--tinta3)">${Bandeiras.img(d.partido,+LEG_ATUAL(),14,{vazio:false})}${esc(d.partido)} de ${esc(d.uf)}</em>
       </div></div></td>
       <td class="num forte cel2">${celaVoto(d,nf)}</td>
       <td class="num">${p==null?'<span class="sem">—</span>':nf.format(p)}</td>
@@ -2408,7 +2515,10 @@ document.querySelectorAll('.aba').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.aba').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('.vista').forEach(v=>
     v.classList.toggle('on',v.id===b.dataset.vista));
+  // a aba Partidos é da legislatura inteira: os filtros de região, estado, mandato e faixa não se aplicam
+  document.querySelector('.filtros-comuns').style.display=b.dataset.vista==='vPartidos'?'none':'';
   if(b.dataset.vista==='vGrafico') desenhar();
+  else if(b.dataset.vista==='vPartidos') partDesenhar();
   else if(rankPendente) rankDesenhar();
 });
 
@@ -2538,11 +2648,293 @@ async function carregarSemana(){
   box.hidden=false;
 }
 
-window.addEventListener('load',()=>{carregarFrases().then(carregar);carregarSemana();});
+
+// ---------- aba Partidos (partidos.py → dados/partidos/) ----------
+// Tudo vem calculado do script; aqui só se filtra e se desenha. Um arquivo por período, carregado ao escolher.
+// Sem o índice (ainda não gerado), a aba não aparece.
+let PIDX=null, PART=null, PDADOS={}, partEst={periodo:null,tema:''}, partOrd={k:'a',desc:true};
+const partVisivel=()=>document.getElementById('vPartidos').classList.contains('on');
+const pctInt=x=>Math.round(x*100)+'%';
+const NIVEL_PART={partido:'do partido',federacao:'da federação',bloco:'do bloco'};
+const DEF={
+  sigla:'Partido na data em que cada proposição foi apresentada, com a sigla da época.',
+  a:'Deputados que apresentaram PEC ou PL enquanto estavam no partido, neste período e tema. É a base da amostra: menos de 10 = amostra pequena.',
+  p:'PEC e PL distintas de autoria de deputados do partido. Uma proposição conta uma vez, por mais autores do partido que tenha.',
+  conv:'Virou lei ÷ proposições. Situação de hoje: proposição antiga teve mais tempo para virar lei.',
+  m:'Mediana, entre os deputados que apresentaram algo no partido, da parcela das proposições deles que virou lei. Zero quando a maioria nunca teve lei.',
+  z:'Parcela dos deputados autores do partido sem nenhuma proposição virada lei.',
+  top:'Parcela das proposições do partido que são de um único deputado, o que mais apresentou enquanto estava nele.',
+  gov:'Mediana, entre os deputados do partido, da frequência com que votaram como o líder do Governo orientou (Plenário, 2023 a 2026). Só com 3 deputados ou mais.',
+  coe:'Parcela dos votos Sim ou Não que seguiu a orientação registrada da bancada, pelo partido que o deputado tinha no dia do voto.',
+  bls:'Média das respostas da wave 9 (2021) do Brazilian Legislative Survey, calculada por este site, de 1 (esquerda) a 10 (direita).'};
+function partColunas(){
+  const c=[{k:'pos',t:'#',col:'p-pos',ord:false},{k:'sigla',t:'Partido',col:'p-nome',esq:true},
+    {k:'a',t:'Deputados',col:'p-aut'},{k:'p',t:'Proposições',col:'p-pro'},{k:'conv',t:'Conversão',col:'p-con'},
+    {k:'m',t:'Conversão mediana por deputado',col:'p-med'},{k:'z',t:'Autores sem nenhuma lei',col:'p-sem'},
+    {k:'top',t:'Maior autor no volume',col:'p-mai'}];
+  if(PART.atual) c.push({k:'gov',t:'Alinhamento ao Governo',col:'p-gov'},{k:'coe',t:'Coesão',col:'p-coe'},
+                        {k:'bls',t:'Espectro (BLS)',col:'p-bls'});
+  return c;
+}
+const partMeta=r=>(PART.meta&&PART.meta[r.s])||null;
+const partVal={
+  sigla:r=>r.s, a:r=>r.a, p:r=>r.p, conv:r=>r.p?r.l/r.p:null, m:r=>r.m, z:r=>r.a?r.z/r.a:null,
+  top:r=>r.p?r.t[2]/r.p:null,
+  gov:r=>{const m=partMeta(r); return m?m.governo:null;},
+  coe:r=>{const m=partMeta(r); return m&&m.coesao?1-m.coesao.diferentes/m.coesao.comparaveis:null;},
+  bls:r=>{const m=partMeta(r); return m?m.score:null;}};
+const partLinhasTema=()=>(PART&&PART.sel[partEst.tema])||[];
+const partPequena=r=>r.a<PIDX.minAutores;
+const partNomeTema=k=>{ if(!k) return 'todos os temas';
+  for(const b of PIDX.blocos){ if('b'+b.i===k) return `${b.nome} (todo o bloco)`;
+    const c=b.categorias.find(c=>'c'+c.i===k); if(c) return c.nome; } return k; };
+
+async function partCarregar(id){
+  if(PDADOS[id]) return PDADOS[id];
+  const r=await fetch(`dados/partidos/${id}.json`,{cache:'no-cache'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return PDADOS[id]=await r.json();
+}
+async function carregarPartidos(){
+  try{
+    const r=await fetch('dados/partidos/indice.json',{cache:'no-cache'});
+    if(!r.ok) return;
+    PIDX=await r.json();
+  }catch(e){ return; }
+  if(!PIDX.periodos||!PIDX.periodos.length) return;
+  partEst.periodo=PIDX.legislaturaAtual;
+  document.getElementById('partPeriodo').innerHTML=PIDX.periodos.map(p=>
+    `<option value="${p.id}">${esc(p.rotulo)}${p.atual?' (atual)':''}</option>`).join('');
+  document.getElementById('partTema').innerHTML='<option value="">Todos os temas</option>'+PIDX.blocos.map(b=>
+    `<optgroup label="${esc(b.nome)}"><option value="b${b.i}">Todo o bloco: ${esc(b.nome)}</option>`+
+    b.categorias.map(c=>`<option value="c${c.i}">${esc(c.nome)}</option>`).join('')+'</optgroup>').join('');
+  document.getElementById('partPeriodo').value=partEst.periodo;
+  document.getElementById('abaPartidos').hidden=false;
+  if(location.hash==='#partidos') document.getElementById('abaPartidos').click();
+}
+
+function partLinhas(){
+  const f=partVal[partOrd.k];
+  const cmp=(a,b)=>{const x=f(a),y=f(b);
+    if(x==null&&y==null) return 0; if(x==null) return 1; if(y==null) return -1;
+    const c=typeof x==='string'?x.localeCompare(y):x-y; return partOrd.desc?-c:c;};
+  const todas=partLinhasTema();
+  const grandes=todas.filter(r=>!partPequena(r)).sort((a,b)=>cmp(a,b)||b.a-a.a||b.p-a.p);
+  // amostra pequena: fica na tabela, sempre depois e na mesma ordem fixa; nunca entra na ordenação
+  const pequenas=todas.filter(partPequena).sort((a,b)=>b.a-a.a||b.p-a.p);
+  return {grandes,pequenas};
+}
+
+function partCelulas(r,pos,cols){
+  const m=partMeta(r), sc=m&&m.score!=null?m.score:null;
+  const nada='<span class="sem">—</span>';
+  const tags=[];
+  if(PART.atual&&m&&m.bancada===0) tags.push('sem bancada hoje');
+  if(partPequena(r)) tags.push('amostra pequena');
+  const conv=r.p?r.l/r.p:null;
+  const co=m&&m.coesao;
+  let nivel='', dica='';
+  if(co){
+    const t=co.comparaveis, n=co.niveis||{}, fr=k=>(n[k]||0)/t;
+    const dom=Object.keys(NIVEL_PART).sort((a,b)=>fr(b)-fr(a))[0];
+    nivel=fr(dom)>=.5?`orientação ${NIVEL_PART[dom]}`:'orientações mistas';
+    dica=`${nfBR(co.diferentes)} votos contra a orientação, de ${nfBR(t)} comparáveis. Quem orientou: `+
+      Object.keys(NIVEL_PART).filter(k=>n[k]).map(k=>`${NIVEL_PART[k]} ${pctInt(fr(k))}`).join(', ')+'.';
+  }
+  const cel={
+    pos:()=>`<td class="pos">${pos==null?'':pos}</td>`,
+    sigla:()=>`<td class="esq"${r.s.endsWith('*')?` title="Sigla com asterisco: partido extinto que usava a mesma sigla de outro, como a Câmara registra"`:''}>${Bandeiras.img(r.s,PART.id,26)}<b>${esc(r.s)}</b>${tags.length?`<small>${tags.join(' · ')}</small>`:''}</td>`,
+    a:()=>`<td><b>${nfBR(r.a)}</b>${PART.atual&&partEst.tema===''&&m?`<small>${nfBR(m.bancada)} hoje</small>`:''}</td>`,
+    p:()=>`<td title="${nfBR(r.c)} com autores de outro partido, contadas nos dois"><b>${nfBR(r.p)}</b></td>`,
+    conv:()=>`<td>${conv==null?nada:`<b>${pct1(conv)}</b><small>${nfBR(r.l)} de ${nfBR(r.p)}</small>`}</td>`,
+    m:()=>`<td><b>${pct1(r.m)}</b></td>`,
+    z:()=>`<td><b>${pctInt(r.z/r.a)}</b><small>${nfBR(r.z)} de ${nfBR(r.a)}</small></td>`,
+    top:()=>`<td title="${esc(r.t[1])}: ${nfBR(r.t[2])} de ${nfBR(r.p)}"><b>${pctInt(r.t[2]/r.p)}</b></td>`,
+    gov:()=>`<td${!m||m.governo==null?' title="Menos de 3 deputados no período: sem mediana"':''}>${!m||m.governo==null?nada:`<b>${pctInt(m.governo)}</b>`}</td>`,
+    coe:()=>`<td${dica?` title="${esc(dica)}"`:''}>${co?`<b>${pctInt(1-co.diferentes/co.comparaveis)}</b><small>${nivel}</small>`:nada}</td>`,
+    bls:()=>`<td${sc==null?' title="Sem posição na pesquisa: só aparece na tabela"':''}>${sc==null?nada:`<b>${sc.toFixed(1).replace('.',',')}</b>`}</td>`};
+  return cols.map(c=>cel[c.k]()).join('');
+}
+
+function partTabela(){
+  const cols=partColunas();
+  if(!cols.some(c=>c.k===partOrd.k)) partOrd={k:'a',desc:true};
+  document.getElementById('partCols').innerHTML=cols.map(c=>`<col class="${c.col}">`).join('');
+  document.getElementById('partCab').innerHTML=cols.map(c=>{
+    const on=partOrd.k===c.k;
+    return `<th class="${c.esq?'esq ':''}${on?'ord ':''}${c.ord===false?'sem-ord':''}" ${c.ord===false?'':`data-k="${c.k}" aria-sort="${on?(partOrd.desc?'descending':'ascending'):'none'}"`}`+
+      `${DEF[c.k]?` title="${esc(DEF[c.k])}"`:''}>${c.t}${on?`<span class="seta">${partOrd.desc?'▼':'▲'}</span>`:''}</th>`;}).join('');
+  const {grandes,pequenas}=partLinhas();
+  let h=grandes.map((r,i)=>`<tr>${partCelulas(r,i+1,cols)}</tr>`).join('');
+  if(pequenas.length){
+    h+=`<tr class="divisor"><td colspan="${cols.length}">Amostra pequena · menos de ${PIDX.minAutores} deputados autores · fora da ordenação</td></tr>`;
+    h+=pequenas.map(r=>`<tr class="peq">${partCelulas(r,null,cols)}</tr>`).join('');
+  }
+  if(!grandes.length&&!pequenas.length) h=`<tr><td colspan="${cols.length}" class="esq">Nenhuma proposição neste recorte.</td></tr>`;
+  document.getElementById('partCorpo').innerHTML=h;
+  document.querySelector('table.part').style.minWidth=cols.length>8?'964px':'720px';
+}
+
+function partTextos(){
+  const P=PART, n=nfBR, tot=P.tot[partEst.tema]||[0,0,0], tema=partEst.tema;
+  document.getElementById('partLeitura').textContent=
+    `${P.rotulo}${P.atual?' (atual)':''}: ${n(tot[0])} proposições distintas de PEC e PL de autoria de deputados`+
+    `${tema?`, no tema “${partNomeTema(tema)}”`:''}. Cada proposição conta uma vez em cada partido que teve autor nela, no partido `+
+    `que o autor tinha no dia em que a apresentou; as ${n(tot[1])} com autores de mais de um partido aparecem em cada um, por isso a soma das linhas `+
+    `passa do total. `+
+    (P.atual?'Em “Deputados”, o número de baixo é a bancada de hoje. ':
+      'Siglas como eram na época: partido que mudou de nome aparece com cada nome. Alinhamento ao Governo, coesão e posição no espectro só existem para a legislatura atual. ')+
+    'Clique no título de uma coluna para reordenar.';
+  document.getElementById('partAviso').innerHTML=
+    `<p class="part-aviso-p"><b>Conversão não é mérito.</b> Uma proposta virar lei depende também de acesso ao poder — de quem negocia a pauta, `+
+    `integra a base do governo ou preside comissões — e de tempo: projetos levam anos para virar lei, e o que foi apresentado há pouco ainda não teve `+
+    `essa chance. A tabela mostra o que aconteceu em cada bancada, não quem trabalhou mais. `+
+    `${tema?'Tema é a classificação deste site a partir da ementa e da indexação oficial, e uma proposição pode ter mais de um tema; com poucas proposições, '+
+      'um número pequeno muda muito a parcela. ':''}`+
+    `Partido com menos de ${PIDX.minAutores} deputados autores aparece, marcado, fora da ordenação.</p>`;
+  document.getElementById('partLimpar').hidden=!(partEst.periodo!==PIDX.legislaturaAtual||tema);
+  const grandes=partLinhasTema().filter(r=>!partPequena(r)), zeros=grandes.filter(r=>r.m===0).length;
+  const sec=document.getElementById('partGrafSec');
+  if(!P.atual){
+    sec.querySelector('.leitura').textContent='Este gráfico existe só para a legislatura atual: a posição no espectro é a média das respostas de 2021, dos partidos de hoje, e não vale para as siglas de outras épocas.';
+    document.getElementById('partGrafico').innerHTML='';
+  }else{
+    const semScore=partLinhasTema().filter(r=>{const m=partMeta(r); return !m||m.score==null;}).map(r=>r.s);
+    sec.querySelector('.leitura').textContent=
+      `Cada ponto é um partido com posição no espectro (média das respostas do BLS, calculada por este site); na vertical, a conversão mediana por `+
+      `deputado${tema?` no tema “${partNomeTema(tema)}”`:''}. Em ${zeros} dos ${grandes.length} partidos com ${PIDX.minAutores} deputados autores ou mais a mediana é zero: `+
+      `a maioria dos deputados não teve nenhuma proposição virada lei, e por isso quase todos ficam na base do gráfico — a diferença entre os partidos `+
+      `aparece melhor na conversão da tabela. Círculos vazados: amostra pequena.${semScore.length?` Sem posição na pesquisa, só na tabela: ${semScore.join(', ')}.`:''}`;
+  }
+  document.getElementById('partMetodo').innerHTML=
+    `<p><b>De onde vem.</b> Os arquivos anuais em lote da Câmara (proposições e autores, de 1991 em diante), de TODOS os autores, não só dos deputados de hoje. `+
+    `O partido é o que o autor tinha na data da apresentação, com a sigla da época; contra o histórico oficial de exercício, 99,6% das autorias batem, e a diferença é quase toda sigla truncada. `+
+    `Variantes de grafia do mesmo partido (REPUBLIC, SOLIDARI, SD, PCDOB) foram unificadas; fusões e mudanças de nome (PMDB e MDB, PFL e DEM) não. Entram PEC e PL de deputados; Executivo, Senado e comissões ficam de fora, `+
+    `assim como ${n(tot[2])} proposição(ões) sem autor com partido neste recorte.</p>`+
+    `<p><b>Por deputado.</b> A unidade é o par deputado–partido: quem trocou de partido conta em cada um, só com o que apresentou enquanto estava nele. `+
+    `Mediana da conversão e "autores sem nenhuma lei" usam quem apresentou algo no partido: não há lista de quem esteve no partido sem apresentar nada.</p>`+
+    `<p><b>Período e tema.</b> Período é a legislatura da data de apresentação. O tema é o do filtro das páginas dos deputados (7 blocos, 27 categorias, por palavras-chave); `+
+    `é interpretação do site, com precisão ainda não medida, e uma proposição conta em cada tema que tem.</p>`+
+    (P.atual?`<p><b>Só na legislatura atual.</b> Bancada é o partido de hoje (${n(P.deputadosHoje)} deputados). <b>Alinhamento ao Governo</b> usa o partido em que cada deputado mais votou (a página Quem vota com quem). `+
+    `<b>Coesão</b> é a parcela dos votos Sim ou Não que seguiu a orientação registrada da bancada, pelo partido no dia do voto; orientação liberada não conta. `+
+    `Quando o partido orienta por bloco ou federação, é a orientação do bloco ou da federação, e a coluna diz qual predomina. São quatro recortes de "partido" no mesmo quadro porque cada dado oficial traz o seu.</p>`:'');
+}
+
+// Perfil por tema: parcela das proposições de cada partido em cada bloco. Tinta neutra: tema não tem ideologia.
+function partPerfil(){
+  const sec=document.getElementById('partPerfilSec'), tb=document.getElementById('partPerfil');
+  const linhas=PART.sel[''].filter(r=>!partPequena(r));
+  if(!linhas.length){ sec.hidden=true; return; }
+  sec.hidden=false;
+  const mapas=PIDX.blocos.map(b=>Object.fromEntries((PART.sel['b'+b.i]||[]).map(x=>[x.s,x])));
+  const celulas=linhas.map(r=>PIDX.blocos.map((b,i)=>{const x=mapas[i][r.s]; return {x,f:x?x.p/r.p:0};}));
+  const max=Math.max(.01,...celulas.flat().map(c=>c.f));
+  document.getElementById('partPerfilLeitura').textContent=
+    `Parcela das proposições de cada partido em cada bloco de temas, ${PART.rotulo.toLowerCase()}. Uma proposição pode ter mais de um tema, então a linha soma mais de 100%; `+
+    `as que não casam com nenhuma regra ficam sem tema (${nfBR(PIDX.periodos.find(p=>p.id===PART.id).semTema)} no período). Tema é classificação do site, não posição nem intenção. `+
+    `Clique num bloco para filtrar a tabela. Partidos com menos de ${PIDX.minAutores} deputados autores ficam de fora.`;
+  tb.innerHTML=`<thead><tr><th class="esq">Partido</th>${PIDX.blocos.map(b=>
+    `<th class="col${partEst.tema==='b'+b.i?' sel':''}" data-b="b${b.i}" title="Filtrar a tabela por ${esc(b.nome)}">${esc(b.nome)}</th>`).join('')}</tr></thead><tbody>`+
+    linhas.map((r,j)=>`<tr><td class="esq">${Bandeiras.img(r.s,PART.id,16)}${esc(r.s)}</td>${celulas[j].map(c=>{
+      const a=c.x?(.07+.6*c.f/max):0;
+      return `<td style="${a?`background:rgba(15,23,42,${a.toFixed(2)});${a>.38?'color:#fff':''}`:''}"`+
+        `${c.x?` title="${nfBR(c.x.p)} de ${nfBR(r.p)} proposições · ${nfBR(c.x.l)} ${c.x.l===1?'virou lei':'viraram lei'}"`:''}>${c.x?pctInt(c.f):'—'}</td>`;}).join('')}</tr>`).join('')+'</tbody>';
+}
+
+async function partDesenhar(){
+  if(!PIDX) return;
+  const id=partEst.periodo;
+  let dados;
+  try{ await Bandeiras.carregar(); dados=await partCarregar(id); }
+  catch(e){ document.getElementById('partLeitura').textContent=`Não foi possível carregar este período (${e.message}).`; return; }
+  if(partEst.periodo!==id) return;           // o leitor trocou de período durante a carga
+  PART=dados;
+  if(partEst.tema&&!PART.sel[partEst.tema]) partEst.tema='';
+  document.getElementById('partTema').value=partEst.tema;
+  partTextos(); partTabela(); partPerfil(); partGrafico(); partCreditos();
+}
+
+// Créditos dos logos: o oficial da Câmara quando abre; senão o do Wikimedia Commons, só pela tabela curada.
+function partCreditos(){
+  const cr=Bandeiras.creditos();
+  document.getElementById('partCreditos').innerHTML=
+    `<p>Os logos são das marcas dos próprios partidos e servem aqui só para identificá-los. Este site não guarda cópia: a página mostra a imagem a partir do endereço de origem. `+
+    `Vêm do logo oficial da Câmara dos Deputados quando o endereço dela funciona (o registro oficial devolve erro para vários partidos, inclusive MDB, PL, NOVO, REPUBLICANOS e UNIÃO) e, para os demais, do Wikimedia Commons, `+
+    `conferidos um a um na imagem. Sigla sem logo não tem imagem segura: partidos extintos pouco conhecidos ficam só com o nome.</p>`+
+    (cr.length?`<p><b>Wikimedia Commons:</b> `+cr.map(c=>`<a href="${esc(c.pagina)}" target="_blank" rel="noopener">${esc(c.sigla)}</a> (${esc(c.licenca||'licença na página')})`).join(' · ')+'.</p>':'');
+}
+
+// Dispersão: X = posição no BLS, Y = conversão mediana por deputado. Sem posição: só na tabela. Só na legislatura atual.
+function partGrafico(){
+  const box=document.getElementById('partGrafico');
+  const dados=PART.atual?partLinhasTema().map(r=>({r,m:partMeta(r)})).filter(d=>d.m&&d.m.score!=null):[];
+  if(!dados.length){ box.innerHTML=''; return; }
+  const W=Math.max(300,box.clientWidth||640), H=W<520?340:400, m={l:52,r:24,t:28,b:58};
+  const pw=W-m.l-m.r, ph=H-m.t-m.b;
+  const maximo=Math.max(...dados.map(d=>d.r.m));
+  const passo=maximo<=.02?.005:.01, topo=Math.max(.03,Math.ceil(maximo*1.35/passo)*passo);
+  const X=s=>m.l+((s-1)/9)*pw, Y=v=>m.t+ph-(v/topo)*ph;
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,role:'img',
+    'aria-label':'Posição do partido no espectro contra a conversão mediana por deputado'});
+  const defs=el('defs',{}), g=el('linearGradient',{id:'pgGrad',x1:0,x2:1,y1:0,y2:0});
+  PARADAS.forEach(([s,rgb])=>{const st=el('stop',{offset:((s-1)/9*100)+'%','stop-color':`rgb(${rgb.join(',')})`});g.appendChild(st)});
+  defs.appendChild(g); svg.appendChild(defs);
+  const eixo=el('g',{class:'pg-eixo'});
+  for(let v=0;v<=topo+1e-9;v+=passo){
+    eixo.appendChild(el('line',{x1:m.l,x2:m.l+pw,y1:Y(v),y2:Y(v),class:v===0?'zero':''}));
+    const t=el('text',{x:m.l-8,y:Y(v)+4,'text-anchor':'end'}); t.textContent=pct1(v).replace(',0%','%'); eixo.appendChild(t);
+  }
+  const rot=(x,txt,a)=>{const t=el('text',{x,y:H-12,'text-anchor':a}); t.textContent=txt; eixo.appendChild(t);};
+  rot(m.l,'esquerda','start'); rot(m.l+pw/2,'centro','middle'); rot(m.l+pw,'direita','end');
+  svg.appendChild(eixo);
+  svg.appendChild(el('rect',{x:m.l,y:H-m.b+14,width:pw,height:4,rx:2,fill:'url(#pgGrad)'}));
+  const ey=el('text',{x:14,y:m.t+ph/2,'text-anchor':'middle',transform:`rotate(-90 14 ${m.t+ph/2})`,class:'pg-eixo'});
+  ey.setAttribute('style','font-size:11px;fill:var(--tinta3)'); ey.textContent='Conversão mediana por deputado'; svg.appendChild(ey);
+
+  // Rótulos: da esquerda para a direita, cada um sobe até uma altura onde não cobre outro rótulo
+  // (vários partidos têm mediana 0 e ficam quase no mesmo ponto). Colisão pela posição real, não pelo degrau.
+  const larg=s=>s.length*7.2+6, colocados=[], camadaRotulos=[];
+  [...dados].sort((a,b)=>a.m.score-b.m.score).forEach(({r,m:mt})=>{
+    const cx=X(mt.score), cy=Y(r.m), w=larg(r.s);
+    const lx=Math.min(Math.max(cx,w/2+2),W-w/2-2);          // não sai do quadro
+    let degrau=0, ty=cy-14;
+    while(degrau<30&&ty>m.t&&colocados.some(o=>Math.abs(o.ty-ty)<16&&Math.abs(o.lx-lx)<(o.w+w)/2+4)){ degrau++; ty=cy-14-degrau*16; }
+    colocados.push({lx,w,ty});
+    if(degrau>0) svg.appendChild(el('line',{x1:cx,x2:cx,y1:cy-8,y2:ty+4,class:'pg-lider'}));
+    const t=el('text',{x:lx,y:ty,'text-anchor':'middle',class:'pg-rotulo'+(partPequena(r)?' peq':'')}); t.textContent=r.s; camadaRotulos.push(t);
+  });
+  dados.forEach(({r,m:mt})=>{
+    const cor=corDoScore(mt.score), pq=partPequena(r);
+    const c=el('circle',{cx:X(mt.score),cy:Y(r.m),r:7,class:'pg-pt',
+      fill:pq?'#fff':cor,stroke:pq?cor:'#fff','stroke-width':pq?2:1.5,
+      'stroke-dasharray':pq?'3 2':'none',opacity:pq?1:.95});
+    const tt=el('title',{}); tt.textContent=`${r.s}: conversão mediana ${pct1(r.m)} · ${r.a} deputados autores · espectro ${mt.score.toFixed(1).replace('.',',')}`+(pq?' · amostra pequena':'');
+    c.appendChild(tt); svg.appendChild(c);
+  });
+  camadaRotulos.forEach(t=>svg.appendChild(t));   // rótulos por cima dos pontos
+  box.innerHTML=''; box.appendChild(svg);
+}
+
+document.getElementById('partCab').addEventListener('click',e=>{
+  const th=e.target.closest('th[data-k]'); if(!th||!PART) return;
+  const k=th.dataset.k;
+  if(partOrd.k===k) partOrd.desc=!partOrd.desc; else {partOrd.k=k; partOrd.desc=k!=='sigla';}
+  partTabela();
+});
+document.getElementById('partPeriodo').onchange=e=>{ const v=e.target.value; partEst.periodo=v==='todas'?'todas':+v; partDesenhar(); };
+document.getElementById('partTema').onchange=e=>{ partEst.tema=e.target.value; partDesenhar(); };
+document.getElementById('partLimpar').onclick=()=>{ partEst={periodo:PIDX.legislaturaAtual,tema:''};
+  document.getElementById('partPeriodo').value=partEst.periodo; partDesenhar(); };
+document.getElementById('partPerfil').addEventListener('click',e=>{
+  const th=e.target.closest('th[data-b]'); if(!th) return;
+  partEst.tema=partEst.tema===th.dataset.b?'':th.dataset.b; partDesenhar();
+});
+
+window.addEventListener('load',()=>{carregarFrases().then(carregar);carregarSemana();carregarPartidos();});
 let tResize;
 window.addEventListener('resize',()=>{
   clearTimeout(tResize);
-  tResize=setTimeout(()=>{if(deputados.length)desenhar()},140);
+  tResize=setTimeout(()=>{if(deputados.length)desenhar(); if(PART&&partVisivel())partGrafico()},140);
 });
 </script>
 </body>

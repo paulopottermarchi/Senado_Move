@@ -305,13 +305,14 @@ function tabela(){
   $('#cab').innerHTML=COLS.map(([k,t,c])=>`<th class="${c||''} ${ordCol===k?'ord':''}" data-k="${k}">${t}${ordCol===k?(ordDesc?' ▼':' ▲'):''}</th>`).join('');
   const L=[...S].sort((a,b)=>{const x=valorCol(a,ordCol),y=valorCol(b,ordCol); if(x==null&&y==null)return 0; if(x==null)return 1; if(y==null)return -1;
     return (x<y?-1:x>y?1:0)*(ordDesc?-1:1)});
-  $('#corpo').innerHTML=L.map(s=>`<tr data-id="${s.id}"><td class="esq"><div class="sen">${foto(s)}<div><b>${esc(s.nome)}</b><small>${esc(s.uf)}</small></div></div></td><td class="esq">${esc(s.partido)}</td>
+  $('#corpo').innerHTML=L.map(s=>`<tr data-id="${s.id}"><td class="esq"><div class="sen">${foto(s)}<div><b>${esc(s.nome)}</b><small>${esc(s.uf)}</small></div></div></td><td class="esq">${Bandeiras.img(s.partido,57,18,{vazio:false})}${esc(s.partido)}</td>
     <td>${nf.format(s.apresentadas)}</td><td>${nf.format(s.viraramLei)}</td><td>${s.apresentadas?(s.viraramLei/s.apresentadas*100).toFixed(1)+'%':'—'}</td>
     <td>${nf.format((s.relatorias||{}).processos||0)}</td>
     <td>${taxaOri(s)==null?`<span title="${esc((s.difOrientacao||{}).nota||'')}">—</span>`:pct1(taxaOri(s))}</td></tr>`).join('');
 }
 
 async function carregar(){
+  await Bandeiras.carregar();
   try{ const r=await fetch('dados/senadores.json',{cache:'no-cache'}); if(!r.ok) throw new Error('HTTP '+r.status); S=await r.json(); }
   catch(e){ $('#grafico').innerHTML=`<p class="erro">Não foi possível carregar senadores.json (${esc(e.message)}).</p>`; return }
   $('#kicker').textContent=`Senado Federal · ${S.length} senadores em exercício`;
@@ -344,7 +345,7 @@ g.addEventListener('mousemove',e=>{
   d.classList.add('on');
 });
 g.addEventListener('mouseleave',()=>$('#dica')?.classList.remove('on'));
-carregar();
+document.addEventListener("DOMContentLoaded",carregar);   // site.js é defer: só existe (Bandeiras) depois do parse
 </script>
 </body>
 </html>

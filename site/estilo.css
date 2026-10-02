@@ -159,6 +159,10 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 .rg-pe{margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;color:#94a3b8}
 .rg-pe p{max-width:90ch}
 
+/* ---------- logo do partido ---------- */
+.bandeira-slot{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-right:8px;flex:none}
+.bandeira{display:block;max-width:100%;max-height:100%;object-fit:contain}
+
 /* ---------- entrada suave (site.js marca; sem JS, tudo aparece normal) ---------- */
 @keyframes surgir{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .revela{opacity:0}

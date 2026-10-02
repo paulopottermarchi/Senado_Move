@@ -136,6 +136,18 @@ jobs:
       - name: Temas e frase-resumo
         run: python scripts/passo.py temas.py
 
+      # Aba "Partidos": proposições por partido, por legislatura desde 1991 e por tema, dos arquivos anuais
+      # em lote da Câmara (a 1ª rodada baixa ~700 MB; as seguintes só relêem o que mudou). Usa o
+      # deputados.json já com os votos, o blocos.json e a coesão que o votos.py deixou no cache.
+      # Falha não para a rodada (a aba só some).
+      - name: Partidos
+        run: python scripts/passo.py --opcional partidos.py
+
+      # Logos dos partidos (Câmara, ou Wikimedia Commons pela tabela curada entradas/logos_partidos.json).
+      # Só referencia endereços; não guarda imagem. Depois de "Partidos", que dá as siglas. Falha não para a rodada.
+      - name: Logos dos partidos
+        run: python scripts/passo.py --opcional logos.py
+
       - name: Esta semana na Câmara
         run: python scripts/passo.py semana.py
 
