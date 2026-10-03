@@ -1,0 +1,318 @@
+{
+ "_gerado": "2026-10-03",
+ "versao": "2026-10-02.4",
+ "legislaturaAtual": 57,
+ "minAutores": 10,
+ "minCoesao": 200,
+ "blocos": [
+  {
+   "i": 0,
+   "nome": "Políticas sociais",
+   "categorias": [
+    {
+     "i": 0,
+     "nome": "Saúde",
+     "curto": "saúde"
+    },
+    {
+     "i": 1,
+     "nome": "Educação",
+     "curto": "educação"
+    },
+    {
+     "i": 2,
+     "nome": "Trabalho, emprego e profissões",
+     "curto": "trabalho e emprego"
+    },
+    {
+     "i": 3,
+     "nome": "Previdência e assistência social",
+     "curto": "previdência e assistência social"
+    }
+   ]
+  },
+  {
+   "i": 1,
+   "nome": "Grupos e direitos",
+   "categorias": [
+    {
+     "i": 4,
+     "nome": "Pessoa idosa e pessoa com deficiência",
+     "curto": "pessoas idosas e com deficiência"
+    },
+    {
+     "i": 5,
+     "nome": "Mulheres e violência de gênero",
+     "curto": "mulheres"
+    },
+    {
+     "i": 6,
+     "nome": "Crianças e adolescentes",
+     "curto": "crianças e adolescentes"
+    },
+    {
+     "i": 7,
+     "nome": "Direitos humanos e igualdade",
+     "curto": "direitos humanos"
+    }
+   ]
+  },
+  {
+   "i": 2,
+   "nome": "Estado, justiça e segurança",
+   "categorias": [
+    {
+     "i": 8,
+     "nome": "Direito penal e segurança pública",
+     "curto": "segurança pública e direito penal"
+    },
+    {
+     "i": 9,
+     "nome": "Administração pública e servidores",
+     "curto": "administração pública"
+    },
+    {
+     "i": 10,
+     "nome": "Direito civil, processo e justiça",
+     "curto": "justiça e direito civil"
+    },
+    {
+     "i": 11,
+     "nome": "Política, eleições e processo legislativo",
+     "curto": "eleições e processo legislativo"
+    },
+    {
+     "i": 12,
+     "nome": "Relações exteriores e soberania",
+     "curto": "relações exteriores"
+    },
+    {
+     "i": 13,
+     "nome": "Defesa, Forças Armadas e militares",
+     "curto": "defesa e militares"
+    }
+   ]
+  },
+  {
+   "i": 3,
+   "nome": "Economia e mercado",
+   "categorias": [
+    {
+     "i": 14,
+     "nome": "Economia, indústria, comércio e empreendedorismo",
+     "curto": "economia e empresas"
+    },
+    {
+     "i": 15,
+     "nome": "Sistema financeiro, crédito e pagamentos",
+     "curto": "crédito e sistema financeiro"
+    },
+    {
+     "i": 16,
+     "nome": "Tributação e finanças públicas",
+     "curto": "tributos e contas públicas"
+    },
+    {
+     "i": 17,
+     "nome": "Consumidor",
+     "curto": "consumidor"
+    },
+    {
+     "i": 18,
+     "nome": "Propriedade intelectual",
+     "curto": "propriedade intelectual"
+    }
+   ]
+  },
+  {
+   "i": 4,
+   "nome": "Infraestrutura e território",
+   "categorias": [
+    {
+     "i": 19,
+     "nome": "Transporte, trânsito e mobilidade",
+     "curto": "transporte e trânsito"
+    },
+    {
+     "i": 20,
+     "nome": "Meio ambiente e animais",
+     "curto": "meio ambiente e animais"
+    },
+    {
+     "i": 21,
+     "nome": "Cidades, habitação e desenvolvimento urbano",
+     "curto": "cidades e habitação"
+    },
+    {
+     "i": 22,
+     "nome": "Energia, mineração, água e saneamento",
+     "curto": "energia, mineração e saneamento"
+    },
+    {
+     "i": 23,
+     "nome": "Agro e desenvolvimento rural",
+     "curto": "agropecuária"
+    }
+   ]
+  },
+  {
+   "i": 5,
+   "nome": "Tecnologia",
+   "categorias": [
+    {
+     "i": 24,
+     "nome": "Tecnologia, telecom e dados",
+     "curto": "tecnologia e dados"
+    }
+   ]
+  },
+  {
+   "i": 6,
+   "nome": "Cultura e homenagens",
+   "categorias": [
+    {
+     "i": 25,
+     "nome": "Cultura, esporte e turismo",
+     "curto": "cultura, esporte e turismo"
+    },
+    {
+     "i": 26,
+     "nome": "Homenagens, datas e títulos",
+     "curto": "homenagens e datas comemorativas"
+    }
+   ]
+  }
+ ],
+ "periodos": [
+  {
+   "id": 57,
+   "rotulo": "57ª legislatura · 2023 a 2027",
+   "inicio": "2023-02-01",
+   "fim": "2027-01-31",
+   "atual": true,
+   "proposicoes": 21039,
+   "deMaisDeUmPartido": 778,
+   "semPartido": 2,
+   "semTema": 265,
+   "partidos": 24,
+   "recursosDaLegislaturaAtual": true
+  },
+  {
+   "id": 56,
+   "rotulo": "56ª legislatura · 2019 a 2023",
+   "inicio": "2019-02-01",
+   "fim": "2023-01-31",
+   "atual": false,
+   "proposicoes": 15953,
+   "deMaisDeUmPartido": 781,
+   "semPartido": 2,
+   "semTema": 303,
+   "partidos": 33,
+   "recursosDaLegislaturaAtual": false
+  },
+  {
+   "id": 55,
+   "rotulo": "55ª legislatura · 2015 a 2019",
+   "inicio": "2015-02-01",
+   "fim": "2019-01-31",
+   "atual": false,
+   "proposicoes": 10987,
+   "deMaisDeUmPartido": 308,
+   "semPartido": 23,
+   "semTema": 297,
+   "partidos": 40,
+   "recursosDaLegislaturaAtual": false
+  },
+  {
+   "id": 54,
+   "rotulo": "54ª legislatura · 2011 a 2015",
+   "inicio": "2011-02-01",
+   "fim": "2015-01-31",
+   "atual": false,
+   "proposicoes": 7994,
+   "deMaisDeUmPartido": 148,
+   "semPartido": 1,
+   "semTema": 279,
+   "partidos": 27,
+   "recursosDaLegislaturaAtual": false
+  },
+  {
+   "id": 53,
+   "rotulo": "53ª legislatura · 2007 a 2011",
+   "inicio": "2007-02-01",
+   "fim": "2011-01-31",
+   "atual": false,
+   "proposicoes": 7495,
+   "deMaisDeUmPartido": 140,
+   "semPartido": 17,
+   "semTema": 137,
+   "partidos": 29,
+   "recursosDaLegislaturaAtual": false
+  },
+  {
+   "id": 52,
+   "rotulo": "52ª legislatura · 2003 a 2007",
+   "inicio": "2003-02-01",
+   "fim": "2007-01-31",
+   "atual": false,
+   "proposicoes": 7526,
+   "deMaisDeUmPartido": 64,
+   "semPartido": 46,
+   "semTema": 141,
+   "partidos": 22,
+   "recursosDaLegislaturaAtual": false
+  },
+  {
+   "id": 51,
+   "rotulo": "51ª legislatura · 1999 a 2003",
+   "inicio": "1999-02-01",
+   "fim": "2003-01-31",
+   "atual": false,
+   "proposicoes": 7376,
+   "deMaisDeUmPartido": 18,
+   "semPartido": 6,
+   "semTema": 149,
+   "partidos": 23,
+   "recursosDaLegislaturaAtual": false
+  },
+  {
+   "id": 50,
+   "rotulo": "50ª legislatura · 1995 a 1999",
+   "inicio": "1995-02-01",
+   "fim": "1999-01-31",
+   "atual": false,
+   "proposicoes": 5071,
+   "deMaisDeUmPartido": 20,
+   "semPartido": 2,
+   "semTema": 113,
+   "partidos": 22,
+   "recursosDaLegislaturaAtual": false
+  },
+  {
+   "id": 49,
+   "rotulo": "49ª legislatura · 1991 a 1995",
+   "inicio": "1991-02-01",
+   "fim": "1995-01-31",
+   "atual": false,
+   "proposicoes": 4423,
+   "deMaisDeUmPartido": 38,
+   "semPartido": 5,
+   "semTema": 99,
+   "partidos": 28,
+   "recursosDaLegislaturaAtual": false
+  },
+  {
+   "id": "todas",
+   "rotulo": "Todas · 1991 a 2026",
+   "inicio": "1991-02-01",
+   "fim": "2026-10-03",
+   "atual": false,
+   "proposicoes": 87864,
+   "deMaisDeUmPartido": 2295,
+   "semPartido": 104,
+   "semTema": 1783,
+   "partidos": 58,
+   "recursosDaLegislaturaAtual": false
+  }
+ ]
+}
