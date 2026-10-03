@@ -53,14 +53,18 @@ def com_cache(nome, refazer, buscar):
 
 
 def siglas_usadas():
-    """Toda sigla que alguma página mostra: as da aba Partidos, a bancada de hoje e os senadores."""
+    """Toda sigla que alguma página mostra: as da aba Partidos (proposições e alinhamento ao Governo), a bancada de hoje e os senadores."""
     s = set()
     for f in (DADOS / "partidos").glob("*.json"):
-        if f.stem in ("indice", "logos"):
+        if f.stem in ("indice", "logos", "governo"):
             continue
         d = json.loads(f.read_text(encoding="utf-8"))
         for linhas in d["sel"].values():
             s.update(l["s"] for l in linhas)
+    try:   # o quadro de alinhamento ao Governo usa as siglas dos votos, que podem não ter proposição no período
+        s.update(json.loads((DADOS / "partidos" / "governo.json").read_text(encoding="utf-8"))["partidos"])
+    except FileNotFoundError:
+        pass
     for arq, campo in (("deputados.json", "partido"), ("senadores.json", "partido")):
         try:
             s.update(x[campo] for x in json.loads((DADOS / arq).read_text(encoding="utf-8")) if x.get(campo))
