@@ -1,0 +1,24 @@
+{
+  "_fonte": "Presidente e partido de cada governo, com as datas. Datas de mandato e filiação: Wikidata (itens Q37181 Lula, Q40722 Dilma Rousseff, Q463533 Michel Temer, Q10304982 Jair Bolsonaro; propriedades P39 e P102), conferidas em 2/10/2026. Data em que Temer assumiu: 12/5/2016, quando o Senado afastou Dilma Rousseff (Agência Brasil, maio de 2016: 'Michel Temer é notificado e assume Presidência').",
+  "_regra": "Cada governo é um período em que a liderança do Governo na Câmara representava o mesmo presidente. O período é só o recorte de datas das votações: QUEM é o Governo em cada votação vem do registro de orientação da própria Câmara (bancada 'GOV.' ou 'Governo'), nunca daqui. 'partidoPresidente' lista as siglas, como aparecem nos votos, do partido do presidente no período: serve só para marcar a coluna, nunca entra em conta. A 55ª legislatura tem dois governos (Dilma e Temer) e por isso o recorte é por governo, não por legislatura.",
+  "_nao_ha": "Antes de 2003 não há orientação de bancada nos arquivos da Câmara (votacoesOrientacoes começa em 2003) e os votos individuais de 2001 e 2002 são parciais: governos anteriores (Collor, Itamar, Fernando Henrique) ficam de fora. Sem partido: Bolsonaro, de nov/2019 a 30/11/2021, não tem sigla a marcar (o Wikidata lista a Aliança pelo Brasil, que não consta do registro de partidos da Câmara).",
+  "governos": [
+    {"id": "lula1", "rotulo": "Lula I", "presidente": "Lula", "curto": "Lula", "inicio": "2003-01-01", "fim": "2006-12-31",
+     "partidoPresidente": [{"sigla": "PT"}]},
+    {"id": "lula2", "rotulo": "Lula II", "presidente": "Lula", "curto": "Lula", "inicio": "2007-01-01", "fim": "2010-12-31",
+     "partidoPresidente": [{"sigla": "PT"}]},
+    {"id": "dilma1", "rotulo": "Dilma I", "presidente": "Dilma Rousseff", "curto": "Dilma", "inicio": "2011-01-01", "fim": "2014-12-31",
+     "partidoPresidente": [{"sigla": "PT"}]},
+    {"id": "dilma2", "rotulo": "Dilma II", "presidente": "Dilma Rousseff", "curto": "Dilma", "inicio": "2015-01-01", "fim": "2016-05-11",
+     "partidoPresidente": [{"sigla": "PT"}],
+     "nota": "Termina em 11/5/2016: no dia seguinte o Senado afastou a presidente e Michel Temer assumiu."},
+    {"id": "temer", "rotulo": "Temer", "presidente": "Michel Temer", "curto": "Temer", "inicio": "2016-05-12", "fim": "2018-12-31",
+     "partidoPresidente": [{"sigla": "PMDB"}, {"sigla": "MDB"}],
+     "nota": "Começa em 12/5/2016, na presidência interina; o partido se chamava PMDB e passou a MDB em 2017, por isso as duas siglas."},
+    {"id": "bolsonaro", "rotulo": "Bolsonaro", "presidente": "Jair Bolsonaro", "curto": "Bolsonaro", "inicio": "2019-01-01", "fim": "2022-12-31",
+     "partidoPresidente": [{"sigla": "PSL", "ate": "2019-11"}, {"sigla": "PL", "de": "2021-11-30"}],
+     "nota": "PSL até nov/2019; PL desde 30/11/2021. Entre as duas datas, sem partido."},
+    {"id": "lula3", "rotulo": "Lula III", "presidente": "Lula", "curto": "Lula", "inicio": "2023-01-01", "fim": "2099-12-31",
+     "partidoPresidente": [{"sigla": "PT"}]}
+  ]
+}

@@ -229,7 +229,7 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
     <p>Parcela de cada faixa que votou a favor: posição no espectro pela média das respostas da pesquisa
        Brazilian Legislative Survey (Power e Zucco, 2021), calculada por este site; os limites entre as
        faixas são escolha deste site. Deputados de partidos sem posição, como a União Brasil, ficam fora
-       dessas barras. Categorias pela classificação deste site, a partir da ementa oficial.</p>
+       dessas barras.<span id="viesBarras"></span> Categorias pela classificação deste site, a partir da ementa oficial.</p>
     <p>Votações nominais no Plenário: todas as votações com voto de cada deputado registrado sobre a
        proposição, desde o ano em que foi apresentada — texto-base, emendas, destaques e requerimentos,
        inclusive o de urgência, que a Câmara registra no requerimento e liga à proposição. Mesmos arquivos
@@ -338,6 +338,18 @@ async function carregar(){
   LEIS=(await rp.json()).map(p=>({...p, tipo:(p.numero||'').split(' ')[0], div:(p.difOrientacao||[]).map(pessoa),
                                   nom:p.nominaisPlenario||[], enq:ENQ[String(p.idProposicao)]||null, sf:ECID[String(p.idProposicao)]||null, noto:NOT[String(p.idProposicao)]||null,
                                   _num:norm(p.numero), _ementa:norm((p.ementa||'')+' '+(p.resumo||''))}));
+  // O viés precisa estar escrito, não subentendido, com números das próprias votações: quem não tem posição
+  // no espectro fica fora das barras e das médias, e a maior ausência é a União Brasil (fusão DEM+PSL de 2022,
+  // depois da pesquisa que dá a posição).
+  {
+    const votantes=LEIS.reduce((a,l)=>a+l.sim+l.nao+(l.abstencao||0),0)||1;
+    const fora=LEIS.reduce((a,l)=>a+(l.excluidosSemScore||0),0);
+    const uniao=LEIS.reduce((a,l)=>a+((l.excluidosPorPartido||{})['UNIÃO']||0),0);
+    const pc=x=>(x*100).toFixed(1).replace('.',',')+'%';
+    document.getElementById('viesBarras').textContent=
+      ` Nas ${LEIS.length} votações desta página, os votos da União Brasil são ${pc(uniao/votantes)} do total e ficam fora das barras e das médias; `+
+      `somados os dos demais partidos sem posição (PCdoB, PV, REDE, AVANTE, PRD e outros), são ${pc(fora/votantes)}.`;
+  }
   // quem tem página por tema: deputados em exercício (temas/resumo.json traz as frases por id)
   try{ if(rr&&rr.ok) ATUAIS=new Set(Object.keys((await rr.json()).frases||{}).map(Number)); }catch(e){}
 

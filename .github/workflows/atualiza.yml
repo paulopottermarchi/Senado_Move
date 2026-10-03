@@ -143,6 +143,12 @@ jobs:
       - name: Partidos
         run: python scripts/passo.py --opcional partidos.py
 
+      # Alinhamento dos partidos ao Governo, governo a governo (2003 em diante). Usa os arquivos de votação em lote
+      # (os de 2003–2022 só na 1ª rodada: ~480 MB, apagados depois de derivados) e confere o resultado com o
+      # blocos.json. Falha não para a rodada (o quadro e a coluna só somem).
+      - name: Alinhamento ao Governo por governo
+        run: python scripts/passo.py --opcional governo.py
+
       # Logos dos partidos (Câmara, ou Wikimedia Commons pela tabela curada entradas/logos_partidos.json).
       # Só referencia endereços; não guarda imagem. Depois de "Partidos", que dá as siglas. Falha não para a rodada.
       - name: Logos dos partidos

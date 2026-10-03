@@ -124,7 +124,6 @@
            text-decoration:none;border:1px solid var(--tinta);border-radius:var(--raio-c);padding:8px 12px}
 .ver-temas:hover{background:var(--tinta);color:#fff}
 .ver-temas[hidden]{display:none}
-.ver-leis{margin-top:16px}
 
 .secao{font-family:var(--serif);font-size:18px;font-weight:600;
        margin:24px 0 4px;padding-top:20px;border-top:1px solid var(--linha)}
@@ -189,76 +188,6 @@
   .plenario{max-width:340px;margin:0 auto 8px}
 }
 
-.mapa{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio-c);
-      margin-top:24px;padding:20px 24px 20px}
-.mapa-cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
-.mapa-cab h2{font-family:var(--serif);font-size:20px;font-weight:600}
-.mapa .leitura{margin-bottom:20px}
-.regs{display:flex;flex-direction:column;gap:4px}
-.reg{display:grid;grid-template-columns:104px minmax(0,1fr) 52px;gap:16px;align-items:center;
-     padding:8px 8px;border-radius:var(--raio-c);cursor:pointer;transition:background 300ms var(--curva);
-     background:none;border:none;font:inherit;text-align:left;color:inherit;width:100%}
-.reg:hover{background:var(--papel2)}
-.reg.ativa{background:var(--linha2)}
-.reg.ofusca{opacity:.38}
-.reg-nome{font-size:14px;font-weight:500}
-.reg-uf{font-size:12px;color:var(--tinta3);font-weight:400}
-.pilha{display:flex;height:30px;border-radius:2px;overflow:hidden}
-.pilha span{display:flex;align-items:center;justify-content:center;transition:width 300ms var(--curva);
-            font-size:11px;font-weight:600;color:#fff;overflow:hidden;white-space:nowrap;
-            letter-spacing:-.01em}
-.pilha span.escuro{color:#3a3a3a}
-.reg-n{text-align:right;font-size:13px;color:var(--tinta2)}
-.reg-n b{font-weight:500;color:var(--tinta)}
-.mapa-pe{font-size:12px;color:var(--tinta3);margin-top:16px;padding-top:12px;
-         border-top:1px solid var(--linha2);line-height:1.55}
-@media(max-width:620px){
-  .reg{grid-template-columns:78px minmax(0,1fr) 44px;gap:8px}
-  .reg-uf{display:none}
-}
-
-.votos{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio-c);
-       margin-top:24px;padding:20px 24px 20px}
-.votos-cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
-.votos-cab h2{font-family:var(--serif);font-size:20px;font-weight:600}
-
-.vt{display:grid;grid-template-columns:minmax(0,1fr) 122px 88px 106px;gap:16px;align-items:center;
-    padding:12px 12px;border-radius:var(--raio-c);border-bottom:1px solid var(--linha2)}
-.vt:last-child{border-bottom:none}
-.vt:hover{background:var(--papel2)}
-.vt-num{font-size:12px;color:var(--tinta3)}
-.vt-tit{font-size:14px;line-height:1.4;margin-top:2px}
-.vt-res{font-size:12px;color:var(--tinta2);margin-top:4px}
-.vt-res b{font-weight:600;color:var(--tinta)}
-
-.adesao{display:flex;gap:4px;align-items:flex-end;height:38px}
-.adesao div{flex:1;position:relative;height:100%;background:var(--linha2);border-radius:1px}
-.adesao i{position:absolute;bottom:0;left:0;right:0;border-radius:1px;display:block}
-.adesao-leg{font-size:11px;color:var(--tinta3);margin-top:4px;text-align:center}
-
-.cruz{text-align:right}
-.cruz b{font-family:var(--serif);font-size:20px;font-weight:600;display:block;line-height:1.1}
-.cruz span{font-size:11px;color:var(--tinta3)}
-
-.meia{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--linha-forte);z-index:1}
-
-.votos-pe{font-size:12px;color:var(--tinta3);margin-top:16px;padding-top:12px;
-          border-top:1px solid var(--linha2);line-height:1.55}
-.cabecalho-col{display:grid;grid-template-columns:minmax(0,1fr) 122px 88px 106px;gap:16px;
-               padding:0 12px 8px;font-size:11px;color:var(--tinta3);
-               border-bottom:1px solid var(--linha)}
-.cabecalho-col span:nth-child(2){text-align:center}
-.cabecalho-col span:nth-child(3),.cabecalho-col span:nth-child(4){text-align:right}
-.vt-med{font-size:12px;color:var(--tinta2);margin-top:2px}
-.vt-med b{font-weight:600;color:var(--tinta)}
-.vt-num a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--tinta3)}
-
-@media(max-width:700px){
-  .vt,.cabecalho-col,
-  .votos.real .vt,.votos.real .cabecalho-col{grid-template-columns:minmax(0,1fr) 96px;gap:12px}
-  .cruz,.consulta{display:none}
-  .cabecalho-col span:nth-child(3),.cabecalho-col span:nth-child(4){display:none}
-}
 
 .caso{border:1px solid var(--linha);border-radius:var(--raio-c);padding:12px 16px}
 .caso-tit{font-size:13px;font-weight:600;margin-bottom:8px}
@@ -434,15 +363,6 @@ table.rank tbody tr:hover td{background:var(--papel2)}
 .regra-tr i{display:block;height:100%;background:#5eead4;border-radius:3px}
 .regra-tr.cheio i{background:var(--destaque-claro)}
 
-.consulta{text-align:right;line-height:1.25}
-.consulta b{font-family:var(--serif);font-size:16px;font-weight:600;display:block}
-.consulta small{font-size:11px;color:var(--tinta3);display:block;margin-top:1px}
-.consulta small a{color:inherit}
-.consulta .barrinha{display:block;height:3px;background:var(--linha2);border-radius:2px;
-                    margin-top:4px;overflow:hidden}
-.consulta .barrinha i{display:block;height:100%;background:#3d5c46}
-.consulta .nula{font-size:12px;color:var(--tinta3);font-family:var(--sans);font-weight:400}
-.amostra-fraca{color:#8a6d1f}
 
 .av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
        background:var(--linha2);overflow:hidden;vertical-align:middle}
@@ -624,14 +544,12 @@ table.rank td.dep{white-space:normal;overflow:visible;text-align:left}
                    border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra)}
 
 /* seções em cartão */
-.painel,.semana,.votos,.mapa{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);
+.painel,.semana{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);
                               box-shadow:var(--sombra);padding:32px;margin-top:32px}
 .sec-cab{margin-bottom:16px}
 .sec-cab .kicker{margin-bottom:8px}
-.sec-cab h2,.semana-cab h2,.votos-cab h2,.mapa-cab h2{font-family:var(--serif);
+.sec-cab h2,.semana-cab h2{font-family:var(--serif);
   font-size:clamp(22px,2.6vw,28px);font-weight:600;line-height:1.2;letter-spacing:-.01em}
-.votos-cab,.mapa-cab{align-items:flex-end;margin-bottom:8px}
-.votos-cab .sec-cab,.mapa-cab .sec-cab{margin-bottom:0}
 .leitura{font-size:15px;line-height:1.625;max-width:66ch;color:var(--tinta2)}
 
 /* abas */
@@ -672,10 +590,6 @@ table.rank td.dep{white-space:normal;overflow:visible;text-align:left}
 .sem-mais-btn:hover{background:var(--linha)}
 .sem-cat span{border-radius:999px;padding:0 8px;background:var(--papel)}
 
-/* votações e regiões */
-.vt{border-radius:var(--raio-p);transition:background-color var(--t)}
-.votos-pe,.mapa-pe{font-size:13px;line-height:1.7;color:var(--tinta2);max-width:80ch}
-.pilha{border-radius:var(--raio-c);height:28px}
 
 /* ficha */
 .veu{background:rgba(15,23,42,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
@@ -692,7 +606,7 @@ table.rank td.dep{white-space:normal;overflow:visible;text-align:left}
 }
 @media(max-width:720px){
   .capa{padding:40px 0 8px}
-  .painel,.semana,.votos,.mapa{padding:20px;border-radius:var(--raio-p)}
+  .painel,.semana{padding:20px;border-radius:var(--raio-p)}
   .lado{padding-left:0}
   .filtros .seg-mini{margin-left:0}
   .ficha{padding:24px;border-radius:var(--raio-p)}
@@ -766,6 +680,17 @@ table.perfil th.col:hover,table.perfil th.col.sel{color:var(--tinta)}
 table.perfil th.col.sel{font-weight:600}
 table.perfil td{height:36px;text-align:center;font-size:12.5px;font-weight:500;border-radius:var(--raio-c);background:var(--papel2)}
 table.perfil td.esq{text-align:left;background:none;font-weight:600;font-size:13px;padding-left:2px}
+/* alinhamento ao Governo, governo a governo (governo.json) */
+table.perfil.gov{min-width:760px}
+table.perfil.gov th{font-weight:600;color:var(--tinta2);padding-bottom:8px}
+table.perfil.gov th.esq{font-weight:500;color:var(--tinta3)}
+table.perfil.gov th small{display:block;font-weight:400;font-size:11px;line-height:1.3;color:var(--tinta3);margin-top:2px}
+table.perfil.gov th.sel{color:var(--tinta);box-shadow:inset 0 -2px 0 var(--tinta)}
+table.perfil.gov td.peq{font-style:italic}
+table.perfil.gov td .pres{font-size:8px;margin-right:4px;vertical-align:middle}
+table.perfil.gov tr.cam td{height:40px}
+table.perfil.gov tr.cam td.esq{font-weight:500;color:var(--tinta2)}
+.part-mais{margin-top:12px}
 @media(max-width:720px){
   table.perfil td.esq,table.perfil th.esq{position:sticky;left:0;z-index:1;background:var(--papel)}
   table.part td.esq,table.part th.esq{position:sticky;left:0;z-index:1;background:var(--papel);box-shadow:1px 0 0 var(--linha2)}
@@ -971,6 +896,12 @@ table.perfil td.esq{text-align:left;background:none;font-weight:600;font-size:13
           <tbody id="partCorpo"></tbody>
         </table>
       </div>
+      <div class="part-sec" id="partGovSec" hidden>
+        <h3>Alinhamento ao Governo, governo a governo</h3>
+        <p class="leitura" id="partGovLeitura"></p>
+        <div class="tabela-rol part-rol"><table class="perfil gov" id="partGov"></table></div>
+        <button class="limpar part-mais" id="partGovMais" hidden></button>
+      </div>
       <div class="part-sec" id="partGrafSec">
         <h3>Espectro × conversão mediana</h3>
         <p class="leitura" id="partGrafLeitura"></p>
@@ -993,47 +924,6 @@ table.perfil td.esq{text-align:left;background:none;font-weight:600;font-size:13
   </section>
 
   <section class="semana" id="semana" hidden aria-labelledby="semanaTit"></section>
-
-  <section class="votos" id="votacoes" aria-labelledby="votosTit">
-    <div class="votos-cab">
-      <div class="sec-cab">
-        <p class="kicker">Votações de 2023 a 2026</p>
-        <h2 id="votosTit">Como a Câmara se dividiu</h2>
-      </div>
-      <div class="seg" role="group" aria-label="Quais votações mostrar">
-        <button class="pino on" id="vDisp">Mais disputadas</button>
-        <button class="pino" id="vCons">Mais consensuais</button>
-      </div>
-    </div>
-    <p class="leitura" id="votosLeitura"></p>
-
-    <div class="cabecalho-col">
-      <span>Proposição</span>
-      <span>Quem votou a favor</span>
-      <span>Enquete da Câmara <button class="saibamais" data-pop="popConsulta">o que é</button></span>
-      <span>Apoio cruzado <button class="saibamais" data-pop="popCruz">o que é</button></span>
-    </div>
-    <div id="votosLista"></div>
-    <a class="ver-temas ver-leis" href="leis.html">Ver todas as leis votadas, e quem votou diferente do próprio partido</a>
-    <a class="ver-temas ver-leis" href="leis.html?ordem=senado">Ver as leis com mais participação do público, na consulta do Senado e na enquete da Câmara</a>
-    <p class="votos-pe" id="votosPe"></p>
-  </section>
-
-  <section class="mapa" id="regioes" aria-labelledby="mapaTit">
-    <div class="mapa-cab">
-      <div class="sec-cab">
-        <p class="kicker">Regiões</p>
-        <h2 id="mapaTit">O espectro em cada região</h2>
-      </div>
-      <div class="seg" role="group" aria-label="Largura das barras">
-        <button class="pino on" id="mTam">Tamanho da bancada</button>
-        <button class="pino" id="mProp">Proporção interna</button>
-      </div>
-    </div>
-    <p class="leitura" id="mapaLeitura"></p>
-    <div class="regs" id="regs"></div>
-    <p class="mapa-pe" id="mapaPe"></p>
-  </section>
 </div>
 
 <footer class="rodape-site" id="sobre">
@@ -1125,30 +1015,6 @@ table.perfil td.esq{text-align:left;background:none;font-weight:600;font-size:13
 
 
 
-
-<div class="pop" id="popConsulta" role="dialog" aria-modal="false" aria-labelledby="popConsultaTit">
-  <button class="pop-sair" onclick="fecharPop()" aria-label="Fechar">&times;</button>
-  <h4 id="popConsultaTit">O que é a enquete da Câmara</h4>
-
-  <p>Cada proposição tem uma enquete no site da Câmara, com cinco respostas, de "concordo
-     totalmente" a "discordo totalmente". O número aqui é a parcela que concorda, total ou em
-     parte, ao lado de quantas pessoas responderam.</p>
-
-  <p><strong style="color:#fff">Isto não é pesquisa de opinião.</strong> Quem participa é quem
-     procurou o portal e se cadastrou, não uma amostra do país. Um grupo organizado consegue
-     encher uma consulta em poucos dias, e temas que mobilizam militância aparecem com números
-     muito diferentes de temas técnicos que ninguém acompanha.</p>
-
-  <p>Por isso o número de participantes vem junto, e não escondido: 90% a favor entre 80 pessoas
-     e 60% a favor entre 40 mil dizem coisas completamente diferentes. Consultas com menos de
-     500 participantes aparecem destacadas, como aviso de que a amostra é pequena demais para
-     concluir qualquer coisa.</p>
-
-  <p class="fraco">Enquete aberta continua recebendo respostas, inclusive depois da votação. Os
-     percentuais são calculados das contagens que a Câmara publica e podem diferir por
-     arredondamento dos que ela mostra. Fonte: enquetes da Câmara dos Deputados
-     (camara.leg.br/enquetes).</p>
-</div>
 
 <div class="pop" id="popQuoc" role="dialog" aria-modal="false" aria-labelledby="popQuocTit">
   <button class="pop-sair" onclick="fecharPop()" aria-label="Fechar">&times;</button>
@@ -1435,42 +1301,17 @@ async function carregar(){
     }catch(e){}
   }catch(e){ deputados=montarDemo(); demo=true; }
 
-  // Gráfico 2: proposicoes.json (votos.py). Independente do deputados.json — se
-  // faltar, só este bloco cai na demonstração.
+
+  // proposicoes.json (votos.py): a ficha só usa em quantas leis o deputado votou diferente da orientação da bancada.
+  // A lista das votações, com placar, adesão por faixa e enquete, é a página das leis (leis.html).
+  DIV_LEIS=new Map();
   try{
     const r=await fetch('dados/proposicoes.json',{cache:'no-cache'});
-    if(!r.ok) throw 0;
-    const ps=await r.json();
-    if(!Array.isArray(ps)||!ps.length) throw 0;
-    // enquetes.json (enquetes.py): se faltar, a coluna diz "não consultada", sem inventar
-    let enq={};
-    try{ const re=await fetch('dados/enquetes.json',{cache:'no-cache'}); if(re.ok) enq=await re.json(); }catch(e){}
-    const consultaDe=id=>{
-      const e=enq[String(id)];
-      if(!e) return {ausente:'enquete não consultada nesta atualização'};
-      if(e.situacao==='sem enquete') return {ausente:'a Câmara não abriu enquete'};
-      return {participantes:e.total, favoravel:e.total?(e.votos[0]+e.votos[1])/e.total:0,
-              concordam:e.votos[0]+e.votos[1],
-              url:`https://www.camara.leg.br/enquetes/${id}/resultados`, aberta:e.situacao==='aberta'};
-    };
-    votacoes=ps.map(p=>({
-      numero:p.numero||'', titulo:p.titulo||p.ementa||'', data:p.data||null,
-      urlCamara:p.urlCamara||null, tipo:(p.numero||'').split(' ')[0],
-      sim:p.sim, nao:p.nao, abstencao:p.abstencao||0, margem:p.margem,
-      adesao:p.adesaoPorFaixa||null,
-      scoreSim:p.scoreMedioSim??null, scoreNao:p.scoreMedioNao??null,
-      autorScore:p.autorScore??null, autorNota:p.autorNota||null,
-      apoioCruzado:p.apoioCruzado??null,
-      aprovacao:p.aprovacao??null,        // resultado SÓ deste campo, nunca de sim>não
-      excluidos:p.excluidosSemScore||0, excluidosPorPartido:p.excluidosPorPartido||{},
-      // quem votou diferente da orientação da própria bancada: [id, nome, partido, uf, voto, orientação, bancada]
-      divIds:(p.difOrientacao||[]).map(x=>x[0]),
-      consulta:consultaDe(p.idProposicao)}));
-    votosDemo=false;
-    DIV_LEIS=new Map();
-    votacoes.forEach(v=>v.divIds.forEach(id=>DIV_LEIS.set(id,(DIV_LEIS.get(id)||0)+1)));
-  }catch(e){ votacoes=[]; votosDemo=true; }
-  document.querySelector('.votos').classList.toggle('real',!votosDemo);
+    if(r.ok){
+      const ps=await r.json();
+      if(Array.isArray(ps)) ps.forEach(p=>(p.difOrientacao||[]).forEach(x=>DIV_LEIS.set(x[0],(DIV_LEIS.get(x[0])||0)+1)));
+    }
+  }catch(e){}
 
   semScoreNenhum = deputados.length>0 && deputados.every(d=>d.score==null);
   // números da carreira guardados à parte: o filtro de mandato troca os ativos
@@ -1748,7 +1589,7 @@ function desenhar(){
   atualizarLimpar();
   const W=tela.clientWidth,H=tela.clientHeight;
   if(!W||!H){                       // aba Ranking ativa: o scatter está oculto
-    plenarioDesenhar(); contaDesenhar(); mapaDesenhar(); votosDesenhar(); rankDesenhar();
+    plenarioDesenhar(); contaDesenhar(); rankDesenhar();
     return;
   }
   const m={t:20,r:48,b:58,l:48};
@@ -1826,8 +1667,6 @@ function desenhar(){
 
   plenarioDesenhar();
   contaDesenhar();
-  mapaDesenhar();
-  votosDesenhar();
   // a tabela está na outra aba: só é refeita quando for aberta (eram ~50 ms a cada filtro)
   rankPendente=true;
 }
@@ -1916,229 +1755,6 @@ function contaDesenhar(){
 }
 
 
-// ---------- espectro por região ----------
-const REG_NOME={N:'Norte',NE:'Nordeste',CO:'Centro-Oeste',SE:'Sudeste',S:'Sul'};
-let mapaProporcional=false;
-
-function mapaDesenhar(){
-  const ordem=['N','NE','CO','SE','S'];
-  const porReg={};
-  ordem.forEach(r=>porReg[r]=deputados.filter(d=>d.regiao===r&&estaNoMandato(d)));
-  const maior=Math.max(...ordem.map(r=>porReg[r].length),1);
-
-  document.getElementById('regs').innerHTML=ordem.map(r=>{
-    const lista=porReg[r], tot=lista.length;
-    const largura=mapaProporcional?100:(tot/maior*100);
-    // Faixas só na legenda e nos filtros (CLAUDE.md): contar deputados por faixa aqui
-    // poria o PL (7,41) na centro-direita por um centésimo. Cada deputado é um filete
-    // na cor contínua do score, da esquerda para a direita; sem score vai ao fim, cinza.
-    const w=tot?100/tot:0;
-    const segs=[...lista].sort((a,b)=>(a.score??99)-(b.score??99)).map(d=>
-      `<span style="width:${w.toFixed(3)}%;background:${corDoScore(d.score)}"
-             title="${d.nome} (${d.partido})${d.score==null?', sem posição':': '+d.score.toFixed(1)}"></span>`
-    ).join('');
-    const ativa=filtro.reg===r;
-    const ofusca=filtro.reg&&filtro.reg!==r;
-    return `<button class="reg ${ativa?'ativa':''} ${ofusca?'ofusca':''}" data-r="${r}">
-      <span class="reg-nome">${REG_NOME[r]}<br><span class="reg-uf">${REGIOES[r].join(' ')}</span></span>
-      <span class="pilha" style="width:${largura.toFixed(1)}%">${segs}</span>
-      <span class="reg-n"><b>${tot}</b></span>
-    </button>`;
-  }).join('');
-
-  document.querySelectorAll('.reg').forEach(b=>b.onclick=()=>{
-    const r=b.dataset.r;
-    filtro.reg = filtro.reg===r ? '' : r;
-    sincronizarRegiao();
-    desenhar();
-  });
-
-  document.getElementById('mapaLeitura').textContent = mapaProporcional
-    ? 'Todas as barras têm a mesma largura, então dá para comparar o perfil de cada região sem o tamanho da bancada atrapalhar.'
-    : 'A largura da barra é o tamanho da bancada. Clique numa região para filtrar o gráfico acima.';
-
-  document.getElementById('mapaPe').textContent =
-    'A posição vem do partido do deputado, não da região. Bancadas grandes do Sudeste e do Nordeste '+
-    'respondem por boa parte da Câmara, então uma inclinação pequena nelas pesa mais no total do que '+
-    'uma inclinação forte no Centro-Oeste.';
-}
-
-
-// ---------- como a Câmara se dividiu ----------
-const FAIXAS=['esquerda','centro-esquerda','centro','centro-direita','direita'];
-const CENTRO_FAIXA={'esquerda':2.2,'centro-esquerda':4.1,'centro':5.5,
-                    'centro-direita':6.9,'direita':8.4};
-let votosModo='disputadas';
-let votacoes=[], votosDemo=true;
-
-const TEMAS=[
- 'Regras de contratação no setor público','Isenção de imposto sobre alimentos básicos',
- 'Licenciamento ambiental para obras de infraestrutura','Porte de arma em área rural',
- 'Piso salarial de categoria profissional','Regulamentação do trabalho por aplicativo',
- 'Financiamento de campanhas eleitorais','Tempo de contribuição para aposentadoria',
- 'Demarcação de terras','Tributação de grandes fortunas',
- 'Ensino domiciliar','Cotas em concursos públicos',
- 'Prazo de prescrição em crimes financeiros','Repasse federal para saúde municipal',
- 'Marco legal da inteligência artificial','Redução de jornada de trabalho',
- 'Privatização de empresa estatal','Programa de transferência de renda',
- 'Regras de importação de medicamentos','Segurança em escolas públicas'];
-
-function montarVotacoes(){
-  const v=[];
-  for(let i=0;i<20;i++){
-    const disputada=i<10;
-    // adesão por faixa: disputadas têm gradiente forte, consensuais são altas em todas
-    const inverte=rnd()>0.5;
-    const adesao={};
-    FAIXAS.forEach((f,j)=>{
-      const pos=inverte?(4-j)/4:j/4;
-      adesao[f]=disputada
-        ? Math.max(.03,Math.min(.97, 0.12+pos*0.78+(rnd()-0.5)*0.14))
-        : Math.max(.55,Math.min(.99, 0.80+rnd()*0.18));
-    });
-    // placar a partir das bancadas reais por faixa
-    let sim=0,nao=0,somaSim=0;
-    FAIXAS.forEach(f=>{
-      const n=Math.round(deputados.filter(d=>d.ideologia===f).length*(0.82+rnd()*0.14));
-      const s=Math.round(n*adesao[f]);
-      sim+=s; nao+=n-s; somaSim+=s*CENTRO_FAIXA[f];
-    });
-    const scoreSim=sim?somaSim/sim:null;
-    const autorScore=CENTRO_FAIXA[FAIXAS[Math.floor(rnd()*5)]];
-    // a maioria das proposições nunca foi aberta a consulta pública
-    let consulta=null;
-    if(rnd()>0.42){
-      const u=rnd();
-      const part = u>0.94 ? 9000+Math.floor(rnd()*48000)
-                 : u>0.70 ? 700+Math.floor(rnd()*3800)
-                          : 40+Math.floor(rnd()*420);
-      const fav=Math.max(.03,Math.min(.97,rnd()));
-      consulta={participantes:part, favoravel:fav};
-    }
-    const ehPEC=rnd()>0.65;
-    // PEC exige 308 votos, não maioria simples: aprovação nunca se deduz do placar
-    const aprovacao = ehPEC ? (sim>=308?1:0) : (sim>nao?1:0);
-    v.push({
-      consulta, tipo:ehPEC?'PEC':'PL', aprovacao,
-      numero:(ehPEC?'PEC ':'PL ')+(Math.floor(rnd()*900)+100)+'/'+(2021+Math.floor(rnd()*5)),
-      titulo:TEMAS[i%TEMAS.length],
-      sim,nao,margem:Math.abs(sim-nao),adesao,
-      scoreSim,scoreNao:null,autorScore,
-      apoioCruzado:scoreSim==null?null:Math.abs(autorScore-scoreSim)
-    });
-  }
-  return v;
-}
-
-function celaConsulta(c){
-  if(!c) return '<span class="nula">sem consulta</span>';
-  if(c.ausente) return `<span class="nula" title="${c.ausente}">—</span>`;
-  if(!c.participantes) return '<span class="nula">ninguém respondeu</span>';
-  const pct=(c.favoravel*100);
-  const nf=new Intl.NumberFormat('pt-BR');
-  const fraca=c.participantes<500;
-  // Abaixo de 100 respostas, contagem ("5 de 6"), não percentual — como em leis.html.
-  const poucas=c.concordam!=null&&c.participantes<100;
-  return `<b class="${fraca?'amostra-fraca':''}">${poucas?`${c.concordam} de ${c.participantes}`:pct.toFixed(0)+'%'}</b>
-    <small${fraca?' class="amostra-fraca"':''}>concordam · ${c.url?`<a href="${c.url}" target="_blank" rel="noopener">${poucas?'ver':nf.format(c.participantes)+' respostas'}</a>`:`${nf.format(c.participantes)} participantes`}${c.aberta?', aberta':''}</small>
-    <span class="barrinha"><i style="width:${pct.toFixed(0)}%"></i></span>`;
-}
-
-function votosDesenhar(){
-  if(!votacoes.length) votacoes=montarVotacoes();
-  const lista=[...votacoes].sort((a,b)=>
-    votosModo==='disputadas' ? a.margem-b.margem : b.margem-a.margem).slice(0,10);
-
-  // Quórum qualificado: com placar favorável, a proposta ainda pode cair.
-  const QUORUM={PEC:308,PLP:257};
-  const dataBR=s=>s?s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4):'';
-  // por que não há apoio cruzado: o motivo vem de votos.py (autorNota)
-  const semCruz=v=>!v.autorNota?'sem amostra'
-    :/não é deputado/.test(v.autorNota)?'autor não é deputado'
-    :/sem voto registrado/.test(v.autorNota)?'autor fora da legislatura'
-    :/sem score/.test(v.autorNota)?'autor sem posição':'sem autor com posição';
-
-  document.getElementById('votosLista').innerHTML=lista.map(v=>{
-    const barras=FAIXAS.map(f=>{
-      const a=v.adesao?v.adesao[f]:null;
-      if(a==null) return `<div title="${NOMES[f]}: sem votante com posição nesta votação"></div>`;
-      const pct=a*100;
-      return `<div title="${NOMES[f]}: ${pct.toFixed(0)}% votou a favor">
-        <i style="height:${pct.toFixed(1)}%;background:${CORES[f]}"></i></div>`;
-    }).join('');
-    // NUNCA deduzir de sim>nao: PEC exige 308 votos e pode ser rejeitada com placar favorável
-    const res = v.aprovacao==null ? null : !!v.aprovacao;
-    const q=QUORUM[v.tipo];
-    const num=v.urlCamara
-      ? `<a href="${v.urlCamara}" target="_blank" rel="noopener">${v.numero}</a>` : v.numero;
-    const med=(v.scoreSim==null&&v.scoreNao==null) ? ''
-      : `<div class="vt-med">Posição média de quem votou sim: <b>${v.scoreSim==null?'—':v.scoreSim.toFixed(1)}</b>
-           · de quem votou não: <b>${v.scoreNao==null?'—':v.scoreNao.toFixed(1)}</b></div>`;
-    return `<div class="vt">
-      <div>
-        <div class="vt-num">${num}${v.data?' · '+dataBR(v.data):''}</div>
-        <div class="vt-tit">${v.titulo}</div>
-        <div class="vt-res"><b>${v.sim}</b> a favor, <b>${v.nao}</b> contra,
-          diferença de <b>${v.margem}</b>${res==null?''
-            :res?' — aprovada':(q&&v.sim>v.nao
-              ?` — rejeitada, faltou quórum de ${q}`
-              :' — rejeitada')}</div>
-        ${med}
-      </div>
-      <div>
-        <div class="adesao" style="position:relative">${barras}<div class="meia"></div></div>
-        <div class="adesao-leg">esquerda a direita</div>
-      </div>
-      <div class="consulta">${celaConsulta(v.consulta)}</div>
-      <div class="cruz">
-        <b>${v.apoioCruzado==null?'—':v.apoioCruzado.toFixed(1)}</b>
-        <span${v.autorNota?` title="${v.autorNota}"`:''}>${v.apoioCruzado==null?semCruz(v)
-                 :v.apoioCruzado>3?'campos distantes'
-                 :v.apoioCruzado>1.5?'faixas vizinhas':'campo próprio'}</span>
-      </div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('votosLeitura').textContent = votosModo==='disputadas'
-    ? 'As dez votações com menor diferença entre sim e não. São as que dividiram a Câmara ao meio, e onde a linha entre os campos aparece com mais clareza.'
-    : 'As dez votações com maior diferença entre sim e não. São as que passaram sem briga, com apoio em todas as faixas do espectro.';
-
-  document.getElementById('votosPe').innerHTML =
-    'Cada coluna é uma faixa do espectro, da esquerda para a direita, e a altura é a parcela '+
-    'daquela faixa que votou a favor — não o número de votos, para que bancadas grandes não '+
-    'dominem a leitura. A linha do meio marca metade. Apoio cruzado é a distância entre a posição '+
-    'de quem propôs e a posição média de quem votou a favor: quanto maior, mais a proposta saiu '+
-    'do campo do autor. Só votações com registro de voto individual entram aqui. '+
-    'O resultado vem do campo de aprovação da própria Câmara, nunca da comparação entre sim e '+
-    'não: emenda à Constituição precisa de 308 votos, então uma PEC pode ter mais sim que não e '+
-    'ainda assim ser rejeitada. '+
-    (votosDemo
-      ? '<strong>Votações de demonstração</strong>: temas, placares e consultas são fictícios. '+
-        'A enquete vem do site da Câmara e mede quem foi lá responder, não a população. '+
-        '<button class="saibamais" data-pop="popConsulta">por que isso importa</button>'
-      : viesDeclarado());
-}
-
-// O viés precisa estar escrito, não subentendido: quem não tem posição no espectro fica
-// fora das barras e das médias, e a maior ausência é a da União Brasil. Números
-// calculados das próprias votações, não fixados no texto.
-function viesDeclarado(){
-  const votantes=votacoes.reduce((s,v)=>s+v.sim+v.nao+v.abstencao,0)||1;
-  const fora=votacoes.reduce((s,v)=>s+v.excluidos,0);
-  const uniao=votacoes.reduce((s,v)=>s+((v.excluidosPorPartido||{})['UNIÃO']||0),0);
-  const nUniao=deputados.filter(d=>d.partido==='UNIÃO').length;
-  const pc=x=>(x*100).toFixed(1).replace('.',',')+'%';
-  return `Base: ${votacoes.length} votações finais de texto-base com registro de voto individual, `+
-    `de 2023 a 2026. <strong>Viés declarado:</strong> os ${nUniao} deputados da União Brasil ficam `+
-    `fora das barras e das médias, porque o partido nasceu da fusão de DEM e PSL em 2022, depois `+
-    `da pesquisa que dá a posição no espectro. São ${pc(uniao/votantes)} dos votos dessas votações, `+
-    `quase todos de centro-direita pela origem em DEM e PSL — então as colunas da centro-direita `+
-    `e da direita são calculadas sem uma bancada grande desse lado. Com os demais partidos sem `+
-    `posição (PCdoB, PV, REDE, AVANTE, PRD e outros), o total fora sobe para ${pc(fora/votantes)} `+
-    `dos votos.`;
-}
-
-
 // ---------- popovers ----------
 let popAberto=null;
 function fecharPop(){ if(popAberto){popAberto.classList.remove('on');popAberto=null} }
@@ -2180,7 +1796,7 @@ const COLS=[
   {k:'div',            t:'Diferente da orientação', col:'c-div', ord:true},
   {k:'wiki',           t:'Notoriedade',        col:'c-wik', ord:true}
   // Sem coluna de apoio cruzado por deputado: só 15 dos 513 têm amostra (CLAUDE.md).
-  // Ele existe por votação, no bloco "Como a Câmara se dividiu".
+  // Ele existe por votação, na página das leis votadas (leis.html).
 ];
 let ordCol='votosRecebidos', ordDesc=true, votoRelativo=false, rankPendente=true;
 
@@ -2490,12 +2106,6 @@ document.addEventListener('keydown',e=>{
   sair();
 });
 
-mTam.onclick=()=>{mapaProporcional=false;mTam.classList.add('on');mProp.classList.remove('on');mapaDesenhar()};
-mProp.onclick=()=>{mapaProporcional=true;mProp.classList.add('on');mTam.classList.remove('on');mapaDesenhar()};
-
-vDisp.onclick=()=>{votosModo='disputadas';vDisp.classList.add('on');vCons.classList.remove('on');votosDesenhar()};
-vCons.onclick=()=>{votosModo='consensuais';vCons.classList.add('on');vDisp.classList.remove('on');votosDesenhar()};
-
 yApres.onclick=()=>{
   medida='apresentadas';
   yApres.classList.add('on');yLei.classList.remove('on');
@@ -2652,7 +2262,7 @@ async function carregarSemana(){
 // ---------- aba Partidos (partidos.py → dados/partidos/) ----------
 // Tudo vem calculado do script; aqui só se filtra e se desenha. Um arquivo por período, carregado ao escolher.
 // Sem o índice (ainda não gerado), a aba não aparece.
-let PIDX=null, PART=null, PDADOS={}, partEst={periodo:null,tema:''}, partOrd={k:'a',desc:true};
+let PIDX=null, PART=null, PDADOS={}, partEst={periodo:null,tema:''}, partOrd={k:'a',desc:true}, GOV=null, partGovTodos=false;
 const partVisivel=()=>document.getElementById('vPartidos').classList.contains('on');
 const pctInt=x=>Math.round(x*100)+'%';
 const NIVEL_PART={partido:'do partido',federacao:'da federação',bloco:'do bloco'};
@@ -2664,7 +2274,7 @@ const DEF={
   m:'Mediana, entre os deputados que apresentaram algo no partido, da parcela das proposições deles que virou lei. Zero quando a maioria nunca teve lei.',
   z:'Parcela dos deputados autores do partido sem nenhuma proposição virada lei.',
   top:'Parcela das proposições do partido que são de um único deputado, o que mais apresentou enquanto estava nele.',
-  gov:'Mediana, entre os deputados do partido, da frequência com que votaram como o líder do Governo orientou (Plenário, 2023 a 2026). Só com 3 deputados ou mais.',
+  gov:'Mediana, entre os deputados do partido, da frequência com que votaram como o líder do Governo orientou (votações nominais do Plenário), no governo em vigor. Só com 3 deputados ou mais. Na 55ª legislatura há dois governos: Dilma e Temer.',
   coe:'Parcela dos votos Sim ou Não que seguiu a orientação registrada da bancada, pelo partido que o deputado tinha no dia do voto.',
   bls:'Média das respostas da wave 9 (2021) do Brazilian Legislative Survey, calculada por este site, de 1 (esquerda) a 10 (direita).'};
 function partColunas(){
@@ -2672,15 +2282,31 @@ function partColunas(){
     {k:'a',t:'Deputados',col:'p-aut'},{k:'p',t:'Proposições',col:'p-pro'},{k:'conv',t:'Conversão',col:'p-con'},
     {k:'m',t:'Conversão mediana por deputado',col:'p-med'},{k:'z',t:'Autores sem nenhuma lei',col:'p-sem'},
     {k:'top',t:'Maior autor no volume',col:'p-mai'}];
-  if(PART.atual) c.push({k:'gov',t:'Alinhamento ao Governo',col:'p-gov'},{k:'coe',t:'Coesão',col:'p-coe'},
-                        {k:'bls',t:'Espectro (BLS)',col:'p-bls'});
+  if(PART.atual||partGovs().length) c.push({k:'gov',t:'Alinhamento ao Governo',col:'p-gov'});
+  if(PART.atual) c.push({k:'coe',t:'Coesão',col:'p-coe'},{k:'bls',t:'Espectro (BLS)',col:'p-bls'});
   return c;
 }
+
+// Governos com votações na legislatura escolhida (governo.json): a 55ª tem dois, Dilma e Temer.
+const partGovs=()=>{
+  if(!GOV||!PART) return [];
+  return (GOV.legislaturas[String(PART.id)]||[]).map(i=>GOV.governos.find(g=>g.id===i)).filter(Boolean);
+};
+// valor do partido em cada governo escolhido: [mediana, deputados] ou null
+const partGovVals=r=>partGovs().map(g=>(GOV.partidos[r.s]||{})[g.id]||null);
+const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const fmtGovData=s=>{ const p=s.split('-'); return p.length===2?`${MESES[+p[1]-1]}/${p[0]}`:`${+p[2]}/${+p[1]}/${p[0]}`; };
+const govPeriodo=g=>`${g.inicio.slice(0,4)}${g.emCurso?' em diante':'–'+g.fim.slice(0,4)}`;
+const govPartidos=g=>g.partidoPresidente.map(e=>e.sigla).join(' → ');
+// "partido de Lula", com o período quando o presidente mudou de partido (Bolsonaro: PSL até nov/2019, PL desde 30/11/2021)
+const partDoPresidente=(sigla,gs)=>gs.flatMap(g=>g.partidoPresidente.filter(e=>e.sigla===sigla).map(e=>
+  `partido de ${g.curto}${e.ate?' até '+fmtGovData(e.ate):''}${e.de?' desde '+fmtGovData(e.de):''}`));
 const partMeta=r=>(PART.meta&&PART.meta[r.s])||null;
 const partVal={
   sigla:r=>r.s, a:r=>r.a, p:r=>r.p, conv:r=>r.p?r.l/r.p:null, m:r=>r.m, z:r=>r.a?r.z/r.a:null,
   top:r=>r.p?r.t[2]/r.p:null,
-  gov:r=>{const m=partMeta(r); return m?m.governo:null;},
+  gov:r=>{ if(GOV&&partGovs().length){ const v=partGovVals(r).filter(Boolean); return v.length?v[v.length-1][0]:null; }
+    const m=partMeta(r); return m?m.governo:null; },
   coe:r=>{const m=partMeta(r); return m&&m.coesao?1-m.coesao.diferentes/m.coesao.comparaveis:null;},
   bls:r=>{const m=partMeta(r); return m?m.score:null;}};
 const partLinhasTema=()=>(PART&&PART.sel[partEst.tema])||[];
@@ -2702,6 +2328,8 @@ async function carregarPartidos(){
     PIDX=await r.json();
   }catch(e){ return; }
   if(!PIDX.periodos||!PIDX.periodos.length) return;
+  try{ const g=await fetch('dados/partidos/governo.json',{cache:'no-cache'}); if(g.ok) GOV=await g.json(); }
+  catch(e){ GOV=null; }                      // sem o arquivo, a aba só não mostra o alinhamento histórico
   partEst.periodo=PIDX.legislaturaAtual;
   document.getElementById('partPeriodo').innerHTML=PIDX.periodos.map(p=>
     `<option value="${p.id}">${esc(p.rotulo)}${p.atual?' (atual)':''}</option>`).join('');
@@ -2730,6 +2358,7 @@ function partCelulas(r,pos,cols){
   const nada='<span class="sem">—</span>';
   const tags=[];
   if(PART.atual&&m&&m.bancada===0) tags.push('sem bancada hoje');
+  tags.push(...partDoPresidente(r.s,partGovs()));
   if(partPequena(r)) tags.push('amostra pequena');
   const conv=r.p?r.l/r.p:null;
   const co=m&&m.coesao;
@@ -2750,7 +2379,14 @@ function partCelulas(r,pos,cols){
     m:()=>`<td><b>${pct1(r.m)}</b></td>`,
     z:()=>`<td><b>${pctInt(r.z/r.a)}</b><small>${nfBR(r.z)} de ${nfBR(r.a)}</small></td>`,
     top:()=>`<td title="${esc(r.t[1])}: ${nfBR(r.t[2])} de ${nfBR(r.p)}"><b>${pctInt(r.t[2]/r.p)}</b></td>`,
-    gov:()=>`<td${!m||m.governo==null?' title="Menos de 3 deputados no período: sem mediana"':''}>${!m||m.governo==null?nada:`<b>${pctInt(m.governo)}</b>`}</td>`,
+    gov:()=>{
+      const gs=partGovs();
+      if(!gs.length) return `<td${!m||m.governo==null?' title="Menos de 3 deputados no período: sem mediana"':''}>${!m||m.governo==null?nada:`<b>${pctInt(m.governo)}</b>`}</td>`;
+      const vs=partGovVals(r);
+      if(!vs.some(Boolean)) return `<td title="Menos de ${GOV.regras.minDeputados} deputados com votos suficientes neste governo, ou o partido não existia: sem mediana">${nada}</td>`;
+      const dica=gs.map((g,i)=>vs[i]?`${g.rotulo}: mediana de ${pctInt(vs[i][0])} entre ${nfBR(vs[i][1])} deputados`:`${g.rotulo}: sem número`).join(' · ');
+      return `<td title="${esc(dica)}"><b>${vs.map(v=>v?pctInt(v[0]):'—').join(' → ')}</b><small>${gs.map(g=>esc(g.rotulo)).join(' → ')}</small></td>`;
+    },
     coe:()=>`<td${dica?` title="${esc(dica)}"`:''}>${co?`<b>${pctInt(1-co.diferentes/co.comparaveis)}</b><small>${nivel}</small>`:nada}</td>`,
     bls:()=>`<td${sc==null?' title="Sem posição na pesquisa: só aparece na tabela"':''}>${sc==null?nada:`<b>${sc.toFixed(1).replace('.',',')}</b>`}</td>`};
   return cols.map(c=>cel[c.k]()).join('');
@@ -2772,7 +2408,17 @@ function partTabela(){
   }
   if(!grandes.length&&!pequenas.length) h=`<tr><td colspan="${cols.length}" class="esq">Nenhuma proposição neste recorte.</td></tr>`;
   document.getElementById('partCorpo').innerHTML=h;
-  document.querySelector('table.part').style.minWidth=cols.length>8?'964px':'720px';
+  document.querySelector('table.part').style.minWidth=cols.length>=11?'964px':cols.length===9?'800px':'720px';
+}
+
+// Quem era o presidente e o partido dele, e o que a coluna de alinhamento mede neste período.
+function partGovTexto(){
+  if(!GOV) return '';
+  const gs=partGovs();
+  if(gs.length) return `Governo no período: ${gs.map(g=>`${g.presidente} (${govPartidos(g)}), ${govPeriodo(g)}`).join('; depois ')}. `+
+    `“Alinhamento ao Governo” é a mediana dos deputados do partido nas votações em que o líder do Governo orientou; o quadro abaixo compara todos os governos. `;
+  if(PART.id==='todas') return 'O alinhamento ao Governo aparece no quadro abaixo, governo a governo. ';
+  return `Alinhamento ao Governo: só desde ${GOV.regras.primeiroAno}, quando a Câmara passou a publicar as orientações de bancada; veja o quadro abaixo. `;
 }
 
 function partTextos(){
@@ -2783,7 +2429,8 @@ function partTextos(){
     `que o autor tinha no dia em que a apresentou; as ${n(tot[1])} com autores de mais de um partido aparecem em cada um, por isso a soma das linhas `+
     `passa do total. `+
     (P.atual?'Em “Deputados”, o número de baixo é a bancada de hoje. ':
-      'Siglas como eram na época: partido que mudou de nome aparece com cada nome. Alinhamento ao Governo, coesão e posição no espectro só existem para a legislatura atual. ')+
+      'Siglas como eram na época: partido que mudou de nome aparece com cada nome. Coesão e posição no espectro só existem para a legislatura atual. ')+
+    partGovTexto()+
     'Clique no título de uma coluna para reordenar.';
   document.getElementById('partAviso').innerHTML=
     `<p class="part-aviso-p"><b>Conversão não é mérito.</b> Uma proposta virar lei depende também de acesso ao poder — de quem negocia a pauta, `+
@@ -2815,7 +2462,11 @@ function partTextos(){
     `Mediana da conversão e "autores sem nenhuma lei" usam quem apresentou algo no partido: não há lista de quem esteve no partido sem apresentar nada.</p>`+
     `<p><b>Período e tema.</b> Período é a legislatura da data de apresentação. O tema é o do filtro das páginas dos deputados (7 blocos, 27 categorias, por palavras-chave); `+
     `é interpretação do site, com precisão ainda não medida, e uma proposição conta em cada tema que tem.</p>`+
-    (P.atual?`<p><b>Só na legislatura atual.</b> Bancada é o partido de hoje (${n(P.deputadosHoje)} deputados). <b>Alinhamento ao Governo</b> usa o partido em que cada deputado mais votou (a página Quem vota com quem). `+
+    (GOV?`<p><b>Alinhamento ao Governo.</b> Para cada deputado, a frequência com que votou como o líder do Governo orientou (Sim ou Não) nas votações nominais do Plenário; o número do partido é a mediana entre os deputados dele, `+
+    `pelo partido em que cada um mais votou no governo, com ${GOV.regras.minDeputados} deputados ou mais (${GOV.regras.minVotos} votos Sim ou Não e ${GOV.regras.minComparaveis} votações com orientação por deputado). `+
+    `Quem é o Governo vem do registro de orientação da própria Câmara, que muda sozinho com o presidente; o corte entre governos (Dilma e Temer na 55ª legislatura) e o partido do presidente vêm de uma tabela conferida com o Wikidata. `+
+    `Só desde ${GOV.regras.primeiroAno}: antes disso a Câmara não publica as orientações. Entram todos os deputados que votaram, inclusive suplentes que já saíram; por isso o governo atual pode diferir em até 1,5 ponto do que a página Quem vota com quem mostra por partido, que só olha os deputados de hoje.</p>`:'')+
+    (P.atual?`<p><b>Só na legislatura atual.</b> Bancada é o partido de hoje (${n(P.deputadosHoje)} deputados). `+
     `<b>Coesão</b> é a parcela dos votos Sim ou Não que seguiu a orientação registrada da bancada, pelo partido no dia do voto; orientação liberada não conta. `+
     `Quando o partido orienta por bloco ou federação, é a orientação do bloco ou da federação, e a coluna diz qual predomina. São quatro recortes de "partido" no mesmo quadro porque cada dado oficial traz o seu.</p>`:'');
 }
@@ -2851,7 +2502,47 @@ async function partDesenhar(){
   PART=dados;
   if(partEst.tema&&!PART.sel[partEst.tema]) partEst.tema='';
   document.getElementById('partTema').value=partEst.tema;
-  partTextos(); partTabela(); partPerfil(); partGrafico(); partCreditos();
+  partTextos(); partTabela(); partGovQuadro(); partPerfil(); partGrafico(); partCreditos();
+}
+
+// Quadro governo a governo: independe do período escolhido (destaca os governos dele). Tinta neutra, como o perfil por tema.
+function partGovQuadro(){
+  const sec=document.getElementById('partGovSec'), tb=document.getElementById('partGov'), mais=document.getElementById('partGovMais');
+  if(!GOV||!GOV.governos.length){ sec.hidden=true; return; }
+  sec.hidden=false;
+  const gs=GOV.governos, sel=new Set(partGovs().map(g=>g.id)), R=GOV.regras;
+  const soma=s=>Object.values(GOV.partidos[s]).reduce((a,v)=>a+v[1],0);
+  const maior=s=>Math.max(...Object.values(GOV.partidos[s]).map(v=>v[1]));
+  const todos=Object.keys(GOV.partidos).sort((a,b)=>soma(b)-soma(a)||a.localeCompare(b));
+  const grandes=todos.filter(s=>maior(s)>=PIDX.minAutores);
+  const linhas=partGovTodos?todos:grandes;
+  // legislatura do governo mais recente em que o partido tem número: serve para escolher o logo certo da época
+  const legDe={}; for(const [l,ids] of Object.entries(GOV.legislaturas)) for(const i of ids) legDe[i]=+l;
+  const legLinha=s=>{ const ids=gs.map(g=>g.id).filter(i=>GOV.partidos[s][i]); return legDe[ids[ids.length-1]]; };
+  const alvo=gs.flatMap(g=>g.partidoPresidente.map(e=>(GOV.partidos[e.sigla]||{})[g.id]).filter(Boolean)).map(v=>v[0]);
+  const cam=gs.map(g=>g.mediana).filter(x=>x!=null);
+  const gMin=gs.find(g=>g.mediana===Math.min(...cam)), gMax=gs.find(g=>g.mediana===Math.max(...cam));
+  document.getElementById('partGovLeitura').textContent=
+    `Cada número é a mediana, entre os deputados do partido, da frequência com que votaram como o líder do Governo orientou (Sim ou Não) nas votações nominais do Plenário. `+
+    `Cada coluna é um governo; quem é o Governo em cada votação vem do registro de orientação da Câmara. ● marca o partido do presidente. `+
+    (alvo.length?`O partido do presidente ficou entre ${pctInt(Math.min(...alvo))} e ${pctInt(Math.max(...alvo))}; a mediana de todos os deputados variou de ${pctInt(gMin.mediana)} (${gMin.rotulo}) a ${pctInt(gMax.mediana)} (${gMax.rotulo}). `:'')+
+    `Isso mede proximidade com o governo do momento, não ideologia nem mérito: o mesmo partido pode estar perto de um governo e longe do seguinte. `+
+    `Siglas como eram na época (PMDB e MDB são linhas separadas). Itálico: menos de ${PIDX.minAutores} deputados. —: menos de ${R.minDeputados} deputados com votos suficientes, ou o partido não existia.`;
+  const cel=(v,g,s)=>{
+    if(!v) return '<td>—</td>';
+    const a=.07+.6*v[0], marca=g.partidoPresidente.some(e=>e.sigla===s)?`<span class="pres" title="${esc(partDoPresidente(s,[g]).join('; '))}">●</span>`:'';
+    return `<td class="${v[1]<PIDX.minAutores?'peq':''}" style="background:rgba(15,23,42,${a.toFixed(2)});${a>.38?'color:#fff':''}" `+
+      `title="${esc(s)} no governo ${esc(g.rotulo)}: mediana de ${pctInt(v[0])} entre ${nfBR(v[1])} deputados">${marca}${pctInt(v[0])}</td>`;
+  };
+  tb.innerHTML=`<thead><tr><th class="esq">Partido</th>${gs.map(g=>
+    `<th class="${sel.has(g.id)?'sel':''}" title="${esc((g.nota||'')+' '+nfBR(g.votacoesComOrientacao)+' votações nominais com orientação do Governo; '+nfBR(g.deputados)+' deputados com número.')}">`+
+    `${esc(g.rotulo)}<small>${esc(g.presidente)}${g.partidoPresidente.length?' ('+esc(govPartidos(g))+')':''}</small>`+
+    `<small>${govPeriodo(g)}</small><small>${nfBR(g.votacoesComOrientacao)} votações</small></th>`).join('')}</tr></thead><tbody>`+
+    linhas.map(s=>`<tr><td class="esq">${Bandeiras.img(s,legLinha(s),16)}${esc(s)}</td>${gs.map(g=>cel((GOV.partidos[s]||{})[g.id]||null,g,s)).join('')}</tr>`).join('')+
+    `<tr class="cam"><td class="esq">Todos os deputados</td>${gs.map(g=>g.mediana==null?'<td>—</td>':
+      `<td style="background:rgba(15,23,42,${(.07+.6*g.mediana).toFixed(2)});${.07+.6*g.mediana>.38?'color:#fff':''}" title="Mediana de todos os deputados com número neste governo (${nfBR(g.deputados)})">${pctInt(g.mediana)}</td>`).join('')}</tr></tbody>`;
+  mais.hidden=todos.length===grandes.length;
+  mais.textContent=partGovTodos?`Mostrar só os partidos com ${PIDX.minAutores} deputados ou mais`:`Mostrar os ${todos.length-grandes.length} partidos menores`;
 }
 
 // Créditos dos logos: o oficial da Câmara quando abre; senão o do Wikimedia Commons, só pela tabela curada.
@@ -2925,6 +2616,7 @@ document.getElementById('partPeriodo').onchange=e=>{ const v=e.target.value; par
 document.getElementById('partTema').onchange=e=>{ partEst.tema=e.target.value; partDesenhar(); };
 document.getElementById('partLimpar').onclick=()=>{ partEst={periodo:PIDX.legislaturaAtual,tema:''};
   document.getElementById('partPeriodo').value=partEst.periodo; partDesenhar(); };
+document.getElementById('partGovMais').onclick=()=>{ partGovTodos=!partGovTodos; partGovQuadro(); };
 document.getElementById('partPerfil').addEventListener('click',e=>{
   const th=e.target.closest('th[data-b]'); if(!th) return;
   partEst.tema=partEst.tema===th.dataset.b?'':th.dataset.b; partDesenhar();

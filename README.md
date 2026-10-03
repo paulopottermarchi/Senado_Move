@@ -11,8 +11,8 @@ dos Deputados, o Senado Federal ou o TSE.
 
 | Página | O que responde |
 |---|---|
-| **Início** (`index.html`) | Onde cada um dos 513 deputados está no espectro político e quanto propôs — com alternância entre proposições *apresentadas* e as que *viraram lei*. Ranking, o que aconteceu na semana, as votações mais disputadas e mais consensuais, e o espectro por região. |
-| **Partidos** (aba da página inicial) | As proposições de cada partido, por legislatura desde 1991 e por tema: proposições distintas, conversão, quem concentra o volume e perfil por tema; na legislatura atual, também alinhamento ao Governo, coesão e posição no espectro. |
+| **Início** (`index.html`) | Onde cada um dos 513 deputados está no espectro político e quanto propôs — com alternância entre proposições *apresentadas* e as que *viraram lei*. Ranking, partidos e o que aconteceu na semana. As votações mais disputadas e mais consensuais estão na página das leis votadas; o filtro de região, no próprio gráfico. |
+| **Partidos** (aba da página inicial) | As proposições de cada partido, por legislatura desde 1991 e por tema: proposições distintas, conversão, quem concentra o volume e perfil por tema; alinhamento ao Governo governo a governo, desde 2003; na legislatura atual, também coesão e posição no espectro. |
 | **Perfil do deputado** (`deputado.html?id=…`) | Todas as PEC e PL de autoria, por tema, com o tempo e o caminho de cada uma na Câmara; com quem vota; leituras na Wikipédia; obras com emenda dele. |
 | **Senadores** (`senadores.html`) | Os 81 senadores no mesmo gráfico: autoria, leis, relatorias e votos no Plenário. |
 | **Leis votadas** (`leis.html`) | As votações finais nominais desde 2023: placar, posição média de quem votou sim e não, adesão por faixa do espectro, quem votou diferente da orientação da própria bancada, enquete da Câmara e consulta do Senado. |
@@ -65,12 +65,19 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
   — nunca a soma dos totais por deputado. Quem trocou de partido conta em cada um, só com o que apresentou
   enquanto estava nele. O tema é o das páginas dos deputados (7 blocos, 27 categorias, por palavras-chave:
   interpretação do site). Partido com menos de 10 deputados autores aparece, marcado, fora da ordenação.
-  Conversão reflete também acesso ao poder e tempo, não só mérito. Posição no espectro, alinhamento ao Governo
-  e coesão só existem para a legislatura atual.
+  Conversão reflete também acesso ao poder e tempo, não só mérito. Posição no espectro e coesão só existem
+  para a legislatura atual.
 - **Presença** é contagem de votos registrados, nunca taxa: sem o período de exercício de cada um, a
   conta trataria licença e suplência como falta.
 - **Obras**: crescimento = valor global atual − valor inicial, os dois campos do registro do contrato;
   a natureza de cada termo aditivo (acréscimo, reajuste, prorrogação…) sai do texto do termo.
+- **Alinhamento ao Governo**: para cada deputado, a frequência com que votou como o líder do Governo orientou
+  (registro de orientação da Câmara, só Sim ou Não) nas votações nominais do Plenário; o número do partido é a mediana
+  entre os deputados dele, com 3 ou mais. O recorte é o **governo** (Lula I, Lula II, Dilma I, Dilma II, Temer,
+  Bolsonaro, Lula III), não a legislatura: a 55ª teve dois presidentes. Quem é o Governo em cada votação vem do
+  registro da Câmara; a tabela `entradas/governos.json` só dá os cortes de data e o partido do presidente (conferidos
+  no Wikidata). Só desde 2003, quando a Câmara passou a publicar as orientações. Mede proximidade com o governo do
+  momento, não ideologia nem mérito.
 - **Logos dos partidos**: o da Câmara quando o endereço oficial abre (34 dos 62 registros); para os demais, o do
   Wikimedia Commons, só por uma tabela curada (`entradas/logos_partidos.json`) em que cada logo foi conferido na
   imagem e ligado ao partido pelo nome oficial. Partido sem logo seguro fica só com o nome: nunca se busca por
@@ -102,7 +109,7 @@ site/                 o que vai ao ar — o GitHub Pages publica a pasta inteira
     temas/            um arquivo por deputado, a taxonomia e o resumo
 scripts/              coleta e processamento, em Python
 entradas/             tabelas fixas e resultados pagos, versionados e não publicados
-                      (ideologia.json, eleicao2022.json, logos_partidos.json, resumos por IA)
+                      (ideologia.json, eleicao2022.json, governos.json, logos_partidos.json, resumos por IA)
 cache/                respostas cruas das APIs — fora do git (centenas de MB), regenerável
 .github/workflows/    a rodada diária
 ```
@@ -135,7 +142,7 @@ completa da rodada diária está no workflow:
 
 ```
 atualiza → coleta → votos → blocos → notoriedade → wikipedia → noticias → youtube → enquetes
-→ ecidadania → resumos → obras → senado → tramitacoes → temas → partidos → logos → semana
+→ ecidadania → resumos → obras → senado → tramitacoes → temas → partidos → governo → logos → semana
 ```
 
 Para ver o site, sirva a pasta `site/` (o navegador não carrega os JSON de arquivos abertos direto
