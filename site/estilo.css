@@ -7,6 +7,12 @@
    transições de 300 ms em ease-in-out.
    ===================================================================== */
 
+/* Barlow Condensed (SIL OFL 1.1, vendor/fonts/): SÓ para títulos grandes e números de destaque. O texto segue em Newsreader e
+   Libre Franklin. Subconjunto latino (cobre todo o português), autohospedado: sem pedido a terceiros. */
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:500;font-display:swap;src:url(vendor/fonts/barlow-condensed-500.woff2) format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(vendor/fonts/barlow-condensed-600.woff2) format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url(vendor/fonts/barlow-condensed-700.woff2) format('woff2')}
+
 :root{
   /* Espectro — SÓ para ideologia (CLAUDE.md). Nenhum outro uso. */
   --esq:#d85a30; --cesq:#b88f5a; --cen:#888780; --cdir:#4a7a9f; --dir:#0c447c; --sem:#c8cace;
@@ -26,6 +32,7 @@
   --link:var(--destaque);
 
   --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --cond:'Barlow Condensed','Arial Narrow','Roboto Condensed',Impact,sans-serif;     /* só título grande e número de destaque */
   --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   /* escala tipográfica (px): 11 · 12 · 13 · 14 · 15 · 16 · 18 · 20 · 24 · 30 · 36 · 48 */
 
