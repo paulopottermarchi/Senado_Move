@@ -196,6 +196,10 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 :is(.explora a,a.pessoa,.pessoa[href]){transition:border-color var(--t),box-shadow var(--t),transform var(--t)}
 :is(.explora a,a.pessoa,.pessoa[href]):active{transform:translateY(0) scale(.99)}
 
+/* título palavra por palavra: cada palavra numa máscara de onde sobe (o texto continua inteiro para quem lê em voz alta) */
+.pal{display:inline-block;vertical-align:top;overflow:hidden;padding:.06em .05em .14em;margin:-.06em -.05em -.14em}
+.pal>span{display:inline-block}
+
 /* ---------- logo do partido ---------- */
 .bandeira-slot{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-right:8px;flex:none}
 .bandeira{display:block;max-width:100%;max-height:100%;object-fit:contain}

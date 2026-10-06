@@ -117,6 +117,43 @@ td.saida small{white-space:normal}
   .plenario{max-width:340px;margin:0 auto 8px} }
 @media(max-width:760px){ .painel{padding:20px} th:nth-child(n+5),td:nth-child(n+5){display:none} }
 
+
+/* ---------- topo: título condensado, modelo decorativo à direita e leituras ---------- */
+.hero{position:relative;padding:56px 0 8px;isolation:isolate}
+.hero::before{content:"";position:absolute;z-index:-1;inset:0 -16px 0 30%;pointer-events:none;
+  background:radial-gradient(60% 70% at 78% 30%,rgba(45,212,191,.10),transparent 70%)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);column-gap:56px;align-items:start;
+  grid-template-areas:"k lado" "t lado" "c lado" "a lado";grid-template-rows:auto auto auto 1fr}
+.hero-grid>.kicker{grid-area:k}
+.hero-grid>h1{grid-area:t}
+.hero-grid>.chamada{grid-area:c}
+.hero-grid>.aviso{grid-area:a;max-width:none}
+.hero-lado{grid-area:lado;align-self:start}
+.hero .titulo-cond{font-family:var(--cond);font-weight:600;font-size:clamp(52px,8.2vw,100px);line-height:.94;letter-spacing:0;
+  text-transform:uppercase;max-width:none;text-wrap:balance;margin-top:4px}
+.hero .chamada{font-size:clamp(16px,1.8vw,18px);max-width:60ch;margin-top:24px}
+.hero-cena{position:relative;margin:0;aspect-ratio:4/3;border-radius:var(--raio);overflow:hidden;border:1px solid #1b2a3a;
+  background:radial-gradient(75% 65% at 50% 40%,#10222c 0%,#0a121b 72%),#0a121b;box-shadow:var(--sombra-md)}
+.hero-cena img,.hero-cena canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.hero-cena canvas{opacity:0;transition:opacity .8s var(--curva)}
+.hero-cena img{transition:opacity .8s var(--curva)}
+.hero-cena.pronto canvas{opacity:1}
+.hero-cena.pronto img{opacity:0}
+.leituras{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.leituras li{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio-p);padding:12px 16px;box-shadow:var(--sombra);min-width:0}
+.leituras b{display:block;font-family:var(--cond);font-weight:600;font-size:clamp(36px,3.6vw,48px);line-height:1;letter-spacing:0;color:var(--tinta)}
+.leituras span{display:block;font-size:12px;line-height:1.35;color:var(--tinta3);margin-top:6px}
+@media(max-width:860px){
+  .hero{padding:32px 0 0}
+  .hero-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"k" "t" "lado" "c" "a";grid-template-rows:none}
+  .hero-lado{margin-top:24px}
+  .hero-cena{aspect-ratio:auto;height:220px;max-height:220px}
+  .hero-grid.sem-modelo .hero-cena{display:none}              /* conexão que pede economia: nem a imagem */
+  .leituras{gap:8px;margin-top:12px}
+  .leituras li{padding:8px 12px}
+  .leituras b{font-size:34px}
+  .hero .chamada{margin-top:24px}
+}
 </style>
 </head>
 <body>
@@ -138,22 +175,36 @@ td.saida small{white-space:normal}
 </header>
 
 <main class="wrap">
-  <div class="capa">
-    <p class="kicker" id="kicker">Senado Federal · senadores em exercício</p>
-    <h1>O que cada senador propôs, e o que virou lei</h1>
-    <p class="chamada">O mesmo gráfico dos deputados: o espectro político do partido de cada senador contra o
-       que ele apresentou. Na ficha, também o que relatou e como votou.</p>
-    <div class="aviso" role="note">
-      <p><b>A posição no espectro é do partido, não da pessoa.</b> É o mesmo número usado para os deputados: média das
-         respostas da wave 9 (2021) do Brazilian Legislative Survey, de Power e Zucco, calculada por este site, numa
-         escala de 1, esquerda, a 10, direita. Partido sem posição na pesquisa aparece à parte, em cinza.</p>
-      <p><b>Apresentar projeto custa pouco</b>; o que diz mais é o que virou lei. <b>Relatoria</b> é designação do
-         presidente da comissão, sinal de confiança dos pares — entra na ficha como contexto, nunca como nota.</p>
-      <p><b>Votar diferente da orientação da própria bancada não é traição nem incoerência por definição.</b>
-         Pode ser convicção, compromisso com o estado ou acordo; a página mostra quantas vezes, não por quê. A
-         orientação é a que o partido registrou no Senado em cada votação — registro, não estimativa.</p>
+  <section class="hero" aria-labelledby="titulo">
+    <div class="hero-grid" id="heroGrid">
+      <p class="kicker" id="kicker" data-entra>Senado Federal · senadores em exercício</p>
+      <h1 id="titulo" class="titulo-cond"><span class="pal"><span>O</span></span> <span class="pal"><span>que</span></span> <span class="pal"><span>cada</span></span> <span class="pal"><span>senador</span></span> <span class="pal"><span>propôs,</span></span> <span class="pal"><span>e</span></span> <span class="pal"><span>o</span></span> <span class="pal"><span>que</span></span> <span class="pal"><span>virou</span></span> <span class="pal"><span>lei</span></span></h1>
+      <!-- modelo decorativo (cupula3d.js) na coluna da direita; no celular, abaixo do título. Sem dado nenhum: aria-hidden -->
+      <div class="hero-lado" data-entra>
+        <figure class="hero-cena" id="heroCena" aria-hidden="true">
+          <img src="img/cupula-senado.svg" alt="" width="480" height="360" decoding="async">
+        </figure>
+        <!-- leituras calculadas de senadores.json no navegador (nunca escritas à mão); "—" até chegarem -->
+        <ul class="leituras" id="leituras" aria-label="Números desta página, calculados dos dados">
+          <li><b id="leSen">—</b><span>senadores em exercício</span></li>
+          <li><b id="leUF">—</b><span>estados e DF</span></li>
+          <li><b id="lePar">—</b><span>partidos</span></li>
+        </ul>
+      </div>
+      <p class="chamada">O mesmo gráfico dos deputados: o espectro político do partido de cada senador contra o
+         que ele apresentou. Na ficha, também o que relatou e como votou.</p>
+      <div class="aviso" role="note">
+        <p><b>A posição no espectro é do partido, não da pessoa.</b> É o mesmo número usado para os deputados: média das
+           respostas da wave 9 (2021) do Brazilian Legislative Survey, de Power e Zucco, calculada por este site, numa
+           escala de 1, esquerda, a 10, direita. Partido sem posição na pesquisa aparece à parte, em cinza.</p>
+        <p><b>Apresentar projeto custa pouco</b>; o que diz mais é o que virou lei. <b>Relatoria</b> é designação do
+           presidente da comissão, sinal de confiança dos pares — entra na ficha como contexto, nunca como nota.</p>
+        <p><b>Votar diferente da orientação da própria bancada não é traição nem incoerência por definição.</b>
+           Pode ser convicção, compromisso com o estado ou acordo; a página mostra quantas vezes, não por quê. A
+           orientação é a que o partido registrou no Senado em cada votação — registro, não estimativa.</p>
+      </div>
     </div>
-  </div>
+  </section>
 
   <section class="painel" aria-labelledby="t-graf">
     <h2 id="t-graf">Espectro × produção</h2>
@@ -535,6 +586,34 @@ function composicao(){
     (leg&&!completo()?` Legislatura ${rotuloLeg(leg)}: os ${R.length} assentos em cor são os senadores de hoje que já estavam no cargo; os apagados não estavam. Não é a composição do Senado da época: os que já saíram ainda não foram carregados.`:'');
 }
 
+// ---- topo: leituras calculadas dos dados e o modelo decorativo (depois da primeira pintura) ----
+function leituras(){
+  const n=(id,v)=>{ const e=document.getElementById(id); if(e){ e.textContent=nf.format(v); e.setAttribute('data-conta',''); } };
+  n('leSen',S.length);
+  n('leUF',new Set(S.map(s=>s.uf).filter(Boolean)).size);
+  n('lePar',new Set(S.map(s=>s.partido).filter(Boolean)).size);
+  if(window.Contar) Contar.varrer(document.getElementById('leituras'));
+}
+// O modelo só entra se o navegador tem importmap e WebGL, a conexão não pede economia e o movimento não está reduzido; senão fica
+// a imagem estática (que já ocupa o espaço: nenhum deslocamento de layout). Carrega depois do evento load, quando o navegador está ocioso.
+function modeloDoTopo(){
+  const palco=document.getElementById('heroCena'); if(!palco) return;
+  const cx=navigator.connection;
+  if(cx&&(cx.saveData===true||/(^|-)2g$/.test(cx.effectiveType||''))){ document.getElementById('heroGrid').classList.add('sem-modelo'); return; }
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if(!(window.HTMLScriptElement&&HTMLScriptElement.supports&&HTMLScriptElement.supports('importmap'))) return;
+  const iniciar=async()=>{
+    try{
+      const C=await import('./cena3d.js'); if(!C.webglDisponivel()) return;
+      const THREE=await C.carregarThree(); if(!THREE) return;
+      const M=await import('./cupula3d.js');
+      M.iniciar({THREE,contentor:palco,aoPronto:()=>palco.classList.add('pronto')});
+    }catch(e){ /* fica a imagem estática */ }
+  };
+  const quando=()=>('requestIdleCallback' in window)?requestIdleCallback(iniciar,{timeout:3000}):setTimeout(iniciar,1500);
+  if(document.readyState==='complete') quando(); else addEventListener('load',quando,{once:true});
+}
+
 async function carregar(){
   const json=u=>fetch(u,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
   const pLegs=json('dados/legislaturas.json');             // sai junto do resto, não depois
@@ -557,7 +636,7 @@ async function carregar(){
   const medianaDe=v=>{ const n=v.length; return !n?null:(n%2?v[(n-1)/2]:(v[n/2-1]+v[n/2])/2); };   // com quantidade par, a média dos dois do meio
   MEDIANA_ORI=medianaDe(ord(taxaOri));
   MEDIANA_GOV=medianaDe(ord(taxaGov));
-  composicao(); grafico(); tabela();
+  composicao(); grafico(); tabela(); leituras();
   const q=new URLSearchParams(location.search).get('id');
   if(q){ if(!S.some(x=>x.id===+q)) await carregarAntigos(); abrir(+q); }       // ?id= de quem já saiu
 }
@@ -590,6 +669,7 @@ g.addEventListener('mousemove',e=>{
 });
 g.addEventListener('mouseleave',()=>$('#dica')?.classList.remove('on'));
 window.addEventListener('tema',()=>{ if(S.length){ composicao(); grafico(); } });   // a paleta do espectro muda no tema escuro
+document.addEventListener("DOMContentLoaded",()=>{ Entrada.abrir(document.querySelector('.hero')); modeloDoTopo(); });
 document.addEventListener("DOMContentLoaded",carregar);   // site.js é defer: só existe (Bandeiras) depois do parse
 </script>
 </body>

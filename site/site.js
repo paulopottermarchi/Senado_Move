@@ -132,6 +132,31 @@ window.Tema = (() => {
   addEventListener('pagehide', () => { try { sessionStorage.setItem('navInd', JSON.stringify(atual ? caixa(atual) : null)); } catch (e) { /* ok */ } });
 })();
 
+// Abertura de uma página com .hero: kicker, título palavra por palavra (.pal) e os blocos [data-entra] entram em cascata (Motion).
+// Mesma regra de melhoria progressiva da inicial: o CSS esconde só enquanto html não tem .m-ok; o estado inicial passa para estilo em
+// linha antes de soltar; sem Motion, com movimento reduzido ou com qualquer erro, tudo aparece pronto (a animação m-seguranca do
+// estilo.css solta tudo em 3,5 s se ninguém assumir).
+window.Entrada = (() => {
+  const soltar = () => document.documentElement.classList.add('m-ok');
+  const limpar = els => els.forEach(el => { el.style.removeProperty('opacity'); el.style.removeProperty('transform'); });
+  const abrir = hero => {
+    const M = window.Motion;
+    if (!hero || !M || !M.animate || !M.stagger || matchMedia('(prefers-reduced-motion: reduce)').matches) { soltar(); return; }
+    const itens = [...hero.querySelectorAll('[data-entra]')], pal = [...hero.querySelectorAll('.pal>span')];
+    try {
+      itens.forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(16px)'; });
+      pal.forEach(el => { el.style.transform = 'translateY(110%)'; });
+      soltar();
+      const ease = [0.22, 1, 0.36, 1];
+      const fim = [M.animate(pal, { y: ['110%', '0%'] }, { duration: 0.85, ease, delay: M.stagger(0.05, { startDelay: 0.08 }) }),
+        ...itens.map((el, i) => M.animate(el, { opacity: [0, 1], y: [16, 0] }, { duration: 0.7, ease, delay: 0.1 + i * 0.12 }))].map(a => a.finished);
+      const volta = () => { limpar(itens); limpar(pal); };
+      Promise.all(fim).then(volta, volta);
+    } catch (e) { limpar(itens); limpar(pal); soltar(); }
+  };
+  return { abrir };
+})();
+
 // Logos dos partidos (dados/partidos/logos.json, gerado por logos.py). A página só referencia o endereço da
 // imagem, como faz com as fotos dos deputados; nenhuma cópia fica neste site. Sigla sem logo seguro não mostra nada.
 window.Bandeiras = (() => {
