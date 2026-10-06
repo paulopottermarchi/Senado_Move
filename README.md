@@ -9,8 +9,8 @@ funcionar está versionado em `site/vendor/`, em versão fixa e sem CDN: o Motio
 Three.js 0.180.0 (3D, MIT; o modelo decorativo do topo das páginas, depois da primeira pintura, e o plenário dos senadores, só por clique; sempre sob demanda, por importmap e `site/cena3d.js`) e a fonte Barlow Condensed
 (SIL OFL, só para títulos grandes e números de destaque). Tudo é melhoria progressiva: sem JavaScript, sem WebGL ou com erro,
 a página fica completa (o SVG do plenário e uma imagem estática no topo). As animações respeitam `prefers-reduced-motion`; o
-tema escuro vale por `prefers-color-scheme` ou pelo alternador da barra, e só nas páginas que declaram `data-escuro-ok`
-(hoje, deputados e senadores). O visual editorial (grade larga, título e números em condensada, um modelo 3D por página, camadas escuras e claras) vale nas páginas com `data-ed`. Site independente, sem vínculo com a Câmara
+tema escuro vale por `prefers-color-scheme` ou pelo alternador da barra, nas páginas que declaram `data-escuro-ok`
+(hoje, todas). O visual editorial (grade larga, título e números em condensada, um modelo 3D por página, camadas escuras e claras) vale nas páginas com `data-ed`. Site independente, sem vínculo com a Câmara
 dos Deputados, o Senado Federal ou o TSE.
 
 ## O que o site mostra

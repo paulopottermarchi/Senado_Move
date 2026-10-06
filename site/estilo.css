@@ -22,6 +22,10 @@
      interface azul faria o site parecer de um lado. O petróleo fica só na interface (links,
      rótulos, item atual, foco, marca) — nunca em gráfico nem em dado. */
   --tinta:#0f172a;  --tinta2:#334155;  --tinta3:#566376;       /* 17,9 · 10,4 · 6,1 : 1 no branco */
+  --b0:#4d7c0f; --b1:#7a4fa0;                                   /* os dois blocos de "Quem vota com quem": fora da paleta do espectro */
+  --cresce:#1e293b;                                             /* crescimento do contrato (obras) */
+  --camada-escura:#0a0f1a;                                      /* fundo da camada escura (.escuro) em página clara */
+  --rampa1:#0f172a; --rampa2:#475569; --rampa3:#64748b; --rampa4:#94a3b8; --rampa5:#cbd5e1; --rampa6:#e2e8f0; --rampa7:#f1f5f9;   /* neutros, do mais forte ao mais fraco (categorias sem cor: fluxo) */
   --atencao:#8a6d1f;                                            /* amostra pequena: ocre, 4,9:1 no branco */
   --tinta-rgb:15,23,42;                                          /* a tinta em rgb, para tingir células (rgba(var(--tinta-rgb),.3)) */
   --destaque:#0f766e;                                          /* texto e links: 5,5 : 1 no branco */
@@ -242,6 +246,8 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 @media (prefers-color-scheme:dark){
   :root[data-escuro-ok]:not([data-tema="claro"]){
     --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
+    --b0:#a3c957; --b1:#b58ee0; --cresce:#cbd5e1; --camada-escura:#070b13;
+    --rampa1:#e8edf5; --rampa2:#b6c2d3; --rampa3:#94a3b8; --rampa4:#64748b; --rampa5:#475569; --rampa6:#334155; --rampa7:#1e293b;
     --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb; --tinta-rgb:232,237,245; --atencao:#e0b84d;
     --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
     --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55;
@@ -262,6 +268,8 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 }
 :root[data-escuro-ok][data-tema="escuro"]{
     --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
+    --b0:#a3c957; --b1:#b58ee0; --cresce:#cbd5e1; --camada-escura:#070b13;
+    --rampa1:#e8edf5; --rampa2:#b6c2d3; --rampa3:#94a3b8; --rampa4:#64748b; --rampa5:#475569; --rampa6:#334155; --rampa7:#1e293b;
     --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb; --tinta-rgb:232,237,245; --atencao:#e0b84d;
     --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
     --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55;
@@ -347,7 +355,7 @@ html[data-ed] .wrap,html[data-ed] .topo-in{max-width:1440px;padding-inline:clamp
   --topo-bg:rgba(10,15,26,.86);
   --inverso:#e8edf5; --sobre-inverso:#0a0f1a; --inverso-2:#475569; --inverso-3:rgba(15,23,42,.1);
   --marca-fundo:#1e293b; --seg-hover:rgba(255,255,255,.06); --brilho:#1d283b;
-  background:var(--fundo); color:var(--tinta); color-scheme:dark;
+  background:var(--camada-escura); color:var(--tinta); color-scheme:dark;
 }
 .topo.escuro{border-bottom-color:rgba(255,255,255,.1)}
 

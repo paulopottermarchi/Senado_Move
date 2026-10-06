@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-ed>
+<html lang="pt-BR" data-escuro-ok data-ed>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
 <link rel="stylesheet" href="estilo.css">
 <link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
 <!-- Three.js 0.180.0, versionado em vendor/three/ (sem CDN). O importmap só diz onde fica; nada é baixado até alguém dar import('three'),
@@ -33,8 +34,8 @@
 /* o enquadramento vem ANTES de qualquer número */
 
 /* controles */
-.painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
-        padding:24px 28px;margin-top:28px}
+.painel{background:none;border:solid var(--linha);border-width:1px 0;border-radius:0;box-shadow:none;
+        padding:16px 0;margin-top:8px}
 .ctl{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center}
 
 .linha2{margin-top:12px;padding-top:12px;border-top:1px solid var(--linha2)}
@@ -46,15 +47,7 @@
 .sel{max-width:260px}
 
 /* lista */
-.lei{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);padding:24px 28px;margin-top:16px;
-     box-shadow:var(--sombra);transition:box-shadow var(--t),border-color var(--t)}
-.lei:hover{box-shadow:var(--sombra-md);border-color:var(--linha-forte)}
-.lei-cab{display:flex;justify-content:space-between;gap:16px;align-items:baseline;flex-wrap:wrap}
-.lei-num{font-size:13px;color:var(--tinta3)}
-.lei-num a{color:var(--tinta);font-weight:600;text-decoration:none;border-bottom:1px dotted var(--tinta3)}
-.lei-res{font-size:13px;color:var(--tinta2)}
-.lei-res b{color:var(--tinta);font-weight:600}
-.ementa{font-family:var(--serif);font-size:18px;line-height:1.45;margin-top:8px;max-width:72ch}
+.ementa{font-family:var(--serif);font-size:clamp(18px,1.7vw,24px);line-height:1.3;margin-top:0;max-width:none}
 .tempo-lei{font-size:13px;color:var(--tinta2);margin-top:8px;max-width:74ch}
 .tempo-lei .caminho{display:block;color:var(--tinta3)}
 .oficial{margin-top:8px;max-width:72ch}
@@ -64,15 +57,7 @@
 .oficial a{font-size:13px;color:var(--tinta2)}
 .cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
 .cats span{font-size:11px;color:var(--tinta2);border:1px solid var(--linha);border-radius:999px;padding:0 8px;cursor:help}
-.corpo-lei{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:24px;margin-top:16px;align-items:start}
-.placar{font-size:14px;line-height:1.6}
-.placar b{font-weight:600}
 .med{font-size:13px;color:var(--tinta2);margin-top:4px}
-.ades{display:flex;gap:4px;align-items:flex-end;height:44px;position:relative}
-.ades div{flex:1;height:100%;background:var(--linha2);border-radius:2px;position:relative}
-.ades i{position:absolute;bottom:0;left:0;right:0;border-radius:2px;display:block}
-.ades .meia{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--linha-forte);z-index:1}
-.ades-leg{font-size:11px;color:var(--tinta3);margin-top:4px;text-align:center}
 
 .div{margin-top:16px;padding-top:16px;border-top:1px solid var(--linha2)}
 .div summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500}
@@ -123,7 +108,7 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
 .sinal .n small{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--tinta2);margin-left:4px}
 .sinal p{font-size:13px;color:var(--tinta2);margin-top:4px;line-height:1.5}
 .sinal p a{color:var(--tinta2)}
-.sinal .fraca{color:#8a5a00}
+.sinal .fraca{color:var(--atencao)}
 .sinal .sem{font-size:13px;color:var(--tinta3);margin-top:8px}
 .enq{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--linha2);margin-top:8px}
 .enq i{display:block;height:100%}
@@ -137,11 +122,54 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
 
 .vazio{margin-top:20px;font-size:15px;color:var(--tinta2)}
 
+/* ---------- a lista (prancha "Leis votadas"): um número por linha, o placar e a adesão por faixa ---------- */
+.lista-cab{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;padding:20px 0 12px;font-size:12px;font-weight:600;
+           letter-spacing:.1em;text-transform:uppercase;color:var(--tinta3);border-bottom:1px solid var(--tinta)}
+.lista-cab .k1{grid-column:1/span 2}.lista-cab .k2{grid-column:3/span 5}.lista-cab .k3{grid-column:8/span 3}.lista-cab .k4{grid-column:11/span 2}
+.lei{margin:0 -16px;padding:36px 16px;border-bottom:1px solid var(--linha);transition:background var(--t)}
+.lei:hover{background:var(--papel2)}
+.lei-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start}
+.c-num{grid-column:1/span 2;min-width:0}.c-txt{grid-column:3/span 5;min-width:0}.c-plac{grid-column:8/span 3;min-width:0}.c-ades{grid-column:11/span 2;min-width:0}
+.c-num .num{font-family:var(--cond);font-weight:600;font-size:clamp(24px,2.4vw,34px);line-height:1;letter-spacing:0;color:var(--tinta);
+            text-decoration:none;border-bottom:1px solid transparent}
+.c-num .num:hover{border-bottom-color:var(--tinta)}
+.c-num .data{display:block;margin-top:6px;font-size:13px;color:var(--tinta3)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip-lei{padding:2px 10px;border:1px solid var(--linha-forte);border-radius:999px;font-size:12px;line-height:1.6;color:var(--tinta2)}
+.chip-lei.tra{border-style:dashed;color:var(--tinta3)}
+.rot-col{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.plac{font-family:var(--cond);font-weight:600;font-size:clamp(40px,4.4vw,64px);line-height:1;letter-spacing:0;color:var(--tinta);white-space:nowrap}
+.plac i{font-style:normal;color:var(--tinta3);padding:0 .12em}
+.plac-barra{display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:10px;background:var(--linha-forte)}
+.plac-barra i{display:block;height:100%;background:var(--tinta)}
+.plac-leg{margin-top:8px;font-size:12px;line-height:1.45;color:var(--tinta3)}
+.ades{display:flex;gap:8px;align-items:flex-start}
+.col-ades{flex:1;min-width:0;text-align:center;font-size:11px;line-height:1.4;color:var(--tinta3)}
+.trilho-ades{position:relative;height:64px;background:var(--linha2);border-radius:3px;display:flex;align-items:flex-end;margin-bottom:6px;overflow:hidden}
+.trilho-ades i{display:block;width:100%;border-radius:3px}
+.trilho-ades .meia{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--linha-forte)}
+.mais-lei{margin-top:24px;padding-top:12px;border-top:1px solid var(--linha2)}
+.mais-lei>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--tinta)}
+.mais-lei>summary::-webkit-details-marker{display:none}
+.mais-lei>summary::before{content:"";width:7px;height:7px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;
+  transform:rotate(-45deg);transition:transform 300ms var(--curva);flex-shrink:0}
+.mais-lei[open]>summary::before{transform:rotate(45deg)}
+.mais-lei>summary em{font-style:normal;font-weight:400;font-size:13px;color:var(--tinta3)}
+@media(max-width:900px){
+  .lista-cab{display:none}
+  .lei{margin:0 -4px;padding:28px 4px}
+  .lei-grid{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:20px}
+  .c-num,.c-txt{grid-column:1/-1}.c-plac{grid-column:1/2}.c-ades{grid-column:2/3}
+  .c-num{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}.c-num .data{margin-top:0}
+  .rot-col{position:static;width:auto;height:auto;margin:0 0 6px;overflow:visible;clip:auto;clip-path:none;display:block;white-space:normal;
+           font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta3)}
+  .plac{font-size:44px}
+}
+
 @media(max-width:760px){
-  .corpo-lei,.sinais{grid-template-columns:1fr}
+  .sinais{grid-template-columns:1fr}
   .nominais li{grid-template-columns:minmax(0,1fr) auto}
   .nominais .d{grid-column:1/-1}
-  .lei,.painel{padding:20px}
   .contagem{margin-left:0;width:100%}
 }
 
@@ -207,6 +235,7 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
     <p class="resumo-dep" id="resumoDep" hidden></p>
   </section>
 
+  <div class="lista-cab" aria-hidden="true"><div class="k1">Proposição</div><div class="k2">O que muda</div><div class="k3">Placar</div><div class="k4">Parcela de cada faixa que votou sim</div></div>
   <div id="lista"></div>
   <button class="mais" id="mais" hidden>Mostrar mais</button>
 
@@ -308,8 +337,13 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
 </footer>
 
 <script>
-const CORES={'esquerda':'#d85a30','centro-esquerda':'#b88f5a','centro':'#888780',
+// As cores vêm de site.js (Espectro), que troca só o "direita" no tema escuro. Este script pode rodar antes do site.js (defer): até ele
+// chegar vale a paleta clara.
+const CORES_CLARO={'esquerda':'#d85a30','centro-esquerda':'#b88f5a','centro':'#888780',
              'centro-direita':'#4a7a9f','direita':'#0c447c'};
+const CORES={};
+for(const k of Object.keys(CORES_CLARO))
+  Object.defineProperty(CORES,k,{enumerable:true,get:()=>(window.Espectro?Espectro.CORES:CORES_CLARO)[k]});
 const NOMES={'esquerda':'Esquerda','centro-esquerda':'Centro-esquerda','centro':'Centro',
              'centro-direita':'Centro-direita','direita':'Direita'};
 const FAIXAS=Object.keys(CORES);
@@ -438,10 +472,11 @@ function filtradas(){
 
 function barraAdesao(a){
   if(!a) return '';
-  const cols=FAIXAS.map(fx=>a[fx]==null
-    ? `<div title="${NOMES[fx]}: sem votante com posição"></div>`
-    : `<div title="${NOMES[fx]}: ${Math.round(a[fx]*100)}% votou a favor"><i style="height:${(a[fx]*100).toFixed(1)}%;background:${CORES[fx]}"></i></div>`).join('');
-  return `<div class="ades">${cols}<span class="meia"></span></div><div class="ades-leg">parcela de cada faixa que votou a favor, da esquerda à direita</div>`;
+  const ABREV={'esquerda':'E','centro-esquerda':'CE','centro':'C','centro-direita':'CD','direita':'D'};
+  const lab=FAIXAS.map(fx=>`${NOMES[fx]}: ${a[fx]==null?'sem votante com posição':Math.round(a[fx]*100)+'%'}`).join('; ');
+  const cols=FAIXAS.map(fx=>`<div class="col-ades" title="${NOMES[fx]}: ${a[fx]==null?'sem votante com posição':Math.round(a[fx]*100)+'% votou a favor'}"><div class="trilho-ades">${
+    a[fx]==null?'':`<i style="height:${(a[fx]*100).toFixed(1)}%;background:${CORES[fx]}"></i>`}<span class="meia"></span></div><span aria-hidden="true">${ABREV[fx]}</span></div>`).join('');
+  return `<div class="ades" role="img" aria-label="Parcela de cada faixa do espectro que votou a favor, da esquerda à direita. ${esc(lab)}">${cols}</div>`;
 }
 
 function blocoDivergentes(l,dep){
@@ -477,7 +512,10 @@ function sinalNominais(l){
 
 // Enquete da Câmara: as cinco opções, na ordem em que a Câmara publica. Cores de
 // concordância, nunca as do espectro: enquete não tem ideologia.
-const ENQ_CORES=['#1d5c37','#8fbf9f','#c9ccd0','#dca3a3','#862929'];
+// concordância da enquete: verde, cinza e vermelho (nunca as cores do espectro); no escuro, as mesmas famílias mais claras
+const ENQ_CLARO=['#1d5c37','#8fbf9f','#c9ccd0','#dca3a3','#862929'], ENQ_ESCURO=['#3fae6e','#8fd0a8','#9aa8bb','#e0a0a0','#e05c5c'];
+const ENQ_CORES={};
+ENQ_CLARO.forEach((_,i)=>Object.defineProperty(ENQ_CORES,i,{enumerable:true,get:()=>(window.Tema&&Tema.escuro()?ENQ_ESCURO:ENQ_CLARO)[i]}));
 const ENQ_NOMES=['Concordo totalmente','Concordo na maior parte','Estou indeciso','Discordo na maior parte','Discordo totalmente'];
 const pct=(n,t)=>Math.round(100*n/t);
 function sinalEnquete(l){
@@ -605,16 +643,28 @@ function cartao(l,dep){
     ?`<p class="med">Posição média de quem votou sim: <b>${l.scoreMedioSim==null?'—':l.scoreMedioSim.toFixed(1).replace('.',',')}</b> · de quem votou não: <b>${l.scoreMedioNao==null?'—':l.scoreMedioNao.toFixed(1).replace('.',',')}</b> (de 1, esquerda, a 10, direita)</p>`:'';
   const cats=(l.temas||[]).length?`<div class="cats">${l.temas.map(([n,t,o])=>
     `<span title="Nesta categoria pelo termo “${esc(t)}”, na ementa">${esc(cap(n))}</span>`).join('')}</div>`:'';
+  const anterior=l.enq&&l.enq.numeroNaEnquete?`<span class="chip-lei tra" title="A Câmara renumerou a proposição; a enquete ficou com o número antigo">com número anterior: ${esc(l.enq.numeroNaEnquete)}</span>`:'';
+  const dif=(!SEM_DIF&&l.div.length)?`<span class="chip-lei" title="Votos Sim ou Não contra a orientação registrada da própria bancada">${l.div.length} ${l.div.length===1?'voto diferente':'votos diferentes'} da bancada</span>`:'';
+  const MESC=['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'];
+  const curta=l.data?`${+l.data.slice(8,10)} ${MESC[+l.data.slice(5,7)-1]} ${l.data.slice(0,4)}`:'';
+  const tot=l.sim+l.nao, pSim=tot?100*l.sim/tot:0;
   return `<article class="lei">
-    <div class="lei-cab"><span class="lei-num"><a href="${esc(l.urlCamara)}" target="_blank" rel="noopener">${esc(l.numero)}</a> · votada em ${dataBR(l.data)}</span>
-      <span class="lei-res"><b>${nf.format(l.sim)}</b> a favor, <b>${nf.format(l.nao)}</b> contra${res?` — ${res}`:''}</span></div>
-    ${textoLei(l)}${cats}${tempoLei(l)}${noticiasLei(l)}
-    <div class="corpo-lei"><div><p class="placar">Diferença de <b>${nf.format(l.margem)}</b> votos${l.abstencao?`, ${l.abstencao} abstenções`:''}.</p>${med}</div>
-      <div>${barraAdesao(l.adesaoPorFaixa)}</div></div>
-    ${faixaNotoriedade(l)}
-    <div class="sinais">${sinalNominais(l)}${sinalEnquete(l)}${sinalSenado(l)}</div>
-    ${blocoNominais(l)}
-    ${blocoDivergentes(l,dep)}
+    <div class="lei-grid">
+      <div class="c-num"><a class="num" href="${esc(l.urlCamara)}" target="_blank" rel="noopener">${esc(l.numero)}</a><span class="data">${curta}</span></div>
+      <div class="c-txt">${textoLei(l)}<div class="chips">${res?`<span class="chip-lei">${esc(cap(res))}</span>`:''}${anterior}${dif}</div>${cats}</div>
+      <div class="c-plac"><span class="rot-col">Placar</span>
+        <div class="plac" aria-label="${nf.format(l.sim)} a favor, ${nf.format(l.nao)} contra"><b>${nf.format(l.sim)}</b><i aria-hidden="true">×</i><b>${nf.format(l.nao)}</b></div>
+        <div class="plac-barra" aria-hidden="true"><i style="width:${pSim.toFixed(1)}%"></i></div>
+        <div class="plac-leg">sim · não — diferença de ${nf.format(l.margem)} votos${l.abstencao?`, ${nf.format(l.abstencao)} abstenções`:''}</div></div>
+      <div class="c-ades"><span class="rot-col">Parcela de cada faixa que votou sim</span>${barraAdesao(l.adesaoPorFaixa)}</div>
+    </div>
+    <details class="mais-lei"${dep?' open':''}><summary>Detalhes <em>· caminho, notoriedade, enquete, votações nominais e quem votou diferente</em></summary>
+      ${tempoLei(l)}${noticiasLei(l)}${med}
+      ${faixaNotoriedade(l)}
+      <div class="sinais">${sinalNominais(l)}${sinalEnquete(l)}${sinalSenado(l)}</div>
+      ${blocoNominais(l)}
+      ${blocoDivergentes(l,dep)}
+    </details>
   </article>`;
 }
 
@@ -655,6 +705,7 @@ limpar.onclick=()=>{
   fTexto.value=fDep.value=''; fTema.value=fTipo.value=''; fSoDiv.checked=false; ordem=fOrdem.value='data';
   history.replaceState(null,'','leis.html'); reset();
 };
+window.addEventListener('tema',()=>{ if(LEIS.length) desenhar(); });     // as barras trazem a cor no estilo: refaz ao trocar de tema
 carregar().catch(e=>{ lista.innerHTML='<p class="vazio">Não foi possível carregar proposicoes.json. Abra o site por um servidor (não direto do disco).</p>'; });
 </script>
 </body>

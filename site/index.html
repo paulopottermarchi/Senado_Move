@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-ed>
+<html lang="pt-BR" data-escuro-ok data-ed>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -20,6 +20,7 @@
 (function(){var h=location.hash.slice(1);
   if(['deputados','partidos','votacoes'].indexOf(h)>-1) location.replace('deputados.html'+location.search+location.hash);})();
 </script>
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
 <link rel="stylesheet" href="estilo.css">
 <link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
 <!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
@@ -239,7 +240,7 @@
 .reg-n b{font-weight:500;color:var(--tinta)}
 .mapa-leg{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;margin-top:16px;font-size:13px;color:var(--tinta2)}
 .mapa-leg .grad{display:inline-block;width:160px;height:9px;border-radius:5px;vertical-align:-1px;margin:0 8px;
-  background:linear-gradient(90deg,#d85a30,#b88f5a 25%,#888780 50%,#4a7a9f 75%,#0c447c)}
+  background:linear-gradient(90deg,#d85a30,#b88f5a 25%,#888780 50%,#4a7a9f 75%,var(--dir))}
 .mapa-leg .sem{display:inline-block;width:10px;height:10px;border-radius:50%;background:#c8cace;vertical-align:-1px;margin-right:6px}
 .mapa-pe{font-size:13px;line-height:1.7;color:var(--tinta2);max-width:80ch;margin-top:16px;padding-top:12px;border-top:1px solid var(--linha2)}
 .regioes-sec{padding:0 0 clamp(56px,6.5vw,96px)}
@@ -846,7 +847,7 @@ function gDesenhar(animar){
   });
   svg.appendChild(svgEl('line',{x1:m.l,x2:W-8,y1:m.t+ph,y2:m.t+ph,class:'gr-eixo'}));
   const defs=svgEl('defs',{}), gr=svgEl('linearGradient',{id:'gEsp',x1:'0',x2:'1'});
-  [['0%','#d85a30'],['25%','#b88f5a'],['50%','#888780'],['75%','#4a7a9f'],['100%','#0c447c']].forEach(([o,c])=>gr.appendChild(svgEl('stop',{offset:o,'stop-color':c})));
+  [['0%',E.CORES.esquerda],['25%',E.CORES['centro-esquerda']],['50%',E.CORES.centro],['75%',E.CORES['centro-direita']],['100%',E.CORES.direita]].forEach(([o,c])=>gr.appendChild(svgEl('stop',{offset:o,'stop-color':c})));
   defs.appendChild(gr); svg.appendChild(defs);
   svg.appendChild(svgEl('rect',{x:m.l,y:m.t+ph+16,width:pw,height:6,rx:3,fill:'url(#gEsp)'}));
   const rot=(x,t,an,cls)=>{const e=svgEl('text',{x,y:m.t+ph+44,'text-anchor':an,class:cls||''}); e.textContent=t; svg.appendChild(e)};
@@ -951,7 +952,8 @@ function preencherIndice(){
 }
 
 async function iniciar(){
-  E=window.Espectro;                         // site.js é defer: só existe depois do parse
+  E=window.Espectro;
+  window.addEventListener('tema',()=>{ if(deputados.length){ gDesenhar(false); mapaDesenhar(); } });   // as cores do espectro seguem o tema                         // site.js é defer: só existe depois do parse
   heroAbrir(); heroDica(); gLigar();
   if(window.Contar) Contar.varrer(document.getElementById('heroFig'));
   document.getElementById('mTam').onclick=()=>{mapaProporcional=false;mTam.classList.add('on');mProp.classList.remove('on');mapaDesenhar();};
