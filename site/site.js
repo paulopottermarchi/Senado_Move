@@ -1,4 +1,50 @@
 // Câmara Aberta — comportamento comum a todas as páginas (carregado com defer).
+
+// Tema claro/escuro. Só vale em página que traz <html data-escuro-ok> (as outras seguem claras). O claro é o padrão; o escuro vem de
+// prefers-color-scheme ou da escolha do leitor, guardada em localStorage (<head> repete a leitura antes da pintura, sem piscar).
+// Escolher o mesmo tema que o sistema usa apaga a escolha: a página volta a seguir o sistema. Quem desenha em canvas ou SVG
+// (Espectro.corDoScore) ouve o evento 'tema' da window para redesenhar com a paleta do tema.
+window.Tema = (() => {
+  const html = document.documentElement, suportado = html.hasAttribute('data-escuro-ok');
+  const mq = matchMedia('(prefers-color-scheme: dark)');
+  const sistema = () => (mq.matches ? 'escuro' : 'claro');
+  const efetivo = () => (!suportado ? 'claro' : (html.dataset.tema === 'claro' || html.dataset.tema === 'escuro' ? html.dataset.tema : sistema()));
+  const escuro = () => efetivo() === 'escuro';
+  const LUA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>';
+  const SOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  let botao = null;
+  const pintar = () => {
+    const e = efetivo(), m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', e === 'escuro' ? '#0a0f1a' : '#ffffff');
+    if (botao) {
+      botao.innerHTML = e === 'escuro' ? SOL : LUA;
+      botao.setAttribute('aria-label', e === 'escuro' ? 'Tema escuro ativo. Mudar para o tema claro' : 'Tema claro ativo. Mudar para o tema escuro');
+      botao.title = e === 'escuro' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro';
+    }
+  };
+  const avisar = () => { pintar(); window.dispatchEvent(new CustomEvent('tema', { detail: efetivo() })); };
+  const alternar = () => {
+    if (!suportado) return;
+    const novo = escuro() ? 'claro' : 'escuro';
+    try {
+      if (novo === sistema()) localStorage.removeItem('tema'); else localStorage.setItem('tema', novo);
+    } catch (e) { /* sem armazenamento: vale só nesta visita */ }
+    if (novo === sistema()) delete html.dataset.tema; else html.dataset.tema = novo;
+    avisar();
+  };
+  if (suportado) {
+    const dentro = document.querySelector('.topo-in');
+    if (dentro) {
+      botao = document.createElement('button');
+      botao.type = 'button'; botao.className = 'tema-btn';
+      botao.addEventListener('click', alternar);
+      dentro.appendChild(botao);
+    }
+    mq.addEventListener && mq.addEventListener('change', () => { if (!html.dataset.tema) avisar(); });   // seguindo o sistema
+    pintar();
+  }
+  return { efetivo, escuro, alternar, suportado };
+})();
 (() => {
   // No celular a barra rola de lado: abre já mostrando o item da página atual.
   const atual = document.querySelector('.nav a[aria-current]');
@@ -125,17 +171,23 @@ window.Espectro = (() => {
   const NOMES = { 'esquerda': 'Esquerda', 'centro-esquerda': 'Centro-esquerda', 'centro': 'Centro',
                   'centro-direita': 'Centro-direita', 'direita': 'Direita', 'sem-classificacao': 'Sem classificação' };
   const PARADAS = [[1, [216, 90, 48]], [3.25, [184, 143, 90]], [5.5, [136, 135, 128]], [7.75, [74, 122, 159]], [10, [12, 68, 124]]];
+  // Tema escuro (só em página com data-escuro-ok): o único ajuste é o "direita", #0c447c → #3478cf. Sobre o fundo escuro o primeiro
+  // tem 1,8:1 e some; o segundo tem 4,3:1 e continua a distinguir-se do "centro-direita" (#4a7a9f). As outras já passavam de 3:1.
+  const CORES_ESC = { ...CORES, 'direita': '#3478cf' };
+  const PARADAS_ESC = [...PARADAS.slice(0, 4), [10, [52, 120, 207]]];
+  const escuro = () => !!(window.Tema && window.Tema.escuro());
   const corDoScore = s => {
-    if (s == null) return CORES['sem-classificacao'];
+    const cores = escuro() ? CORES_ESC : CORES, paradas = escuro() ? PARADAS_ESC : PARADAS;
+    if (s == null) return cores['sem-classificacao'];
     s = Math.max(1, Math.min(10, s));
-    for (let i = 0; i < PARADAS.length - 1; i++) {
-      const [a, ca] = PARADAS[i], [b, cb] = PARADAS[i + 1];
+    for (let i = 0; i < paradas.length - 1; i++) {
+      const [a, ca] = paradas[i], [b, cb] = paradas[i + 1];
       if (s <= b) {
         const t = (s - a) / (b - a);
         return '#' + ca.map((v, j) => Math.round(v + (cb[j] - v) * t).toString(16).padStart(2, '0')).join('');
       }
     }
-    return '#0c447c';
+    return escuro() ? '#3478cf' : '#0c447c';
   };
   const REGIOES = { N: ['AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO'], NE: ['AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE'],
                     CO: ['DF', 'GO', 'MT', 'MS'], SE: ['ES', 'MG', 'RJ', 'SP'], S: ['PR', 'RS', 'SC'] };
@@ -162,7 +214,8 @@ window.Espectro = (() => {
     });
     return pts.sort((a, b) => b.ang - a.ang);
   };
-  return { CORES, NOMES, PARADAS, corDoScore, REGIOES, REG_NOME, UF_REG, assentos };
+  return { get CORES() { return escuro() ? CORES_ESC : CORES; }, NOMES, get PARADAS() { return escuro() ? PARADAS_ESC : PARADAS; },
+           corDoScore, REGIOES, REG_NOME, UF_REG, assentos };
 })();
 
 // Contagem animada nos números de destaque (Motion). O valor final já está no texto: sem JS, sem Motion ou com movimento reduzido

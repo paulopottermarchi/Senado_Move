@@ -36,6 +36,14 @@
   --sombra-md:0 8px 16px -4px rgba(15,23,42,.08),0 2px 6px -2px rgba(15,23,42,.05); /* md */
   --sombra-lg:0 32px 64px -16px rgba(15,23,42,.28),0 8px 24px -8px rgba(15,23,42,.12);
   --anel:0 0 0 4px rgba(13,148,136,.18);
+
+  /* superfícies que mudam de tema (o claro é o que sempre foi) */
+  --topo-bg:rgba(255,255,255,.86);
+  --inverso:#0f172a; --sobre-inverso:#fff; --inverso-2:#a3b1c2; --inverso-3:rgba(255,255,255,.12);   /* botão ligado, dica: o oposto do texto */
+  --marca-fundo:#0f172a;
+  --rodape-bg:#0f172a;
+  --seg-hover:rgba(255,255,255,.6);
+  --brilho:#f8fafc;                        /* esqueleto de carregamento */
   --curva:cubic-bezier(.4,0,.2,1);
   --t:300ms var(--curva);
 }
@@ -57,14 +65,14 @@ button{transition:color var(--t),background-color var(--t),border-color var(--t)
 .pino:active,.mais:active,.sem-mais-btn:active{transform:scale(.97)}           /* o botão cede ao toque */
 
 /* ---------- barra do site ---------- */
-.topo{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);
+.topo{position:sticky;top:0;z-index:80;background:var(--topo-bg);
       backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);
       border-bottom:1px solid var(--linha)}
 .topo-in{max-width:1120px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:32px}
 .marca{display:inline-flex;align-items:center;gap:12px;font-family:var(--serif);font-size:20px;font-weight:600;
        letter-spacing:-.01em;line-height:1;color:var(--tinta);text-decoration:none;white-space:nowrap;flex-shrink:0}
 .marca-ico{width:32px;height:32px;display:block;flex-shrink:0;transition:transform var(--t)}
-.marca-ico .fundo{fill:var(--tinta)}
+.marca-ico .fundo{fill:var(--marca-fundo)}
 .marca:hover .marca-ico{transform:translateY(-1px) scale(1.04)}
 .nav{align-self:stretch;display:flex;align-items:stretch;gap:4px;margin-left:auto;min-width:0;
      overflow-x:auto;scrollbar-width:none}
@@ -124,12 +132,12 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 .pino{font:inherit;font-size:13px;font-weight:500;line-height:1.25;padding:8px 16px;border:1px solid var(--linha);
       background:var(--papel);color:var(--tinta2);border-radius:var(--raio-p);cursor:pointer;white-space:nowrap}
 .pino:hover{border-color:var(--linha-forte);color:var(--tinta);box-shadow:var(--sombra)}
-.pino.on{background:var(--tinta);border-color:var(--tinta);color:#fff;box-shadow:none}
+.pino.on{background:var(--inverso);border-color:var(--inverso);color:var(--sobre-inverso);box-shadow:none}
 
 /* grupo segmentado */
 .seg{display:inline-flex;align-items:center;gap:4px;padding:4px;background:var(--linha2);border-radius:var(--raio-p)}
 .seg .pino{border:none;background:transparent;border-radius:var(--raio-c);padding:8px 12px;color:var(--tinta3)}
-.seg .pino:hover{color:var(--tinta);background:rgba(255,255,255,.6);box-shadow:none}
+.seg .pino:hover{color:var(--tinta);background:var(--seg-hover);box-shadow:none}
 .seg .pino.on{background:var(--papel);color:var(--tinta);box-shadow:0 1px 2px rgba(15,23,42,.08),0 1px 3px rgba(15,23,42,.06)}
 
 .limpar{font:inherit;font-size:13px;font-weight:500;color:var(--tinta);background:none;border:none;cursor:pointer;
@@ -153,7 +161,7 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 
 /* ---------- rodapé do site ---------- */
 .rodape-site+.rodape-global{margin-top:0}
-.rodape-global{margin-top:64px;background:var(--tinta);color:#a3b1c2;padding:56px 0 32px;font-size:14px;line-height:1.6}
+.rodape-global{margin-top:64px;background:var(--rodape-bg);color:#a3b1c2;padding:56px 0 32px;font-size:14px;line-height:1.6}
 .rg{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr));gap:32px 48px}
 .rg .marca{color:#fff;font-size:20px}
 .rg .marca-ico .fundo{fill:#1e293b}
@@ -172,7 +180,7 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 @media (scripting:enabled){
   :is(#regs,#lista,#grafico,#funilCols,#raiz):empty::before,
   .tela:not(:has(svg))::before{content:"";display:block;min-height:var(--esq-h,200px);border-radius:var(--raio-p);
-    background:linear-gradient(90deg,var(--linha2) 0%,#f8fafc 40%,var(--linha2) 80%) 0 0/200% 100%;
+    background:linear-gradient(90deg,var(--linha2) 0%,var(--brilho) 40%,var(--linha2) 80%) 0 0/200% 100%;
     animation:brilho 1.6s linear infinite}
   .tela:not(:has(svg))::before{position:absolute;inset:0;min-height:0}
 }
@@ -209,6 +217,62 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 ::view-transition-old(root){animation:none;mix-blend-mode:normal}
 ::view-transition-new(root){animation:vt-entra .32s var(--curva) both;mix-blend-mode:normal}
 @keyframes vt-entra{from{opacity:0;transform:translateY(8px)}}
+
+/* ---------- tema escuro ----------
+   Só em página que traz <html data-escuro-ok> (as outras têm cores fixas ainda não revistas e seguem claras). Claro é o padrão;
+   o escuro vale por prefers-color-scheme ou pela escolha do leitor (data-tema="escuro"|"claro", guardada pelo site.js).
+   Os dois blocos são idênticos: um para a preferência do sistema, outro para a escolha manual. */
+:root[data-escuro-ok]{color-scheme:light dark}
+:root[data-escuro-ok][data-tema="claro"]{color-scheme:light}
+@media (prefers-color-scheme:dark){
+  :root[data-escuro-ok]:not([data-tema="claro"]){
+    --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
+    --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb;
+    --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
+    --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55;
+    --dir:#3478cf;                     /* único ajuste do espectro: o #0c447c some sobre o escuro (1,8:1); este tem 4,3:1 */
+    --sombra:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.35);
+    --sombra-md:0 8px 16px -4px rgba(0,0,0,.5),0 2px 6px -2px rgba(0,0,0,.4);
+    --sombra-lg:0 32px 64px -16px rgba(0,0,0,.7),0 8px 24px -8px rgba(0,0,0,.5);
+    --anel:0 0 0 4px rgba(45,212,191,.25);
+    --topo-bg:rgba(10,15,26,.82);
+    --inverso:#e8edf5; --sobre-inverso:#0a0f1a; --inverso-2:#475569; --inverso-3:rgba(15,23,42,.1);
+    --marca-fundo:#1e293b; --rodape-bg:#070b13; --seg-hover:rgba(255,255,255,.06); --brilho:#1d283b;
+    color-scheme:dark;
+  }
+  :root[data-escuro-ok]:not([data-tema="claro"]) .sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239aa8bb' stroke-width='1.5'/%3E%3C/svg%3E")}
+  :root[data-escuro-ok]:not([data-tema="claro"]) .bandeira-slot{background:#f1f5f9;border-radius:4px;box-shadow:0 0 0 2px #f1f5f9}      /* o logo é feito para fundo claro */
+  :root[data-escuro-ok]:not([data-tema="claro"]) .seg .pino.on{box-shadow:0 1px 2px rgba(0,0,0,.4)}
+  :root[data-escuro-ok]:not([data-tema="claro"]) .rodape-site a{text-decoration-color:rgba(45,212,191,.4)}
+}
+:root[data-escuro-ok][data-tema="escuro"]{
+    --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
+    --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb;
+    --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
+    --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55;
+    --dir:#3478cf;                     /* único ajuste do espectro: o #0c447c some sobre o escuro (1,8:1); este tem 4,3:1 */
+    --sombra:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.35);
+    --sombra-md:0 8px 16px -4px rgba(0,0,0,.5),0 2px 6px -2px rgba(0,0,0,.4);
+    --sombra-lg:0 32px 64px -16px rgba(0,0,0,.7),0 8px 24px -8px rgba(0,0,0,.5);
+    --anel:0 0 0 4px rgba(45,212,191,.25);
+    --topo-bg:rgba(10,15,26,.82);
+    --inverso:#e8edf5; --sobre-inverso:#0a0f1a; --inverso-2:#475569; --inverso-3:rgba(15,23,42,.1);
+    --marca-fundo:#1e293b; --rodape-bg:#070b13; --seg-hover:rgba(255,255,255,.06); --brilho:#1d283b;
+    color-scheme:dark;
+}
+:root[data-escuro-ok][data-tema="escuro"] .sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239aa8bb' stroke-width='1.5'/%3E%3C/svg%3E")}
+:root[data-escuro-ok][data-tema="escuro"] .bandeira-slot{background:#f1f5f9;border-radius:4px;box-shadow:0 0 0 2px #f1f5f9}      /* o logo é feito para fundo claro */
+:root[data-escuro-ok][data-tema="escuro"] .seg .pino.on{box-shadow:0 1px 2px rgba(0,0,0,.4)}
+:root[data-escuro-ok][data-tema="escuro"] .rodape-site a{text-decoration-color:rgba(45,212,191,.4)}
+
+/* alternador de tema (site.js o põe na barra das páginas que declaram data-escuro-ok) */
+.tema-btn{flex-shrink:0;width:36px;height:36px;display:inline-grid;place-items:center;margin-left:8px;padding:0;
+          border:1px solid var(--linha);border-radius:999px;background:var(--papel);color:var(--tinta2);cursor:pointer;
+          align-self:center}
+.tema-btn:hover{border-color:var(--linha-forte);color:var(--tinta)}
+.tema-btn:active{transform:scale(.94)}
+.tema-btn svg{width:18px;height:18px;display:block}
+@media(max-width:640px){.tema-btn{margin-right:12px;margin-left:0}}
 
 /* ---------- telas menores ---------- */
 @media(max-width:1000px){

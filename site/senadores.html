@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-escuro-ok>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Senadores | Câmara Aberta</title>
 <meta name="description" content="Os 81 senadores no espectro político: PEC e PL de autoria, leis, relatorias e votos no Plenário.">
 <meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<!-- tema: lê a escolha guardada antes da primeira pintura (sem piscar); o resto é do site.js (window.Tema) -->
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Câmara Aberta">
 <meta property="og:title" content="Senadores | Câmara Aberta">
@@ -28,22 +31,22 @@
 
 .grafico{margin-top:16px;position:relative}
 .grafico svg{width:100%;height:auto;display:block}
-.pt{cursor:pointer;stroke:#fff;stroke-width:1.5;transition:stroke-width 200ms var(--curva)}
+.pt{cursor:pointer;stroke:var(--papel);stroke-width:1.5;transition:stroke-width 200ms var(--curva)}
 .pt:hover,.pt.sel{stroke:var(--tinta);stroke-width:2.5}
 /* dica do gráfico, com a foto */
 .dica{position:absolute;z-index:5;pointer-events:none;display:flex;align-items:center;gap:12px;white-space:nowrap;
-      background:var(--tinta);color:#fff;padding:8px 12px;border-radius:var(--raio-c);font-size:13px;line-height:1.45;
+      background:var(--inverso);color:var(--sobre-inverso);padding:8px 12px;border-radius:var(--raio-c);font-size:13px;line-height:1.45;
       box-shadow:var(--sombra-md);opacity:0;transition:opacity 200ms var(--curva)}
 .dica.on{opacity:1}
 .dica b{font-weight:500}
-.dica em{display:block;font-style:normal;font-size:12px;color:#a3b1c2}
-.dica .foto{width:40px;height:40px;font-size:13px;background:rgba(255,255,255,.12);color:#cbd5e1}
+.dica em{display:block;font-style:normal;font-size:12px;color:var(--inverso-2)}
+.dica .foto{width:40px;height:40px;font-size:13px;background:var(--inverso-3);color:var(--inverso-2)}
 .eixo text{font-size:11px;fill:var(--tinta3)}
 .eixo line{stroke:var(--linha)}
 .leg{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;margin-top:12px;font-size:13px;color:var(--tinta2)}
 .leg .grad{display:inline-block;width:160px;height:9px;border-radius:5px;vertical-align:-1px;
-  background:linear-gradient(90deg,#d85a30,#b88f5a 25%,#888780 50%,#4a7a9f 75%,#0c447c)}
-.leg .sem{display:inline-block;width:10px;height:10px;border-radius:50%;background:#c8cace;vertical-align:-1px;margin-right:4px}
+  background:linear-gradient(90deg,var(--esq),var(--cesq) 25%,var(--cen) 50%,var(--cdir) 75%,var(--dir))}   /* tokens do espectro: o --dir muda no tema escuro */
+.leg .sem{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--sem);vertical-align:-1px;margin-right:4px}
 .ficha{margin-top:20px;border:1px solid var(--linha);border-radius:var(--raio-p);padding:20px 20px}
 .ficha[hidden]{display:none}
 .f-cab{display:flex;gap:16px;align-items:center}
@@ -83,7 +86,7 @@ tbody tr{transition:background-color var(--t)}
 .lado h3{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:2px}
 .lado .obs{font-size:12px;color:var(--tinta3);margin-bottom:16px;line-height:1.45}
 .plenario{width:100%;display:block;margin-bottom:8px}
-.assento{cursor:pointer;stroke:#fff;stroke-width:1;transition:opacity 200ms var(--curva)}
+.assento{cursor:pointer;stroke:var(--papel);stroke-width:1;transition:opacity 200ms var(--curva)}
 .assento:hover,.assento:focus-visible{stroke:var(--tinta);stroke-width:2}
 .comp-total{text-align:center;font-family:var(--serif);font-size:13px;color:var(--tinta3);margin-top:-40px;margin-bottom:16px;position:relative}
 .comp-total b{display:block;font-size:30px;font-weight:600;color:var(--tinta);line-height:1}
@@ -582,6 +585,7 @@ g.addEventListener('mousemove',e=>{
   d.classList.add('on');
 });
 g.addEventListener('mouseleave',()=>$('#dica')?.classList.remove('on'));
+window.addEventListener('tema',()=>{ if(S.length){ composicao(); grafico(); } });   // a paleta do espectro muda no tema escuro
 document.addEventListener("DOMContentLoaded",carregar);   // site.js é defer: só existe (Bandeiras) depois do parse
 </script>
 </body>
