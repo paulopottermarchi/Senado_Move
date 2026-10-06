@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-escuro-ok data-ed>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -15,7 +15,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
 <link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Three.js 0.180.0, versionado em vendor/three/ (sem CDN). O importmap só diz onde fica; nada é baixado até alguém dar import('three'),
+     o que cena3d.js faz sob demanda (modelo do topo, depois da primeira pintura). -->
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
+<!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
 <script src="site.js" defer></script>
 <style>
 /* Onde a proposta morre entre as casas. Tinta neutra: um processo não tem ideologia, então nada aqui usa a cor do espectro. */
@@ -39,20 +47,20 @@
 .fx-lin-topo b small{font-family:var(--sans);font-size:12px;font-weight:400;color:var(--tinta3);margin-left:4px}
 .fx-trilho{height:12px;border-radius:6px;background:var(--linha2);overflow:hidden;margin-top:4px}
 .fx-trilho i{display:block;height:100%;background:var(--tinta);border-radius:6px;min-width:2px}
-.fx-trilho.l2 i{background:#475569}
-.fx-trilho.l3 i{background:#94a3b8}
+.fx-trilho.l2 i{background:var(--rampa2)}
+.fx-trilho.l3 i{background:var(--rampa4)}
 
 .fx-onde{margin-top:20px;padding-top:16px;border-top:1px solid var(--linha2)}
 .fx-onde h4{font-size:13px;font-weight:600;color:var(--tinta2)}
 .fx-pilha{display:flex;height:18px;border-radius:4px;overflow:hidden;margin-top:8px;background:var(--linha2)}
 .fx-pilha i{display:block;height:100%}
-.s-lei{background:#0f172a}
-.s-arq{background:#64748b}
-.s-rej{background:#94a3b8}
-.s-out{background:#cbd5e1}
-.s-tra{background:#e2e8f0}
-.s-apn{background:#f1f5f9;box-shadow:inset 0 0 0 1px #cbd5e1}
-.s-par{background:repeating-linear-gradient(135deg,#e2e8f0 0 4px,#cbd5e1 4px 8px)}
+.s-lei{background:var(--rampa1)}
+.s-arq{background:var(--rampa3)}
+.s-rej{background:var(--rampa4)}
+.s-out{background:var(--rampa5)}
+.s-tra{background:var(--rampa6)}
+.s-apn{background:var(--rampa7);box-shadow:inset 0 0 0 1px var(--rampa5)}
+.s-par{background:repeating-linear-gradient(135deg,var(--rampa6) 0 4px,var(--rampa5) 4px 8px)}
 .fx-leg{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:10px;font-size:12px;color:var(--tinta2)}
 .fx-leg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .fx-leg b{font-weight:600;color:var(--tinta)}
@@ -119,10 +127,15 @@ details.fx-cob p{font-size:13px;color:var(--tinta2);margin-top:8px;max-width:78c
 
 <main class="wrap">
   <div class="capa">
+    <div class="hero-ed">
+      <div class="txt">
     <p class="kicker">Câmara e Senado · proposições que mudaram de casa</p>
-    <h1>Onde a proposta morre entre as casas</h1>
+      <h1 class="t-grande">Onde a proposta morre entre as casas</h1>
     <p class="chamada" id="chamada">Projetos aprovados numa casa e remetidos à outra, e o que aconteceu lá: quantos viraram lei,
        quanto tempo levaram e onde estão os que não andam.</p>
+      </div>
+      <div class="lado"><figure class="modelo-ed" data-modelo="casas" aria-hidden="true"><img src="img/modelo-casas.svg" alt="" width="480" height="360" decoding="async"></figure></div>
+    </div>
 
     <div class="aviso" role="note">
       <p><b>Parada não é atraso.</b> “Parada” aqui só descreve: a proposição está em tramitação e o último andamento

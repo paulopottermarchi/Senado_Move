@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-escuro-ok data-ed>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -15,11 +15,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
 <link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Three.js 0.180.0, versionado em vendor/three/ (sem CDN). O importmap só diz onde fica; nada é baixado até alguém dar import('three'),
+     o que cena3d.js faz sob demanda (modelo do topo, depois da primeira pintura). -->
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 <script>
 /* "Esta semana" mudou para a página inicial (5/10/2026): links antigos para deputados.html#semana seguem para lá. */
 if(location.hash==='#semana') location.replace('index.html'+location.search+location.hash);
 </script>
+<!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
 <script src="site.js" defer></script>
 <style>
 /* ---------- topo ---------- */
@@ -68,15 +76,15 @@ if(location.hash==='#semana') location.replace('index.html'+location.search+loca
 .tela svg{position:absolute;inset:0}
 .pt{cursor:pointer;transition:opacity 300ms var(--curva)}
 .pt.apagado{opacity:.06!important}
-.dica{position:absolute;pointer-events:none;background:var(--tinta);color:#fff;
+.dica{position:absolute;pointer-events:none;background:var(--inverso);color:var(--sobre-inverso);
       padding:8px 12px;border-radius:var(--raio-c);font-size:13px;line-height:1.45;
       opacity:0;transition:opacity 200ms var(--curva);z-index:30;white-space:nowrap}
 .dica.on{opacity:1}
 .dica b{font-weight:500}
-.dica em{font-style:normal;color:#a8acb2;display:block;font-size:12px;margin-top:1px}
+.dica em{font-style:normal;color:var(--inverso-2);display:block;font-size:12px;margin-top:1px}
 .dica-in{display:flex;align-items:center;gap:12px}
-.dica .av-cx{background:rgba(255,255,255,.12)}
-.dica .av-ini{color:#cbd5e1}
+.dica .av-cx{background:var(--inverso-3)}
+.dica .av-ini{color:var(--inverso-2)}
 .faixas{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;padding-top:16px;
         border-top:1px solid var(--linha2);font-size:13px;color:var(--tinta2)}
 .faixa{display:flex;align-items:center;gap:8px;cursor:pointer;
@@ -112,7 +120,7 @@ if(location.hash==='#semana') location.replace('index.html'+location.search+loca
 .origem{font-size:12px;color:var(--tinta3);margin-top:12px;line-height:1.55}
 .ver-temas{display:inline-block;margin-top:16px;font-size:13px;font-weight:500;color:var(--tinta);
            text-decoration:none;border:1px solid var(--tinta);border-radius:var(--raio-c);padding:8px 12px}
-.ver-temas:hover{background:var(--tinta);color:#fff}
+.ver-temas:hover{background:var(--inverso);color:var(--sobre-inverso)}
 .ver-temas[hidden]{display:none}
 .ver-leis{margin-top:16px}
 .secao{font-family:var(--serif);font-size:18px;font-weight:600;
@@ -125,7 +133,7 @@ if(location.hash==='#semana') location.replace('index.html'+location.search+loca
 .prop-tit{font-size:14px;line-height:1.4;margin-top:4px}
 .prop-pe{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
 .selo{font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;white-space:nowrap}
-.s-lei{background:var(--tinta);color:#fff}
+.s-lei{background:var(--inverso);color:var(--sobre-inverso)}
 .s-aprovada{background:#e2efe6;color:#1d5c37}
 .s-rejeitada{background:#f5e0e0;color:#862929}
 .s-tramitacao{background:#f5eed8;color:#775a11}
@@ -135,7 +143,7 @@ if(location.hash==='#semana') location.replace('index.html'+location.search+loca
 .resumo a:hover{text-decoration:underline}
 .resumo .cru{font-style:italic;color:var(--tinta3)}
 @media(hover:hover) and (pointer:fine){.resumo{position:absolute;left:10px;right:10px;bottom:calc(100% - 2px);
-          background:var(--tinta);color:#e8eaec;padding:12px 12px;border-radius:var(--raio-c);
+          background:var(--inverso);color:var(--sobre-inverso);padding:12px 12px;border-radius:var(--raio-c);
           opacity:0;visibility:hidden;transition:opacity 200ms var(--curva);z-index:40;
           box-shadow:0 10px 26px rgba(15,23,42,.24);pointer-events:none}
 .prop:hover .resumo{opacity:1;visibility:visible}
@@ -216,7 +224,7 @@ if(location.hash==='#semana') location.replace('index.html'+location.search+loca
 .regua{margin-top:20px;padding-top:16px;border-top:1px solid var(--linha2)}
 .regua-tit{font-size:13px;font-weight:600;margin-bottom:12px}
 .regua-barra{height:8px;border-radius:4px;position:relative;
-             background:linear-gradient(90deg,var(--linha-forte) 0%,#9aa3ad 34%,#4a7a9f 68%,#0c447c 100%)}
+             background:linear-gradient(90deg,var(--linha-forte) 0%,#9aa3ad 34%,#4a7a9f 68%,var(--dir) 100%)}
 .regua-marcas{display:flex;justify-content:space-between;margin-top:8px;
               font-size:11px;color:var(--tinta3)}
 .regua-texto{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:12px}
@@ -230,7 +238,7 @@ if(location.hash==='#semana') location.replace('index.html'+location.search+loca
 .saibamais:focus-visible{outline:2px solid var(--tinta);outline-offset:3px}
 .pop{position:fixed;z-index:120;width:min(400px,calc(100vw - 32px));
      background:rgba(15,23,42,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-     color:#e9eaec;border-radius:7px;padding:20px 24px;
+     color:#e9eaec;border:1px solid rgba(255,255,255,.14);border-radius:7px;padding:20px 24px;
      box-shadow:0 18px 50px rgba(15,23,42,.42);
      max-height:min(560px,calc(100vh - 40px));overflow-y:auto;
      opacity:0;visibility:hidden;transition:opacity 200ms var(--curva)}
@@ -368,7 +376,7 @@ table.rank tbody tr:hover td{background:var(--papel2)}
                     margin-top:4px;overflow:hidden}
 .consulta .barrinha i{display:block;height:100%;background:#3d5c46}
 .consulta .nula{font-size:12px;color:var(--tinta3);font-family:var(--sans);font-weight:400}
-.amostra-fraca{color:#8a6d1f}
+.amostra-fraca{color:var(--atencao)}
 .av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
        background:var(--linha2);overflow:hidden;vertical-align:middle}
 .av-cx .av-ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -589,7 +597,7 @@ table.part tr.divisor:hover td{background:none}
 .pg-eixo text{font-size:11px;fill:var(--tinta3)}
 .pg-eixo line{stroke:var(--linha)}
 .pg-eixo .zero{stroke:var(--linha-forte)}
-.pg-rotulo{font-size:12px;font-weight:600;fill:var(--tinta);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.pg-rotulo{font-size:12px;font-weight:600;fill:var(--tinta);paint-order:stroke;stroke:var(--papel);stroke-width:3px;stroke-linejoin:round}
 .pg-rotulo.peq{font-weight:500;fill:var(--tinta3)}
 .pg-lider{stroke:var(--linha-forte);stroke-width:1}
 .pg-pt{transition:r 200ms var(--curva)}
@@ -653,10 +661,14 @@ table.part tr.divisor td{position:static;box-shadow:none}
 <div class="wrap" id="inicio">
 
   <div class="capa">
+    <div class="hero-ed">
+      <div class="txt">
     <p class="kicker">Câmara dos Deputados · 513 deputados</p>
-    <h1>O que cada deputado propôs, e o que virou lei</h1>
-    <p class="chamada">Dados oficiais da Câmara, do Senado e do TSE, organizados para qualquer pessoa
-       entender. Procure o seu deputado ou explore os 513.</p>
+      <h1 class="t-gigante"><span class="acento" id="dNum">513</span> deputados</h1>
+    <p class="chamada">Quem propõe muito e quem consegue aprovar, da esquerda à direita. Um ponto por deputado; clique para abrir a ficha.</p>
+      </div>
+      <div class="lado"><figure class="modelo-ed" data-modelo="bacia" aria-hidden="true"><img src="img/modelo-bacia.svg" alt="" width="480" height="360" decoding="async"></figure></div>
+    </div>
 
     <div class="busca">
       <svg class="busca-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"
@@ -1040,7 +1052,7 @@ table.part tr.divisor td{position:static;box-shadow:none}
 
   <div class="caso">
     <div class="caso-tit">Apoio baixo <em>— ficou no próprio campo</em></div>
-    <div class="caso-barras"><div><i style="height:88%;background:#d85a30"></i></div><div><i style="height:71%;background:#b88f5a"></i></div><div><i style="height:34%;background:#888780"></i></div><div><i style="height:12%;background:#4a7a9f"></i></div><div><i style="height:6%;background:#0c447c"></i></div></div>
+    <div class="caso-barras"><div><i style="height:88%;background:#d85a30"></i></div><div><i style="height:71%;background:#b88f5a"></i></div><div><i style="height:34%;background:#888780"></i></div><div><i style="height:12%;background:#4a7a9f"></i></div><div><i style="height:6%;background:#3478cf"></i></div></div>
     <div class="caso-eixo"><span>esquerda</span><span>direita</span></div>
     <div class="caso-nota">Proposta de uma deputada de esquerda aprovada quase só pela esquerda.
       Apoio cruzado <b>0,8</b>.</div>
@@ -1048,7 +1060,7 @@ table.part tr.divisor td{position:static;box-shadow:none}
 
   <div class="caso">
     <div class="caso-tit">Apoio alto <em>— atravessou o espectro</em></div>
-    <div class="caso-barras"><div><i style="height:79%;background:#d85a30"></i></div><div><i style="height:84%;background:#b88f5a"></i></div><div><i style="height:88%;background:#888780"></i></div><div><i style="height:81%;background:#4a7a9f"></i></div><div><i style="height:76%;background:#0c447c"></i></div></div>
+    <div class="caso-barras"><div><i style="height:79%;background:#d85a30"></i></div><div><i style="height:84%;background:#b88f5a"></i></div><div><i style="height:88%;background:#888780"></i></div><div><i style="height:81%;background:#4a7a9f"></i></div><div><i style="height:76%;background:#3478cf"></i></div></div>
     <div class="caso-eixo"><span>esquerda</span><span>direita</span></div>
     <div class="caso-nota">A mesma autora, outra proposta: apoio parecido em todas as faixas.
       Apoio cruzado <b>4,3</b>.</div>
@@ -1073,8 +1085,13 @@ table.part tr.divisor td{position:static;box-shadow:none}
 </div>
 
 <script>
-const CORES={'esquerda':'#d85a30','centro-esquerda':'#b88f5a','centro':'#888780',
+// As cores vêm de site.js (Espectro), que troca só o "direita" no tema escuro (#0c447c some sobre o fundo escuro). Este script
+// roda antes do site.js (que é defer): até ele chegar, vale a paleta clara, e a página repinta as peças estáticas quando ele chega.
+const CORES_CLARO={'esquerda':'#d85a30','centro-esquerda':'#b88f5a','centro':'#888780',
              'centro-direita':'#4a7a9f','direita':'#0c447c','sem-classificacao':'#c8cace'};
+const CORES={};
+for(const k of Object.keys(CORES_CLARO))
+  Object.defineProperty(CORES,k,{enumerable:true,get:()=>(window.Espectro?Espectro.CORES:CORES_CLARO)[k]});
 const NOMES={'esquerda':'Esquerda','centro-esquerda':'Centro-esquerda','centro':'Centro',
              'centro-direita':'Centro-direita','direita':'Direita',
              'sem-classificacao':'Sem classificação'};
@@ -1084,21 +1101,17 @@ const FONTE='média das respostas da wave 9 (2021) do Brazilian Legislative Surv
 // Cor contínua ao longo do espectro. Interpolar em vez de classificar evita que
 // um centésimo de diferença (PL 7,41 x REPUBLICANOS 7,69) mude a cor de dezenas
 // de deputados por causa de um corte que é escolha nossa, não do dado.
-const PARADAS=[[1,[216,90,48]],[3.25,[184,143,90]],[5.5,[136,135,128]],
-               [7.75,[74,122,159]],[10,[12,68,124]]];
-function corDoScore(s){
-  if(s==null)return CORES['sem-classificacao'];
-  s=Math.max(1,Math.min(10,s));
-  for(let i=0;i<PARADAS.length-1;i++){
-    const [a,ca]=PARADAS[i],[b,cb]=PARADAS[i+1];
-    if(s<=b){
-      const t=(s-a)/(b-a);
-      return '#'+ca.map((v,j)=>Math.round(v+(cb[j]-v)*t).toString(16).padStart(2,'0')).join('');
-    }
-  }
-  return CORES['direita'];
-}
+const corDoScore=s=>window.Espectro?Espectro.corDoScore(s):CORES_CLARO['sem-classificacao'];
 
+// Texto de célula tingida: o melhor contraste entre texto claro e escuro sobre o fundo já misturado (tema claro: tinta sobre papel; escuro: o inverso).
+function txtCel(a){
+  const esc=!!(window.Tema&&Tema.escuro());
+  const base=esc?[17,24,39]:[255,255,255], tinta=esc?[232,237,245]:[15,23,42];
+  const L=c=>{const [r,g,b]=c.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*r+.7152*g+.0722*b};
+  const lb=L(base.map((v,i)=>v*(1-a)+tinta[i]*a));
+  // branco puro ou preto puro: são os dois únicos que garantem 4,5:1 mesmo no pior fundo (a meio caminho entre claro e escuro)
+  return 'color:'+(1.05/(lb+.05)>=(lb+.05)/.05?'#fff':'#000');
+}
 const ideX=s=>s==null?null:(s-1)/9;
 function classificar(s){
   if(s==null)return 'sem-classificacao';
@@ -1331,6 +1344,7 @@ async function carregar(pFrases){
   }
   posicionar();
   textos();
+  const dn=document.getElementById('dNum'); if(dn&&!demo) dn.textContent=deputados.length.toLocaleString('pt-BR');
   desenhar();
 }
 
@@ -1601,6 +1615,35 @@ const tela=document.getElementById('tela'), dica=document.getElementById('dica')
 const NS='http://www.w3.org/2000/svg';
 const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
 
+// Os pontos são os MESMOS <circle> entre um desenho e outro (id do deputado → elemento): é isso que permite deslizar até a nova
+// posição em vez de redesenhar de golpe. O eixo e a grade são refeitos a cada vez; os pontos só mudam de lugar. Quem sai do recorte
+// some e, ao voltar, nasce de novo (aparece com fade). A animação é um único animate do Motion que move os pontos que mudaram de
+// lugar e estão visíveis (os apagados pulam direto). Sem Motion, com movimento reduzido, na primeira vez e depois de redimensionar:
+// sem animação. Se os quadros saírem espaçados demais (celular fraco), pula para o fim e as próximas trocas não animam.
+const circulos=new Map();
+let animaPontos=null, ultimoTam='', pontosLentos=false, ultimoMedida=null;
+const PONTOS_QUADRO_MAX_MS=40;       // intervalo médio entre quadros acima disso (menos de 25 quadros/s) é engasgo
+function ligarPonto(c){
+  const d=()=>c._d;
+  c.addEventListener('mouseenter',e=>{
+    if(!passa(d())) return;
+    const total=valorY(d());
+    c.setAttribute('r',raioDe(d())+3.5); c.setAttribute('opacity',1);
+    const uni=medida==='apresentadas'?'proposições apresentadas':'viraram lei';
+    dica.innerHTML=`<div class="dica-in">${retrato(d(),40)}<div><b>${esc(d().nome)}</b><em>${esc(d().partido)} de ${esc(d().uf)}, ${total} ${uni}</em></div></div>`;
+    dica.classList.add('on');
+    const r=tela.getBoundingClientRect(), W=tela.clientWidth;
+    let px=e.clientX-r.left+13;
+    if(px+dica.offsetWidth>W-6) px=e.clientX-r.left-dica.offsetWidth-13;
+    dica.style.left=px+'px'; dica.style.top=Math.max(2,e.clientY-r.top-42)+'px';
+  });
+  c.addEventListener('mouseleave',()=>{
+    c.setAttribute('r',raioDe(d())); c.setAttribute('opacity',.6);
+    dica.classList.remove('on');
+  });
+  c.addEventListener('click',()=>{ if(passa(d())) abrir(d()); });
+}
+
 function desenhar(){
   atualizarLimpar();
   const W=tela.clientWidth,H=tela.clientHeight;
@@ -1623,60 +1666,80 @@ function desenhar(){
              :[0,Math.round(max*.25),Math.round(max*.5),Math.round(max*.75),max])
     .filter(t=>t<=max).forEach(t=>{
       const yy=y(t);
-      svg.appendChild(el('line',{x1:m.l,x2:W-m.r,y1:yy,y2:yy,stroke:'#f0f1f2'}));
-      const g=el('text',{x:m.l-9,y:yy+3.5,'font-size':11,fill:'#a5a9ae','text-anchor':'end'});
+      svg.appendChild(el('line',{x1:m.l,x2:W-m.r,y1:yy,y2:yy,stroke:'var(--linha2)'}));
+      const g=el('text',{x:m.l-9,y:yy+3.5,'font-size':11,fill:'var(--tinta3)','text-anchor':'end'});
       g.textContent=t; svg.appendChild(g);
     });
 
   const defs=el('defs',{}),gr=el('linearGradient',{id:'esp',x1:'0',x2:'1'});
-  [['0%','#d85a30'],['25%','#b88f5a'],['50%','#888780'],['75%','#4a7a9f'],['100%','#0c447c']]
+  [['0%',CORES.esquerda],['25%',CORES['centro-esquerda']],['50%',CORES.centro],['75%',CORES['centro-direita']],['100%',CORES.direita]]
     .forEach(([o,c])=>gr.appendChild(el('stop',{offset:o,'stop-color':c})));
   defs.appendChild(gr); svg.appendChild(defs);
   svg.appendChild(el('rect',{x:m.l,y:H-m.b+16,width:pw,height:4,rx:2,fill:'url(#esp)',opacity:.9}));
 
-  const rot=(x,yy,t,an)=>{const e=el('text',{x,y:yy,'font-size':11.5,fill:'#8b8f96','text-anchor':an||'middle'});
+  const rot=(x,yy,t,an)=>{const e=el('text',{x,y:yy,'font-size':11.5,fill:'var(--tinta3)','text-anchor':an||'middle'});
     e.textContent=t;svg.appendChild(e)};
   rot(m.l,H-m.b+36,'Esquerda','start');
   rot(m.l+pw/2,H-m.b+36,'Centro');
   rot(W-m.r,H-m.b+36,'Direita','end');
-  const ey=el('text',{x:13,y:m.t+ph/2,'font-size':11.5,fill:'#8b8f96','text-anchor':'middle',
+  const ey=el('text',{x:13,y:m.t+ph/2,'font-size':11.5,fill:'var(--tinta3)','text-anchor':'middle',
     transform:`rotate(-90 13 ${m.t+ph/2})`});
   ey.textContent = medida==='apresentadas'
     ? 'Proposições apresentadas' : 'Proposições que viraram lei';
   svg.appendChild(ey);
 
+  // pontos: reaproveita o elemento de cada deputado; só muda de lugar o que mudou
+  const M=window.Motion;
+  const tam=W+'x'+H;
+  const animar=!!(M&&M.animate)&&!pontosLentos&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&circulos.size>0&&tam===ultimoTam;
+  ultimoTam=tam;
+  if(animaPontos){ animaPontos.stop(); animaPontos=null; }       // desenho no meio de outro: parte de onde os pontos estão agora
+  const noRecorte=new Set(), mover=[];
   let n=0;
   doMandato.forEach(d=>{
     const total=valorY(d);
-    const cx=d.x==null?W-m.r+28:m.l+d.x*pw;
-    const rBase=raioDe(d);
-    const c=el('circle',{cx,cy:y(total),r:rBase,fill:corDoScore(d.score),
-      opacity:.6,class:'pt'});
-    const ok=passa(d);
-    if(!ok)c.classList.add('apagado'); else n++;
-    if(ok){
-      c.addEventListener('mouseenter',e=>{
-        c.setAttribute('r',rBase+3.5); c.setAttribute('opacity',1);
-        const uni=medida==='apresentadas'?'proposições apresentadas':'viraram lei';
-        dica.innerHTML=`<div class="dica-in">${retrato(d,40)}<div><b>${esc(d.nome)}</b><em>${esc(d.partido)} de ${esc(d.uf)}, ${total} ${uni}</em></div></div>`;
-        dica.classList.add('on');
-        const r=tela.getBoundingClientRect();
-        let px=e.clientX-r.left+13;
-        if(px+dica.offsetWidth>W-6) px=e.clientX-r.left-dica.offsetWidth-13;
-        dica.style.left=px+'px'; dica.style.top=Math.max(2,e.clientY-r.top-42)+'px';
-      });
-      c.addEventListener('mouseleave',()=>{
-        c.setAttribute('r',rBase);
-        c.setAttribute('opacity',.6);
-        dica.classList.remove('on');
-      });
-      c.addEventListener('click',()=>abrir(d));
+    const cx=d.x==null?W-m.r+28:m.l+d.x*pw, cy=y(total);
+    noRecorte.add(d.id);
+    let c=circulos.get(d.id);
+    const novo=!c;
+    if(novo){
+      c=el('circle',{cx,cy,r:raioDe(d),fill:corDoScore(d.score),opacity:animar?0:.6,class:'pt'});
+      c._d=d; ligarPonto(c); circulos.set(d.id,c);
+      if(animar) requestAnimationFrame(()=>requestAnimationFrame(()=>c.setAttribute('opacity',.6)));   // nasce com fade
+    }else{
+      c._d=d;
+      c.setAttribute('fill',corDoScore(d.score)); c.setAttribute('r',raioDe(d));
     }
+    const ok=passa(d);
+    c.classList.toggle('apagado',!ok); if(ok) n++;                 // o fade do apagado é a transição de opacity do .pt
+    if(!novo&&animar&&ok){
+      const x0=+c.getAttribute('cx'), y0=+c.getAttribute('cy');
+      if(Math.abs(x0-cx)>.4||Math.abs(y0-cy)>.4){ mover.push({c,x0,y0,x1:cx,y1:cy}); }
+      else{ c.setAttribute('cx',cx); c.setAttribute('cy',cy); }
+    }else if(!novo){ c.setAttribute('cx',cx); c.setAttribute('cy',cy); }   // apagado ou sem animação: vai direto
     svg.appendChild(c);
   });
+  for(const id of [...circulos.keys()]) if(!noRecorte.has(id)) circulos.delete(id);   // saiu do recorte (mandato)
 
   tela.querySelector('svg')?.remove();
   tela.insertBefore(svg,dica);
+  if(mover.length){
+    const fim=()=>{ for(const o of mover){ o.c.setAttribute('cx',o.x1); o.c.setAttribute('cy',o.y1); } animaPontos=null; };
+    let anterior=null, soma=0, quadros=0;
+    animaPontos=M.animate(0,1,{
+      duration:medida===ultimoMedida?0.45:0.75, ease:[0.22,1,0.36,1],
+      onUpdate:p=>{
+        for(const o of mover){ o.c.setAttribute('cx',(o.x0+(o.x1-o.x0)*p).toFixed(1)); o.c.setAttribute('cy',(o.y0+(o.y1-o.y0)*p).toFixed(1)); }
+        // o intervalo entre quadros inclui estilo, layout e pintura do SVG, não só este laço: é o que o leitor sente como engasgo
+        const agora=performance.now();
+        if(anterior!=null){ soma+=agora-anterior; quadros++; }
+        anterior=agora;
+        if(quadros>=5&&soma/quadros>PONTOS_QUADRO_MAX_MS){ pontosLentos=true; animaPontos&&animaPontos.stop(); fim(); }
+      },
+      onComplete:fim
+    });
+  }
+  ultimoMedida=medida;
   const tot=doMandato.length, noMand=mandato?` no mandato ${rotuloLeg(mandato)}`:'';
   document.getElementById('quantos').textContent =
     n===tot ? `${tot} deputados${noMand}` : `${n} de ${tot}${noMand}`;
@@ -1699,6 +1762,9 @@ document.querySelectorAll('.faixa').forEach(b=>b.onclick=()=>{
 });
 pLog.onclick=()=>{comprimida=true;pLog.classList.add('on');pLin.classList.remove('on');desenhar()};
 pLin.onclick=()=>{comprimida=false;pLin.classList.add('on');pLog.classList.remove('on');desenhar()};
+const pintarFaixas=()=>document.querySelectorAll('#faixas .faixa').forEach(b=>{ const i=b.querySelector('i'); if(i) i.style.background=CORES[b.dataset.f]; });
+window.addEventListener('tema',()=>{ pintarFaixas(); desenhar(); });
+document.addEventListener('DOMContentLoaded',pintarFaixas);
 
 
 // ---------- hemiciclo ----------
@@ -1761,7 +1827,7 @@ function contaDesenhar(){
       <td class="p">${pct.toFixed(0)}%</td></tr>`;
   }).join('');
   document.getElementById('conta').innerHTML=linhas;
-  document.getElementById('totalN').textContent=tot;
+  { const n=document.getElementById('totalN'); if(window.Contar) Contar.para(n,tot); else n.textContent=tot; }   // o total conta do valor anterior ao novo quando um filtro muda
   document.querySelectorAll('.conta tr').forEach(tr=>tr.onclick=()=>{
     const k=tr.dataset.f;
     filtro.faixas.has(k)?filtro.faixas.delete(k):filtro.faixas.add(k);
@@ -2183,10 +2249,9 @@ function abrir(d){
   document.getElementById('fFoto').innerHTML=retrato(d,66);
   fNome.textContent=d.nome;
   fQuem.textContent=`${d.partido} de ${d.uf}`+(d.federacao?`, federação ${d.federacao}`:'');
-  fPec.textContent=d.pecs;
-  fPl.textContent=d.leis;
-  fLei.textContent=d.viraramLei??'—';
-  fPlen.textContent=d.aprovadasPlenario??'—';
+  // os quatro números da ficha contam de 0 até o valor do deputado (sem Motion ou com movimento reduzido, aparecem prontos)
+  const conta=(el,v)=>{ if(window.Contar&&typeof v==='number'){ el.textContent='0'; Contar.para(el,v); } else el.textContent=v; };
+  conta(fPec,d.pecs); conta(fPl,d.leis); conta(fLei,d.viraramLei??'—'); conta(fPlen,d.aprovadasPlenario??'—');
 
   // os dois números divergem nos dois sentidos e isso confunde sem explicação
   const vl=d.viraramLei, ap=d.aprovadasPlenario;
@@ -2573,7 +2638,7 @@ function partPerfil(){
     `<th class="col${partEst.tema==='b'+b.i?' sel':''}" data-b="b${b.i}" title="Filtrar a tabela por ${esc(b.nome)}">${esc(b.nome)}</th>`).join('')}</tr></thead><tbody>`+
     linhas.map((r,j)=>`<tr><td class="esq">${Bandeiras.img(r.s,PART.id,16)}${esc(r.s)}</td>${celulas[j].map(c=>{
       const a=c.x?(.07+.6*c.f/max):0;
-      return `<td style="${a?`background:rgba(15,23,42,${a.toFixed(2)});${a>.38?'color:#fff':''}`:''}"`+
+      return `<td style="${a?`background:rgba(var(--tinta-rgb),${a.toFixed(2)});${txtCel(a)}`:''}"`+
         `${c.x?` title="${nfBR(c.x.p)} de ${nfBR(r.p)} proposições · ${nfBR(c.x.l)} ${c.x.l===1?'virou lei':'viraram lei'}"`:''}>${c.x?pctInt(c.f):'—'}</td>`;}).join('')}</tr>`).join('')+'</tbody>';
 }
 
@@ -2616,7 +2681,7 @@ function partGovQuadro(){
   const cel=(v,g,s)=>{
     if(!v) return '<td>—</td>';
     const a=.07+.6*v[0], marca=g.partidoPresidente.some(e=>e.sigla===s)?`<span class="pres" title="${esc(partDoPresidente(s,[g]).join('; '))}">●</span>`:'';
-    return `<td class="${v[1]<PIDX.minAutores?'peq':''}" style="background:rgba(15,23,42,${a.toFixed(2)});${a>.38?'color:#fff':''}" `+
+    return `<td class="${v[1]<PIDX.minAutores?'peq':''}" style="background:rgba(var(--tinta-rgb),${a.toFixed(2)});${txtCel(a)}" `+
       `title="${esc(s)} no governo ${esc(g.rotulo)}: mediana de ${pctInt(v[0])} entre ${nfBR(v[1])} deputados">${marca}${pctInt(v[0])}</td>`;
   };
   tb.innerHTML=`<thead><tr><th class="esq">Partido</th>${gs.map(g=>
@@ -2625,7 +2690,7 @@ function partGovQuadro(){
     `<small>${govPeriodo(g)}</small><small>${nfBR(g.votacoesComOrientacao)} votações</small></th>`).join('')}</tr></thead><tbody>`+
     linhas.map(s=>`<tr><td class="esq">${Bandeiras.img(s,legLinha(s),16)}${esc(s)}</td>${gs.map(g=>cel((GOV.partidos[s]||{})[g.id]||null,g,s)).join('')}</tr>`).join('')+
     `<tr class="cam"><td class="esq">Todos os deputados</td>${gs.map(g=>g.mediana==null?'<td>—</td>':
-      `<td style="background:rgba(15,23,42,${(.07+.6*g.mediana).toFixed(2)});${.07+.6*g.mediana>.38?'color:#fff':''}" title="Mediana de todos os deputados com número neste governo (${nfBR(g.deputados)})">${pctInt(g.mediana)}</td>`).join('')}</tr></tbody>`;
+      `<td style="background:rgba(var(--tinta-rgb),${(.07+.6*g.mediana).toFixed(2)});${txtCel(.07+.6*g.mediana)}" title="Mediana de todos os deputados com número neste governo (${nfBR(g.deputados)})">${pctInt(g.mediana)}</td>`).join('')}</tr></tbody>`;
   mais.hidden=todos.length===grandes.length;
   mais.textContent=partGovTodos?`Mostrar só os partidos com ${PIDX.minAutores} deputados ou mais`:`Mostrar os ${todos.length-grandes.length} partidos menores`;
 }
@@ -2653,7 +2718,7 @@ function partGrafico(){
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,role:'img',
     'aria-label':'Posição do partido no espectro contra a conversão mediana por deputado'});
   const defs=el('defs',{}), g=el('linearGradient',{id:'pgGrad',x1:0,x2:1,y1:0,y2:0});
-  PARADAS.forEach(([s,rgb])=>{const st=el('stop',{offset:((s-1)/9*100)+'%','stop-color':`rgb(${rgb.join(',')})`});g.appendChild(st)});
+  Espectro.PARADAS.forEach(([s,rgb])=>{const st=el('stop',{offset:((s-1)/9*100)+'%','stop-color':`rgb(${rgb.join(',')})`});g.appendChild(st)});
   defs.appendChild(g); svg.appendChild(defs);
   const eixo=el('g',{class:'pg-eixo'});
   for(let v=0;v<=topo+1e-9;v+=passo){
@@ -2682,7 +2747,7 @@ function partGrafico(){
   dados.forEach(({r,m:mt})=>{
     const cor=corDoScore(mt.score), pq=partPequena(r);
     const c=el('circle',{cx:X(mt.score),cy:Y(r.m),r:7,class:'pg-pt',
-      fill:pq?'#fff':cor,stroke:pq?cor:'#fff','stroke-width':pq?2:1.5,
+      fill:pq?'var(--papel)':cor,stroke:pq?cor:'var(--papel)','stroke-width':pq?2:1.5,
       'stroke-dasharray':pq?'3 2':'none',opacity:pq?1:.95});
     const tt=el('title',{}); tt.textContent=`${r.s}: conversão mediana ${pct1(r.m)} · ${r.a} deputados autores · espectro ${mt.score.toFixed(1).replace('.',',')}`+(pq?' · amostra pequena':'');
     c.appendChild(tt); svg.appendChild(c);

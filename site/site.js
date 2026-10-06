@@ -1,4 +1,50 @@
 // Câmara Aberta — comportamento comum a todas as páginas (carregado com defer).
+
+// Tema claro/escuro. Só vale em página que traz <html data-escuro-ok> (as outras seguem claras). O claro é o padrão; o escuro vem de
+// prefers-color-scheme ou da escolha do leitor, guardada em localStorage (<head> repete a leitura antes da pintura, sem piscar).
+// Escolher o mesmo tema que o sistema usa apaga a escolha: a página volta a seguir o sistema. Quem desenha em canvas ou SVG
+// (Espectro.corDoScore) ouve o evento 'tema' da window para redesenhar com a paleta do tema.
+window.Tema = (() => {
+  const html = document.documentElement, suportado = html.hasAttribute('data-escuro-ok');
+  const mq = matchMedia('(prefers-color-scheme: dark)');
+  const sistema = () => (mq.matches ? 'escuro' : 'claro');
+  const efetivo = () => (!suportado ? 'claro' : (html.dataset.tema === 'claro' || html.dataset.tema === 'escuro' ? html.dataset.tema : sistema()));
+  const escuro = () => efetivo() === 'escuro';
+  const LUA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>';
+  const SOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  let botao = null;
+  const pintar = () => {
+    const e = efetivo(), m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', e === 'escuro' ? '#0a0f1a' : '#ffffff');
+    if (botao) {
+      botao.innerHTML = e === 'escuro' ? SOL : LUA;
+      botao.setAttribute('aria-label', e === 'escuro' ? 'Tema escuro ativo. Mudar para o tema claro' : 'Tema claro ativo. Mudar para o tema escuro');
+      botao.title = e === 'escuro' ? 'Mudar para o tema claro' : 'Mudar para o tema escuro';
+    }
+  };
+  const avisar = () => { pintar(); window.dispatchEvent(new CustomEvent('tema', { detail: efetivo() })); };
+  const alternar = () => {
+    if (!suportado) return;
+    const novo = escuro() ? 'claro' : 'escuro';
+    try {
+      if (novo === sistema()) localStorage.removeItem('tema'); else localStorage.setItem('tema', novo);
+    } catch (e) { /* sem armazenamento: vale só nesta visita */ }
+    if (novo === sistema()) delete html.dataset.tema; else html.dataset.tema = novo;
+    avisar();
+  };
+  if (suportado) {
+    const dentro = document.querySelector('.topo-in');
+    if (dentro) {
+      botao = document.createElement('button');
+      botao.type = 'button'; botao.className = 'tema-btn';
+      botao.addEventListener('click', alternar);
+      dentro.appendChild(botao);
+    }
+    mq.addEventListener && mq.addEventListener('change', () => { if (!html.dataset.tema) avisar(); });   // seguindo o sistema
+    pintar();
+  }
+  return { efetivo, escuro, alternar, suportado };
+})();
 (() => {
   // No celular a barra rola de lado: abre já mostrando o item da página atual.
   const atual = document.querySelector('.nav a[aria-current]');
@@ -7,29 +53,123 @@
     nav.scrollLeft += atual.getBoundingClientRect().left - nav.getBoundingClientRect().left - 32;
   }
 
-  // Entrada suave dos blocos fixos da página (não das listas que os filtros redesenham).
-  // Sem JS, ou com movimento reduzido, nada fica escondido: a classe só entra aqui.
-  if (!('IntersectionObserver' in window) ||
-      matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const alvos = [...document.querySelectorAll(
-    '.capa > *, .painel, .semana, .votos, .mapa, .rodape-site .wrap, .rg > *')];
-  const io = new IntersectionObserver(entradas => {
-    let atraso = 0;
-    for (const e of entradas) {
-      if (!e.isIntersecting) continue;
-      const el = e.target;
-      io.unobserve(el);
-      el.style.animationDelay = `${atraso}ms`;
-      atraso = Math.min(atraso + 60, 300);
-      el.classList.add('visivel');
+  // Entrada suave dos blocos fixos da página (não das listas que os filtros redesenham), com inView e stagger do Motion
+  // (window.Motion, de motion-init.js). Sem JS, sem Motion ou com movimento reduzido nada fica escondido: o CSS só esconde
+  // enquanto html não tem .m-ok, e a animação m-seguranca do estilo.css solta tudo depois de 3,5 s se ninguém assumir.
+  const html = document.documentElement, M = window.Motion;
+  const soltar = () => html.classList.add('m-ok');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !M || !M.animate || !M.inView || !M.stagger) { soltar(); return; }
+  try {
+    // os mesmos alvos que o estilo.css esconde; a abertura da página inicial (.hero) se anima sozinha
+    const alvos = [...document.querySelectorAll(
+      '.capa > :not(.hero):not(.explora), .explora > li, .painel, .votos, .mapa, .rodape-site .wrap, .rg > *, [data-reveal]')];
+    // o estado inicial passa para estilo em linha antes de o CSS soltar: nenhum quadro mostra o bloco pronto e depois o esconde
+    for (const el of alvos) { el.dataset.m = ''; el.style.opacity = '0'; el.style.transform = 'translateY(12px)'; }
+    if (!document.querySelector('.hero')) soltar();       // com abertura animada, quem solta é ela, depois de pôr o estado inicial dela
+    const base = M.stagger(0.06);
+    let fila = [], agendado = false;
+    const revelar = () => {
+      agendado = false;
+      const lote = fila; fila = [];
       // terminada a entrada, a peça volta ao normal (hover, sticky e transform livres)
-      el.addEventListener('animationend', () => {
-        el.classList.remove('revela', 'visivel');
-        el.style.animationDelay = '';
-      }, { once: true });
+      const limpar = () => lote.forEach(el => { el.style.removeProperty('opacity'); el.style.removeProperty('transform'); el.removeAttribute('data-m'); });
+      try {
+        M.animate(lote, { opacity: [0, 1], y: [12, 0] },
+          { duration: 0.6, ease: [0.4, 0, 0.2, 1], delay: (i, n) => Math.min(base(i, n), 0.3) }).finished.then(limpar, limpar);
+      } catch (e) { limpar(); }
+    };
+    // o que entra na tela no mesmo instante vai junto, em cascata (60 ms entre um e outro, até 300 ms)
+    M.inView(alvos, el => { fila.push(el); if (!agendado) { agendado = true; queueMicrotask(revelar); } },
+      { margin: '0px 0px -6% 0px' });
+  } catch (e) {
+    document.querySelectorAll('[data-m]').forEach(el => { el.style.removeProperty('opacity'); el.style.removeProperty('transform'); el.removeAttribute('data-m'); });
+    soltar();
+  }
+})();
+
+// Barra do site: UM indicador desliza entre os itens (mouse, foco no teclado e item atual) no lugar do sublinhado de cada item.
+// Sem JS fica o sublinhado do CSS (a[aria-current]::after). Com Motion o indicador desliza em mola; sem Motion ou com movimento
+// reduzido ele só pula. Entre páginas, parte de onde estava na anterior (sessionStorage) e desliza até o item da página nova.
+(() => {
+  const nav = document.querySelector('.nav');
+  if (!nav) return;
+  const itens = [...nav.querySelectorAll('a')], atual = nav.querySelector('a[aria-current]');
+  const ind = document.createElement('span');
+  ind.className = 'nav-ind'; ind.setAttribute('aria-hidden', 'true');
+  nav.appendChild(ind); nav.classList.add('nav-js');
+  const mov = () => !matchMedia('(prefers-reduced-motion: reduce)').matches && window.Motion && window.Motion.animate;
+  const caixa = a => ({ x: a.offsetLeft + 12, w: Math.max(0, a.offsetWidth - 24) });   // 12 px = padding do link: a barra tem a largura do texto
+  let pos = null, visivel = false, alvo = atual, anim = null;
+  const por = (c, animado) => {
+    if (anim) {                       // interrompida no meio: a nova mola parte de onde o indicador está, não de onde ia chegar
+      const r = ind.getBoundingClientRect(), n = nav.getBoundingClientRect();
+      pos = { x: r.left - n.left + nav.scrollLeft, w: r.width };
+      anim.stop(); anim = null;
     }
-  }, { rootMargin: '0px 0px -6% 0px' });
-  for (const el of alvos) { el.classList.add('revela'); io.observe(el); }
+    if (!c) { ind.style.opacity = '0'; visivel = false; return; }
+    ind.style.opacity = '1';
+    if (animado && visivel && pos && mov()) {
+      anim = window.Motion.animate(ind, { x: [pos.x, c.x], width: [pos.w, c.w] }, { type: 'spring', stiffness: 420, damping: 36 });
+    } else { ind.style.transform = `translateX(${c.x}px)`; ind.style.width = c.w + 'px'; }
+    pos = c; visivel = true;
+  };
+  const ir = a => { alvo = a; por(caixa(a), true); };
+  const voltar = () => { alvo = atual; por(atual ? caixa(atual) : null, true); };
+  itens.forEach(a => { a.addEventListener('pointerenter', () => ir(a)); a.addEventListener('focus', () => ir(a)); });
+  nav.addEventListener('pointerleave', voltar);
+  nav.addEventListener('focusout', e => { if (!nav.contains(e.relatedTarget)) voltar(); });
+  // de onde o indicador estava na página anterior até o item desta
+  let antes = null;
+  try { antes = JSON.parse(sessionStorage.getItem('navInd') || 'null'); } catch (e) { /* sem armazenamento: só aparece no lugar */ }
+  if (atual && antes && mov() && typeof antes.x === 'number') {
+    pos = antes; visivel = true; ind.style.transform = `translateX(${antes.x}px)`; ind.style.width = antes.w + 'px'; ind.style.opacity = '1';
+    requestAnimationFrame(() => por(caixa(atual), true));
+  } else { por(atual ? caixa(atual) : null, false); }
+  // a fonte da página chega depois e muda a largura dos itens: mede de novo, sem animar
+  const medir = () => por(alvo ? caixa(alvo) : null, false);
+  if (window.ResizeObserver) new ResizeObserver(medir).observe(nav);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
+  addEventListener('pagehide', () => { try { sessionStorage.setItem('navInd', JSON.stringify(atual ? caixa(atual) : null)); } catch (e) { /* ok */ } });
+})();
+
+// Abertura de uma página com .hero: kicker, título palavra por palavra (.pal) e os blocos [data-entra] entram em cascata (Motion).
+// Mesma regra de melhoria progressiva da inicial: o CSS esconde só enquanto html não tem .m-ok; o estado inicial passa para estilo em
+// linha antes de soltar; sem Motion, com movimento reduzido ou com qualquer erro, tudo aparece pronto (a animação m-seguranca do
+// estilo.css solta tudo em 3,5 s se ninguém assumir).
+window.Entrada = (() => {
+  const soltar = () => document.documentElement.classList.add('m-ok');
+  const limpar = els => els.forEach(el => { el.style.removeProperty('opacity'); el.style.removeProperty('transform'); });
+  const abrir = hero => {
+    const M = window.Motion;
+    if (!hero || !M || !M.animate || !M.stagger || matchMedia('(prefers-reduced-motion: reduce)').matches) { soltar(); return; }
+    const itens = [...hero.querySelectorAll('[data-entra]')], pal = [...hero.querySelectorAll('.pal>span')];
+    try {
+      itens.forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(16px)'; });
+      pal.forEach(el => { el.style.transform = 'translateY(110%)'; });
+      soltar();
+      const ease = [0.22, 1, 0.36, 1];
+      const fim = [M.animate(pal, { y: ['110%', '0%'] }, { duration: 0.85, ease, delay: M.stagger(0.05, { startDelay: 0.08 }) }),
+        ...itens.map((el, i) => M.animate(el, { opacity: [0, 1], y: [16, 0] }, { duration: 0.7, ease, delay: 0.1 + i * 0.12 }))].map(a => a.finished);
+      const volta = () => { limpar(itens); limpar(pal); };
+      Promise.all(fim).then(volta, volta);
+    } catch (e) { limpar(itens); limpar(pal); soltar(); }
+  };
+  // Blocos que entram na página depois do carregamento (as listas de "Esta semana" chegam por fetch, dentro de uma faixa escura que
+  // não pode desbotar contra a página clara): cada um sobe ao entrar na tela. Mesma regra: sem Motion ou com movimento reduzido,
+  // nada é escondido.
+  const revelar = els => {
+    const M = window.Motion;
+    if (!els.length || !M || !M.animate || !M.inView || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const solta = el => { el.style.removeProperty('opacity'); el.style.removeProperty('transform'); };
+    try {
+      els.forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(12px)'; });
+      M.inView(els, el => {
+        const volta = () => solta(el);
+        M.animate(el, { opacity: [0, 1], y: [12, 0] }, { duration: 0.6, ease: [0.4, 0, 0.2, 1] }).finished.then(volta, volta);
+      }, { margin: '0px 0px -6% 0px' });
+    } catch (e) { els.forEach(solta); }
+  };
+  return { abrir, revelar };
 })();
 
 // Logos dos partidos (dados/partidos/logos.json, gerado por logos.py). A página só referencia o endereço da
@@ -71,17 +211,25 @@ window.Espectro = (() => {
   const NOMES = { 'esquerda': 'Esquerda', 'centro-esquerda': 'Centro-esquerda', 'centro': 'Centro',
                   'centro-direita': 'Centro-direita', 'direita': 'Direita', 'sem-classificacao': 'Sem classificação' };
   const PARADAS = [[1, [216, 90, 48]], [3.25, [184, 143, 90]], [5.5, [136, 135, 128]], [7.75, [74, 122, 159]], [10, [12, 68, 124]]];
-  const corDoScore = s => {
-    if (s == null) return CORES['sem-classificacao'];
+  // Tema escuro (só em página com data-escuro-ok): o único ajuste é o "direita", #0c447c → #3478cf. Sobre o fundo escuro o primeiro
+  // tem 1,8:1 e some; o segundo tem 4,3:1 e continua a distinguir-se do "centro-direita" (#4a7a9f). As outras já passavam de 3:1.
+  const CORES_ESC = { ...CORES, 'direita': '#3478cf' };
+  const PARADAS_ESC = [...PARADAS.slice(0, 4), [10, [52, 120, 207]]];
+  const escuro = () => !!(window.Tema && window.Tema.escuro());
+  // `sobreEscuro` (opcional) força a paleta do tema escuro num pedaço escuro de uma página clara (a abertura da inicial).
+  const corDoScore = (s, sobreEscuro) => {
+    const esc = sobreEscuro == null ? escuro() : !!sobreEscuro;
+    const cores = esc ? CORES_ESC : CORES, paradas = esc ? PARADAS_ESC : PARADAS;
+    if (s == null) return cores['sem-classificacao'];
     s = Math.max(1, Math.min(10, s));
-    for (let i = 0; i < PARADAS.length - 1; i++) {
-      const [a, ca] = PARADAS[i], [b, cb] = PARADAS[i + 1];
+    for (let i = 0; i < paradas.length - 1; i++) {
+      const [a, ca] = paradas[i], [b, cb] = paradas[i + 1];
       if (s <= b) {
         const t = (s - a) / (b - a);
         return '#' + ca.map((v, j) => Math.round(v + (cb[j] - v) * t).toString(16).padStart(2, '0')).join('');
       }
     }
-    return '#0c447c';
+    return esc ? '#3478cf' : '#0c447c';
   };
   const REGIOES = { N: ['AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO'], NE: ['AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE'],
                     CO: ['DF', 'GO', 'MT', 'MS'], SE: ['ES', 'MG', 'RJ', 'SP'], S: ['PR', 'RS', 'SC'] };
@@ -108,5 +256,89 @@ window.Espectro = (() => {
     });
     return pts.sort((a, b) => b.ang - a.ang);
   };
-  return { CORES, NOMES, PARADAS, corDoScore, REGIOES, REG_NOME, UF_REG, assentos };
+  return { get CORES() { return escuro() ? CORES_ESC : CORES; }, NOMES, get PARADAS() { return escuro() ? PARADAS_ESC : PARADAS; },
+           corDoScore, REGIOES, REG_NOME, UF_REG, assentos };
 })();
+
+// Contagem animada nos números de destaque (Motion). O valor final já está no texto: sem JS, sem Motion ou com movimento reduzido
+// o número aparece pronto e nada muda. Com Motion, `Contar.varrer(raiz)` marca cada [data-conta], mostra 0 até o número entrar
+// na tela e então conta até o valor que estava escrito (formato pt-BR preservado: milhar com ponto, vírgula decimal, prefixo
+// e sufixo como "+", "%", " mi", "×"). `Contar.para(el, texto)` leva um número que muda com os filtros do valor atual ao novo.
+// `data-conta-atraso="0.9"` espera esse tanto de segundos depois de entrar na tela. O que não for um número simples fica como está.
+window.Contar = (() => {
+  const LER = /^(\D*?)(\d{1,3}(?:\.\d{3})+|\d+)(?:,(\d+))?(\D*)$/;
+  const ler = t => {
+    const m = LER.exec(String(t).trim());
+    return m ? { pre: m[1], num: parseFloat(m[2].replace(/\./g, '') + (m[3] ? '.' + m[3] : '')), dec: m[3] ? m[3].length : 0, suf: m[4] } : null;
+  };
+  const fmt = (v, dec) => v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  const ativo = () => window.Motion && window.Motion.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Contar muda a largura do número (0 → 2.700) e, num texto corrido, a quebra de linha: o resto da frase pularia. Por isso o
+  // número reserva a largura do valor final enquanto conta (inline-block, alinhado à direita) e volta ao normal no fim.
+  const reservar = (el, final) => {
+    const w = el.getBoundingClientRect().width;
+    if (!w) return false;
+    el.style.display = 'inline-block'; el.style.minWidth = w + 'px'; el.style.textAlign = 'right';
+    return true;
+  };
+  const soltarLargura = el => { el.style.removeProperty('display'); el.style.removeProperty('min-width'); el.style.removeProperty('text-align'); };
+  const levar = (el, de, para, x, final, atraso = 0, dur = 1.2) => {
+    if (el._conta) el._conta.stop();
+    if (!el.style.minWidth) { const antes = el.textContent; el.textContent = final; reservar(el, final); el.textContent = antes; }
+    el._conta = window.Motion.animate(de, para, {
+      duration: dur, delay: atraso, ease: [0.16, 1, 0.3, 1],
+      onUpdate: v => { el.textContent = x.pre + fmt(v, x.dec) + x.suf; },
+      onComplete: () => { el.textContent = final; soltarLargura(el); el._conta = null; }
+    });
+  };
+  const varrer = (raiz = document) => {
+    if (!ativo() || !window.Motion.inView) return;
+    for (const el of raiz.querySelectorAll('[data-conta]:not([data-conta-ok])')) {
+      const final = el.textContent, x = ler(final);
+      el.setAttribute('data-conta-ok', '');
+      if (!x || x.num === 0) continue;
+      reservar(el, final);                                   // com a largura do valor final, antes de trocar pelo zero
+      el.textContent = x.pre + fmt(0, x.dec) + x.suf;
+      window.Motion.inView(el, () => { levar(el, 0, x.num, x, final, parseFloat(el.dataset.contaAtraso) || 0); });
+    }
+  };
+  const para = (el, texto) => {
+    texto = String(texto);
+    const de = ler(el.textContent), x = ler(texto);
+    if (!ativo() || !de || !x || de.num === x.num) { if (el._conta) el._conta.stop(); el._conta = null; el.textContent = texto; return; }
+    levar(el, de.num, x.num, x, texto, 0, 0.6);
+  };
+  return { varrer, para };
+})();
+
+// Modelos 3D decorativos do topo das páginas (modelos3d.js). Cada <figure data-modelo="bacia"> traz dentro a imagem estática de reserva
+// (img/modelo-<tipo>.svg), que já ocupa o espaço: nenhum deslocamento de layout. O 3D só entra se o navegador tem importmap e WebGL, a
+// conexão não pede economia, o movimento não está reduzido e o aparelho não é fraco; e só depois do evento load, quando o navegador
+// está ocioso, para o enfeite nunca disputar a CPU com a página que o leitor veio ler. Conexão que pede economia: no celular nem a
+// imagem fica (classe sem-modelo). Sem dado nenhum, aria-hidden. As regras de movimento (oscilação de 15 graus, pausa fora da tela e
+// com a aba oculta) são da cena3d.js.
+window.Modelo3D = (() => {
+  const lenta = () => { const c = navigator.connection; return !!c && (c.saveData === true || /(^|-)2g$/.test(c.effectiveType || '')); };
+  const importmapOk = () => !!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'));
+  const fraco = () => (navigator.deviceMemory && navigator.deviceMemory <= 2) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
+  const montar = async fig => {
+    try {
+      const C = await import('./cena3d.js'); if (!C.webglDisponivel()) return;
+      const THREE = await C.carregarThree(); if (!THREE) return;
+      const M = await import('./modelos3d.js');
+      M.iniciar({ THREE, contentor: fig, tipo: fig.dataset.modelo, aoPronto: () => fig.classList.add('pronto') });
+    } catch (e) { /* fica a imagem estática */ }
+  };
+  const varrer = () => {
+    const figs = [...document.querySelectorAll('[data-modelo]:not([data-3d])')];    // quem já foi tratado não entra de novo
+    if (!figs.length) return;
+    figs.forEach(f => f.setAttribute('data-3d', ''));
+    if (lenta()) { figs.forEach(f => f.classList.add('sem-modelo')); return; }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !importmapOk() || fraco()) return;
+    const iniciar = () => figs.forEach(montar);
+    const quando = () => setTimeout(() => ('requestIdleCallback' in window) ? requestIdleCallback(iniciar, { timeout: 4000 }) : iniciar(), 1800);
+    if (document.readyState === 'complete') quando(); else addEventListener('load', quando, { once: true });
+  };
+  return { varrer };
+})();
+Modelo3D.varrer();

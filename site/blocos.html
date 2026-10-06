@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-escuro-ok data-ed>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -15,10 +15,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
 <link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Three.js 0.180.0, versionado em vendor/three/ (sem CDN). O importmap só diz onde fica; nada é baixado até alguém dar import('three'),
+     o que cena3d.js faz sob demanda (modelo do topo, depois da primeira pintura). -->
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
+<!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
 <script src="site.js" defer></script>
 <style>
-:root{--b0:#4d7c0f; --b1:#7a4fa0}
 
 .painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
         padding:24px 28px;margin-top:28px}
@@ -49,7 +56,7 @@
 .qb{white-space:nowrap}
 .qb::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin:0 4px 0 2px;vertical-align:0}
 .trilho{position:relative;height:34px;background:linear-gradient(to right,transparent calc(50% - .5px),var(--linha) calc(50% - .5px),var(--linha) calc(50% + .5px),transparent calc(50% + .5px))}
-.pt{position:absolute;width:11px;height:11px;border-radius:50%;margin-left:-5.5px;border:1.5px solid #fff;
+.pt{position:absolute;width:11px;height:11px;border-radius:50%;margin-left:-5.5px;border:1.5px solid var(--papel);
     background:var(--c);cursor:pointer;padding:0;opacity:.9}
 .pt:hover,.pt:focus-visible{transform:scale(1.5);z-index:3;opacity:1}
 .pt.sel{transform:scale(1.9);z-index:4;opacity:1;box-shadow:0 0 0 2px var(--tinta)}
@@ -72,7 +79,7 @@
 .regua{position:relative;height:30px;margin-top:12px;max-width:560px}
 .regua .base{position:absolute;left:0;right:0;top:14px;height:2px;background:var(--linha);border-radius:1px}
 .regua .faixa{position:absolute;top:10px;height:10px;background:var(--linha2);border:1px solid var(--linha);border-radius:var(--raio-c)}
-.regua .eu{position:absolute;top:7px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:var(--c);border:2px solid #fff;box-shadow:0 0 0 1px var(--tinta)}
+.regua .eu{position:absolute;top:7px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:var(--c);border:2px solid var(--papel);box-shadow:0 0 0 1px var(--tinta)}
 .regua .md{position:absolute;top:6px;width:2px;height:18px;margin-left:-1px;background:var(--tinta)}
 .regua-leg{display:flex;justify-content:space-between;font-size:11px;color:var(--tinta3);max-width:560px}
 .f-links{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;font-size:13px}
@@ -154,9 +161,14 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
 
 <main class="wrap">
   <div class="capa">
+    <div class="hero-ed">
+      <div class="txt">
     <p class="kicker">Votações nominais do Plenário · 2023 a 2026</p>
-    <h1>Quem vota junto com quem</h1>
+      <h1 class="t-grande">Quem vota junto com quem</h1>
     <p class="chamada" id="chamada">Agrupando os deputados só pela semelhança dos votos, sem olhar o partido.</p>
+      </div>
+      <div class="lado"><figure class="modelo-ed" data-modelo="aneis" aria-hidden="true"><img src="img/modelo-aneis.svg" alt="" width="480" height="360" decoding="async"></figure></div>
+    </div>
 
     <div class="aviso" role="note">
       <p><b>Votar junto não é pensar igual.</b> No voto nominal, o que mais separa os deputados é apoiar ou

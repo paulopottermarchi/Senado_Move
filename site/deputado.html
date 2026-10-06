@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-escuro-ok data-ed>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -15,7 +15,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
 <link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Three.js 0.180.0, versionado em vendor/three/ (sem CDN). O importmap só diz onde fica; nada é baixado até alguém dar import('three'),
+     o que cena3d.js faz sob demanda (modelo do topo, depois da primeira pintura). -->
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
+<!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
 <script src="site.js" defer></script>
 <style>
 /* Mesmos tokens do estilo.css e de deputados.html. As cores do espectro NÃO aparecem nesta página:
@@ -25,9 +33,11 @@
 .volta:hover{color:var(--tinta);text-decoration:underline}
 
 /* ---------- cabeçalho ---------- */
-.cab{display:flex;gap:20px;align-items:center;padding:24px 0 8px}
-.cab h1{font-family:var(--serif);font-size:clamp(28px,4.4vw,40px);font-weight:500;
-        letter-spacing:-.012em;line-height:1.08}
+.cab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:24px 40px;align-items:center;padding:24px 0 8px}
+.cab-txt{display:flex;gap:20px;align-items:center;min-width:0}
+.cab h1{font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:0;line-height:.92;max-width:none;
+  font-size:clamp(44px,6.4vw,92px);text-wrap:balance}
+@media(max-width:900px){.cab{grid-template-columns:minmax(0,1fr)}}
 .cab .quem{font-size:14px;color:var(--tinta3);margin-top:4px}
 .frase{font-family:var(--serif);font-size:clamp(17px,2.1vw,20px);line-height:1.45;
        color:var(--tinta);max-width:58ch;margin:12px 0 0}
@@ -43,7 +53,7 @@
 .cqv-regua .base{position:absolute;left:0;right:0;top:13px;height:2px;background:var(--linha);border-radius:1px}
 .cqv-regua .faixa{position:absolute;top:9px;height:10px;background:var(--linha2,var(--linha2));border:1px solid var(--linha);border-radius:var(--raio-c)}
 .cqv-regua .md{position:absolute;top:5px;width:2px;height:18px;margin-left:-1px;background:var(--tinta)}
-.cqv-regua .eu{position:absolute;top:6px;width:16px;height:16px;margin-left:-8px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--tinta)}
+.cqv-regua .eu{position:absolute;top:6px;width:16px;height:16px;margin-left:-8px;border-radius:50%;border:2px solid var(--papel);box-shadow:0 0 0 1px var(--tinta)}
 .noto-meses{display:flex;align-items:flex-end;gap:4px;height:46px;margin-top:12px}
 .noto-meses i{flex:1;background:var(--tinta2);opacity:.55;border-radius:2px 2px 0 0;min-height:2px}
 .noto-meses i:hover{opacity:1}
@@ -103,10 +113,10 @@
 .haste{display:block;height:3px;background:var(--linha2);border-radius:2px;margin-top:4px}
 .haste i{display:block;height:100%;border-radius:2px;background:var(--tinta3)}
 .cat:hover,.todas:hover{background:var(--linha2);color:var(--tinta)}
-.cat[aria-pressed="true"],.todas[aria-pressed="true"]{background:var(--tinta);color:#fff}
-.cat[aria-pressed="true"] .cat-l b{color:#fff}
-.cat[aria-pressed="true"] .haste{background:rgba(255,255,255,.22)}
-.cat[aria-pressed="true"] .haste i{background:#fff}
+.cat[aria-pressed="true"],.todas[aria-pressed="true"]{background:var(--inverso);color:var(--sobre-inverso)}
+.cat[aria-pressed="true"] .cat-l b{color:var(--sobre-inverso)}
+.cat[aria-pressed="true"] .haste{background:var(--inverso-3)}
+.cat[aria-pressed="true"] .haste i{background:var(--sobre-inverso)}
 .nc{margin-top:16px;padding-top:12px;border-top:1px solid var(--linha2)}
 .obs{font-size:12px;color:var(--tinta3);line-height:1.5;margin-top:16px}
 
@@ -123,7 +133,7 @@
 .item-num:hover{text-decoration:underline}
 .item-data{font-size:12px;color:var(--tinta3)}
 .selo{font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;white-space:nowrap;
-      background:var(--tinta);color:#fff}
+      background:var(--inverso);color:var(--sobre-inverso)}
 .item-not{font-size:13px;color:var(--tinta2);margin-top:4px}
 .item-tempo{font-size:13px;color:var(--tinta2);margin-top:4px;max-width:72ch}
 .item-tempo .caminho{display:block;color:var(--tinta3)}
@@ -316,7 +326,7 @@ async function comQuemVota(id){
   const lo=ps.length?Math.min(...ps):null, hi=ps.length?Math.max(...ps):null;
   const pc=v=>Math.round(v*100)+'%';
   const bloco=B.blocos[d.bloco].medianaGoverno>=.5?'que acompanha o Governo':'que vota contra o Governo';
-  const cor=d.bloco===0?'#4d7c0f':'#7a4fa0';
+  const cor=d.bloco===0?'var(--b0)':'var(--b1)';
   el.hidden=false;
   el.innerHTML=`<h2 id="cqvTit">Com quem vota</h2>
     <p class="cqv-av">Votar junto não é pensar igual: no voto nominal, o que mais separa os deputados é apoiar ou não o governo do momento.</p>
@@ -405,9 +415,10 @@ function montar(){
   obrasDoDeputado(d.id,d.uf);
   document.getElementById('raiz').innerHTML=`
     <header class="cab">
-      ${retrato(d,72)}
-      <div><h1>${esc(d.nome)}</h1>
-        <div class="quem">${esc(d.partido||'')} de ${esc(d.uf||'')}${d.federacao?`, federação ${esc(d.federacao)}`:''}</div></div>
+      <div class="cab-txt">${retrato(d,72)}
+        <div><h1>${esc(d.nome)}</h1>
+          <div class="quem">${esc(d.partido||'')} de ${esc(d.uf||'')}${d.federacao?`, federação ${esc(d.federacao)}`:''}</div></div></div>
+      <figure class="modelo-ed" data-modelo="assento" aria-hidden="true"><img src="img/modelo-assento.svg" alt="" width="480" height="360" decoding="async"></figure>
     </header>
     <p class="frase">${esc(d.frase||'')}</p>
     ${antes?`<p class="carreira">Somando mandatos anteriores: ${NF.format(apres)} ${plural(apres,'proposição','proposições')}
@@ -441,6 +452,7 @@ function montar(){
       exigidas para PEC. Ementa e situação são as oficiais da Câmara. A frase do topo e o período
       padrão contam desde ${data(tax.inicioLegislatura)}, início da legislatura atual. Regras na
       versão ${esc(tax.versao)}, dados de ${data(tax.geradoEm)}.</p>`;
+  if(window.Modelo3D) Modelo3D.varrer();       // o modelo entra depois que a ficha é montada (a página é desenhada por script)
 
   document.querySelectorAll('[data-leg]').forEach(b=>b.onclick=()=>{
     filtro.leg=b.dataset.leg==='1'; ligar('[data-leg]',b); limite=PASSO; desenhar();

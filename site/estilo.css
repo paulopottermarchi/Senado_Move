@@ -7,6 +7,12 @@
    transições de 300 ms em ease-in-out.
    ===================================================================== */
 
+/* Barlow Condensed (SIL OFL 1.1, vendor/fonts/): SÓ para títulos grandes e números de destaque. O texto segue em Newsreader e
+   Libre Franklin. Subconjunto latino (cobre todo o português), autohospedado: sem pedido a terceiros. */
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:500;font-display:swap;src:url(vendor/fonts/barlow-condensed-500.woff2) format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(vendor/fonts/barlow-condensed-600.woff2) format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url(vendor/fonts/barlow-condensed-700.woff2) format('woff2')}
+
 :root{
   /* Espectro — SÓ para ideologia (CLAUDE.md). Nenhum outro uso. */
   --esq:#d85a30; --cesq:#b88f5a; --cen:#888780; --cdir:#4a7a9f; --dir:#0c447c; --sem:#c8cace;
@@ -16,6 +22,12 @@
      interface azul faria o site parecer de um lado. O petróleo fica só na interface (links,
      rótulos, item atual, foco, marca) — nunca em gráfico nem em dado. */
   --tinta:#0f172a;  --tinta2:#334155;  --tinta3:#566376;       /* 17,9 · 10,4 · 6,1 : 1 no branco */
+  --b0:#4d7c0f; --b1:#7a4fa0;                                   /* os dois blocos de "Quem vota com quem": fora da paleta do espectro */
+  --cresce:#1e293b;                                             /* crescimento do contrato (obras) */
+  --camada-escura:#0a0f1a;                                      /* fundo da camada escura (.escuro) em página clara */
+  --rampa1:#0f172a; --rampa2:#475569; --rampa3:#64748b; --rampa4:#94a3b8; --rampa5:#cbd5e1; --rampa6:#e2e8f0; --rampa7:#f1f5f9;   /* neutros, do mais forte ao mais fraco (categorias sem cor: fluxo) */
+  --atencao:#8a6d1f;                                            /* amostra pequena: ocre, 4,9:1 no branco */
+  --tinta-rgb:15,23,42;                                          /* a tinta em rgb, para tingir células (rgba(var(--tinta-rgb),.3)) */
   --destaque:#0f766e;                                          /* texto e links: 5,5 : 1 no branco */
   --destaque-forte:#115e59;                                    /* hover: 7,6 : 1 */
   --destaque-vivo:#0d9488;                                     /* traços e indicadores: 3,7 : 1 */
@@ -26,6 +38,7 @@
   --link:var(--destaque);
 
   --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --cond:'Barlow Condensed','Arial Narrow','Roboto Condensed',Impact,sans-serif;     /* só título grande e número de destaque */
   --sans:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   /* escala tipográfica (px): 11 · 12 · 13 · 14 · 15 · 16 · 18 · 20 · 24 · 30 · 36 · 48 */
 
@@ -36,6 +49,14 @@
   --sombra-md:0 8px 16px -4px rgba(15,23,42,.08),0 2px 6px -2px rgba(15,23,42,.05); /* md */
   --sombra-lg:0 32px 64px -16px rgba(15,23,42,.28),0 8px 24px -8px rgba(15,23,42,.12);
   --anel:0 0 0 4px rgba(13,148,136,.18);
+
+  /* superfícies que mudam de tema (o claro é o que sempre foi) */
+  --topo-bg:rgba(255,255,255,.86);
+  --inverso:#0f172a; --sobre-inverso:#fff; --inverso-2:#a3b1c2; --inverso-3:rgba(255,255,255,.12);   /* botão ligado, dica: o oposto do texto */
+  --marca-fundo:#0f172a;
+  --rodape-bg:#0f172a;
+  --seg-hover:rgba(255,255,255,.6);
+  --brilho:#f8fafc;                        /* esqueleto de carregamento */
   --curva:cubic-bezier(.4,0,.2,1);
   --t:300ms var(--curva);
 }
@@ -50,19 +71,21 @@ body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);font-siz
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
 a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px;
   transition:color var(--t),text-decoration-color var(--t),background-color var(--t),border-color var(--t)}
-:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:2px;border-radius:4px}
+:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:2px;border-radius:4px;animation:foco .2s var(--curva)}
+@keyframes foco{from{outline-color:transparent;outline-offset:-1px}}
 ::selection{background:var(--destaque-fundo)}
 button{transition:color var(--t),background-color var(--t),border-color var(--t),box-shadow var(--t),transform var(--t)}
+.pino:active,.mais:active,.sem-mais-btn:active{transform:scale(.97)}           /* o botão cede ao toque */
 
 /* ---------- barra do site ---------- */
-.topo{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);
+.topo{position:sticky;top:0;z-index:80;background:var(--topo-bg);
       backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);
       border-bottom:1px solid var(--linha)}
 .topo-in{max-width:1120px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:32px}
 .marca{display:inline-flex;align-items:center;gap:12px;font-family:var(--serif);font-size:20px;font-weight:600;
        letter-spacing:-.01em;line-height:1;color:var(--tinta);text-decoration:none;white-space:nowrap;flex-shrink:0}
 .marca-ico{width:32px;height:32px;display:block;flex-shrink:0;transition:transform var(--t)}
-.marca-ico .fundo{fill:var(--tinta)}
+.marca-ico .fundo{fill:var(--marca-fundo)}
 .marca:hover .marca-ico{transform:translateY(-1px) scale(1.04)}
 .nav{align-self:stretch;display:flex;align-items:stretch;gap:4px;margin-left:auto;min-width:0;
      overflow-x:auto;scrollbar-width:none}
@@ -76,6 +99,11 @@ button{transition:color var(--t),background-color var(--t),border-color var(--t)
 .nav a[aria-current]{color:var(--tinta)}
 .nav a[aria-current]::after{transform:scaleX(1);background:var(--destaque-vivo)}
 .nav a:focus-visible{outline-offset:-4px}
+/* com JS, um indicador só (site.js) desliza entre os itens e o sublinhado de cada item sai */
+.nav{position:relative}
+.nav-js a::after{display:none}
+.nav-ind{position:absolute;left:0;bottom:0;height:2px;width:0;border-radius:2px;background:var(--destaque-vivo);
+         pointer-events:none;opacity:0;transition:opacity .2s var(--curva);will-change:transform,width}
 
 /* ---------- abertura das páginas ---------- */
 .capa{padding:64px 0 16px}
@@ -117,12 +145,12 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 .pino{font:inherit;font-size:13px;font-weight:500;line-height:1.25;padding:8px 16px;border:1px solid var(--linha);
       background:var(--papel);color:var(--tinta2);border-radius:var(--raio-p);cursor:pointer;white-space:nowrap}
 .pino:hover{border-color:var(--linha-forte);color:var(--tinta);box-shadow:var(--sombra)}
-.pino.on{background:var(--tinta);border-color:var(--tinta);color:#fff;box-shadow:none}
+.pino.on{background:var(--inverso);border-color:var(--inverso);color:var(--sobre-inverso);box-shadow:none}
 
 /* grupo segmentado */
 .seg{display:inline-flex;align-items:center;gap:4px;padding:4px;background:var(--linha2);border-radius:var(--raio-p)}
 .seg .pino{border:none;background:transparent;border-radius:var(--raio-c);padding:8px 12px;color:var(--tinta3)}
-.seg .pino:hover{color:var(--tinta);background:rgba(255,255,255,.6);box-shadow:none}
+.seg .pino:hover{color:var(--tinta);background:var(--seg-hover);box-shadow:none}
 .seg .pino.on{background:var(--papel);color:var(--tinta);box-shadow:0 1px 2px rgba(15,23,42,.08),0 1px 3px rgba(15,23,42,.06)}
 
 .limpar{font:inherit;font-size:13px;font-weight:500;color:var(--tinta);background:none;border:none;cursor:pointer;
@@ -146,7 +174,7 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 
 /* ---------- rodapé do site ---------- */
 .rodape-site+.rodape-global{margin-top:0}
-.rodape-global{margin-top:64px;background:var(--tinta);color:#a3b1c2;padding:56px 0 32px;font-size:14px;line-height:1.6}
+.rodape-global{margin-top:64px;background:var(--rodape-bg);color:#a3b1c2;padding:56px 0 32px;font-size:14px;line-height:1.6}
 .rg{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr));gap:32px 48px}
 .rg .marca{color:#fff;font-size:20px}
 .rg .marca-ico .fundo{fill:#1e293b}
@@ -159,14 +187,115 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 .rg-pe{margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;color:#94a3b8}
 .rg-pe p{max-width:90ch}
 
+/* ---------- carregando: esqueleto neutro (tinta e cinza, nunca as cores do espectro) ----------
+   Aparece só enquanto o contêiner está vazio e some sozinho quando a página o preenche; sem JS não aparece (nada vai chegar). */
+@keyframes brilho{to{background-position:-200% 0}}
+@media (scripting:enabled){
+  :is(#regs,#lista,#grafico,#funilCols,#raiz):empty::before,
+  .tela:not(:has(svg))::before{content:"";display:block;min-height:var(--esq-h,200px);border-radius:var(--raio-p);
+    background:linear-gradient(90deg,var(--linha2) 0%,var(--brilho) 40%,var(--linha2) 80%) 0 0/200% 100%;
+    animation:brilho 1.6s linear infinite}
+  .tela:not(:has(svg))::before{position:absolute;inset:0;min-height:0}
+}
+
+/* cartões-link: sobem um pouco ao passar o mouse e descem ao clicar (mesmo gesto em todas as páginas) */
+:is(.explora a,a.pessoa,.pessoa[href]){transition:border-color var(--t),box-shadow var(--t),transform var(--t)}
+:is(.explora a,a.pessoa,.pessoa[href]):active{transform:translateY(0) scale(.99)}
+
+/* título palavra por palavra: cada palavra numa máscara de onde sobe (o texto continua inteiro para quem lê em voz alta) */
+.pal{display:inline-block;vertical-align:top;overflow:hidden;padding:.06em .05em .14em;margin:-.06em -.05em -.14em}
+.pal>span{display:inline-block}
+
+.so-leitor{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
 /* ---------- logo do partido ---------- */
 .bandeira-slot{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-right:8px;flex:none}
 .bandeira{display:block;max-width:100%;max-height:100%;object-fit:contain}
 
-/* ---------- entrada suave (site.js marca; sem JS, tudo aparece normal) ---------- */
+/* ---------- entrada suave (site.js + Motion; sem JS, sem Motion ou com movimento reduzido nada fica escondido) ----------
+   O CSS esconde os blocos que vão entrar só enquanto html não tem .m-ok (o site.js solta depois de pôr o estado inicial em
+   estilo em linha) e só se há JS e o leitor aceita movimento. Se o Motion nunca assumir, a animação m-seguranca solta tudo
+   depois de 3,5 s. Os alvos são os mesmos que o site.js lista: blocos fixos, nunca as listas que os filtros redesenham. */
 @keyframes surgir{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.revela{opacity:0}
-.revela.visivel{animation:surgir .6s var(--curva) both}
+@keyframes m-seguranca{to{opacity:1;transform:none}}
+@media (scripting:enabled) and (prefers-reduced-motion:no-preference){
+  html:not(.m-ok) :is(.capa > :not(.hero):not(.explora),.explora > li,.painel,.votos,.mapa,.rodape-site .wrap,.rg > *,[data-reveal]),
+  html:not(.m-ok) .hero [data-entra]{opacity:0;animation:m-seguranca 0s 3.5s forwards}
+  html:not(.m-ok) .hero .pal>span{transform:translateY(110%);animation:m-seguranca 0s 3.5s forwards}
+}
+
+/* ---------- transição entre páginas (CSS nativo, sem JS) ----------
+   Navegador com suporte (Chrome/Edge 126+, Safari 18.2+) troca de página com um fade curto; os demais navegam como sempre.
+   A barra do site tem nome próprio: sai do instantâneo da página e fica parada, só o conteúdo muda. A página nova entra por
+   cima da antiga, que não some antes (o fundo nunca pisca), subindo poucos pixels. */
+@view-transition{navigation:auto}
+.topo{view-transition-name:topo}
+::view-transition-group(topo){animation-duration:0s}
+::view-transition-old(topo){display:none}
+::view-transition-new(topo){animation:none;mix-blend-mode:normal}
+::view-transition-old(root){animation:none;mix-blend-mode:normal}
+::view-transition-new(root){animation:vt-entra .32s var(--curva) both;mix-blend-mode:normal}
+@keyframes vt-entra{from{opacity:0;transform:translateY(8px)}}
+
+/* ---------- tema escuro ----------
+   Só em página que traz <html data-escuro-ok> (as outras têm cores fixas ainda não revistas e seguem claras). Claro é o padrão;
+   o escuro vale por prefers-color-scheme ou pela escolha do leitor (data-tema="escuro"|"claro", guardada pelo site.js).
+   Os dois blocos são idênticos: um para a preferência do sistema, outro para a escolha manual. */
+:root[data-escuro-ok]{color-scheme:light dark}
+:root[data-escuro-ok][data-tema="claro"]{color-scheme:light}
+@media (prefers-color-scheme:dark){
+  :root[data-escuro-ok]:not([data-tema="claro"]){
+    --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
+    --b0:#a3c957; --b1:#b58ee0; --cresce:#cbd5e1; --camada-escura:#070b13;
+    --rampa1:#e8edf5; --rampa2:#b6c2d3; --rampa3:#94a3b8; --rampa4:#64748b; --rampa5:#475569; --rampa6:#334155; --rampa7:#1e293b;
+    --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb; --tinta-rgb:232,237,245; --atencao:#e0b84d;
+    --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
+    --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55;
+    --dir:#3478cf;                     /* único ajuste do espectro: o #0c447c some sobre o escuro (1,8:1); este tem 4,3:1 */
+    --sombra:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.35);
+    --sombra-md:0 8px 16px -4px rgba(0,0,0,.5),0 2px 6px -2px rgba(0,0,0,.4);
+    --sombra-lg:0 32px 64px -16px rgba(0,0,0,.7),0 8px 24px -8px rgba(0,0,0,.5);
+    --anel:0 0 0 4px rgba(45,212,191,.25);
+    --topo-bg:rgba(10,15,26,.82);
+    --inverso:#e8edf5; --sobre-inverso:#0a0f1a; --inverso-2:#475569; --inverso-3:rgba(15,23,42,.1);
+    --marca-fundo:#1e293b; --rodape-bg:#070b13; --seg-hover:rgba(255,255,255,.06); --brilho:#1d283b;
+    color-scheme:dark;
+  }
+  :root[data-escuro-ok]:not([data-tema="claro"]) .sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239aa8bb' stroke-width='1.5'/%3E%3C/svg%3E")}
+  :root[data-escuro-ok]:not([data-tema="claro"]) .bandeira-slot{background:#f1f5f9;border-radius:4px;box-shadow:0 0 0 2px #f1f5f9}      /* o logo é feito para fundo claro */
+  :root[data-escuro-ok]:not([data-tema="claro"]) .seg .pino.on{box-shadow:0 1px 2px rgba(0,0,0,.4)}
+  :root[data-escuro-ok]:not([data-tema="claro"]) .rodape-site a{text-decoration-color:rgba(45,212,191,.4)}
+}
+:root[data-escuro-ok][data-tema="escuro"]{
+    --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
+    --b0:#a3c957; --b1:#b58ee0; --cresce:#cbd5e1; --camada-escura:#070b13;
+    --rampa1:#e8edf5; --rampa2:#b6c2d3; --rampa3:#94a3b8; --rampa4:#64748b; --rampa5:#475569; --rampa6:#334155; --rampa7:#1e293b;
+    --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb; --tinta-rgb:232,237,245; --atencao:#e0b84d;
+    --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
+    --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55;
+    --dir:#3478cf;                     /* único ajuste do espectro: o #0c447c some sobre o escuro (1,8:1); este tem 4,3:1 */
+    --sombra:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.35);
+    --sombra-md:0 8px 16px -4px rgba(0,0,0,.5),0 2px 6px -2px rgba(0,0,0,.4);
+    --sombra-lg:0 32px 64px -16px rgba(0,0,0,.7),0 8px 24px -8px rgba(0,0,0,.5);
+    --anel:0 0 0 4px rgba(45,212,191,.25);
+    --topo-bg:rgba(10,15,26,.82);
+    --inverso:#e8edf5; --sobre-inverso:#0a0f1a; --inverso-2:#475569; --inverso-3:rgba(15,23,42,.1);
+    --marca-fundo:#1e293b; --rodape-bg:#070b13; --seg-hover:rgba(255,255,255,.06); --brilho:#1d283b;
+    color-scheme:dark;
+}
+:root[data-escuro-ok][data-tema="escuro"] .sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239aa8bb' stroke-width='1.5'/%3E%3C/svg%3E")}
+:root[data-escuro-ok][data-tema="escuro"] .bandeira-slot{background:#f1f5f9;border-radius:4px;box-shadow:0 0 0 2px #f1f5f9}      /* o logo é feito para fundo claro */
+:root[data-escuro-ok][data-tema="escuro"] .seg .pino.on{box-shadow:0 1px 2px rgba(0,0,0,.4)}
+:root[data-escuro-ok][data-tema="escuro"] .rodape-site a{text-decoration-color:rgba(45,212,191,.4)}
+
+/* alternador de tema (site.js o põe na barra das páginas que declaram data-escuro-ok) */
+.tema-btn{flex-shrink:0;width:36px;height:36px;display:inline-grid;place-items:center;margin-left:8px;padding:0;
+          border:1px solid var(--linha);border-radius:999px;background:var(--papel);color:var(--tinta2);cursor:pointer;
+          align-self:center}
+.tema-btn:hover{border-color:var(--linha-forte);color:var(--tinta)}
+.tema-btn:active{transform:scale(.94)}
+.tema-btn svg{width:18px;height:18px;display:block}
+@media(max-width:640px){.tema-btn{margin-right:12px;margin-left:0}}
 
 /* ---------- telas menores ---------- */
 @media(max-width:1000px){
@@ -194,10 +323,84 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{transition:none!important;animation:none!important}
-  .revela{opacity:1}
+  @view-transition{navigation:none}
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
 }
 @media print{
   .topo,.rodape-global{display:none}
-  .revela{opacity:1!important;animation:none!important}
+  [data-m]{opacity:1!important;transform:none!important}
   body{background:#fff}
 }
+
+/* =====================================================================
+   REDESENHO EDITORIAL (6/10/2026) — jornalismo de dados: grade de 12 colunas, muito respiro, números grandes, o gráfico como
+   protagonista e um modelo 3D decorativo no topo de cada página. Só vale em página que traz <html data-ed>; as outras ficam como
+   estavam. Tudo aqui usa os tokens do site (nada de cor nova), e as cores do espectro continuam só para ideologia.
+   ===================================================================== */
+/* mais largura e a mesma margem lateral da grade (80 px a 1440 px) */
+html[data-ed] .wrap,html[data-ed] .topo-in{max-width:1440px;padding-inline:clamp(16px,5.55vw,80px)}
+@media(max-width:640px){html[data-ed] .topo-in{padding:0 0 0 16px}}
+
+/* camada escura dentro de página clara (a abertura da inicial, "Esta semana"): redefine os tokens só aqui dentro, e tudo o que
+   está nela (busca, hemiciclo, listas) se adapta sem regra própria. É o mesmo conjunto do tema escuro. */
+.escuro{
+  --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
+  --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb; --tinta-rgb:232,237,245; --atencao:#e0b84d;
+  --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
+  --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55; --dir:#3478cf;
+  --sombra:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.35);
+  --sombra-md:0 8px 16px -4px rgba(0,0,0,.5),0 2px 6px -2px rgba(0,0,0,.4);
+  --sombra-lg:0 32px 64px -16px rgba(0,0,0,.7),0 8px 24px -8px rgba(0,0,0,.5);
+  --anel:0 0 0 4px rgba(45,212,191,.25);
+  --topo-bg:rgba(10,15,26,.86);
+  --inverso:#e8edf5; --sobre-inverso:#0a0f1a; --inverso-2:#475569; --inverso-3:rgba(15,23,42,.1);
+  --marca-fundo:#1e293b; --seg-hover:rgba(255,255,255,.06); --brilho:#1d283b;
+  background:var(--camada-escura); color:var(--tinta); color-scheme:dark;
+}
+.topo.escuro{border-bottom-color:rgba(255,255,255,.1)}
+
+/* tipografia: a condensada só diz o que é grande (título e número); a serifa conduz a leitura */
+.cond{font-family:var(--cond);font-weight:600;letter-spacing:0}
+html[data-ed] .t-gigante,html[data-ed] .t-grande{font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:0;max-width:none;text-wrap:balance}
+html[data-ed] .t-gigante{font-size:clamp(60px,12.2vw,176px);line-height:.88}
+html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
+.t-gigante .acento,.t-grande .acento{color:var(--destaque)}
+.h2-ed{font-family:var(--serif);font-weight:500;font-size:clamp(34px,4.2vw,60px);line-height:1.04;letter-spacing:-.02em;max-width:16ch;text-wrap:balance}
+.h2-ed.largo{max-width:20ch}
+.lede-ed{font-size:clamp(16px,1.5vw,19px);line-height:1.6;color:var(--tinta2);max-width:54ch}
+.sec-ed{padding:clamp(64px,8vw,112px) 0 clamp(56px,6.5vw,96px)}
+
+/* abertura: o número primeiro, o modelo na coluna da direita (nunca atrás do texto) */
+.hero-ed{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;row-gap:40px;align-items:end;padding:72px 0 64px}
+.hero-ed>.txt{grid-column:1/span 8;min-width:0}
+.hero-ed>.lado{grid-column:9/span 4;min-width:0}
+.hero-ed .lede-ed{margin-top:28px}
+.hero-ed .kicker{margin-bottom:16px}
+.modelo-ed{position:relative;margin:0;aspect-ratio:4/3;border-radius:var(--raio);overflow:hidden;border:1px solid #1b2a3a;
+  background:radial-gradient(75% 65% at 50% 40%,#10222c 0%,#0a121b 72%),#0a121b;box-shadow:var(--sombra-md)}
+.modelo-ed img,.modelo-ed canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.modelo-ed canvas{opacity:0;transition:opacity .8s var(--curva)}
+.modelo-ed img{transition:opacity .8s var(--curva)}
+.modelo-ed.pronto canvas{opacity:1}
+.modelo-ed.pronto img{opacity:0}
+@media(max-width:900px){
+  .hero-ed{padding:40px 0 32px;row-gap:28px}
+  .hero-ed>.txt,.hero-ed>.lado{grid-column:1/-1}
+  .modelo-ed{aspect-ratio:auto;height:220px;max-height:220px}
+  .modelo-ed.sem-modelo{display:none}                  /* conexão que pede economia: nem a imagem */
+}
+
+/* três números grandes, separados por filetes */
+.numeros-ed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--linha-forte);margin-top:24px}
+.numeros-ed>div{padding:16px 0 0 24px;border-left:1px solid var(--linha-forte);min-width:0}
+.numeros-ed>div:first-child{padding-left:0;border-left:0}
+.numeros-ed b{display:block;font-family:var(--cond);font-weight:600;font-size:clamp(40px,4.6vw,64px);line-height:1;letter-spacing:0;color:var(--tinta)}
+.numeros-ed span{display:block;margin-top:6px;font-size:13px;line-height:1.35;color:var(--tinta3)}
+
+/* abertura das páginas internas (leis, blocos, fluxo, obras): título grande à esquerda, modelo à direita; o resto da página como era */
+.capa>.hero-ed{padding:0 0 28px;align-items:end}
+.capa>.hero-ed .chamada{margin-top:28px;font-size:clamp(16px,1.5vw,19px);max-width:54ch}
+.capa>.hero-ed .t-gigante{margin-top:4px}
+.metodo-fim{margin-top:64px;padding-top:32px;border-top:1px solid var(--linha)}
+.metodo-fim h2{font-family:var(--serif);font-size:clamp(24px,2.6vw,30px);font-weight:500;line-height:1.15;margin-bottom:8px}
+.metodo-fim .aviso{max-width:78ch;margin-top:16px}
