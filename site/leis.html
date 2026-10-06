@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-ed>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -16,6 +16,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Three.js 0.180.0, versionado em vendor/three/ (sem CDN). O importmap só diz onde fica; nada é baixado até alguém dar import('three'),
+     o que cena3d.js faz sob demanda (modelo do topo, depois da primeira pintura). -->
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 <!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
 <link rel="modulepreload" href="vendor/motion-14.0.0.js">
 <script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
@@ -163,31 +167,16 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
 
 <main class="wrap">
   <div class="capa">
+    <div class="hero-ed">
+      <div class="txt">
     <p class="kicker">Leis votadas · 2023 a 2026</p>
-    <h1>O que a Câmara votou, e quem votou diferente da orientação da própria bancada</h1>
+      <h1 class="t-gigante"><span class="acento" id="hNum">164</span> votações</h1>
     <p class="chamada" id="chamada">As votações finais de texto-base com voto registrado de cada
        deputado, da mais recente para a mais antiga.</p>
-
-    <div class="aviso" role="note">
-      <p><b>Votar diferente da orientação da própria bancada não é traição nem incoerência por definição.</b>
-         Pode ser convicção pessoal, compromisso com o estado ou a região, ou acordo. Esta página mostra
-         quem fez isso, não por quê.</p>
-      <p>A orientação é a que a Câmara registrou em cada votação, não uma estimativa. A bancada é a liderança
-         que orientou e que inclui o partido do deputado naquele dia — o próprio partido, a federação ou o
-         bloco em que o partido estava, nessa ordem. Orientação liberada, obstrução ou em branco não conta,
-         nem a de Governo, Oposição, Maioria e Minoria. Entram apenas os votos Sim e Não.</p>
-      <p><b>Enquete e consulta pública não são pesquisa de opinião.</b> Cada lei traz três registros do
-         peso que teve, lado a lado e nunca somados numa nota: quantas vezes o Plenário votou nome a nome
-         sobre ela (a disputa entre os deputados), quantas pessoas responderam à enquete da Câmara e quantas
-         votaram na consulta pública do Senado (o interesse de quem procurou cada site). Quem responde não é
-         uma amostra do país, a mesma pessoa pode responder nas duas, e uma campanha organizada enche uma
-         consulta em poucos dias.</p>
-      <p><b>Notoriedade na Câmara não é importância.</b> A porcentagem diz o quanto o assunto foi falado dentro
-         da Câmara: quantos projetos sobre o mesmo tema foram apensados, quantas vezes o Plenário votou nome a
-         nome, quão apertado foi o placar final, se tramitou em urgência e, nas PEC, quantos deputados
-         assinaram. É a média simples desses itens, com pesos iguais, e cada um aparece ao lado do número.
-         O público (enquete e consulta) fica fora da conta.</p>
+      </div>
+      <div class="lado"><figure class="modelo-ed" data-modelo="folhas" aria-hidden="true"><img src="img/modelo-folhas.svg" alt="" width="480" height="360" decoding="async"></figure></div>
     </div>
+
   </div>
 
   <section class="painel" aria-label="Filtros">
@@ -220,6 +209,30 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
 
   <div id="lista"></div>
   <button class="mais" id="mais" hidden>Mostrar mais</button>
+
+  <section class="metodo-fim" aria-labelledby="comoTit">
+    <h2 id="comoTit">Como ler esta página</h2>
+    <div class="aviso" role="note">
+      <p><b>Votar diferente da orientação da própria bancada não é traição nem incoerência por definição.</b>
+         Pode ser convicção pessoal, compromisso com o estado ou a região, ou acordo. Esta página mostra
+         quem fez isso, não por quê.</p>
+      <p>A orientação é a que a Câmara registrou em cada votação, não uma estimativa. A bancada é a liderança
+         que orientou e que inclui o partido do deputado naquele dia — o próprio partido, a federação ou o
+         bloco em que o partido estava, nessa ordem. Orientação liberada, obstrução ou em branco não conta,
+         nem a de Governo, Oposição, Maioria e Minoria. Entram apenas os votos Sim e Não.</p>
+      <p><b>Enquete e consulta pública não são pesquisa de opinião.</b> Cada lei traz três registros do
+         peso que teve, lado a lado e nunca somados numa nota: quantas vezes o Plenário votou nome a nome
+         sobre ela (a disputa entre os deputados), quantas pessoas responderam à enquete da Câmara e quantas
+         votaram na consulta pública do Senado (o interesse de quem procurou cada site). Quem responde não é
+         uma amostra do país, a mesma pessoa pode responder nas duas, e uma campanha organizada enche uma
+         consulta em poucos dias.</p>
+      <p><b>Notoriedade na Câmara não é importância.</b> A porcentagem diz o quanto o assunto foi falado dentro
+         da Câmara: quantos projetos sobre o mesmo tema foram apensados, quantas vezes o Plenário votou nome a
+         nome, quão apertado foi o placar final, se tramitou em urgência e, nas PEC, quantos deputados
+         assinaram. É a média simples desses itens, com pesos iguais, e cada um aparece ao lado do número.
+         O público (enquete e consulta) fica fora da conta.</p>
+    </div>
+  </section>
 </main>
 
 <footer class="rodape-site">
@@ -369,8 +382,11 @@ async function carregar(){
   const total=LEIS.reduce((s,l)=>s+l.div.length,0);
   // proposicoes.json gerado antes da medida pela orientação: não afirma "ninguém votou diferente"
   SEM_DIF=!LEIS.some(l=>'difOrientacao' in l);
+  const hn=document.getElementById('hNum'); if(hn) hn.textContent=nf.format(LEIS.length);      // o número grande vem dos dados
+  // a ressalva vem antes de qualquer número sobre voto diferente (CLAUDE.md: enquadramento antes do número)
+  const RESSALVA='<b>Votar diferente da orientação da própria bancada não é traição nem incoerência por definição:</b> pode ser convicção, compromisso com o estado ou acordo. ';
   chamada.innerHTML=SEM_DIF?`As <b data-conta>${LEIS.length}</b> votações finais de texto-base com voto registrado de cada deputado, de 2023 a 2026.`:
-    `As <b data-conta>${LEIS.length}</b> votações finais de texto-base com voto registrado de cada deputado, `+
+    `${RESSALVA}As <b data-conta>${LEIS.length}</b> votações finais de texto-base com voto registrado de cada deputado, `+
     `de 2023 a 2026. Em <b data-conta>${LEIS.filter(l=>l.div.length).length}</b> delas alguém votou diferente da orientação `+
     `da própria bancada — <b data-conta>${nf.format(total)}</b> votos ao todo.`;
   if(window.Contar) Contar.varrer(chamada);

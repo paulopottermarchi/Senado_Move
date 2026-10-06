@@ -22,6 +22,8 @@
      interface azul faria o site parecer de um lado. O petróleo fica só na interface (links,
      rótulos, item atual, foco, marca) — nunca em gráfico nem em dado. */
   --tinta:#0f172a;  --tinta2:#334155;  --tinta3:#566376;       /* 17,9 · 10,4 · 6,1 : 1 no branco */
+  --atencao:#8a6d1f;                                            /* amostra pequena: ocre, 4,9:1 no branco */
+  --tinta-rgb:15,23,42;                                          /* a tinta em rgb, para tingir células (rgba(var(--tinta-rgb),.3)) */
   --destaque:#0f766e;                                          /* texto e links: 5,5 : 1 no branco */
   --destaque-forte:#115e59;                                    /* hover: 7,6 : 1 */
   --destaque-vivo:#0d9488;                                     /* traços e indicadores: 3,7 : 1 */
@@ -240,7 +242,7 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 @media (prefers-color-scheme:dark){
   :root[data-escuro-ok]:not([data-tema="claro"]){
     --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
-    --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb;
+    --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb; --tinta-rgb:232,237,245; --atencao:#e0b84d;
     --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
     --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55;
     --dir:#3478cf;                     /* único ajuste do espectro: o #0c447c some sobre o escuro (1,8:1); este tem 4,3:1 */
@@ -260,7 +262,7 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 }
 :root[data-escuro-ok][data-tema="escuro"]{
     --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
-    --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb;
+    --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb; --tinta-rgb:232,237,245; --atencao:#e0b84d;
     --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
     --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55;
     --dir:#3478cf;                     /* único ajuste do espectro: o #0c447c some sobre o escuro (1,8:1); este tem 4,3:1 */
@@ -335,7 +337,7 @@ html[data-ed] .wrap,html[data-ed] .topo-in{max-width:1440px;padding-inline:clamp
    está nela (busca, hemiciclo, listas) se adapta sem regra própria. É o mesmo conjunto do tema escuro. */
 .escuro{
   --fundo:#0a0f1a; --papel:#111827; --papel2:#0e1522;
-  --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb;
+  --tinta:#e8edf5; --tinta2:#c5d0de; --tinta3:#9aa8bb; --tinta-rgb:232,237,245; --atencao:#e0b84d;
   --destaque:#2dd4bf; --destaque-forte:#5eead4; --destaque-vivo:#14b8a6; --destaque-claro:#2dd4bf; --destaque-fundo:#0f2a2b;
   --linha:#1e2a3f; --linha2:#172033; --linha-forte:#2d3b55; --dir:#3478cf;
   --sombra:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.35);
@@ -351,9 +353,9 @@ html[data-ed] .wrap,html[data-ed] .topo-in{max-width:1440px;padding-inline:clamp
 
 /* tipografia: a condensada só diz o que é grande (título e número); a serifa conduz a leitura */
 .cond{font-family:var(--cond);font-weight:600;letter-spacing:0}
-.t-gigante,.t-grande{font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:0;max-width:none;text-wrap:balance}
-.t-gigante{font-size:clamp(60px,12.2vw,176px);line-height:.88}
-.t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
+html[data-ed] .t-gigante,html[data-ed] .t-grande{font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:0;max-width:none;text-wrap:balance}
+html[data-ed] .t-gigante{font-size:clamp(60px,12.2vw,176px);line-height:.88}
+html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 .t-gigante .acento,.t-grande .acento{color:var(--destaque)}
 .h2-ed{font-family:var(--serif);font-weight:500;font-size:clamp(34px,4.2vw,60px);line-height:1.04;letter-spacing:-.02em;max-width:16ch;text-wrap:balance}
 .h2-ed.largo{max-width:20ch}
@@ -386,3 +388,11 @@ html[data-ed] .wrap,html[data-ed] .topo-in{max-width:1440px;padding-inline:clamp
 .numeros-ed>div:first-child{padding-left:0;border-left:0}
 .numeros-ed b{display:block;font-family:var(--cond);font-weight:600;font-size:clamp(40px,4.6vw,64px);line-height:1;letter-spacing:0;color:var(--tinta)}
 .numeros-ed span{display:block;margin-top:6px;font-size:13px;line-height:1.35;color:var(--tinta3)}
+
+/* abertura das páginas internas (leis, blocos, fluxo, obras): título grande à esquerda, modelo à direita; o resto da página como era */
+.capa>.hero-ed{padding:0 0 28px;align-items:end}
+.capa>.hero-ed .chamada{margin-top:28px;font-size:clamp(16px,1.5vw,19px);max-width:54ch}
+.capa>.hero-ed .t-gigante{margin-top:4px}
+.metodo-fim{margin-top:64px;padding-top:32px;border-top:1px solid var(--linha)}
+.metodo-fim h2{font-family:var(--serif);font-size:clamp(24px,2.6vw,30px);font-weight:500;line-height:1.15;margin-bottom:8px}
+.metodo-fim .aviso{max-width:78ch;margin-top:16px}

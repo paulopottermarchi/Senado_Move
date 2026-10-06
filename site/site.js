@@ -330,8 +330,9 @@ window.Modelo3D = (() => {
     } catch (e) { /* fica a imagem estática */ }
   };
   const varrer = () => {
-    const figs = [...document.querySelectorAll('[data-modelo]')];
+    const figs = [...document.querySelectorAll('[data-modelo]:not([data-3d])')];    // quem já foi tratado não entra de novo
     if (!figs.length) return;
+    figs.forEach(f => f.setAttribute('data-3d', ''));
     if (lenta()) { figs.forEach(f => f.classList.add('sem-modelo')); return; }
     if (matchMedia('(prefers-reduced-motion: reduce)').matches || !importmapOk() || fraco()) return;
     const iniciar = () => figs.forEach(montar);

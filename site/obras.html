@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-ed>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -16,6 +16,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Three.js 0.180.0, versionado em vendor/three/ (sem CDN). O importmap só diz onde fica; nada é baixado até alguém dar import('three'),
+     o que cena3d.js faz sob demanda (modelo do topo, depois da primeira pintura). -->
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 <!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
 <link rel="modulepreload" href="vendor/motion-14.0.0.js">
 <script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
@@ -143,10 +147,15 @@
 
 <main class="wrap">
   <div class="capa">
+    <div class="hero-ed">
+      <div class="txt">
     <p class="kicker" id="kicker">Obras com contrato federal · São Paulo</p>
-    <h1>Quanto o contrato da obra cresceu</h1>
+      <h1 class="t-grande">Quanto o contrato da obra cresceu</h1>
     <p class="chamada">Do valor assinado ao valor de hoje, termo a termo, com o documento oficial de cada passo:
        quem contratou, qual empresa, quanto já foi pago e qual emenda parlamentar pôs dinheiro na obra.</p>
+      </div>
+      <div class="lado"><figure class="modelo-ed" data-modelo="obras" aria-hidden="true"><img src="img/modelo-obras.svg" alt="" width="480" height="360" decoding="async"></figure></div>
+    </div>
 
     <div class="aviso" role="note">
       <p><b>Aditivo não é irregularidade.</b> A lei permite acrescentar até 25% do valor inicial atualizado de

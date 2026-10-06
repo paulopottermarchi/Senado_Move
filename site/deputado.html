@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-ed>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -16,6 +16,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Three.js 0.180.0, versionado em vendor/three/ (sem CDN). O importmap só diz onde fica; nada é baixado até alguém dar import('three'),
+     o que cena3d.js faz sob demanda (modelo do topo, depois da primeira pintura). -->
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 <!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
 <link rel="modulepreload" href="vendor/motion-14.0.0.js">
 <script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
@@ -28,9 +32,11 @@
 .volta:hover{color:var(--tinta);text-decoration:underline}
 
 /* ---------- cabeçalho ---------- */
-.cab{display:flex;gap:20px;align-items:center;padding:24px 0 8px}
-.cab h1{font-family:var(--serif);font-size:clamp(28px,4.4vw,40px);font-weight:500;
-        letter-spacing:-.012em;line-height:1.08}
+.cab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:24px 40px;align-items:center;padding:24px 0 8px}
+.cab-txt{display:flex;gap:20px;align-items:center;min-width:0}
+.cab h1{font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:0;line-height:.92;max-width:none;
+  font-size:clamp(44px,6.4vw,92px);text-wrap:balance}
+@media(max-width:900px){.cab{grid-template-columns:minmax(0,1fr)}}
 .cab .quem{font-size:14px;color:var(--tinta3);margin-top:4px}
 .frase{font-family:var(--serif);font-size:clamp(17px,2.1vw,20px);line-height:1.45;
        color:var(--tinta);max-width:58ch;margin:12px 0 0}
@@ -408,9 +414,10 @@ function montar(){
   obrasDoDeputado(d.id,d.uf);
   document.getElementById('raiz').innerHTML=`
     <header class="cab">
-      ${retrato(d,72)}
-      <div><h1>${esc(d.nome)}</h1>
-        <div class="quem">${esc(d.partido||'')} de ${esc(d.uf||'')}${d.federacao?`, federação ${esc(d.federacao)}`:''}</div></div>
+      <div class="cab-txt">${retrato(d,72)}
+        <div><h1>${esc(d.nome)}</h1>
+          <div class="quem">${esc(d.partido||'')} de ${esc(d.uf||'')}${d.federacao?`, federação ${esc(d.federacao)}`:''}</div></div></div>
+      <figure class="modelo-ed" data-modelo="assento" aria-hidden="true"><img src="img/modelo-assento.svg" alt="" width="480" height="360" decoding="async"></figure>
     </header>
     <p class="frase">${esc(d.frase||'')}</p>
     ${antes?`<p class="carreira">Somando mandatos anteriores: ${NF.format(apres)} ${plural(apres,'proposição','proposições')}
@@ -444,6 +451,7 @@ function montar(){
       exigidas para PEC. Ementa e situação são as oficiais da Câmara. A frase do topo e o período
       padrão contam desde ${data(tax.inicioLegislatura)}, início da legislatura atual. Regras na
       versão ${esc(tax.versao)}, dados de ${data(tax.geradoEm)}.</p>`;
+  if(window.Modelo3D) Modelo3D.varrer();       // o modelo entra depois que a ficha é montada (a página é desenhada por script)
 
   document.querySelectorAll('[data-leg]').forEach(b=>b.onclick=()=>{
     filtro.leg=b.dataset.leg==='1'; ligar('[data-leg]',b); limite=PASSO; desenhar();
