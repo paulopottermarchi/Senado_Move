@@ -119,3 +119,43 @@ window.Espectro = (() => {
   };
   return { CORES, NOMES, PARADAS, corDoScore, REGIOES, REG_NOME, UF_REG, assentos };
 })();
+
+// Contagem animada nos números de destaque (Motion). O valor final já está no texto: sem JS, sem Motion ou com movimento reduzido
+// o número aparece pronto e nada muda. Com Motion, `Contar.varrer(raiz)` marca cada [data-conta], mostra 0 até o número entrar
+// na tela e então conta até o valor que estava escrito (formato pt-BR preservado: milhar com ponto, vírgula decimal, prefixo
+// e sufixo como "+", "%", " mi", "×"). `Contar.para(el, texto)` leva um número que muda com os filtros do valor atual ao novo.
+// `data-conta-atraso="0.9"` espera esse tanto de segundos depois de entrar na tela. O que não for um número simples fica como está.
+window.Contar = (() => {
+  const LER = /^(\D*?)(\d{1,3}(?:\.\d{3})+|\d+)(?:,(\d+))?(\D*)$/;
+  const ler = t => {
+    const m = LER.exec(String(t).trim());
+    return m ? { pre: m[1], num: parseFloat(m[2].replace(/\./g, '') + (m[3] ? '.' + m[3] : '')), dec: m[3] ? m[3].length : 0, suf: m[4] } : null;
+  };
+  const fmt = (v, dec) => v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  const ativo = () => window.Motion && window.Motion.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const levar = (el, de, para, x, final, atraso = 0, dur = 1.2) => {
+    if (el._conta) el._conta.stop();
+    el._conta = window.Motion.animate(de, para, {
+      duration: dur, delay: atraso, ease: [0.16, 1, 0.3, 1],
+      onUpdate: v => { el.textContent = x.pre + fmt(v, x.dec) + x.suf; },
+      onComplete: () => { el.textContent = final; el._conta = null; }
+    });
+  };
+  const varrer = (raiz = document) => {
+    if (!ativo() || !window.Motion.inView) return;
+    for (const el of raiz.querySelectorAll('[data-conta]:not([data-conta-ok])')) {
+      const final = el.textContent, x = ler(final);
+      el.setAttribute('data-conta-ok', '');
+      if (!x || x.num === 0) continue;
+      el.textContent = x.pre + fmt(0, x.dec) + x.suf;
+      window.Motion.inView(el, () => { levar(el, 0, x.num, x, final, parseFloat(el.dataset.contaAtraso) || 0); });
+    }
+  };
+  const para = (el, texto) => {
+    texto = String(texto);
+    const de = ler(el.textContent), x = ler(texto);
+    if (!ativo() || !de || !x || de.num === x.num) { if (el._conta) el._conta.stop(); el._conta = null; el.textContent = texto; return; }
+    levar(el, de.num, x.num, x, texto, 0, 0.6);
+  };
+  return { varrer, para };
+})();

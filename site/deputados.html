@@ -1764,7 +1764,7 @@ function contaDesenhar(){
       <td class="p">${pct.toFixed(0)}%</td></tr>`;
   }).join('');
   document.getElementById('conta').innerHTML=linhas;
-  document.getElementById('totalN').textContent=tot;
+  { const n=document.getElementById('totalN'); if(window.Contar) Contar.para(n,tot); else n.textContent=tot; }   // o total conta do valor anterior ao novo quando um filtro muda
   document.querySelectorAll('.conta tr').forEach(tr=>tr.onclick=()=>{
     const k=tr.dataset.f;
     filtro.faixas.has(k)?filtro.faixas.delete(k):filtro.faixas.add(k);
@@ -2186,10 +2186,9 @@ function abrir(d){
   document.getElementById('fFoto').innerHTML=retrato(d,66);
   fNome.textContent=d.nome;
   fQuem.textContent=`${d.partido} de ${d.uf}`+(d.federacao?`, federação ${d.federacao}`:'');
-  fPec.textContent=d.pecs;
-  fPl.textContent=d.leis;
-  fLei.textContent=d.viraramLei??'—';
-  fPlen.textContent=d.aprovadasPlenario??'—';
+  // os quatro números da ficha contam de 0 até o valor do deputado (sem Motion ou com movimento reduzido, aparecem prontos)
+  const conta=(el,v)=>{ if(window.Contar&&typeof v==='number'){ el.textContent='0'; Contar.para(el,v); } else el.textContent=v; };
+  conta(fPec,d.pecs); conta(fPl,d.leis); conta(fLei,d.viraramLei??'—'); conta(fPlen,d.aprovadasPlenario??'—');
 
   // os dois números divergem nos dois sentidos e isso confunde sem explicação
   const vl=d.viraramLei, ap=d.aprovadasPlenario;

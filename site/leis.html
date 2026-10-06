@@ -369,10 +369,11 @@ async function carregar(){
   const total=LEIS.reduce((s,l)=>s+l.div.length,0);
   // proposicoes.json gerado antes da medida pela orientação: não afirma "ninguém votou diferente"
   SEM_DIF=!LEIS.some(l=>'difOrientacao' in l);
-  chamada.textContent=SEM_DIF?`As ${LEIS.length} votações finais de texto-base com voto registrado de cada deputado, de 2023 a 2026.`:
-    `As ${LEIS.length} votações finais de texto-base com voto registrado de cada deputado, `+
-    `de 2023 a 2026. Em ${LEIS.filter(l=>l.div.length).length} delas alguém votou diferente da orientação `+
-    `da própria bancada — ${nf.format(total)} votos ao todo.`;
+  chamada.innerHTML=SEM_DIF?`As <b data-conta>${LEIS.length}</b> votações finais de texto-base com voto registrado de cada deputado, de 2023 a 2026.`:
+    `As <b data-conta>${LEIS.length}</b> votações finais de texto-base com voto registrado de cada deputado, `+
+    `de 2023 a 2026. Em <b data-conta>${LEIS.filter(l=>l.div.length).length}</b> delas alguém votou diferente da orientação `+
+    `da própria bancada — <b data-conta>${nf.format(total)}</b> votos ao todo.`;
+  if(window.Contar) Contar.varrer(chamada);
 
   // ?dep=ID vem da ficha do deputado na página principal
   const q=new URLSearchParams(location.search);

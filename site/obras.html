@@ -492,9 +492,10 @@ function resumo(){
   const c=OBRAS.filter(o=>o.inicial>0), cresc=c.filter(o=>o.atual>o.inicial+0.5).map(pctDe).sort((a,b)=>a-b);
   const n=cresc.length, med=!n?0:(n%2?cresc[(n-1)/2]:(cresc[n/2-1]+cresc[n/2])/2);      // mediana de verdade (n par: média dos dois do meio)
   const cob=META._cobertura||{};
-  $('#resumo').innerHTML=`Em <b>${nf.format(cresc.length)} de ${nf.format(c.length)}</b> obras o valor do contrato cresceu depois da assinatura;
-    entre elas, a mediana foi <b>${sinal(med)}</b>. Em ${nf.format(c.filter(o=>o.atual<o.inicial-0.5).length)} o valor caiu (supressão).
+  $('#resumo').innerHTML=`Em <b data-conta>${nf.format(cresc.length)}</b> de <b data-conta>${nf.format(c.length)}</b> obras o valor do contrato cresceu depois da assinatura;
+    entre elas, a mediana foi <b data-conta>${sinal(med)}</b>. Em ${nf.format(c.filter(o=>o.atual<o.inicial-0.5).length)} o valor caiu (supressão).
     Crescimento total, somando acréscimos e reajustes.`;
+  if(window.Contar) Contar.varrer($('#resumo'));
   if(cob.obrasNaUf) $('#cobertura').textContent=`Das ${nf.format(cob.obrasNaUf)} obras de ${META._uf} no ObrasGov, ${nf.format(cob.obrasComContrato)} têm contrato no sistema de contratos do governo federal (Contratos.gov.br) — só essas estão aqui.`;
   $('#kicker').textContent=`Obras com contrato federal · ${META._uf==='SP'?'São Paulo':META._uf}`;
   $('#rodapeData').textContent=`ObrasGov atualizado em ${data(META._obrasgovAtualizado)}; arquivo de emendas da CGU de ${data(META._emendasCgu)}; página gerada em ${data(META._geradoEm)}.`;

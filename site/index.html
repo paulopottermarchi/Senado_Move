@@ -302,7 +302,7 @@ a.reg:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
         <div class="hv-box">
           <svg class="hv" id="heroViz" viewBox="0 0 300 158" role="img"
                aria-label="Hemiciclo com os 513 deputados, do mais à esquerda ao mais à direita pela posição do partido no espectro"></svg>
-          <div class="hv-n" aria-hidden="true"><b>513</b><span>deputados</span></div>
+          <div class="hv-n" aria-hidden="true"><b data-conta data-conta-atraso=".9">513</b><span>deputados</span></div>
         </div>
         <a class="hv-dica" id="heroDica" href="deputados.html" tabindex="-1" aria-hidden="true"></a>
         <figcaption id="heroCap">Cada ponto é um deputado, do mais à esquerda ao mais à direita pela posição do partido.<span id="heroSem"></span>
@@ -516,13 +516,13 @@ async function carregarSemana(){
       <h2 id="semanaTit">Esta semana na Câmara</h2></div>
       <p>${periodo(s.de,s.ate)}. Atualizado em ${dataLonga(s.geradoEm)}, às ${+s.geradoEm.slice(11,13)}h${s.geradoEm.slice(14,16)}.</p></div>
     <div class="sem-grade">
-      <div class="sem-col"><h3>Viraram lei <span>${s.viraramLei.total}</span></h3>
+      <div class="sem-col"><h3>Viraram lei <span data-conta>${s.viraramLei.total}</span></h3>
         ${s.viraramLei.total?semLista(s.viraramLei,null):'<p class="sem-obs">Nenhuma nesta semana.</p>'}</div>
       <div class="sem-col"><h3>Na pauta do Plenário</h3>${semPauta(s.pauta)}</div>
-      <div class="sem-col"><h3>Andaram <span>${s.andaram.total}</span></h3>
+      <div class="sem-col"><h3>Andaram <span data-conta>${s.andaram.total}</span></h3>
         ${s.andaram.total?semLista(s.andaram,x=>`${esc(x.andamento)}${x.situacao?`. Situação agora: ${esc(x.situacao)}`:''}`)
           :'<p class="sem-obs">Nenhum andamento registrado.</p>'}</div>
-      <div class="sem-col"><h3>Novas <span>${s.novas.total}</span></h3>
+      <div class="sem-col"><h3>Novas <span data-conta>${s.novas.total}</span></h3>
         ${temas?`<p class="sem-obs">Temas mais frequentes: ${esc(temas)}.</p>`:''}
         ${semLista(s.novas,null)}</div>
     </div>
@@ -532,6 +532,7 @@ async function carregarSemana(){
       Categorias pela classificação deste site, a partir da ementa oficial (ou da indexação da Câmara,
       quando a ementa não diz o assunto): passe o mouse sobre uma categoria para ver o termo que a definiu.</p>`;
   box.hidden=false;
+  if(window.Contar) Contar.varrer(box);         // os totais contam até o valor quando entram na tela
   // a seção só existe depois do fetch, e as fontes ainda mexem na altura de cima: rola agora e de novo quando elas chegam
   if(location.hash==='#semana'){ const ir=()=>box.scrollIntoView({behavior:'instant'}); ir(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(ir); }
 }
@@ -679,6 +680,7 @@ function heroDica(){
 async function iniciar(){
   E=window.Espectro;                         // site.js é defer: só existe depois do parse
   heroAbrir(); heroDica();
+  if(window.Contar) Contar.varrer(document.getElementById('heroFig'));
   document.getElementById('mTam').onclick=()=>{mapaProporcional=false;mTam.classList.add('on');mProp.classList.remove('on');mapaDesenhar();};
   document.getElementById('mProp').onclick=()=>{mapaProporcional=true;mProp.classList.add('on');mTam.classList.remove('on');mapaDesenhar();};
   carregarSemana();
