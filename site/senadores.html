@@ -61,7 +61,7 @@
 .f-cab p{font-size:13px;color:var(--tinta2)}
 .nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:16px}
 .nums div{border:1px solid var(--linha2);border-radius:var(--raio-p);padding:8px 12px}
-.nums b{display:block;font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.1}
+.nums b{display:block;font-family:var(--cond);font-size:34px;font-weight:600;line-height:1;letter-spacing:0}
 .nums span{font-size:12px;color:var(--tinta2)}
 .f-txt{font-size:14px;line-height:1.6;margin-top:12px;max-width:74ch;color:var(--tinta2)}
 .f-txt b{color:var(--tinta);font-weight:600}
@@ -93,7 +93,7 @@ tbody tr{transition:background-color var(--t)}
 .assento{cursor:pointer;stroke:var(--papel);stroke-width:1;transition:opacity 200ms var(--curva)}
 .assento:hover,.assento:focus-visible{stroke:var(--tinta);stroke-width:2}
 .comp-total{text-align:center;font-family:var(--serif);font-size:13px;color:var(--tinta3);margin-top:-40px;margin-bottom:16px;position:relative}
-.comp-total b{display:block;font-size:30px;font-weight:600;color:var(--tinta);line-height:1}
+.comp-total b{display:block;font-family:var(--cond);font-size:38px;font-weight:600;color:var(--tinta);line-height:1;letter-spacing:0}
 .conta{width:100%;border-collapse:collapse;margin:0}
 .conta tbody tr{cursor:default}
 .conta tbody tr:hover{background:none}
@@ -661,6 +661,7 @@ function modeloDoTopo(){
   if(cx&&(cx.saveData===true||/(^|-)2g$/.test(cx.effectiveType||''))){ document.getElementById('heroGrid').classList.add('sem-modelo'); return; }
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if(!(window.HTMLScriptElement&&HTMLScriptElement.supports&&HTMLScriptElement.supports('importmap'))) return;
+  if((navigator.deviceMemory&&navigator.deviceMemory<=2)||(navigator.hardwareConcurrency&&navigator.hardwareConcurrency<=2)) return;   // aparelho fraco: enfeite não compensa
   const iniciar=async()=>{
     try{
       const C=await import('./cena3d.js'); if(!C.webglDisponivel()) return;
@@ -669,7 +670,8 @@ function modeloDoTopo(){
       M.iniciar({THREE,contentor:palco,aoPronto:()=>palco.classList.add('pronto')});
     }catch(e){ /* fica a imagem estática */ }
   };
-  const quando=()=>('requestIdleCallback' in window)?requestIdleCallback(iniciar,{timeout:3000}):setTimeout(iniciar,1500);
+  // 1,8 s depois do load e, ainda, quando o navegador está ocioso: o enfeite nunca disputa a CPU com a página que o leitor veio ler
+  const quando=()=>setTimeout(()=>('requestIdleCallback' in window)?requestIdleCallback(iniciar,{timeout:4000}):iniciar(),1800);
   if(document.readyState==='complete') quando(); else addEventListener('load',quando,{once:true});
 }
 

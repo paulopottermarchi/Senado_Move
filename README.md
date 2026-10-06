@@ -4,9 +4,13 @@ O que cada deputado e senador propôs, o que virou lei e como votou, a partir de
 oficiais, organizados para qualquer pessoa entender.
 
 Site estático (HTML, CSS e JavaScript puros, sem build e sem npm), atualizado todos os dias por um
-workflow do GitHub Actions e publicado no GitHub Pages. A única biblioteca é o Motion 14.0.0 (animação, licença MIT),
-versionada em `site/vendor/` e carregada por `site/motion-init.js`: nada de CDN em produção, e se ela não carregar o site
-funciona igual, sem animação. As animações respeitam `prefers-reduced-motion`. Site independente, sem vínculo com a Câmara
+workflow do GitHub Actions e publicado no GitHub Pages. Tudo o que o navegador baixa de terceiros para
+funcionar está versionado em `site/vendor/`, em versão fixa e sem CDN: o Motion 14.0.0 (animação, MIT; `site/motion-init.js`), o
+Three.js 0.180.0 (3D, MIT; só a página dos senadores, sob demanda, por importmap e `site/cena3d.js`) e a fonte Barlow Condensed
+(SIL OFL, só para títulos grandes e números de destaque). Tudo é melhoria progressiva: sem JavaScript, sem WebGL ou com erro,
+a página fica completa (o SVG do plenário e uma imagem estática no topo). As animações respeitam `prefers-reduced-motion`; o
+tema escuro vale por `prefers-color-scheme` ou pelo alternador da barra, e só nas páginas que declaram `data-escuro-ok`
+(hoje, senadores). Site independente, sem vínculo com a Câmara
 dos Deputados, o Senado Federal ou o TSE.
 
 ## O que o site mostra
