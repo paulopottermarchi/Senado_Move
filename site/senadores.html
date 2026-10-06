@@ -154,6 +154,40 @@ td.saida small{white-space:normal}
   .leituras b{font-size:34px}
   .hero .chamada{margin-top:24px}
 }
+
+/* ---------- plenário em 3D (diálogo nativo) ---------- */
+#ver3d{margin-top:16px;width:100%}
+#ver3d[hidden]{display:none}
+.dlg3d{width:min(1120px,96vw);max-width:96vw;max-height:94vh;padding:0;border:1px solid var(--linha);border-radius:var(--raio);
+  background:var(--papel);color:var(--tinta);box-shadow:var(--sombra-lg);overflow:hidden}
+.dlg3d[open]{display:flex;flex-direction:column}
+.dlg3d::backdrop{background:rgba(5,9,16,.68);backdrop-filter:blur(3px)}
+.dlg3d-cab{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px 0}
+.dlg3d-cab h2{font-size:22px}
+.dlg3d-sub{padding:8px 24px 0;font-size:14px;line-height:1.55;color:var(--tinta2);max-width:96ch}
+.dlg3d-cena{position:relative;flex:1 1 auto;height:min(58vh,560px);min-height:300px;margin:12px 24px 0;border:1px solid var(--linha);
+  border-radius:var(--raio-p);background:var(--papel2);overflow:hidden}
+.dlg3d-cena:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:2px}
+.dlg3d-estado{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;font-size:14px;color:var(--tinta3)}
+.dlg3d-estado[hidden]{display:none}
+.dlg3d-ctl{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:12px 24px 0}
+.dlg3d-ctl .leg{margin:0 0 0 auto}
+.dlg3d-nota{padding:12px 24px 20px;font-size:13px;line-height:1.55;color:var(--tinta2)}
+.dica3d{position:absolute;z-index:3;transform:translate(-50%,calc(-100% - 14px));pointer-events:none;white-space:nowrap;
+  background:var(--inverso);color:var(--sobre-inverso);padding:8px 12px;border-radius:var(--raio-c);font-size:13px;line-height:1.4;
+  box-shadow:var(--sombra-md);opacity:0;transition:opacity 150ms var(--curva)}
+.dica3d.on{opacity:1}
+.dica3d.toque{pointer-events:auto}
+.dica3d b{display:block;font-weight:600}
+.dica3d small{display:block;font-size:12px;color:var(--inverso-2)}
+.dica3d .pino{margin-top:8px;padding:6px 12px}
+@media(max-width:700px){
+  .dlg3d{width:calc(100vw - 16px);max-width:calc(100vw - 16px);height:auto;max-height:calc(100dvh - 16px);overflow-y:auto}
+  .dlg3d-cab{padding:12px 16px 0}.dlg3d-sub{padding:8px 16px 0;font-size:13px}
+  .dlg3d-cena{flex:0 0 auto;height:clamp(220px,64vw,340px);min-height:0;margin:8px 12px 0}
+  .dlg3d-ctl{padding:8px 16px 0}.dlg3d-ctl .leg{margin-left:0}
+  .dlg3d-nota{padding:8px 16px 16px;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -230,6 +264,8 @@ td.saida small{white-space:normal}
         <svg class="plenario" id="plenario" viewBox="0 0 300 168" role="img" aria-label="Assentos do Senado ordenados pela posição do partido no espectro"></svg>
         <p class="comp-total"><b id="compN">81</b>senadores</p>
         <table class="conta" aria-label="Senadores por faixa do espectro"><tbody id="conta"></tbody></table>
+        <!-- só aparece se o navegador tem WebGL e importmap; o Three.js só é pedido quando alguém clica -->
+        <button class="pino" id="ver3d" type="button" hidden aria-haspopup="dialog">Ver plenário em 3D</button>
       </aside>
     </div>
     <div class="ficha" id="ficha" hidden aria-live="polite"></div>
@@ -241,6 +277,24 @@ td.saida small{white-space:normal}
     <div class="tab"><table><thead><tr id="cab"></tr></thead><tbody id="corpo"></tbody></table></div>
   </section>
 </main>
+
+<dialog class="dlg3d" id="dlg3d" aria-labelledby="dlg3dTit">
+  <div class="dlg3d-cab">
+    <h2 id="dlg3dTit">Plenário do Senado em 3D</h2>
+    <button class="pino" type="button" id="dlg3dFechar">Fechar</button>
+  </div>
+  <p class="dlg3d-sub" id="dlg3dSub"></p>
+  <div class="dlg3d-cena" id="dlg3dCena"><p class="dlg3d-estado" id="dlg3dEstado" role="status">Carregando o 3D…</p></div>
+  <div class="dlg3d-ctl">
+    <button class="pino" type="button" id="vistaFrontal">Vista frontal</button>
+    <button class="pino" type="button" id="zoomMais" aria-label="Aproximar">+</button>
+    <button class="pino" type="button" id="zoomMenos" aria-label="Afastar">−</button>
+    <div class="leg"><span>esquerda <i class="grad"></i> direita</span><span><i class="sem"></i>partido sem posição na pesquisa</span></div>
+  </div>
+  <p class="dlg3d-nota"><b>A ordem dos assentos segue o espectro do partido e não é a disposição real do plenário.</b> A altura dos degraus
+    e a profundidade são só de arquibancada e não significam dado: todos os assentos têm o mesmo tamanho. Setas percorrem os assentos,
+    Enter abre a ficha, Ctrl e a roda (ou + e −) dão zoom, Esc fecha. O plenário em 2D, ao lado do gráfico, tem os mesmos assentos.</p>
+</dialog>
 
 <footer class="rodape-site">
   <div class="wrap">
@@ -561,14 +615,19 @@ function tabela(){
 }
 
 // ---- composição: um assento por senador, do mais à esquerda ao mais à direita (a posição é a do PARTIDO) ----
-function composicao(){
-  const E=window.Espectro, svg=$('#plenario');
+// A ordem e a geometria dos assentos: UMA só, usada pelo SVG (2D) e pelo plenário em 3D (plenario3d.js), para os dois nunca divergirem.
+function ordemPlenario(){
   const R=doRecorte();
   // com todos os que exerceram, os assentos são os deles (passam de 81: suplente entra no lugar de titular); senão, os 81 de hoje, apagados os que não estavam
   const base=completo()?R:S;
   const ordem=[...base].sort((a,b)=>(pos(a).score??99)-(pos(b).score??99)||(pos(a).partido||'').localeCompare(pos(b).partido||'')||a.nome.localeCompare(b.nome));
-  const denso=ordem.length>100, raio=denso?4.4:5.4;
-  const pts=E.assentos(ordem.length,denso?5:4,denso?56:62,140);
+  const denso=ordem.length>100;
+  const pts=window.Espectro.assentos(ordem.length,denso?5:4,denso?56:62,140);
+  return {R,ordem,denso,pts};
+}
+function composicao(){
+  const E=window.Espectro, svg=$('#plenario');
+  const {R,ordem,denso,pts}=ordemPlenario(), raio=denso?4.4:5.4;
   svg.innerHTML=ordem.map((x,i)=>{const p=pts[i]; return p?`<circle class="assento" data-id="${x.id}" tabindex="0" role="button" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${raio}"
     fill="${E.corDoScore(pos(x).score)}" opacity="${estaNaLeg(x)?1:.1}"><title>${esc(x.nome)} (${esc(pos(x).partido||'sem partido')}-${esc(x.uf)})${estaNaLeg(x)?'':' — não estava em exercício nesta legislatura'}</title></circle>`:'';}).join('');
   const tot=R.length||1, faixa=x=>pos(x).ideologia||'sem-classificacao';
@@ -614,6 +673,46 @@ function modeloDoTopo(){
   if(document.readyState==='complete') quando(); else addEventListener('load',quando,{once:true});
 }
 
+// ---- plenário em 3D: só quando o leitor clica no botão; sem WebGL (ou sem importmap/<dialog>), o botão nem aparece ----
+const temWebGL=()=>{ try{ const c=document.createElement('canvas'), g=c.getContext('webgl2')||c.getContext('webgl'); if(!g) return false;
+  const x=g.getExtension('WEBGL_lose_context'); if(x) x.loseContext(); return true; }catch(e){ return false; } };
+const importmapOk=()=>!!(window.HTMLScriptElement&&HTMLScriptElement.supports&&HTMLScriptElement.supports('importmap'));
+let P3D=null;
+function botao3D(){ const b=$('#ver3d'); if(b&&typeof HTMLDialogElement==='function'&&importmapOk()&&temWebGL()) b.hidden=false; }
+function fechar3D(){ const d=$('#dlg3d'); if(d.open) d.close(); }
+async function abrir3D(){
+  const dlg=$('#dlg3d'), cena=$('#dlg3dCena'), estado=$('#dlg3dEstado');
+  const {ordem,pts}=ordemPlenario();
+  const sem=ordem.filter(x=>pos(x).score==null).length, fora=ordem.filter(x=>!estaNaLeg(x)).length;
+  $('#dlg3dSub').textContent=`Cada assento é um senador (${ordem.length}), do mais à esquerda ao mais à direita pela posição do partido; a cor é a do espectro, a mesma do gráfico.`+
+    `${sem?` ${sem} ${sem===1?'está':'estão'} em partido sem posição na pesquisa, em cinza.`:''}${fora?` ${fora} assentos apagados: não estavam em exercício na legislatura ${rotuloLeg(leg)}.`:''}`+
+    ' Passe o mouse ou use as setas para ver quem é; clique ou Enter abre a ficha.';
+  estado.hidden=false; estado.textContent='Carregando o 3D…';
+  dlg.showModal();
+  try{
+    const C=await import('./cena3d.js'), M=await import('./plenario3d.js');
+    const THREE=await C.carregarThree(); if(!THREE) throw new Error('three');
+    const {OrbitControls}=await import('three/addons/controls/OrbitControls.js');
+    if(!dlg.open) return;                                                       // fechou enquanto carregava
+    P3D=M.iniciar({THREE,OrbitControls,contentor:cena,pts,corDe:sc=>window.Espectro.corDoScore(sc),
+      assentos:ordem.map(x=>({id:x.id,nome:x.nome,partido:pos(x).partido,uf:x.uf,score:pos(x).score,ativo:estaNaLeg(x)})),
+      aoEscolher:id=>{ fechar3D(); abrir(id); },
+      aoErro:()=>{ if(P3D){ P3D.destruir(); P3D=null; } estado.hidden=false; estado.textContent='O 3D foi interrompido pelo navegador. Feche e abra de novo, ou use o plenário em 2D.'; }});
+    if(!P3D) throw new Error('webgl');
+    estado.hidden=true;
+  }catch(e){
+    estado.hidden=false;
+    estado.textContent='Não foi possível abrir o plenário em 3D neste navegador. O plenário em 2D, ao lado do gráfico, mostra os mesmos assentos.';
+  }
+}
+$('#ver3d').addEventListener('click',abrir3D);
+$('#dlg3dFechar').addEventListener('click',fechar3D);
+$('#vistaFrontal').addEventListener('click',()=>P3D&&P3D.vistaFrontal());
+$('#zoomMais').addEventListener('click',()=>P3D&&P3D.zoom(0.85));
+$('#zoomMenos').addEventListener('click',()=>P3D&&P3D.zoom(1/0.85));
+$('#dlg3d').addEventListener('close',()=>{ if(P3D){ P3D.destruir(); P3D=null; } });      // libera geometrias, texturas e o contexto WebGL
+$('#dlg3d').addEventListener('click',e=>{ if(e.target===$('#dlg3d')) fechar3D(); });    // clique no fundo escuro
+
 async function carregar(){
   const json=u=>fetch(u,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
   const pLegs=json('dados/legislaturas.json');             // sai junto do resto, não depois
@@ -636,7 +735,7 @@ async function carregar(){
   const medianaDe=v=>{ const n=v.length; return !n?null:(n%2?v[(n-1)/2]:(v[n/2-1]+v[n/2])/2); };   // com quantidade par, a média dos dois do meio
   MEDIANA_ORI=medianaDe(ord(taxaOri));
   MEDIANA_GOV=medianaDe(ord(taxaGov));
-  composicao(); grafico(); tabela(); leituras();
+  composicao(); grafico(); tabela(); leituras(); botao3D();
   const q=new URLSearchParams(location.search).get('id');
   if(q){ if(!S.some(x=>x.id===+q)) await carregarAntigos(); abrir(+q); }       // ?id= de quem já saiu
 }
@@ -668,7 +767,7 @@ g.addEventListener('mousemove',e=>{
   d.classList.add('on');
 });
 g.addEventListener('mouseleave',()=>$('#dica')?.classList.remove('on'));
-window.addEventListener('tema',()=>{ if(S.length){ composicao(); grafico(); } });   // a paleta do espectro muda no tema escuro
+window.addEventListener('tema',()=>{ if(S.length){ composicao(); grafico(); if(P3D) P3D.recolorir(); } });   // a paleta do espectro muda no tema escuro
 document.addEventListener("DOMContentLoaded",()=>{ Entrada.abrir(document.querySelector('.hero')); modeloDoTopo(); });
 document.addEventListener("DOMContentLoaded",carregar);   // site.js é defer: só existe (Bandeiras) depois do parse
 </script>
