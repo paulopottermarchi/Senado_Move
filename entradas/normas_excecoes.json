@@ -1,0 +1,10 @@
+{
+  "_nota": "Proposições que a Câmara registra como 'Transformado em Norma Jurídica' mas cujas tramitações NÃO trazem o evento de transformação (sem número nem data da norma). Cada linha só entra com fonte oficial que ligue a proposição à norma e dê a data; nunca por memória. contexto.py usa esta tabela apenas quando o registro da Câmara não tem o evento.",
+  "normas": {
+    "PEC 45/2019": {
+      "sigla": "EC", "tipo": "Emenda Constitucional", "numero": 132, "ano": 2023, "data": "2023-12-20",
+      "fonte": "Portal da Câmara dos Deputados, 'Após décadas de negociação, Congresso aprovou a reforma tributária em 2023': \"o principal tema aprovado pela Câmara dos Deputados em 2023 foi a reforma tributária (PEC 45/19)\" e \"a Emenda Constitucional 132, promulgada em 20 de dezembro\". Conferido em 6/10/2026.",
+      "url": "https://www.camara.leg.br/noticias/1028787-APOS-DECADAS-DE-NEGOCIACAO,-CONGRESSO-APROVOU-A-REFORMA-TRIBUTARIA-EM-2023"
+    }
+  }
+}

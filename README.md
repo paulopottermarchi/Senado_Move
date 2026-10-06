@@ -26,6 +26,7 @@ dos Deputados, o Senado Federal ou o TSE.
 | **Quem vota com quem** (`blocos.html`) | Os blocos que se formam pela semelhança dos votos, sem olhar o partido. |
 | **Entre as casas** (`fluxo.html`) | Proposições aprovadas numa casa e remetidas à outra (Câmara → Senado e Senado → Câmara): quantas viraram lei, quanto tempo levaram na casa revisora e em que órgão estão paradas. A unidade é a proposição, nunca o parlamentar. |
 | **Obras** (`obras.html`) | Obras federais em São Paulo com contrato no Contratos.gov.br: quanto o contrato cresceu, termo a termo, com os documentos oficiais. |
+| **Contexto econômico** (`contexto.html`) | O que o Congresso está fazendo em matéria econômica (PEC e PLP de tema oficial Economia ou Finanças Públicas e Orçamento: sancionadas, em tramitação e paradas há mais de um ano), ao lado das séries oficiais de inflação e meta, PIB, despesa, dívida e resultado do governo. Os dois lados ficam separados: a página não liga lei a indicador, não julga número e diz isso no topo. |
 
 ## Princípios
 
@@ -111,6 +112,7 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 | [Dados Abertos do Senado](https://legis.senado.leg.br/dadosabertos/) e e-Cidadania | senadores, autoria, relatorias, votações; consulta pública das matérias |
 | TSE — Divulgação de Resultados 2022 | votos de cada deputado e quociente eleitoral (tabela fixa em `entradas/`) |
 | Brazilian Legislative Survey (Power e Zucco) | posição dos partidos no espectro |
+| IBGE (API SIDRA), Banco Central (SGS e página de metas) e Tesouro Nacional (API de Séries Temporais) | IPCA, PIB, meta de inflação e banda, dívida, despesa, resultado primário e nominal do Governo Central |
 | ObrasGov.br, Contratos.gov.br e CGU | obras, contratos, termos aditivos, emendas parlamentares, sanções (CEIS/CNEP) |
 | Enquetes e Agência Câmara (RSS) | enquete de cada lei votada; notícias ligadas às proposições |
 | Wikipédia (API de leituras) | leituras do artigo de cada deputado, ligado por identificador |
@@ -121,7 +123,7 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 ```
 site/                 o que vai ao ar — o GitHub Pages publica a pasta inteira, e só ela
   index.html          página inicial; deputados.html, a dos deputados (prototipo.html só redireciona)
-  deputado.html  leis.html  blocos.html  fluxo.html  obras.html  senadores.html
+  deputado.html  leis.html  blocos.html  fluxo.html  obras.html  senadores.html  contexto.html
   estilo.css  site.js  motion-init.js  favicon.ico
   cena3d.js  modelos3d.js  cupula3d.js  plenario3d.js   3D sob demanda: base comum, modelos do topo, plenário dos senadores
   img/                imagem estática de cada modelo (a mesma câmera do 3D, para quem não tem WebGL)
@@ -219,6 +221,9 @@ com os dados do dia anterior. Para publicar pela primeira vez: *Settings → Pag
 - **Relatorias na Câmara** não têm fonte por deputado na API, e aparecem como "—". No Senado existem.
 - **Obras**: por ora só São Paulo e só contrato federal, cerca de 1,3% das obras de SP cadastradas no
   ObrasGov. Obras contratadas por estado ou prefeitura não aparecem.
+- **Contexto econômico**: só a Câmara e só dois temas oficiais (Economia e Finanças Públicas e Orçamento). PL ordinário entra apenas nas sancionadas dos
+  últimos 12 meses; apensadas e proposições sem situação na API ficam fora das abas e são contadas. Antes de 2003 a Câmara não atribuiu tema a todas as
+  proposições, então há anos sem marcos. O "objetivo declarado" é citação literal da justificação, nunca paráfrase de IA.
 - **Categorias de tema** são classificação deste site por palavras-chave da ementa, com o termo que
   definiu cada uma sempre visível. A precisão ainda não foi medida.
 
