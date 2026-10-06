@@ -73,8 +73,24 @@ tbody tr{transition:background-color var(--t)}
 .sen b{display:block;font-weight:500;line-height:1.3}
 .tab{overflow-x:auto}
 
+/* composição: um assento por senador, da esquerda à direita (a mesma ideia do gráfico dos deputados) */
+.comp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center;margin-top:16px}
+.comp svg{width:100%;max-width:460px;display:block;margin:0 auto}
+.assento{cursor:pointer;stroke:#fff;stroke-width:1;transition:opacity 200ms var(--curva)}
+.assento:hover,.assento:focus-visible{stroke:var(--tinta);stroke-width:2}
+.comp-total{text-align:center;font-family:var(--serif);font-size:13px;color:var(--tinta3);margin-top:-40px;position:relative}
+.comp-total b{display:block;font-size:30px;font-weight:600;color:var(--tinta);line-height:1}
+.conta{width:100%;border-collapse:collapse;margin:0}
+.conta tbody tr{cursor:default}
+.conta tbody tr:hover{background:none}
+.conta td{padding:8px 0;font-size:14px;color:var(--tinta2);vertical-align:middle;border-bottom:1px solid var(--linha2);text-align:left}
+.conta td.n{text-align:right;font-weight:600;color:var(--tinta);width:44px}
+.conta td.p{text-align:right;width:48px;font-size:13px;color:var(--tinta3)}
+.conta i.pt-cor{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
+.conta .haste{height:4px;background:var(--linha2);border-radius:2px;margin-top:6px}
+.conta .haste i{display:block;height:100%;border-radius:2px}
 .erro{padding:20px;border:1px solid var(--linha);border-radius:var(--raio-p);margin-top:20px;font-size:14px}
-@media(max-width:760px){ .painel{padding:20px} th:nth-child(n+5),td:nth-child(n+5){display:none} }
+@media(max-width:760px){ .painel{padding:20px} th:nth-child(n+5),td:nth-child(n+5){display:none} .comp{grid-template-columns:1fr;gap:16px} }
 
 </style>
 </head>
@@ -84,11 +100,12 @@ tbody tr{transition:background-color var(--t)}
   <div class="topo-in">
     <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
     <nav class="nav" aria-label="Páginas do site">
-      <a href="index.html#deputados">Deputados</a>
+      <a href="deputados.html">Deputados</a>
       <a href="senadores.html" aria-current="page">Senadores</a>
       <a href="index.html#semana">Esta semana</a>
       <a href="leis.html">Leis votadas</a>
       <a href="blocos.html">Quem vota com quem</a>
+      <a href="fluxo.html">Entre as casas</a>
       <a href="obras.html">Obras</a>
       <a href="index.html#sobre">Sobre os dados</a>
     </nav>
@@ -113,6 +130,18 @@ tbody tr{transition:background-color var(--t)}
     </div>
   </div>
 
+  <section class="painel" aria-labelledby="t-comp">
+    <h2 id="t-comp">Composição, da esquerda à direita</h2>
+    <p class="sub" id="subComp"></p>
+    <div class="comp">
+      <div>
+        <svg id="plenario" viewBox="0 0 300 168" role="img" aria-label="Assentos do Senado ordenados pela posição do partido no espectro"></svg>
+        <p class="comp-total"><b id="compN">81</b>senadores</p>
+      </div>
+      <table class="conta" aria-label="Senadores por faixa do espectro"><tbody id="conta"></tbody></table>
+    </div>
+  </section>
+
   <section class="painel" aria-labelledby="t-graf">
     <h2 id="t-graf">Espectro × produção</h2>
     <p class="sub" id="subGraf"></p>
@@ -121,10 +150,8 @@ tbody tr{transition:background-color var(--t)}
         <button class="pino on" data-y="apresentadas">Apresentadas</button>
         <button class="pino" data-y="viraramLei">Viraram lei</button>
       </div>
-      <div class="grupo" role="group" aria-label="Período">
-        <button class="pino on" data-p="carreira">Toda a carreira</button>
-        <button class="pino" data-p="nesta">Nesta legislatura</button>
-      </div>
+      <label class="campo" id="campoLeg" style="display:none"><span>Legislatura</span>
+        <select class="sel" id="selLeg"><option value="">Toda a carreira</option></select></label>
       <input class="texto" id="busca" type="search" placeholder="Buscar senador ou partido" autocomplete="off" aria-label="Buscar senador">
     </div>
     <div class="grafico" id="grafico" aria-label="Gráfico de senadores"></div>
@@ -135,7 +162,7 @@ tbody tr{transition:background-color var(--t)}
 
   <section class="painel" aria-labelledby="t-tab">
     <h2 id="t-tab">Os senadores em tabela</h2>
-    <p class="sub">Clique no título de uma coluna para reordenar, e numa linha para abrir a ficha.</p>
+    <p class="sub" id="subTab">Clique no título de uma coluna para reordenar, e numa linha para abrir a ficha.</p>
     <div class="tab"><table><thead><tr id="cab"></tr></thead><tbody id="corpo"></tbody></table></div>
   </section>
 </main>
@@ -145,8 +172,15 @@ tbody tr{transition:background-color var(--t)}
     <h2>Como é calculado</h2>
     <p>Dados Abertos do Senado Federal. <b>Autoria</b>: PEC e PL em que o senador é o primeiro autor (ordem 1 na autoria
        do processo, pelo código do parlamentar) — as coautorias e as assinaturas de apoio não contam. <b>Virou lei</b>:
-       situação "transformada em norma jurídica", com ou sem veto parcial. "Nesta legislatura" conta o apresentado
-       desde 1º de fevereiro de 2023.</p>
+       situação "transformada em norma jurídica", com ou sem veto parcial. O PLS (Projeto de Lei do Senado, o nome do PL até
+       2018) conta como PL. Quando o texto do processo diz "Senador X e outros", o primeiro autor é conferido no detalhe,
+       pelo código do parlamentar: quem apenas assinou não conta como autor.</p>
+    <p><b>Legislatura</b>: o seletor mostra, entre os senadores de hoje, quem já estava em exercício em cada legislatura
+       desde a 52ª (2003–2007) — titular ou suplente que de fato exerceu, pelo registro de exercício de cada mandato — e
+       conta só o que apresentou (ou relatou) nela, pela data de apresentação (de designação, nas relatorias).
+       <b>Quem já saiu do Senado não aparece</b>: não é a composição do Senado da época, e por isso as primeiras
+       legislaturas têm poucos senadores. A posição no espectro segue sendo a do partido de hoje. Votos e orientação de
+       bancada só existem desde 2023.</p>
     <p><b>Relatorias</b>: processos distintos (PEC, PL, PLP, MPV, PDL, PRS, PLN) em que foi designado relator, e quantos
        terminaram com a matéria deliberada. Redistribuição, troca por relator "ad hoc" e mudança de comissão não somam
        de novo. <b>Votos</b>: votações nominais abertas do Plenário desde 2023 (votação secreta não mostra o voto de
@@ -157,6 +191,12 @@ tbody tr{transition:background-color var(--t)}
        partido dele, no dia do voto, no registro de orientação de bancada do Senado. Orientação liberada ("livre"),
        obstrução e partido que não orientou não contam, nem as orientações de Governo, Oposição, Maioria, Minoria e
        Bancada Feminina, que não são a bancada de ninguém. Com menos de 30 votações comparáveis, não há número.</p>
+    <p><b>Alinhamento ao Governo</b>: nas votações nominais abertas do Plenário desde 2023, o líder do Governo no Senado
+       registra uma orientação (SIM, NÃO ou LIVRE) como qualquer bancada. A coluna é a parcela dos votos Sim ou Não do
+       senador, nas votações em que o Governo orientou SIM ou NÃO, em que ele votou como o Governo orientou (a mesma medida
+       que a página dos deputados usa). Orientação liberada, obstrução e votação sem registro de orientação não contam;
+       com menos de 30 votações comparáveis, não há número. Mede proximidade com o governo do momento, e o governo muda:
+       não é ideologia, lealdade nem mérito.</p>
     <p id="rodapeData"></p>
   </div>
 </footer>
@@ -169,10 +209,12 @@ tbody tr{transition:background-color var(--t)}
       </div>
       <nav class="rg-col" aria-label="Páginas">
         <h2>Páginas</h2>
-        <a href="index.html#deputados">Deputados</a>
+        <a href="index.html">Início</a>
+        <a href="deputados.html">Deputados</a>
         <a href="senadores.html">Senadores</a>
         <a href="leis.html">Leis votadas</a>
         <a href="blocos.html">Quem vota com quem</a>
+        <a href="fluxo.html">Entre as casas</a>
         <a href="obras.html">Obras</a>
       </nav>
       <div class="rg-col">
@@ -203,24 +245,30 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const nf=new Intl.NumberFormat('pt-BR');
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const dataBR=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)}`:'—';
-// cor contínua ao longo do espectro — a mesma do gráfico dos deputados
-const PARADAS=[[1,[216,90,48]],[3.25,[184,143,90]],[5.5,[136,135,128]],[7.75,[74,122,159]],[10,[12,68,124]]];
-function corDoScore(s){
-  if(s==null) return '#c8cace';
-  s=Math.max(1,Math.min(10,s));
-  for(let i=0;i<PARADAS.length-1;i++){const [a,ca]=PARADAS[i],[b,cb]=PARADAS[i+1];
-    if(s<=b){const t=(s-a)/(b-a); return '#'+ca.map((v,j)=>Math.round(v+(cb[j]-v)*t).toString(16).padStart(2,'0')).join('');}}
-  return '#0c447c';
-}
+// cor contínua ao longo do espectro: a mesma de todo o site (site.js é defer, então só vale depois do parse)
+const corDoScore=sc=>window.Espectro.corDoScore(sc);
 // dispersão no X (o X é do partido, herdado; o Y é da pessoa e nunca se desloca): ±0,0275
 const jitter=id=>{let h=2166136261; for(const c of String(id)){h^=c.charCodeAt(0); h=Math.imul(h,16777619);} return ((h>>>0)%1000/1000-.5)*.055;};
 
-let S=[], eixoY='apresentadas', periodo='carreira', sel=null, ordCol='apresentadas', ordDesc=true;
-const valorY=s=>periodo==='nesta'?(s.nestaLegislatura||{})[eixoY]??0:s[eixoY];
+let S=[], eixoY='apresentadas', sel=null, ordCol='apresentadas', ordDesc=true;
+// Legislatura escolhida ('' = carreira inteira). O filtro só vale para os senadores de HOJE: quem já saiu do Senado não está
+// nestes dados (como no filtro de mandato dos deputados), e a página diz isso. Votos e orientação existem só desde 2023.
+let LEGS=[], leg='';
+const LEG_ATUAL=()=>LEGS.length?String(LEGS[LEGS.length-1].id):'';
+const rotuloLeg=id=>{ const l=LEGS.find(x=>String(x.id)===String(id)); return l?`${l.inicio.slice(0,4)}–${l.fim.slice(0,4)}`:`${id}ª legislatura`; };
+const VAZIO={pecs:0,leis:0,apresentadas:0,viraramLei:0,relatorias:{processos:0,deliberadas:0,designacoes:0}};
+// Em exercício: período no registro de mandatos do Senado OU, quando o registro falha (suplente que exerceu e não consta),
+// PEC ou PL apresentado como senador naquela legislatura (`exercicioPorAutoria`, de senado.py).
+const estaNaLeg=s=>!leg||!!(s.mandatos&&s.mandatos[leg])||(s.exercicioPorAutoria||[]).includes(leg);
+const num=s=>!leg?s:((s.porLegislatura||{})[leg]||VAZIO);          // os números do recorte: carreira ou a legislatura escolhida
+const doRecorte=()=>S.filter(estaNaLeg);
+const votosValem=()=>!leg||leg===LEG_ATUAL();
+const valorY=s=>num(s)[eixoY]??0;
 
 function grafico(){
   const W=900,H=440,m={l:48,r:100,t:16,b:40}, iw=W-m.l-m.r, ih=H-m.t-m.b;
-  const max=Math.max(4,...S.map(valorY)), dec=Math.pow(10,Math.floor(Math.log10(max))), passo=dec*(max/dec>5?2:1);
+  const R=doRecorte();
+  const max=Math.max(4,...R.map(valorY)), dec=Math.pow(10,Math.floor(Math.log10(max))), passo=dec*(max/dec>5?2:1);
   const topo=Math.ceil(max/passo)*passo;
   const X=s=>s.ideX==null?m.l+iw+62:m.l+Math.max(0,Math.min(1,s.ideX+jitter(s.id)))*iw;
   const Y=v=>m.t+ih-(v/topo)*ih;
@@ -229,12 +277,13 @@ function grafico(){
   for(let v=0;v<=topo+1e-9;v+=passo) ticks+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${m.l-8}" y="${Y(v)+4}" text-anchor="end">${nf.format(v)}</text>`;
   const rot=[[0,'esquerda','start'],[.5,'centro','middle'],[1,'direita','end']].map(([x,t,a])=>`<text x="${m.l+x*iw}" y="${H-12}" text-anchor="${a}">${t}</text>`).join('')+
     `<text x="${m.l+iw+62}" y="${H-12}" text-anchor="middle">sem posição</text>`;
-  const pts=S.map(s=>{const bate=!q||norm(s.nome+' '+s.partido+' '+s.uf).includes(q);
+  const pts=R.map(s=>{const bate=!q||norm(s.nome+' '+s.partido+' '+s.uf).includes(q);
     return `<circle class="pt${sel===s.id?' sel':''}" data-id="${s.id}" cx="${X(s).toFixed(1)}" cy="${Y(valorY(s)).toFixed(1)}" r="${sel===s.id?8:6.5}"
       fill="${corDoScore(s.score)}" opacity="${bate?.92:.12}"/>`}).join('');
   $('#grafico').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cada ponto é um senador; a tabela abaixo traz os mesmos dados"><g class="eixo">${ticks}${rot}</g>${pts}</svg><div class="dica" id="dica"></div>`;
   const rotY=eixoY==='apresentadas'?'PEC e PL apresentados':'que viraram lei';
-  $('#subGraf').textContent=`Cada ponto é um senador. Na horizontal, a posição do partido; na vertical, ${rotY}${periodo==='nesta'?' desde fevereiro de 2023':' na carreira inteira'}.`;
+  $('#subGraf').textContent=`Cada ponto é um senador${leg?` que estava em exercício na legislatura ${rotuloLeg(leg)}`:''}. Na horizontal, a posição do partido (a de hoje); na vertical, ${rotY}${leg?` nessa legislatura`:' na carreira inteira'}.`+
+    (leg?` Entram só os ${R.length} dos ${S.length} senadores de hoje que já estavam no cargo então; quem já saiu do Senado não aparece nestes dados.`:'');
 }
 
 // motivo oficial registrado pelo Senado quando o senador não votou — como vem, sem taxa
@@ -254,6 +303,14 @@ function textoOrientacao(s){
     orientação registrada pelo próprio partido em <b>${pct1(t)}</b> das ${nf.format(o.comparaveis)} em que o partido orientou
     Sim ou Não${MEDIANA_ORI!=null?`; no Senado, a mediana é ${pct1(MEDIANA_ORI)}`:''}. Votações com orientação liberada não contam.</p>`;
 }
+function textoGoverno(s){
+  if(!s.governo) return '';
+  const t=taxaGov(s), g=s.governo;
+  if(t==null) return g.nota?`<p class="f-txt">Alinhamento ao Governo: sem número (${esc(g.nota)}).</p>`:'';
+  return `<p class="f-txt">Alinhamento ao Governo: nas votações nominais abertas do Plenário desde 2023 em que o líder do Governo
+    orientou Sim ou Não, votou como ele orientou em <b>${pct1(t)}</b> das ${nf.format(g.comparaveis)}${MEDIANA_GOV!=null?`; no Senado, a mediana é ${pct1(MEDIANA_GOV)}`:''}.
+    Mede proximidade com o governo do momento, e o governo muda: não é ideologia, lealdade nem mérito.</p>`;
+}
 function iniciais(n){return n.split(' ').filter(Boolean).slice(0,2).map(p=>p[0]).join('')}
 // Foto oficial do Senado. O endereço que a API dá (www…/senadorNNNN.jpg) redireciona duas vezes até
 // legis.senado.leg.br/senadores/fotos-oficiais/NNNN: pede o destino direto e, se falhar, o da API.
@@ -268,67 +325,123 @@ function fotoFalhou(img){
   const api=img.dataset.api;
   if(api){ img.dataset.api=''; img.src=api; } else img.remove();
 }
-function abrir(id){
+function abrir(id,{rolar=true}={}){
   sel=id; const s=S.find(x=>x.id===id); if(!s) return;
-  const v=s.votos||{}, r=s.relatorias||{}, n=s.nestaLegislatura||{};
+  const vv=votosValem(), v=vv?(s.votos||{}):{}, nc=num(s), r=nc.relatorias||{};
+  // sem legislatura escolhida, a frase "nesta legislatura" é da atual (de porLegislatura; o campo antigo vale para JSON ainda não regerado)
+  const lg=leg||LEG_ATUAL(), n=(s.porLegislatura||{})[lg]||(!leg?s.nestaLegislatura:null)||VAZIO;
+  const ex=(s.mandatos||{})[lg];
+  const exTxt=leg?(ex?`Em exercício na legislatura ${rotuloLeg(lg)}: ${ex.map(q=>`de ${dataBR(q.de)} ${q.ate?`a ${dataBR(q.ate)}`:'até hoje'}${q.como&&q.como!=='Titular'?` (${esc(q.como.toLowerCase())})`:''}`).join('; ')}. `
+    :(s.exercicioPorAutoria||[]).includes(lg)?`O registro de mandatos do Senado não mostra o exercício na legislatura ${rotuloLeg(lg)}, mas há PEC e PL apresentados por ele como senador nela. `
+    :`Não estava em exercício na legislatura ${rotuloLeg(lg)}. `):'';
   const leis=(s.leisLista||[]).map(([ident,ementa,data,sit,cod])=>`<li><a href="https://www25.senado.leg.br/web/atividade/materias/-/materia/${cod}" target="_blank" rel="noopener">${esc(ident)}</a> — ${esc(ementa)}<small>apresentado em ${dataBR(data)} · ${esc((sit||'').toLowerCase())}</small></li>`).join('');
   $('#ficha').hidden=false;
   $('#ficha').innerHTML=`<div class="f-cab">${foto(s)}
       <div><h3>${esc(s.nome)}</h3><p>${esc(s.partido)} de ${esc(s.uf)} · ${esc((s.participacao||'').toLowerCase())} · mandato de ${esc((s.mandato[0]||'').slice(0,4))} a ${esc((s.mandato[1]||'').slice(0,4))}
         · <a href="${esc((s.url||'').replace('http://','https://'))}" target="_blank" rel="noopener">página no Senado</a></p></div></div>
     <div class="nums">
-      <div><b>${nf.format(s.pecs)}</b><span>PEC como primeiro autor</span></div>
-      <div><b>${nf.format(s.leis)}</b><span>projetos de lei</span></div>
-      <div><b>${nf.format(s.viraramLei)}</b><span>viraram lei</span></div>
-      <div><b>${nf.format(r.processos||0)}</b><span>proposições relatadas (${nf.format(r.deliberadas||0)} deliberadas)</span></div>
-      <div><b>${v.votacoes?nf.format((v.sim||0)+(v.nao||0)+(v.abstencao||0)):'—'}</b><span>votou${v.votacoes?` em ${nf.format(v.votacoes)} votações nominais desde 2023`:''}</span></div>
+      <div><b>${nf.format(nc.pecs)}</b><span>PEC como primeiro autor${leg?` na legislatura ${rotuloLeg(leg)}`:''}</span></div>
+      <div><b>${nf.format(nc.leis)}</b><span>projetos de lei</span></div>
+      <div><b>${nf.format(nc.viraramLei)}</b><span>viraram lei</span></div>
+      <div><b>${nf.format(r.processos||0)}</b><span>proposições relatadas (${nf.format(r.deliberadas||0)} ${r.deliberadas===1?'deliberada':'deliberadas'})</span></div>
+      <div><b>${v.votacoes?nf.format((v.sim||0)+(v.nao||0)+(v.abstencao||0)):'—'}</b><span>${vv?`votou${v.votacoes?` em ${nf.format(v.votacoes)} votações nominais desde 2023`:''}`:'votos nominais só existem desde 2023'}</span></div>
     </div>
-    <p class="f-txt">Nesta legislatura, apresentou <b>${nf.format(n.apresentadas||0)}</b> PEC e PL; ${n.viraramLei?`<b>${nf.format(n.viraramLei)}</b> já ${n.viraramLei>1?'viraram':'virou'} lei`:'nenhum virou lei ainda'}.
-      ${s.score!=null?`Posição do partido no espectro: <b>${s.score.toFixed(1)} de 10</b> — média das respostas da wave 2021 do Brazilian Legislative Survey, calculada por este site.`:`Sem posição no espectro: ${esc(s.scoreNota)}.`}
+    <p class="f-txt">${exTxt}${leg?`Na legislatura ${rotuloLeg(lg)}`:'Nesta legislatura'}, apresentou <b>${nf.format(n.apresentadas||0)}</b> PEC e PL; ${n.viraramLei?`<b>${nf.format(n.viraramLei)}</b> já ${n.viraramLei>1?'viraram':'virou'} lei`:'nenhum virou lei ainda'}.
+      ${s.score!=null?`Posição do partido no espectro: <b>${s.score.toFixed(1).replace('.',',')} de 10</b> — média das respostas da wave 2021 do Brazilian Legislative Survey, calculada por este site.`:`Sem posição no espectro: ${esc(s.scoreNota)}.`}
       ${v.votacoes?`Nas ${nf.format(v.votacoes)} votações nominais abertas do Plenário desde 2023: ${nf.format(v.sim||0)} Sim, ${nf.format(v.nao||0)} Não, ${nf.format(v.abstencao||0)} ${v.abstencao===1?'abstenção':'abstenções'}${motivos(v.outros)}.`:''}</p>
-    ${textoOrientacao(s)}
-    ${leis?`<p class="f-txt"><b>O que virou lei</b> (primeiro autor):</p><ul class="leis">${leis}</ul>`:''}`;
+    ${vv?textoOrientacao(s):''}
+    ${vv?textoGoverno(s):''}
+    ${leis&&!leg?`<p class="f-txt"><b>O que virou lei</b> (primeiro autor):</p><ul class="leis">${leis}</ul>`:''}`;
   grafico();
-  $('#ficha').scrollIntoView({block:'nearest'});
+  if(rolar) $('#ficha').scrollIntoView({block:'nearest'});
 }
 
 const COLS=[['nome','Senador','esq'],['partido','Partido','esq'],['apresentadas','Apresentadas'],['viraramLei','Viraram lei'],
-            ['conv','Conversão'],['rel','Relatadas'],['dif','Diferente da orientação']];
+            ['conv','Conversão'],['rel','Relatadas'],['dif','Diferente da orientação'],['gov','Alinhamento ao Governo']];
 // Votou diferente da orientação registrada pelo próprio partido (senado.py): parcela, ou null sem amostra.
 const taxaOri=s=>{const o=s.difOrientacao; return o&&o.diferentes!=null&&o.comparaveis?o.diferentes/o.comparaveis:null;};
 const pct1=x=>(x*100).toFixed(1).replace('.',',')+'%';
-let MEDIANA_ORI=null;
-const valorCol=(s,k)=>k==='conv'?(s.apresentadas?s.viraramLei/s.apresentadas:null):k==='rel'?(s.relatorias||{}).processos:
-  k==='dif'?taxaOri(s):
-  k==='nome'||k==='partido'?norm(s[k]):s[k];
+let MEDIANA_ORI=null, MEDIANA_GOV=null;
+// Alinhamento ao Governo (senado.py): parcela dos votos Sim ou Não, nas votações em que o líder do Governo no Senado
+// orientou SIM ou NÃO, em que o senador votou como ele orientou. Mede proximidade com o governo do momento, não ideologia
+// nem mérito; sem 30 votações comparáveis, não há número. Sem o campo (dado ainda não regerado), a coluna some.
+const temGov=()=>S.some(s=>s.governo);
+const taxaGov=s=>{const g=s.governo; return g&&g.alinhados!=null&&g.comparaveis?g.alinhados/g.comparaveis:null;};
+const valorCol=(s,k)=>{ const n=num(s);
+  return k==='apresentadas'?n.apresentadas:k==='viraramLei'?n.viraramLei:k==='conv'?(n.apresentadas?n.viraramLei/n.apresentadas:null):
+    k==='rel'?(n.relatorias||{}).processos:k==='dif'?(votosValem()?taxaOri(s):null):k==='gov'?(votosValem()?taxaGov(s):null):
+    k==='nome'||k==='partido'?norm(s[k]):s[k]; };
+const SEM_VOTO='<span title="O Senado só registra voto nominal e orientação de bancada aqui desde 2023">—</span>';
 function tabela(){
-  $('#cab').innerHTML=COLS.map(([k,t,c])=>`<th class="${c||''} ${ordCol===k?'ord':''}" data-k="${k}">${t}${ordCol===k?(ordDesc?' ▼':' ▲'):''}</th>`).join('');
-  const L=[...S].sort((a,b)=>{const x=valorCol(a,ordCol),y=valorCol(b,ordCol); if(x==null&&y==null)return 0; if(x==null)return 1; if(y==null)return -1;
+  $('#cab').innerHTML=COLS.filter(([k])=>k!=='gov'||temGov()).map(([k,t,c])=>`<th class="${c||''} ${ordCol===k?'ord':''}" data-k="${k}">${t}${ordCol===k?(ordDesc?' ▼':' ▲'):''}</th>`).join('');
+  const R=doRecorte();
+  $('#subTab').textContent='Clique no título de uma coluna para reordenar, e numa linha para abrir a ficha.'+
+    (leg?` Mostra os ${R.length} senadores de hoje que estavam em exercício na legislatura ${rotuloLeg(leg)}; os números são só dessa legislatura.`:'');
+  const L=[...R].sort((a,b)=>{const x=valorCol(a,ordCol),y=valorCol(b,ordCol); if(x==null&&y==null)return 0; if(x==null)return 1; if(y==null)return -1;
     return (x<y?-1:x>y?1:0)*(ordDesc?-1:1)});
-  $('#corpo').innerHTML=L.map(s=>`<tr data-id="${s.id}"><td class="esq"><div class="sen">${foto(s)}<div><b>${esc(s.nome)}</b><small>${esc(s.uf)}</small></div></div></td><td class="esq">${Bandeiras.img(s.partido,57,18,{vazio:false})}${esc(s.partido)}</td>
-    <td>${nf.format(s.apresentadas)}</td><td>${nf.format(s.viraramLei)}</td><td>${s.apresentadas?(s.viraramLei/s.apresentadas*100).toFixed(1)+'%':'—'}</td>
-    <td>${nf.format((s.relatorias||{}).processos||0)}</td>
-    <td>${taxaOri(s)==null?`<span title="${esc((s.difOrientacao||{}).nota||'')}">—</span>`:pct1(taxaOri(s))}</td></tr>`).join('');
+  $('#corpo').innerHTML=L.map(s=>{ const n=num(s); return `<tr data-id="${s.id}"><td class="esq"><div class="sen">${foto(s)}<div><b>${esc(s.nome)}</b><small>${esc(s.uf)}</small></div></div></td><td class="esq">${Bandeiras.img(s.partido,57,18,{vazio:false})}${esc(s.partido)}</td>
+    <td>${nf.format(n.apresentadas)}</td><td>${nf.format(n.viraramLei)}</td><td>${n.apresentadas?(n.viraramLei/n.apresentadas*100).toFixed(1).replace('.',',')+'%':'—'}</td>
+    <td>${nf.format((n.relatorias||{}).processos||0)}</td>
+    <td>${!votosValem()?SEM_VOTO:taxaOri(s)==null?`<span title="${esc((s.difOrientacao||{}).nota||'')}">—</span>`:pct1(taxaOri(s))}</td>
+    ${!temGov()?'':`<td>${!votosValem()?SEM_VOTO:taxaGov(s)==null?`<span title="${esc((s.governo||{}).nota||'')}">—</span>`:`${pct1(taxaGov(s))}<small>${nf.format(s.governo.comparaveis)} votações</small>`}</td>`}</tr>`;}).join('');
+}
+
+// ---- composição: um assento por senador, do mais à esquerda ao mais à direita (a posição é a do PARTIDO) ----
+function composicao(){
+  const E=window.Espectro, svg=$('#plenario');
+  const ordem=[...S].sort((a,b)=>(a.score??99)-(b.score??99)||a.partido.localeCompare(b.partido)||a.nome.localeCompare(b.nome));
+  const pts=E.assentos(ordem.length,4,62,140);
+  svg.innerHTML=ordem.map((x,i)=>{const p=pts[i]; return p?`<circle class="assento" data-id="${x.id}" tabindex="0" role="button" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5.4"
+    fill="${E.corDoScore(x.score)}" opacity="${estaNaLeg(x)?1:.1}"><title>${esc(x.nome)} (${esc(x.partido)}-${esc(x.uf)})${estaNaLeg(x)?'':' — não estava em exercício nesta legislatura'}</title></circle>`:'';}).join('');
+  const R=doRecorte(), tot=R.length||1, faixa=x=>x.ideologia||'sem-classificacao';
+  // faixas só na legenda (CLAUDE.md): cada assento acima tem a cor contínua do score, não a da faixa
+  $('#conta').innerHTML=Object.keys(E.CORES).map(k=>{
+    const n=R.filter(x=>faixa(x)===k).length, pc=n/tot*100;
+    return `<tr><td><i class="pt-cor" style="background:${E.CORES[k]}"></i>${E.NOMES[k]}<div class="haste"><i style="background:${E.CORES[k]};width:${pc.toFixed(1)}%"></i></div></td>
+      <td class="n">${n}</td><td class="p">${pc.toFixed(0)}%</td></tr>`;}).join('');
+  $('#compN').textContent=R.length;
+  const sem=R.filter(x=>x.score==null);
+  $('#subComp').textContent=`Cada assento é um senador, do mais à esquerda ao mais à direita pela posição do partido dele (a mesma média das respostas da wave 9, calculada por este site). `+
+    `${sem.length?`${sem.length} ${sem.length===1?'senador está':'senadores estão'} em partido sem posição na pesquisa e ficam à direita, em cinza. `:''}Clique num assento para abrir a ficha.`+
+    (leg?` Com a legislatura ${rotuloLeg(leg)} escolhida, os ${R.length} assentos em cor são os senadores de hoje que já estavam no cargo então; os apagados não estavam. Isto NÃO é a composição do Senado da época: quem já saiu não está nestes dados.`:'');
 }
 
 async function carregar(){
+  const json=u=>fetch(u,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
+  const pLegs=json('dados/legislaturas.json');             // sai junto do resto, não depois
   await Bandeiras.carregar();
   try{ const r=await fetch('dados/senadores.json',{cache:'no-cache'}); if(!r.ok) throw new Error('HTTP '+r.status); S=await r.json(); }
   catch(e){ $('#grafico').innerHTML=`<p class="erro">Não foi possível carregar senadores.json (${esc(e.message)}).</p>`; return }
+  // Legislaturas oferecidas: da 52ª (2003) em diante e só as em que algum senador de hoje esteve em exercício. Sem `mandatos`
+  // (arquivo ainda não regerado) ou sem a tabela de datas, o seletor nem aparece.
+  const comExercicio=new Set(S.flatMap(s=>[...Object.keys(s.mandatos||{}),...(s.exercicioPorAutoria||[])]));
+  LEGS=((await pLegs)||[]).filter(l=>comExercicio.has(String(l.id)));
+  if(LEGS.length){
+    $('#selLeg').innerHTML='<option value="">Toda a carreira</option>'+[...LEGS].reverse().map(l=>
+      `<option value="${l.id}">${rotuloLeg(l.id)}${String(l.id)===LEG_ATUAL()?' (atual)':''}</option>`).join('');
+    $('#campoLeg').style.display='';
+    const q=new URLSearchParams(location.search).get('leg');
+    if(q&&LEGS.some(l=>String(l.id)===q)){ leg=q; $('#selLeg').value=q; $('#selLeg').classList.add('ativo'); }
+  }
   $('#kicker').textContent=`Senado Federal · ${S.length} senadores em exercício`;
-  const tx=S.map(taxaOri).filter(x=>x!=null).sort((a,b)=>a-b);
-  MEDIANA_ORI=tx.length?tx[Math.floor(tx.length/2)]:null;
-  grafico(); tabela();
+  const ord=f=>S.map(f).filter(x=>x!=null).sort((a,b)=>a-b);
+  const medianaDe=v=>{ const n=v.length; return !n?null:(n%2?v[(n-1)/2]:(v[n/2-1]+v[n/2])/2); };   // com quantidade par, a média dos dois do meio
+  MEDIANA_ORI=medianaDe(ord(taxaOri));
+  MEDIANA_GOV=medianaDe(ord(taxaGov));
+  composicao(); grafico(); tabela();
   const q=new URLSearchParams(location.search).get('id'); if(q) abrir(+q);
 }
 document.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>{eixoY=b.dataset.y; document.querySelectorAll('[data-y]').forEach(x=>x.classList.toggle('on',x===b)); grafico()});
-document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{periodo=b.dataset.p; document.querySelectorAll('[data-p]').forEach(x=>x.classList.toggle('on',x===b)); grafico()});
+$('#selLeg').onchange=()=>{ leg=$('#selLeg').value; $('#selLeg').classList.toggle('ativo',!!leg);
+  composicao(); grafico(); tabela(); if(sel!=null&&!$('#ficha').hidden) abrir(sel,{rolar:false}); };
 $('#busca').addEventListener('input',grafico);
 $('#cab').addEventListener('click',e=>{
   const th=e.target.closest('th[data-k]'); if(!th) return;
   const k=th.dataset.k; ordDesc=ordCol===k?!ordDesc:!['nome','partido'].includes(k); ordCol=k; tabela();
 });
 $('#corpo').addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]'); if(tr) abrir(+tr.dataset.id);});
+$('#plenario').addEventListener('click',e=>{const c=e.target.closest('.assento'); if(c) abrir(+c.dataset.id);});
+$('#plenario').addEventListener('keydown',e=>{const c=e.target.closest('.assento'); if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault(); abrir(+c.dataset.id);}});
 const g=$('#grafico');
 g.addEventListener('click',e=>{const c=e.target.closest('.pt'); if(c) abrir(+c.dataset.id);});
 g.addEventListener('mousemove',e=>{

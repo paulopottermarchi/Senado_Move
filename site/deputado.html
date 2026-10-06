@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="estilo.css">
 <script src="site.js" defer></script>
 <style>
-/* Mesmos tokens do index.html. As cores do espectro NÃO aparecem nesta página:
+/* Mesmos tokens do estilo.css e de deputados.html. As cores do espectro NÃO aparecem nesta página:
    tema não tem ideologia, e colorir categorias com a paleta do eixo X sugeriria que tem. */
 
 .volta{display:inline-block;margin-top:28px;font-size:13px;color:var(--tinta2);text-decoration:none}
@@ -181,18 +181,19 @@
   <div class="topo-in">
     <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
     <nav class="nav" aria-label="Páginas do site">
-      <a href="index.html#deputados" aria-current="true">Deputados</a>
+      <a href="deputados.html" aria-current="page">Deputados</a>
       <a href="senadores.html">Senadores</a>
       <a href="index.html#semana">Esta semana</a>
       <a href="leis.html">Leis votadas</a>
       <a href="blocos.html">Quem vota com quem</a>
+      <a href="fluxo.html">Entre as casas</a>
       <a href="obras.html">Obras</a>
       <a href="index.html#sobre">Sobre os dados</a>
     </nav>
   </div>
 </header>
 <div class="wrap">
-  <a class="volta" href="index.html#deputados">← Voltar aos 513 deputados</a>
+  <a class="volta" href="deputados.html">← Voltar aos 513 deputados</a>
   <main id="raiz" aria-live="polite"></main>
 </div>
 
@@ -205,10 +206,12 @@
       </div>
       <nav class="rg-col" aria-label="Páginas">
         <h2>Páginas</h2>
-        <a href="index.html#deputados">Deputados</a>
+        <a href="index.html">Início</a>
+        <a href="deputados.html">Deputados</a>
         <a href="senadores.html">Senadores</a>
         <a href="leis.html">Leis votadas</a>
         <a href="blocos.html">Quem vota com quem</a>
+        <a href="fluxo.html">Entre as casas</a>
         <a href="obras.html">Obras</a>
       </nav>
       <div class="rg-col">
@@ -270,10 +273,11 @@ async function iniciar(){
   const id=q.get('id');
   if(!id||!/^\d+$/.test(id)){
     aviso('Escolha um deputado','<p>Esta página mostra as proposições de um deputado por tema. '+
-      'Abra a ficha de alguém no <a href="index.html">gráfico</a> e siga o link '+
+      'Abra a ficha de alguém no <a href="deputados.html">gráfico</a> e siga o link '+
       '“Ver as proposições por tema”.</p>');
     return;
   }
+  const pNoticias=carregarNoticias();      // sai junto dos dados do deputado, não depois deles
   try{
     const [rt,rd]=await Promise.all([
       fetch('dados/temas/taxonomia.json',{cache:'no-cache'}),
@@ -294,7 +298,7 @@ async function iniciar(){
     }
     return;
   }
-  await carregarNoticias();
+  await pNoticias;
   const t=q.get('tema');
   sel = t==='todas'||t==='nc' ? t : (t!=null&&/^\d+$/.test(t)&&tax.categorias[+t]!=null ? +t : null);
   montar();
@@ -338,9 +342,8 @@ async function carregarNoticias(){
 }
 
 async function notoriedade(id){
-  let W={}, Y={};
-  try{ const r=await fetch('dados/wikipedia.json',{cache:'no-cache'}); if(r.ok) W=await r.json(); }catch(e){}
-  try{ const r=await fetch('dados/youtube.json',{cache:'no-cache'}); if(r.ok) Y=await r.json(); }catch(e){}
+  const json=u=>fetch(u,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
+  const [W,Y]=(await Promise.all([json('dados/wikipedia.json'),json('dados/youtube.json')])).map(x=>x||{});
   const el=document.getElementById('noto'), w=W[String(id)], y=Y[String(id)];
   // canal oficial (cadastro da Câmara): número como o YouTube informa, sem ranking nem soma
   const yt=!y?'':`<p class="cqv-txt">${y.inscritos!=null?`<b>${NF.format(y.inscritos)}</b> inscritos no canal oficial no YouTube`
