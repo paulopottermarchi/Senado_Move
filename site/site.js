@@ -7,29 +7,38 @@
     nav.scrollLeft += atual.getBoundingClientRect().left - nav.getBoundingClientRect().left - 32;
   }
 
-  // Entrada suave dos blocos fixos da página (não das listas que os filtros redesenham).
-  // Sem JS, ou com movimento reduzido, nada fica escondido: a classe só entra aqui.
-  if (!('IntersectionObserver' in window) ||
-      matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const alvos = [...document.querySelectorAll(
-    '.capa > *, .painel, .semana, .votos, .mapa, .rodape-site .wrap, .rg > *')];
-  const io = new IntersectionObserver(entradas => {
-    let atraso = 0;
-    for (const e of entradas) {
-      if (!e.isIntersecting) continue;
-      const el = e.target;
-      io.unobserve(el);
-      el.style.animationDelay = `${atraso}ms`;
-      atraso = Math.min(atraso + 60, 300);
-      el.classList.add('visivel');
+  // Entrada suave dos blocos fixos da página (não das listas que os filtros redesenham), com inView e stagger do Motion
+  // (window.Motion, de motion-init.js). Sem JS, sem Motion ou com movimento reduzido nada fica escondido: o CSS só esconde
+  // enquanto html não tem .m-ok, e a animação m-seguranca do estilo.css solta tudo depois de 3,5 s se ninguém assumir.
+  const html = document.documentElement, M = window.Motion;
+  const soltar = () => html.classList.add('m-ok');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !M || !M.animate || !M.inView || !M.stagger) { soltar(); return; }
+  try {
+    // os mesmos alvos que o estilo.css esconde; a abertura da página inicial (.hero) se anima sozinha
+    const alvos = [...document.querySelectorAll(
+      '.capa > :not(.hero):not(.explora), .explora > li, .painel, .semana, .votos, .mapa, .rodape-site .wrap, .rg > *')];
+    // o estado inicial passa para estilo em linha antes de o CSS soltar: nenhum quadro mostra o bloco pronto e depois o esconde
+    for (const el of alvos) { el.dataset.m = ''; el.style.opacity = '0'; el.style.transform = 'translateY(12px)'; }
+    if (!document.querySelector('.hero')) soltar();       // com abertura animada, quem solta é ela, depois de pôr o estado inicial dela
+    const base = M.stagger(0.06);
+    let fila = [], agendado = false;
+    const revelar = () => {
+      agendado = false;
+      const lote = fila; fila = [];
       // terminada a entrada, a peça volta ao normal (hover, sticky e transform livres)
-      el.addEventListener('animationend', () => {
-        el.classList.remove('revela', 'visivel');
-        el.style.animationDelay = '';
-      }, { once: true });
-    }
-  }, { rootMargin: '0px 0px -6% 0px' });
-  for (const el of alvos) { el.classList.add('revela'); io.observe(el); }
+      const limpar = () => lote.forEach(el => { el.style.removeProperty('opacity'); el.style.removeProperty('transform'); el.removeAttribute('data-m'); });
+      try {
+        M.animate(lote, { opacity: [0, 1], y: [12, 0] },
+          { duration: 0.6, ease: [0.4, 0, 0.2, 1], delay: (i, n) => Math.min(base(i, n), 0.3) }).finished.then(limpar, limpar);
+      } catch (e) { limpar(); }
+    };
+    // o que entra na tela no mesmo instante vai junto, em cascata (60 ms entre um e outro, até 300 ms)
+    M.inView(alvos, el => { fila.push(el); if (!agendado) { agendado = true; queueMicrotask(revelar); } },
+      { margin: '0px 0px -6% 0px' });
+  } catch (e) {
+    document.querySelectorAll('[data-m]').forEach(el => { el.style.removeProperty('opacity'); el.style.removeProperty('transform'); el.removeAttribute('data-m'); });
+    soltar();
+  }
 })();
 
 // Logos dos partidos (dados/partidos/logos.json, gerado por logos.py). A página só referencia o endereço da

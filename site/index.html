@@ -255,14 +255,6 @@ a.reg:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
   .explora{margin-top:48px}
 }
 @media(max-width:720px){.capa{padding:24px 0 8px}.hero .busca{margin-top:24px}}
-
-/* o CSS esconde o que vai entrar só enquanto o Motion não assumiu (html.m-ok) e só se há JS e movimento: sem isso nada some.
-   Se o Motion nunca assumir, a animação m-seguranca solta tudo depois de 3,5 s. */
-@media (scripting:enabled) and (prefers-reduced-motion:no-preference){
-  html:not(.m-ok) .hero [data-entra]{opacity:0;animation:m-seguranca 0s 3.5s forwards}
-  html:not(.m-ok) .hero .pal>span{transform:translateY(110%);animation:m-seguranca 0s 3.5s forwards}
-}
-@keyframes m-seguranca{to{opacity:1;transform:none}}
 </style>
 </head>
 <body>

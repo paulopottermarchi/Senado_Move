@@ -20,6 +20,9 @@
 /* "Esta semana" mudou para a página inicial (5/10/2026): links antigos para deputados.html#semana seguem para lá. */
 if(location.hash==='#semana') location.replace('index.html'+location.search+location.hash);
 </script>
+<!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
 <script src="site.js" defer></script>
 <style>
 /* ---------- topo ---------- */

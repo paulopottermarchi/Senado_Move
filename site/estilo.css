@@ -163,10 +163,17 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 .bandeira-slot{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-right:8px;flex:none}
 .bandeira{display:block;max-width:100%;max-height:100%;object-fit:contain}
 
-/* ---------- entrada suave (site.js marca; sem JS, tudo aparece normal) ---------- */
+/* ---------- entrada suave (site.js + Motion; sem JS, sem Motion ou com movimento reduzido nada fica escondido) ----------
+   O CSS esconde os blocos que vão entrar só enquanto html não tem .m-ok (o site.js solta depois de pôr o estado inicial em
+   estilo em linha) e só se há JS e o leitor aceita movimento. Se o Motion nunca assumir, a animação m-seguranca solta tudo
+   depois de 3,5 s. Os alvos são os mesmos que o site.js lista: blocos fixos, nunca as listas que os filtros redesenham. */
 @keyframes surgir{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.revela{opacity:0}
-.revela.visivel{animation:surgir .6s var(--curva) both}
+@keyframes m-seguranca{to{opacity:1;transform:none}}
+@media (scripting:enabled) and (prefers-reduced-motion:no-preference){
+  html:not(.m-ok) :is(.capa > :not(.hero):not(.explora),.explora > li,.painel,.semana,.votos,.mapa,.rodape-site .wrap,.rg > *),
+  html:not(.m-ok) .hero [data-entra]{opacity:0;animation:m-seguranca 0s 3.5s forwards}
+  html:not(.m-ok) .hero .pal>span{transform:translateY(110%);animation:m-seguranca 0s 3.5s forwards}
+}
 
 /* ---------- transição entre páginas (CSS nativo, sem JS) ----------
    Navegador com suporte (Chrome/Edge 126+, Safari 18.2+) troca de página com um fade curto; os demais navegam como sempre.
@@ -207,12 +214,11 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{transition:none!important;animation:none!important}
-  .revela{opacity:1}
   @view-transition{navigation:none}
   ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
 }
 @media print{
   .topo,.rodape-global{display:none}
-  .revela{opacity:1!important;animation:none!important}
+  [data-m]{opacity:1!important;transform:none!important}
   body{background:#fff}
 }
