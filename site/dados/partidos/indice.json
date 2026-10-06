@@ -1,5 +1,5 @@
 {
- "_gerado": "2026-10-03",
+ "_gerado": "2026-10-05",
  "versao": "2026-10-02.4",
  "legislaturaAtual": 57,
  "minAutores": 10,
@@ -305,7 +305,7 @@
    "id": "todas",
    "rotulo": "Todas · 1991 a 2026",
    "inicio": "1991-02-01",
-   "fim": "2026-10-03",
+   "fim": "2026-10-05",
    "atual": false,
    "proposicoes": 87864,
    "deMaisDeUmPartido": 2295,
