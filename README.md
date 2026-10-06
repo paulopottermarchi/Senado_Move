@@ -3,8 +3,10 @@
 O que cada deputado e senador propôs, o que virou lei e como votou, a partir de dados públicos
 oficiais, organizados para qualquer pessoa entender.
 
-Site estático (HTML, CSS e JavaScript puros, sem dependências), atualizado todos os dias por um
-workflow do GitHub Actions e publicado no GitHub Pages. Site independente, sem vínculo com a Câmara
+Site estático (HTML, CSS e JavaScript puros, sem build e sem npm), atualizado todos os dias por um
+workflow do GitHub Actions e publicado no GitHub Pages. A única biblioteca é o Motion 14.0.0 (animação, licença MIT),
+versionada em `site/vendor/` e carregada por `site/motion-init.js`: nada de CDN em produção, e se ela não carregar o site
+funciona igual, sem animação. As animações respeitam `prefers-reduced-motion`. Site independente, sem vínculo com a Câmara
 dos Deputados, o Senado Federal ou o TSE.
 
 ## O que o site mostra

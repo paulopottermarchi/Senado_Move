@@ -21,6 +21,9 @@
   if(['deputados','partidos','votacoes'].indexOf(h)>-1) location.replace('deputados.html'+location.search+location.hash);})();
 </script>
 <link rel="stylesheet" href="estilo.css">
+<!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
 <script src="site.js" defer></script>
 <style>
 /* ---------- topo ---------- */
@@ -212,6 +215,54 @@ a.reg:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
 .sem-mais-btn:hover{background:var(--linha)}
 .sem-cat span{border-radius:999px;padding:0 8px;background:var(--papel)}
 @media(max-width:720px){.semana{padding:20px;border-radius:var(--raio-p)}}
+
+/* ---------- abertura: título em cascata e o hemiciclo dos 513 deputados ---------- */
+.capa{padding:40px 0 16px}
+.hero{position:relative;display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);gap:40px 56px;align-items:center;isolation:isolate}
+.hero::before{content:"";position:absolute;z-index:-1;inset:-40px -16px -8px;pointer-events:none;
+  background:radial-gradient(46% 64% at 80% 44%,rgba(45,212,191,.15),transparent 72%)}
+.hero.so-texto{grid-template-columns:minmax(0,1fr)}
+.hero h1{font-size:clamp(40px,6.2vw,68px);line-height:1.04;letter-spacing:-.03em;max-width:12ch}
+/* cada palavra do título numa máscara: sobe de baixo para dentro dela (o texto continua inteiro para quem lê em voz alta) */
+.pal{display:inline-block;vertical-align:top;overflow:hidden;padding:.06em .05em .14em;margin:-.06em -.05em -.14em}
+.pal>span{display:inline-block}
+.hero .chamada{font-size:clamp(17px,2vw,20px);max-width:44ch;margin-top:24px}
+.hero .busca{margin-top:32px}
+.explora{margin-top:64px}
+.hero-viz{position:relative;margin:0;container-type:inline-size}
+.hv-box{position:relative}
+.hv{display:block;width:100%;height:auto;overflow:visible}
+.hv circle{r:2.7px;fill:var(--c,var(--linha-forte));transform-box:fill-box;transform-origin:center;
+           transition:fill .8s var(--curva),r .15s var(--curva)}
+@media(hover:hover){.hv circle{cursor:pointer}.hv circle:hover{r:5px}}
+.hv-n{position:absolute;left:0;right:0;bottom:4%;display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.hv-n b{font-family:var(--serif);font-weight:500;font-size:36px;font-size:clamp(28px,11cqw,56px);line-height:1;letter-spacing:-.03em}
+.hv-n span{font-size:13px;color:var(--tinta3)}
+.hv-dica{position:absolute;z-index:3;transform:translate(-50%,-100%);margin-top:-10px;white-space:nowrap;
+         background:var(--tinta);color:#fff;font-size:12px;line-height:1.4;padding:8px 12px;border-radius:var(--raio-c);
+         box-shadow:var(--sombra-md);text-decoration:none;pointer-events:none;opacity:0;visibility:hidden;
+         transition:opacity .15s var(--curva),visibility .15s}
+.hv-dica.on{opacity:1;visibility:visible}
+.hv-dica small{display:block;font-size:11px;color:#a3b1c2}
+@media(hover:none){.hv-dica.on{pointer-events:auto}}
+.hero-viz figcaption{margin:16px auto 0;font-size:13px;line-height:1.6;color:var(--tinta3);max-width:46ch;text-align:center}
+.hero-viz figcaption a{color:var(--destaque);font-weight:500}
+.hv-leg{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px;font-size:12px;color:var(--tinta3)}
+.hv-leg i{width:120px;height:6px;border-radius:3px;background:linear-gradient(90deg,#d85a30,#b88f5a 25%,#888780 50%,#4a7a9f 75%,#0c447c)}
+@media(max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:48px}
+  .hero-viz{width:100%;max-width:520px;margin:0 auto}
+  .explora{margin-top:48px}
+}
+@media(max-width:720px){.capa{padding:24px 0 8px}.hero .busca{margin-top:24px}}
+
+/* o CSS esconde o que vai entrar só enquanto o Motion não assumiu (html.m-ok) e só se há JS e movimento: sem isso nada some.
+   Se o Motion nunca assumir, a animação m-seguranca solta tudo depois de 3,5 s. */
+@media (scripting:enabled) and (prefers-reduced-motion:no-preference){
+  html:not(.m-ok) .hero [data-entra]{opacity:0;animation:m-seguranca 0s 3.5s forwards}
+  html:not(.m-ok) .hero .pal>span{transform:translateY(110%);animation:m-seguranca 0s 3.5s forwards}
+}
+@keyframes m-seguranca{to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -235,21 +286,38 @@ a.reg:focus-visible{outline:2px solid var(--tinta);outline-offset:2px}
 <div class="wrap" id="inicio">
 
   <div class="capa">
-    <p class="kicker">Congresso Nacional · dados públicos</p>
-    <h1>O que o Congresso propõe, aprova e vota</h1>
-    <p class="chamada">Dados oficiais da Câmara, do Senado e do TSE, organizados para qualquer pessoa
-       entender. Procure o seu deputado ou explore as páginas abaixo.</p>
+    <div class="hero">
+      <div class="hero-txt">
+        <p class="kicker" data-entra>Congresso Nacional · dados públicos</p>
+        <h1><span class="pal"><span>O</span></span> <span class="pal"><span>que</span></span> <span class="pal"><span>o</span></span> <span class="pal"><span>Congresso</span></span> <span class="pal"><span>propõe,</span></span> <span class="pal"><span>aprova</span></span> <span class="pal"><span>e</span></span> <span class="pal"><span>vota</span></span></h1>
+        <p class="chamada" data-entra>Dados oficiais da Câmara, do Senado e do TSE, organizados para qualquer pessoa
+           entender. Procure o seu deputado ou explore as páginas abaixo.</p>
 
-    <div class="busca">
-      <svg class="busca-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"
-        fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l5 5" stroke="currentColor"
-        stroke-width="1.8" stroke-linecap="round"/></svg>
-      <input id="busca" type="search" autocomplete="off" spellcheck="false"
-             placeholder="Nome do deputado ou partido" aria-label="Busque um deputado pelo nome ou partido">
-      <div class="achados" id="achados"></div>
+        <div class="busca" data-entra>
+          <svg class="busca-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"
+            fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l5 5" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input id="busca" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="Nome do deputado ou partido" aria-label="Busque um deputado pelo nome ou partido">
+          <div class="achados" id="achados"></div>
+        </div>
+        <!-- preenchido com semana.json (geradoEm): a rodada diária termina por ele -->
+        <p class="atualizado" id="atualizado" hidden></p>
+      </div>
+
+      <!-- os 513 deputados num hemiciclo, do mais à esquerda ao mais à direita; os pontos nascem aqui e a cor chega com deputados.json -->
+      <figure class="hero-viz" id="heroFig" data-entra aria-labelledby="heroCap">
+        <div class="hv-box">
+          <svg class="hv" id="heroViz" viewBox="0 0 300 158" role="img"
+               aria-label="Hemiciclo com os 513 deputados, do mais à esquerda ao mais à direita pela posição do partido no espectro"></svg>
+          <div class="hv-n" aria-hidden="true"><b>513</b><span>deputados</span></div>
+        </div>
+        <a class="hv-dica" id="heroDica" href="deputados.html" tabindex="-1" aria-hidden="true"></a>
+        <figcaption id="heroCap">Cada ponto é um deputado, do mais à esquerda ao mais à direita pela posição do partido.<span id="heroSem"></span>
+          <a href="deputados.html#deputados">Abrir o gráfico completo →</a>
+          <span class="hv-leg" aria-hidden="true">esquerda <i></i> direita</span></figcaption>
+      </figure>
     </div>
-    <!-- preenchido com semana.json (geradoEm): a rodada diária termina por ele -->
-    <p class="atualizado" id="atualizado" hidden></p>
 
     <ul class="explora">
       <li><a href="deputados.html"><em>Câmara</em><b>Deputados</b>
@@ -544,8 +612,81 @@ function ligarBusca(){
   document.addEventListener('click',e=>{ if(!campo.contains(e.target)&&!lista.contains(e.target)) lista.classList.remove('on'); });
 }
 
+// ---------- abertura: título em cascata e hemiciclo dos 513 deputados ----------
+// A entrada usa o Motion (window.Motion, de motion-init.js). Sem ele, ou com movimento reduzido, nada é escondido nem animado:
+// o título, a busca e o hemiciclo aparecem prontos (o hemiciclo ganha a cor quando deputados.json chega).
+let heroPontos=[], heroDeps=[];
+const heroSoltar=()=>document.documentElement.classList.add('m-ok');
+const heroLimpar=els=>els.forEach(el=>{el.style.removeProperty('opacity');el.style.removeProperty('transform');});
+function heroDesenhar(){
+  const svg=document.getElementById('heroViz'); if(!svg) return;
+  // 513 assentos: o número de cadeiras é fixo; a cor de cada um vem do deputado que ocupa o lugar (heroColorir)
+  svg.innerHTML=E.assentos(513,9,54,140).map((p,i)=>`<circle data-i="${i}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}"></circle>`).join('');
+  heroPontos=[...svg.children];
+}
+function heroAbrir(){
+  heroDesenhar();
+  const M=window.Motion, hero=document.querySelector('.hero');
+  if(!hero||!M||!M.animate||matchMedia('(prefers-reduced-motion: reduce)').matches){ heroSoltar(); return; }
+  try{
+    const itens=[...hero.querySelectorAll('[data-entra]')], pal=[...hero.querySelectorAll('.pal>span')];
+    const [kick,chamada,busca,fig]=itens;
+    // o estado inicial passa para estilo em linha antes de o CSS soltar: nenhum quadro mostra o texto pronto e depois o esconde
+    itens.forEach(el=>{el.style.opacity='0';el.style.transform='translateY(16px)';});
+    pal.forEach(el=>{el.style.transform='translateY(110%)';});
+    heroPontos.forEach(c=>{c.style.opacity='0';});
+    heroSoltar();
+    const ease=[.22,1,.36,1], sobe=(el,delay,dur=.7)=>M.animate(el,{opacity:[0,1],y:[16,0]},{duration:dur,ease,delay});
+    const fim=[
+      sobe(kick,.05),
+      M.animate(pal,{y:['110%','0%']},{duration:.85,ease,delay:M.stagger(.06,{startDelay:.1})}),
+      sobe(chamada,.55), sobe(busca,.68), sobe(fig,.3,.9),
+      M.animate(heroPontos,{opacity:[0,1],scale:[.3,1]},{duration:.6,ease,delay:M.stagger(.0016,{startDelay:.55})})
+    ].map(a=>a.finished);
+    // terminada a entrada, tudo volta ao normal (hover, foco e transformações livres)
+    Promise.all(fim).then(()=>{heroLimpar(itens);heroLimpar(pal);heroLimpar(heroPontos);}).catch(()=>{heroLimpar(itens);heroLimpar(pal);heroLimpar(heroPontos);});
+  }catch(e){
+    document.querySelectorAll('.hero [data-entra],.hero .pal>span,.hv circle').forEach(el=>heroLimpar([el]));
+    heroSoltar();
+  }
+}
+// cada assento ganha a cor do deputado que o ocupa (cor contínua do score; sem score, cinza), da esquerda para a direita
+function heroColorir(){
+  if(!heroPontos.length) return;
+  heroDeps=[...deputados].sort((a,b)=>(a.score??99)-(b.score??99));
+  const anima=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+  heroDeps.forEach((d,i)=>{
+    const c=heroPontos[i]; if(!c) return;
+    if(anima) c.style.transitionDelay=(i*1.2)+'ms';
+    c.style.setProperty('--c',E.corDoScore(d.score));
+  });
+  if(anima) setTimeout(()=>heroPontos.forEach(c=>{c.style.transitionDelay='';}),1800);
+  const sem=heroDeps.filter(d=>d.score==null).length;
+  if(sem) document.getElementById('heroSem').textContent=` ${sem} ${sem===1?'está':'estão'} em partido sem posição na pesquisa, em cinza, à direita.`;
+}
+function heroDica(){
+  const svg=document.getElementById('heroViz'), fig=document.getElementById('heroFig'), dica=document.getElementById('heroDica');
+  let toque=false;
+  svg.addEventListener('pointerover',e=>{
+    toque=e.pointerType==='touch';
+    const c=e.target.closest('circle'), d=c&&heroDeps[+c.dataset.i]; if(!d) return;
+    const r=c.getBoundingClientRect(), f=fig.getBoundingClientRect();
+    dica.innerHTML=`${esc(d.nome)}<small>${esc(d.partido)} de ${esc(d.uf)}${toque?' · abrir a ficha':''}</small>`;
+    dica.href=`deputado.html?id=${encodeURIComponent(d.id)}`;
+    dica.style.left=(r.left+r.width/2-f.left)+'px'; dica.style.top=(r.top-f.top)+'px';
+    dica.classList.add('on');
+  });
+  svg.addEventListener('pointerleave',e=>{ if(e.pointerType!=='touch') dica.classList.remove('on'); });
+  document.addEventListener('pointerdown',e=>{ if(!fig.contains(e.target)) dica.classList.remove('on'); });
+  svg.addEventListener('click',e=>{                    // mouse: o ponto abre a ficha; no toque, o primeiro toque só mostra quem é
+    const c=e.target.closest('circle'), d=c&&heroDeps[+c.dataset.i];
+    if(d&&!toque) location.href=`deputado.html?id=${encodeURIComponent(d.id)}`;
+  });
+}
+
 async function iniciar(){
   E=window.Espectro;                         // site.js é defer: só existe depois do parse
+  heroAbrir(); heroDica();
   document.getElementById('mTam').onclick=()=>{mapaProporcional=false;mTam.classList.add('on');mProp.classList.remove('on');mapaDesenhar();};
   document.getElementById('mProp').onclick=()=>{mapaProporcional=true;mProp.classList.add('on');mTam.classList.remove('on');mapaDesenhar();};
   carregarSemana();
@@ -555,8 +696,10 @@ async function iniciar(){
     deputados=(await r.json()).map(d=>({id:d.id,nome:d.nome,partido:d.partido,uf:d.uf,regiao:E.UF_REG[d.uf]||null,score:d.score??null,urlFoto:d.urlFoto||null}));
   }catch(e){
     document.getElementById('mapaLeitura').textContent='Não foi possível carregar os dados dos deputados ('+e.message+'). Abra o site por um servidor, não direto do disco.';
+    document.getElementById('heroFig').hidden=true; document.querySelector('.hero').classList.add('so-texto');   // sem dados, sem hemiciclo
     return;
   }
+  heroColorir();                              // a cor chega assim que os deputados chegam, sem esperar as frases
   FRASES=((await pFrases)||{}).frases||{};
   mapaDesenhar(); ligarBusca();
 }
