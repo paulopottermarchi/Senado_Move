@@ -6,11 +6,11 @@ oficiais, organizados para qualquer pessoa entender.
 Site estático (HTML, CSS e JavaScript puros, sem build e sem npm), atualizado todos os dias por um
 workflow do GitHub Actions e publicado no GitHub Pages. Tudo o que o navegador baixa de terceiros para
 funcionar está versionado em `site/vendor/`, em versão fixa e sem CDN: o Motion 14.0.0 (animação, MIT; `site/motion-init.js`), o
-Three.js 0.180.0 (3D, MIT; só a página dos senadores, sob demanda, por importmap e `site/cena3d.js`) e a fonte Barlow Condensed
+Three.js 0.180.0 (3D, MIT; o modelo decorativo do topo das páginas, depois da primeira pintura, e o plenário dos senadores, só por clique; sempre sob demanda, por importmap e `site/cena3d.js`) e a fonte Barlow Condensed
 (SIL OFL, só para títulos grandes e números de destaque). Tudo é melhoria progressiva: sem JavaScript, sem WebGL ou com erro,
 a página fica completa (o SVG do plenário e uma imagem estática no topo). As animações respeitam `prefers-reduced-motion`; o
 tema escuro vale por `prefers-color-scheme` ou pelo alternador da barra, e só nas páginas que declaram `data-escuro-ok`
-(hoje, senadores). Site independente, sem vínculo com a Câmara
+(hoje, deputados e senadores). O visual editorial (grade larga, título e números em condensada, um modelo 3D por página, camadas escuras e claras) vale nas páginas com `data-ed`. Site independente, sem vínculo com a Câmara
 dos Deputados, o Senado Federal ou o TSE.
 
 ## O que o site mostra
@@ -121,8 +121,11 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 ```
 site/                 o que vai ao ar — o GitHub Pages publica a pasta inteira, e só ela
   index.html          página inicial; deputados.html, a dos deputados (prototipo.html só redireciona)
-  deputado.html  leis.html  blocos.html  obras.html  senadores.html
-  estilo.css  site.js  favicon.ico
+  deputado.html  leis.html  blocos.html  fluxo.html  obras.html  senadores.html
+  estilo.css  site.js  motion-init.js  favicon.ico
+  cena3d.js  modelos3d.js  cupula3d.js  plenario3d.js   3D sob demanda: base comum, modelos do topo, plenário dos senadores
+  img/                imagem estática de cada modelo (a mesma câmera do 3D, para quem não tem WebGL)
+  vendor/             Motion, Three.js e a fonte condensada, em versão fixa
   dados/              os JSON que as páginas leem, gerados pelos scripts
     temas/            um arquivo por deputado, a taxonomia e o resumo
 scripts/              coleta e processamento, em Python

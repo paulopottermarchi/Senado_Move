@@ -82,8 +82,8 @@
                letter-spacing:-.02em;line-height:1}
 .av-cx img.av{position:absolute;inset:0;width:100%;height:100%;z-index:1;object-fit:cover;object-position:center 22%;display:block;border:none}
 .av-cx img.av.falhou{display:none}
-.atualizado{display:flex;align-items:center;gap:8px;margin-top:28px;font-size:13px;color:var(--tinta3)}
-.atualizado[hidden]{display:none}
+.atualizado{display:flex;align-items:center;gap:8px;margin-top:28px;min-height:20px;font-size:13px;color:var(--tinta3)}
+.atualizado[hidden]{display:flex;visibility:hidden}      /* reserva a linha: o texto chega depois, sem empurrar o resto */
 .atualizado i{width:8px;height:8px;border-radius:50%;background:var(--destaque-claro);flex-shrink:0;box-shadow:0 0 0 4px rgba(45,212,191,.16)}
 
 /* ---------- o hemiciclo dos 513 (a composição da Câmara): como era, agora sobre o escuro ---------- */
@@ -263,6 +263,7 @@
   .leitura-ed{grid-column:1/-1}
 }
 @media(max-width:640px){
+  .atualizado{min-height:44px;align-items:flex-start}
   .busca{flex-direction:column;align-items:stretch}
   .busca-campo{max-width:none}
   .btn-cta{justify-content:center}
@@ -331,7 +332,7 @@
             <div class="hv-n" aria-hidden="true"><b data-conta data-conta-atraso=".9" id="hvN">513</b><span>deputados</span></div>
           </div>
           <a class="hv-dica" id="heroDica" href="deputados.html" tabindex="-1" aria-hidden="true">Ficha do deputado</a>
-          <figcaption id="heroCap">Cada ponto é um deputado, do mais à esquerda ao mais à direita pela posição do partido.<span id="heroSem"></span>
+          <figcaption id="heroCap">Cada ponto é um deputado, do mais à esquerda ao mais à direita pela posição do partido.<span id="heroSem" style="visibility:hidden"> 00 estão em partido sem posição na pesquisa, em cinza, à direita.</span>
             <a href="deputados.html#deputados">Abrir o gráfico completo →</a>
             <span class="hv-leg" aria-hidden="true">esquerda <i></i> direita</span></figcaption>
         </figure>
@@ -792,7 +793,7 @@ function heroColorir(){
   });
   if(anima) setTimeout(()=>heroPontos.forEach(c=>{c.style.transitionDelay='';}),1800);
   const sem=heroDeps.filter(d=>d.score==null).length;
-  if(sem) document.getElementById('heroSem').textContent=` ${sem} ${sem===1?'está':'estão'} em partido sem posição na pesquisa, em cinza, à direita.`;
+  if(sem){ const hs=document.getElementById('heroSem'); hs.textContent=` ${sem} ${sem===1?'está':'estão'} em partido sem posição na pesquisa, em cinza, à direita.`; hs.style.visibility=''; }   // o espaço já estava reservado
 }
 function heroDica(){
   const svg=document.getElementById('heroViz'), fig=document.getElementById('heroFig'), dica=document.getElementById('heroDica');
