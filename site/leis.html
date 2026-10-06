@@ -146,11 +146,12 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
   <div class="topo-in">
     <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
     <nav class="nav" aria-label="Páginas do site">
-      <a href="index.html#deputados">Deputados</a>
+      <a href="deputados.html">Deputados</a>
       <a href="senadores.html">Senadores</a>
       <a href="index.html#semana">Esta semana</a>
       <a href="leis.html" aria-current="page">Leis votadas</a>
       <a href="blocos.html">Quem vota com quem</a>
+      <a href="fluxo.html">Entre as casas</a>
       <a href="obras.html">Obras</a>
       <a href="index.html#sobre">Sobre os dados</a>
     </nav>
@@ -261,10 +262,12 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
       </div>
       <nav class="rg-col" aria-label="Páginas">
         <h2>Páginas</h2>
-        <a href="index.html#deputados">Deputados</a>
+        <a href="index.html">Início</a>
+        <a href="deputados.html">Deputados</a>
         <a href="senadores.html">Senadores</a>
         <a href="leis.html">Leis votadas</a>
         <a href="blocos.html">Quem vota com quem</a>
+        <a href="fluxo.html">Entre as casas</a>
         <a href="obras.html">Obras</a>
       </nav>
       <div class="rg-col">
@@ -579,7 +582,7 @@ function noticiasLei(l){
 function cartao(l,dep){
   const res=l.aprovacao==null?'':l.aprovacao?'aprovada':(QUORUM[l.tipo]&&l.sim>l.nao?`rejeitada, faltou quórum de ${QUORUM[l.tipo]}`:'rejeitada');
   const med=(l.scoreMedioSim!=null||l.scoreMedioNao!=null)
-    ?`<p class="med">Posição média de quem votou sim: <b>${l.scoreMedioSim==null?'—':l.scoreMedioSim.toFixed(1)}</b> · de quem votou não: <b>${l.scoreMedioNao==null?'—':l.scoreMedioNao.toFixed(1)}</b> (de 1, esquerda, a 10, direita)</p>`:'';
+    ?`<p class="med">Posição média de quem votou sim: <b>${l.scoreMedioSim==null?'—':l.scoreMedioSim.toFixed(1).replace('.',',')}</b> · de quem votou não: <b>${l.scoreMedioNao==null?'—':l.scoreMedioNao.toFixed(1).replace('.',',')}</b> (de 1, esquerda, a 10, direita)</p>`:'';
   const cats=(l.temas||[]).length?`<div class="cats">${l.temas.map(([n,t,o])=>
     `<span title="Nesta categoria pelo termo “${esc(t)}”, na ementa">${esc(cap(n))}</span>`).join('')}</div>`:'';
   return `<article class="lei">

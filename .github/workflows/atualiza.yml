@@ -154,6 +154,14 @@ jobs:
       - name: Logos dos partidos
         run: python scripts/passo.py --opcional logos.py
 
+      # Onde a proposta morre entre as casas: proposições aprovadas numa casa e remetidas à outra (Senado /processo +
+      # tramitações da Câmara), por vínculo de identificador exato. A coleta a frio (~24 mil processos do Senado e ~23 mil
+      # tramitações da Câmara) leva horas: com --limite ela se completa em alguns dias, e o fluxo.json só é regravado
+      # quando o conjunto está completo e as checagens passam. Depois, só o que o Senado diz ter mudado (numdias).
+      # Falha não para a rodada (a página só fica sem dados novos).
+      - name: Fluxo entre as casas
+        run: python scripts/passo.py --opcional fluxo.py --limite 9000
+
       - name: Esta semana na Câmara
         run: python scripts/passo.py semana.py
 

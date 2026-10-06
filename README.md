@@ -11,12 +11,14 @@ dos Deputados, o Senado Federal ou o TSE.
 
 | Página | O que responde |
 |---|---|
-| **Início** (`index.html`) | Onde cada um dos 513 deputados está no espectro político e quanto propôs — com alternância entre proposições *apresentadas* e as que *viraram lei*. Ranking, partidos e o que aconteceu na semana. As votações mais disputadas e mais consensuais estão na página das leis votadas; o filtro de região, no próprio gráfico. |
+| **Início** (`index.html`) | A porta de entrada: busca de deputado, um cartão para cada página, "Esta semana na Câmara" (o que virou lei, andou ou foi apresentado nos últimos 7 dias, a pauta do Plenário e as notícias) e o espectro político em cada região do país. |
+| **Deputados** (`deputados.html`) | Onde cada um dos 513 deputados está no espectro político e quanto propôs — com alternância entre proposições *apresentadas* e as que *viraram lei*. Ranking (com votação, votos, conversão, orientação e alinhamento ao Governo), partidos e as votações mais disputadas e mais consensuais. |
 | **Partidos** (aba da página inicial) | As proposições de cada partido, por legislatura desde 1991 e por tema: proposições distintas, conversão, quem concentra o volume e perfil por tema; alinhamento ao Governo governo a governo, desde 2003; na legislatura atual, também coesão e posição no espectro. |
 | **Perfil do deputado** (`deputado.html?id=…`) | Todas as PEC e PL de autoria, por tema, com o tempo e o caminho de cada uma na Câmara; com quem vota; leituras na Wikipédia; obras com emenda dele. |
-| **Senadores** (`senadores.html`) | Os 81 senadores no mesmo gráfico: autoria, leis, relatorias e votos no Plenário. |
+| **Senadores** (`senadores.html`) | Os 81 senadores no mesmo gráfico: autoria, leis, relatorias e votos no Plenário, com composição da esquerda à direita, alinhamento ao Governo e filtro de legislatura desde 2003 (só entre os senadores de hoje). |
 | **Leis votadas** (`leis.html`) | As votações finais nominais desde 2023: placar, posição média de quem votou sim e não, adesão por faixa do espectro, quem votou diferente da orientação da própria bancada, enquete da Câmara e consulta do Senado. |
 | **Quem vota com quem** (`blocos.html`) | Os blocos que se formam pela semelhança dos votos, sem olhar o partido. |
+| **Entre as casas** (`fluxo.html`) | Proposições aprovadas numa casa e remetidas à outra (Câmara → Senado e Senado → Câmara): quantas viraram lei, quanto tempo levaram na casa revisora e em que órgão estão paradas. A unidade é a proposição, nunca o parlamentar. |
 | **Obras** (`obras.html`) | Obras federais em São Paulo com contrato no Contratos.gov.br: quanto o contrato cresceu, termo a termo, com os documentos oficiais. |
 
 ## Princípios
@@ -78,6 +80,16 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
   registro da Câmara; a tabela `entradas/governos.json` só dá os cortes de data e o partido do presidente (conferidos
   no Wikidata). Só desde 2003, quando a Câmara passou a publicar as orientações. Mede proximidade com o governo do
   momento, não ideologia nem mérito.
+- **Entre as casas**: só entram as proposições aprovadas numa casa e remetidas à outra (PL, PLP, PEC e PDL), a partir do
+  Senado (`/processo`, o endpoint atual: `/materia/*` está desativado) e da tramitação da Câmara. A ligação entre as duas é
+  **só por identificador exato** (o número da outra casa que o Senado registra, ou o número de origem que a Câmara cita ao
+  receber); nunca por título ou ementa. Sem vínculo confirmado, a proposição fica fora das contas e é contada. Desfecho vem
+  de campo estruturado, rejeitada se distingue de arquivada, e "parada" descreve (mais de 365 dias sem andamento), nunca
+  acusa de atraso. Nada de autor, relator ou presidente de comissão: agrega por tipo, direção e órgão.
+- **Alinhamento ao Governo (deputados e senadores)**: coluna no ranking dos deputados e na tabela dos senadores. É a parcela dos
+  votos Sim ou Não, nas votações nominais do Plenário desde 2023 em que o líder do Governo orientou Sim ou Não (o registro de
+  orientação de cada Casa), em que a pessoa votou como ele orientou; mínimo de 50 votações na Câmara e 30 no Senado. Mede
+  proximidade com o governo do momento, não ideologia, lealdade nem mérito.
 - **Logos dos partidos**: o da Câmara quando o endereço oficial abre (34 dos 62 registros); para os demais, o do
   Wikimedia Commons, só por uma tabela curada (`entradas/logos_partidos.json`) em que cada logo foi conferido na
   imagem e ligado ao partido pelo nome oficial. Partido sem logo seguro fica só com o nome: nunca se busca por
@@ -102,7 +114,7 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 
 ```
 site/                 o que vai ao ar — o GitHub Pages publica a pasta inteira, e só ela
-  index.html          página inicial (prototipo.html continua existindo só para redirecionar)
+  index.html          página inicial; deputados.html, a dos deputados (prototipo.html só redireciona)
   deputado.html  leis.html  blocos.html  obras.html  senadores.html
   estilo.css  site.js  favicon.ico
   dados/              os JSON que as páginas leem, gerados pelos scripts
@@ -142,7 +154,7 @@ completa da rodada diária está no workflow:
 
 ```
 atualiza → coleta → votos → blocos → notoriedade → wikipedia → noticias → youtube → enquetes
-→ ecidadania → resumos → obras → senado → tramitacoes → temas → partidos → governo → logos → semana
+→ ecidadania → resumos → obras → senado → tramitacoes → temas → partidos → governo → logos → fluxo → semana
 ```
 
 Para ver o site, sirva a pasta `site/` (o navegador não carrega os JSON de arquivos abertos direto
