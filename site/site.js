@@ -178,12 +178,22 @@ window.Contar = (() => {
   };
   const fmt = (v, dec) => v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
   const ativo = () => window.Motion && window.Motion.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Contar muda a largura do número (0 → 2.700) e, num texto corrido, a quebra de linha: o resto da frase pularia. Por isso o
+  // número reserva a largura do valor final enquanto conta (inline-block, alinhado à direita) e volta ao normal no fim.
+  const reservar = (el, final) => {
+    const w = el.getBoundingClientRect().width;
+    if (!w) return false;
+    el.style.display = 'inline-block'; el.style.minWidth = w + 'px'; el.style.textAlign = 'right';
+    return true;
+  };
+  const soltarLargura = el => { el.style.removeProperty('display'); el.style.removeProperty('min-width'); el.style.removeProperty('text-align'); };
   const levar = (el, de, para, x, final, atraso = 0, dur = 1.2) => {
     if (el._conta) el._conta.stop();
+    if (!el.style.minWidth) { const antes = el.textContent; el.textContent = final; reservar(el, final); el.textContent = antes; }
     el._conta = window.Motion.animate(de, para, {
       duration: dur, delay: atraso, ease: [0.16, 1, 0.3, 1],
       onUpdate: v => { el.textContent = x.pre + fmt(v, x.dec) + x.suf; },
-      onComplete: () => { el.textContent = final; el._conta = null; }
+      onComplete: () => { el.textContent = final; soltarLargura(el); el._conta = null; }
     });
   };
   const varrer = (raiz = document) => {
@@ -192,6 +202,7 @@ window.Contar = (() => {
       const final = el.textContent, x = ler(final);
       el.setAttribute('data-conta-ok', '');
       if (!x || x.num === 0) continue;
+      reservar(el, final);                                   // com a largura do valor final, antes de trocar pelo zero
       el.textContent = x.pre + fmt(0, x.dec) + x.suf;
       window.Motion.inView(el, () => { levar(el, 0, x.num, x, final, parseFloat(el.dataset.contaAtraso) || 0); });
     }
