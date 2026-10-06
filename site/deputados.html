@@ -1604,6 +1604,35 @@ const tela=document.getElementById('tela'), dica=document.getElementById('dica')
 const NS='http://www.w3.org/2000/svg';
 const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
 
+// Os pontos são os MESMOS <circle> entre um desenho e outro (id do deputado → elemento): é isso que permite deslizar até a nova
+// posição em vez de redesenhar de golpe. O eixo e a grade são refeitos a cada vez; os pontos só mudam de lugar. Quem sai do recorte
+// some e, ao voltar, nasce de novo (aparece com fade). A animação é um único animate do Motion que move os pontos que mudaram de
+// lugar e estão visíveis (os apagados pulam direto). Sem Motion, com movimento reduzido, na primeira vez e depois de redimensionar:
+// sem animação. Se os quadros saírem espaçados demais (celular fraco), pula para o fim e as próximas trocas não animam.
+const circulos=new Map();
+let animaPontos=null, ultimoTam='', pontosLentos=false, ultimoMedida=null;
+const PONTOS_QUADRO_MAX_MS=40;       // intervalo médio entre quadros acima disso (menos de 25 quadros/s) é engasgo
+function ligarPonto(c){
+  const d=()=>c._d;
+  c.addEventListener('mouseenter',e=>{
+    if(!passa(d())) return;
+    const total=valorY(d());
+    c.setAttribute('r',raioDe(d())+3.5); c.setAttribute('opacity',1);
+    const uni=medida==='apresentadas'?'proposições apresentadas':'viraram lei';
+    dica.innerHTML=`<div class="dica-in">${retrato(d(),40)}<div><b>${esc(d().nome)}</b><em>${esc(d().partido)} de ${esc(d().uf)}, ${total} ${uni}</em></div></div>`;
+    dica.classList.add('on');
+    const r=tela.getBoundingClientRect(), W=tela.clientWidth;
+    let px=e.clientX-r.left+13;
+    if(px+dica.offsetWidth>W-6) px=e.clientX-r.left-dica.offsetWidth-13;
+    dica.style.left=px+'px'; dica.style.top=Math.max(2,e.clientY-r.top-42)+'px';
+  });
+  c.addEventListener('mouseleave',()=>{
+    c.setAttribute('r',raioDe(d())); c.setAttribute('opacity',.6);
+    dica.classList.remove('on');
+  });
+  c.addEventListener('click',()=>{ if(passa(d())) abrir(d()); });
+}
+
 function desenhar(){
   atualizarLimpar();
   const W=tela.clientWidth,H=tela.clientHeight;
@@ -1648,38 +1677,58 @@ function desenhar(){
     ? 'Proposições apresentadas' : 'Proposições que viraram lei';
   svg.appendChild(ey);
 
+  // pontos: reaproveita o elemento de cada deputado; só muda de lugar o que mudou
+  const M=window.Motion;
+  const tam=W+'x'+H;
+  const animar=!!(M&&M.animate)&&!pontosLentos&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&circulos.size>0&&tam===ultimoTam;
+  ultimoTam=tam;
+  if(animaPontos){ animaPontos.stop(); animaPontos=null; }       // desenho no meio de outro: parte de onde os pontos estão agora
+  const noRecorte=new Set(), mover=[];
   let n=0;
   doMandato.forEach(d=>{
     const total=valorY(d);
-    const cx=d.x==null?W-m.r+28:m.l+d.x*pw;
-    const rBase=raioDe(d);
-    const c=el('circle',{cx,cy:y(total),r:rBase,fill:corDoScore(d.score),
-      opacity:.6,class:'pt'});
-    const ok=passa(d);
-    if(!ok)c.classList.add('apagado'); else n++;
-    if(ok){
-      c.addEventListener('mouseenter',e=>{
-        c.setAttribute('r',rBase+3.5); c.setAttribute('opacity',1);
-        const uni=medida==='apresentadas'?'proposições apresentadas':'viraram lei';
-        dica.innerHTML=`<div class="dica-in">${retrato(d,40)}<div><b>${esc(d.nome)}</b><em>${esc(d.partido)} de ${esc(d.uf)}, ${total} ${uni}</em></div></div>`;
-        dica.classList.add('on');
-        const r=tela.getBoundingClientRect();
-        let px=e.clientX-r.left+13;
-        if(px+dica.offsetWidth>W-6) px=e.clientX-r.left-dica.offsetWidth-13;
-        dica.style.left=px+'px'; dica.style.top=Math.max(2,e.clientY-r.top-42)+'px';
-      });
-      c.addEventListener('mouseleave',()=>{
-        c.setAttribute('r',rBase);
-        c.setAttribute('opacity',.6);
-        dica.classList.remove('on');
-      });
-      c.addEventListener('click',()=>abrir(d));
+    const cx=d.x==null?W-m.r+28:m.l+d.x*pw, cy=y(total);
+    noRecorte.add(d.id);
+    let c=circulos.get(d.id);
+    const novo=!c;
+    if(novo){
+      c=el('circle',{cx,cy,r:raioDe(d),fill:corDoScore(d.score),opacity:animar?0:.6,class:'pt'});
+      c._d=d; ligarPonto(c); circulos.set(d.id,c);
+      if(animar) requestAnimationFrame(()=>requestAnimationFrame(()=>c.setAttribute('opacity',.6)));   // nasce com fade
+    }else{
+      c._d=d;
+      c.setAttribute('fill',corDoScore(d.score)); c.setAttribute('r',raioDe(d));
     }
+    const ok=passa(d);
+    c.classList.toggle('apagado',!ok); if(ok) n++;                 // o fade do apagado é a transição de opacity do .pt
+    if(!novo&&animar&&ok){
+      const x0=+c.getAttribute('cx'), y0=+c.getAttribute('cy');
+      if(Math.abs(x0-cx)>.4||Math.abs(y0-cy)>.4){ mover.push({c,x0,y0,x1:cx,y1:cy}); }
+      else{ c.setAttribute('cx',cx); c.setAttribute('cy',cy); }
+    }else if(!novo){ c.setAttribute('cx',cx); c.setAttribute('cy',cy); }   // apagado ou sem animação: vai direto
     svg.appendChild(c);
   });
+  for(const id of [...circulos.keys()]) if(!noRecorte.has(id)) circulos.delete(id);   // saiu do recorte (mandato)
 
   tela.querySelector('svg')?.remove();
   tela.insertBefore(svg,dica);
+  if(mover.length){
+    const fim=()=>{ for(const o of mover){ o.c.setAttribute('cx',o.x1); o.c.setAttribute('cy',o.y1); } animaPontos=null; };
+    let anterior=null, soma=0, quadros=0;
+    animaPontos=M.animate(0,1,{
+      duration:medida===ultimoMedida?0.45:0.75, ease:[0.22,1,0.36,1],
+      onUpdate:p=>{
+        for(const o of mover){ o.c.setAttribute('cx',(o.x0+(o.x1-o.x0)*p).toFixed(1)); o.c.setAttribute('cy',(o.y0+(o.y1-o.y0)*p).toFixed(1)); }
+        // o intervalo entre quadros inclui estilo, layout e pintura do SVG, não só este laço: é o que o leitor sente como engasgo
+        const agora=performance.now();
+        if(anterior!=null){ soma+=agora-anterior; quadros++; }
+        anterior=agora;
+        if(quadros>=5&&soma/quadros>PONTOS_QUADRO_MAX_MS){ pontosLentos=true; animaPontos&&animaPontos.stop(); fim(); }
+      },
+      onComplete:fim
+    });
+  }
+  ultimoMedida=medida;
   const tot=doMandato.length, noMand=mandato?` no mandato ${rotuloLeg(mandato)}`:'';
   document.getElementById('quantos').textContent =
     n===tot ? `${tot} deputados${noMand}` : `${n} de ${tot}${noMand}`;
