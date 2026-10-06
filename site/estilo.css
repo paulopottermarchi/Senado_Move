@@ -50,9 +50,11 @@ body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);font-siz
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
 a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px;
   transition:color var(--t),text-decoration-color var(--t),background-color var(--t),border-color var(--t)}
-:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:2px;border-radius:4px}
+:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:2px;border-radius:4px;animation:foco .2s var(--curva)}
+@keyframes foco{from{outline-color:transparent;outline-offset:-1px}}
 ::selection{background:var(--destaque-fundo)}
 button{transition:color var(--t),background-color var(--t),border-color var(--t),box-shadow var(--t),transform var(--t)}
+.pino:active,.mais:active,.sem-mais-btn:active{transform:scale(.97)}           /* o botão cede ao toque */
 
 /* ---------- barra do site ---------- */
 .topo{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);
@@ -76,6 +78,11 @@ button{transition:color var(--t),background-color var(--t),border-color var(--t)
 .nav a[aria-current]{color:var(--tinta)}
 .nav a[aria-current]::after{transform:scaleX(1);background:var(--destaque-vivo)}
 .nav a:focus-visible{outline-offset:-4px}
+/* com JS, um indicador só (site.js) desliza entre os itens e o sublinhado de cada item sai */
+.nav{position:relative}
+.nav-js a::after{display:none}
+.nav-ind{position:absolute;left:0;bottom:0;height:2px;width:0;border-radius:2px;background:var(--destaque-vivo);
+         pointer-events:none;opacity:0;transition:opacity .2s var(--curva);will-change:transform,width}
 
 /* ---------- abertura das páginas ---------- */
 .capa{padding:64px 0 16px}
@@ -158,6 +165,21 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 .rg-col a:hover{color:#fff;text-decoration:underline;text-decoration-color:var(--destaque-claro)}
 .rg-pe{margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;color:#94a3b8}
 .rg-pe p{max-width:90ch}
+
+/* ---------- carregando: esqueleto neutro (tinta e cinza, nunca as cores do espectro) ----------
+   Aparece só enquanto o contêiner está vazio e some sozinho quando a página o preenche; sem JS não aparece (nada vai chegar). */
+@keyframes brilho{to{background-position:-200% 0}}
+@media (scripting:enabled){
+  :is(#regs,#lista,#grafico,#funilCols,#raiz):empty::before,
+  .tela:not(:has(svg))::before{content:"";display:block;min-height:var(--esq-h,200px);border-radius:var(--raio-p);
+    background:linear-gradient(90deg,var(--linha2) 0%,#f8fafc 40%,var(--linha2) 80%) 0 0/200% 100%;
+    animation:brilho 1.6s linear infinite}
+  .tela:not(:has(svg))::before{position:absolute;inset:0;min-height:0}
+}
+
+/* cartões-link: sobem um pouco ao passar o mouse e descem ao clicar (mesmo gesto em todas as páginas) */
+:is(.explora a,a.pessoa,.pessoa[href]){transition:border-color var(--t),box-shadow var(--t),transform var(--t)}
+:is(.explora a,a.pessoa,.pessoa[href]):active{transform:translateY(0) scale(.99)}
 
 /* ---------- logo do partido ---------- */
 .bandeira-slot{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-right:8px;flex:none}

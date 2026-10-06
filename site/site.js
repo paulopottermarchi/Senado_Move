@@ -41,6 +41,51 @@
   }
 })();
 
+// Barra do site: UM indicador desliza entre os itens (mouse, foco no teclado e item atual) no lugar do sublinhado de cada item.
+// Sem JS fica o sublinhado do CSS (a[aria-current]::after). Com Motion o indicador desliza em mola; sem Motion ou com movimento
+// reduzido ele só pula. Entre páginas, parte de onde estava na anterior (sessionStorage) e desliza até o item da página nova.
+(() => {
+  const nav = document.querySelector('.nav');
+  if (!nav) return;
+  const itens = [...nav.querySelectorAll('a')], atual = nav.querySelector('a[aria-current]');
+  const ind = document.createElement('span');
+  ind.className = 'nav-ind'; ind.setAttribute('aria-hidden', 'true');
+  nav.appendChild(ind); nav.classList.add('nav-js');
+  const mov = () => !matchMedia('(prefers-reduced-motion: reduce)').matches && window.Motion && window.Motion.animate;
+  const caixa = a => ({ x: a.offsetLeft + 12, w: Math.max(0, a.offsetWidth - 24) });   // 12 px = padding do link: a barra tem a largura do texto
+  let pos = null, visivel = false, alvo = atual, anim = null;
+  const por = (c, animado) => {
+    if (anim) {                       // interrompida no meio: a nova mola parte de onde o indicador está, não de onde ia chegar
+      const r = ind.getBoundingClientRect(), n = nav.getBoundingClientRect();
+      pos = { x: r.left - n.left + nav.scrollLeft, w: r.width };
+      anim.stop(); anim = null;
+    }
+    if (!c) { ind.style.opacity = '0'; visivel = false; return; }
+    ind.style.opacity = '1';
+    if (animado && visivel && pos && mov()) {
+      anim = window.Motion.animate(ind, { x: [pos.x, c.x], width: [pos.w, c.w] }, { type: 'spring', stiffness: 420, damping: 36 });
+    } else { ind.style.transform = `translateX(${c.x}px)`; ind.style.width = c.w + 'px'; }
+    pos = c; visivel = true;
+  };
+  const ir = a => { alvo = a; por(caixa(a), true); };
+  const voltar = () => { alvo = atual; por(atual ? caixa(atual) : null, true); };
+  itens.forEach(a => { a.addEventListener('pointerenter', () => ir(a)); a.addEventListener('focus', () => ir(a)); });
+  nav.addEventListener('pointerleave', voltar);
+  nav.addEventListener('focusout', e => { if (!nav.contains(e.relatedTarget)) voltar(); });
+  // de onde o indicador estava na página anterior até o item desta
+  let antes = null;
+  try { antes = JSON.parse(sessionStorage.getItem('navInd') || 'null'); } catch (e) { /* sem armazenamento: só aparece no lugar */ }
+  if (atual && antes && mov() && typeof antes.x === 'number') {
+    pos = antes; visivel = true; ind.style.transform = `translateX(${antes.x}px)`; ind.style.width = antes.w + 'px'; ind.style.opacity = '1';
+    requestAnimationFrame(() => por(caixa(atual), true));
+  } else { por(atual ? caixa(atual) : null, false); }
+  // a fonte da página chega depois e muda a largura dos itens: mede de novo, sem animar
+  const medir = () => por(alvo ? caixa(alvo) : null, false);
+  if (window.ResizeObserver) new ResizeObserver(medir).observe(nav);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
+  addEventListener('pagehide', () => { try { sessionStorage.setItem('navInd', JSON.stringify(atual ? caixa(atual) : null)); } catch (e) { /* ok */ } });
+})();
+
 // Logos dos partidos (dados/partidos/logos.json, gerado por logos.py). A página só referencia o endereço da
 // imagem, como faz com as fotos dos deputados; nenhuma cópia fica neste site. Sigla sem logo seguro não mostra nada.
 window.Bandeiras = (() => {
