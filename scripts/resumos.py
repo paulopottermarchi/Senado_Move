@@ -142,6 +142,10 @@ def escopo(nomes):
     if "leis" in nomes or "todas" in nomes:
         for p in ler_json(PROPOSICOES, []):
             saida[p["idProposicao"]] = (p["numero"], p.get("ementa") or "")
+    if "contexto" in nomes:
+        # página Contexto econômico: sancionadas da janela + em tramitação (cache/contexto/escopo.json, escrito por contexto.py)
+        for it in ler_json(CACHE / "contexto" / "escopo.json", []) or []:
+            saida.setdefault(it["id"], (it["numero"], it.get("ementa") or ""))
     if "recentes" in nomes or "todas" in nomes:
         limite = (datetime.now() - timedelta(days=DIAS_RECENTES)).date().isoformat()
         for dep in ler_json(coleta.CACHE / "deputados_lista.json", []) or []:
@@ -312,7 +316,7 @@ def aplicar(dados):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--escopo", default="leis,recentes",
-                    help="leis, recentes e/ou todas, separados por vírgula")
+                    help="leis, recentes, contexto e/ou todas, separados por vírgula")
     ap.add_argument("--simular", action="store_true", help="extrai e estima custo; não chama o modelo")
     ap.add_argument("--esperar", type=int, default=0, metavar="MIN",
                     help="minutos para esperar os lotes terminarem (padrão 0)")

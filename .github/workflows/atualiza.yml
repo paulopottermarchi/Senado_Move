@@ -109,6 +109,13 @@ jobs:
       - name: Consulta pública do Senado
         run: python scripts/passo.py --opcional ecidadania.py
 
+      # Contexto econômico: agenda (PEC e PLP com tema oficial Economia ou Finanças Públicas e Orçamento), indicadores
+      # (IBGE, Banco Central, Tesouro) e marcos, tudo por API. Vem ANTES dos resumos porque escreve o escopo deles
+      # (cache/contexto/escopo.json). Se uma checagem falhar (buraco na série, unidade que mudou, valor implausível, norma sem
+      # número), o script sai sem gravar e os arquivos do dia anterior ficam; a 1ª rodada baixa ~7 mil proposições (~20 min).
+      - name: Contexto econômico (coleta)
+        run: python scripts/passo.py --opcional contexto.py
+
       # Passo 8: resumo de cada PL e PEC a partir do texto integral, por IA, em lote.
       # Só gera com o segredo ANTHROPIC_API_KEY cadastrado no repositório; sem ele, apenas
       # aplica os resumos já existentes. Espera até 60 min; o que não terminar é coletado
@@ -116,7 +123,19 @@ jobs:
       - name: Resumos (IA, a partir do inteiro teor)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python scripts/passo.py --opcional resumos.py --esperar 60
+        run: python scripts/passo.py --opcional resumos.py --escopo leis,recentes,contexto --limite 200 --esperar 60
+
+      # Objetivo declarado pelo autor, das proposições da página Contexto econômico: o modelo só COPIA a frase da justificação
+      # (ou da exposição de motivos) e a guarda descarta o que não constar palavra por palavra do documento. Mesma chave, mesmo
+      # lote barato, nunca paga duas vezes. Sem a chave, nada novo.
+      - name: Objetivos declarados (IA, citação literal)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/passo.py --opcional objetivos.py --limite 250 --esperar 60
+
+      # Remonta os três JSON do contexto com os resumos e objetivos que acabaram de chegar (não chama API nenhuma).
+      - name: Contexto econômico (montar com resumos e objetivos)
+        run: python scripts/passo.py --opcional contexto.py --so-montar
 
       # Obras com contrato federal (ObrasGov + Contratos.gov.br + emendas da CGU), só SP por ora.
       # APIs públicas sem chave, uma requisição por segundo; contratos relidos a cada 7 dias.
