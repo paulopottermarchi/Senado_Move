@@ -168,6 +168,19 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
 .revela{opacity:0}
 .revela.visivel{animation:surgir .6s var(--curva) both}
 
+/* ---------- transição entre páginas (CSS nativo, sem JS) ----------
+   Navegador com suporte (Chrome/Edge 126+, Safari 18.2+) troca de página com um fade curto; os demais navegam como sempre.
+   A barra do site tem nome próprio: sai do instantâneo da página e fica parada, só o conteúdo muda. A página nova entra por
+   cima da antiga, que não some antes (o fundo nunca pisca), subindo poucos pixels. */
+@view-transition{navigation:auto}
+.topo{view-transition-name:topo}
+::view-transition-group(topo){animation-duration:0s}
+::view-transition-old(topo){display:none}
+::view-transition-new(topo){animation:none;mix-blend-mode:normal}
+::view-transition-old(root){animation:none;mix-blend-mode:normal}
+::view-transition-new(root){animation:vt-entra .32s var(--curva) both;mix-blend-mode:normal}
+@keyframes vt-entra{from{opacity:0;transform:translateY(8px)}}
+
 /* ---------- telas menores ---------- */
 @media(max-width:1000px){
   .topo-in{gap:16px}
@@ -195,6 +208,8 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
   html{scroll-behavior:auto}
   *,*::before,*::after{transition:none!important;animation:none!important}
   .revela{opacity:1}
+  @view-transition{navigation:none}
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
 }
 @media print{
   .topo,.rodape-global{display:none}
