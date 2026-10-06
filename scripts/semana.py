@@ -141,3 +141,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # O resumo da página inicial (inicio.json) sai daqui porque este é o último passo da rodada diária: os arquivos de que
+    # ele depende (fluxo, obras, blocos…) já foram gravados. Falha dele não derruba a semana.
+    try:
+        import inicio
+        inicio.main()
+    except Exception as e:  # noqa: BLE001
+        print(f"aviso: inicio.json não foi gerado ({e})")

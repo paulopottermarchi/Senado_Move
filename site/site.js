@@ -62,7 +62,7 @@ window.Tema = (() => {
   try {
     // os mesmos alvos que o estilo.css esconde; a abertura da página inicial (.hero) se anima sozinha
     const alvos = [...document.querySelectorAll(
-      '.capa > :not(.hero):not(.explora), .explora > li, .painel, .semana, .votos, .mapa, .rodape-site .wrap, .rg > *')];
+      '.capa > :not(.hero):not(.explora), .explora > li, .painel, .votos, .mapa, .rodape-site .wrap, .rg > *, [data-reveal]')];
     // o estado inicial passa para estilo em linha antes de o CSS soltar: nenhum quadro mostra o bloco pronto e depois o esconde
     for (const el of alvos) { el.dataset.m = ''; el.style.opacity = '0'; el.style.transform = 'translateY(12px)'; }
     if (!document.querySelector('.hero')) soltar();       // com abertura animada, quem solta é ela, depois de pôr o estado inicial dela
@@ -154,7 +154,22 @@ window.Entrada = (() => {
       Promise.all(fim).then(volta, volta);
     } catch (e) { limpar(itens); limpar(pal); soltar(); }
   };
-  return { abrir };
+  // Blocos que entram na página depois do carregamento (as listas de "Esta semana" chegam por fetch, dentro de uma faixa escura que
+  // não pode desbotar contra a página clara): cada um sobe ao entrar na tela. Mesma regra: sem Motion ou com movimento reduzido,
+  // nada é escondido.
+  const revelar = els => {
+    const M = window.Motion;
+    if (!els.length || !M || !M.animate || !M.inView || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const solta = el => { el.style.removeProperty('opacity'); el.style.removeProperty('transform'); };
+    try {
+      els.forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(12px)'; });
+      M.inView(els, el => {
+        const volta = () => solta(el);
+        M.animate(el, { opacity: [0, 1], y: [12, 0] }, { duration: 0.6, ease: [0.4, 0, 0.2, 1] }).finished.then(volta, volta);
+      }, { margin: '0px 0px -6% 0px' });
+    } catch (e) { els.forEach(solta); }
+  };
+  return { abrir, revelar };
 })();
 
 // Logos dos partidos (dados/partidos/logos.json, gerado por logos.py). A página só referencia o endereço da
@@ -201,8 +216,10 @@ window.Espectro = (() => {
   const CORES_ESC = { ...CORES, 'direita': '#3478cf' };
   const PARADAS_ESC = [...PARADAS.slice(0, 4), [10, [52, 120, 207]]];
   const escuro = () => !!(window.Tema && window.Tema.escuro());
-  const corDoScore = s => {
-    const cores = escuro() ? CORES_ESC : CORES, paradas = escuro() ? PARADAS_ESC : PARADAS;
+  // `sobreEscuro` (opcional) força a paleta do tema escuro num pedaço escuro de uma página clara (a abertura da inicial).
+  const corDoScore = (s, sobreEscuro) => {
+    const esc = sobreEscuro == null ? escuro() : !!sobreEscuro;
+    const cores = esc ? CORES_ESC : CORES, paradas = esc ? PARADAS_ESC : PARADAS;
     if (s == null) return cores['sem-classificacao'];
     s = Math.max(1, Math.min(10, s));
     for (let i = 0; i < paradas.length - 1; i++) {
@@ -212,7 +229,7 @@ window.Espectro = (() => {
         return '#' + ca.map((v, j) => Math.round(v + (cb[j] - v) * t).toString(16).padStart(2, '0')).join('');
       }
     }
-    return escuro() ? '#3478cf' : '#0c447c';
+    return esc ? '#3478cf' : '#0c447c';
   };
   const REGIOES = { N: ['AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO'], NE: ['AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE'],
                     CO: ['DF', 'GO', 'MT', 'MS'], SE: ['ES', 'MG', 'RJ', 'SP'], S: ['PR', 'RS', 'SC'] };
@@ -293,3 +310,34 @@ window.Contar = (() => {
   };
   return { varrer, para };
 })();
+
+// Modelos 3D decorativos do topo das páginas (modelos3d.js). Cada <figure data-modelo="bacia"> traz dentro a imagem estática de reserva
+// (img/modelo-<tipo>.svg), que já ocupa o espaço: nenhum deslocamento de layout. O 3D só entra se o navegador tem importmap e WebGL, a
+// conexão não pede economia, o movimento não está reduzido e o aparelho não é fraco; e só depois do evento load, quando o navegador
+// está ocioso, para o enfeite nunca disputar a CPU com a página que o leitor veio ler. Conexão que pede economia: no celular nem a
+// imagem fica (classe sem-modelo). Sem dado nenhum, aria-hidden. As regras de movimento (oscilação de 15 graus, pausa fora da tela e
+// com a aba oculta) são da cena3d.js.
+window.Modelo3D = (() => {
+  const lenta = () => { const c = navigator.connection; return !!c && (c.saveData === true || /(^|-)2g$/.test(c.effectiveType || '')); };
+  const importmapOk = () => !!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'));
+  const fraco = () => (navigator.deviceMemory && navigator.deviceMemory <= 2) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
+  const montar = async fig => {
+    try {
+      const C = await import('./cena3d.js'); if (!C.webglDisponivel()) return;
+      const THREE = await C.carregarThree(); if (!THREE) return;
+      const M = await import('./modelos3d.js');
+      M.iniciar({ THREE, contentor: fig, tipo: fig.dataset.modelo, aoPronto: () => fig.classList.add('pronto') });
+    } catch (e) { /* fica a imagem estática */ }
+  };
+  const varrer = () => {
+    const figs = [...document.querySelectorAll('[data-modelo]')];
+    if (!figs.length) return;
+    if (lenta()) { figs.forEach(f => f.classList.add('sem-modelo')); return; }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !importmapOk() || fraco()) return;
+    const iniciar = () => figs.forEach(montar);
+    const quando = () => setTimeout(() => ('requestIdleCallback' in window) ? requestIdleCallback(iniciar, { timeout: 4000 }) : iniciar(), 1800);
+    if (document.readyState === 'complete') quando(); else addEventListener('load', quando, { once: true });
+  };
+  return { varrer };
+})();
+Modelo3D.varrer();
