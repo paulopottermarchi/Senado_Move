@@ -339,6 +339,7 @@ const dataBR=d=>d?`${d.slice(8,10)}/${d.slice(5,7)}/${d.slice(0,4)}`:'—';
 const sinal=v=>v>0?'+':v<0?'−':'';
 const abs=Math.abs;
 const T=d=>Date.parse(d+'T00:00:00Z');
+const diasSem=it=>it.ultimoAndamento&&AG?Math.round((T(AG.hoje)-T(it.ultimoAndamento))/864e5):null;
 const buscaJson=async u=>{ try{ const r=await fetch(u,{cache:'no-cache'}); if(!r.ok) return null; return await r.json(); }catch(e){ return null; } };
 
 let IND=null, AG=null, MAR=null;
@@ -368,10 +369,11 @@ function Grafico(raiz,cfg){
   function desenhar(){
     caixa.querySelectorAll('svg').forEach(e=>e.remove());
     const W=Math.max(300,caixa.clientWidth), H=cfg.altura||(W<560?250:320);
-    const temMarcos=cfg.marcos&&cfg.marcos.length!==undefined;
+    const temMarcos=Array.isArray(cfg.marcos);
     const faixaMarcos=temMarcos?60:0;
     const M={t:14,r:W<560?84:132,b:26+faixaMarcos,l:W<560?44:54};
     const [ini,fim]=janela(), t0=T(ini), t1=T(fim), iw=W-M.l-M.r, ih=H-M.t-M.b, pb=M.t+ih;   // pb: base do gráfico; abaixo dela, o eixo e os marcos
+    const mv=temMarcos?cfg.marcos.filter(m=>m.data>=ini&&m.data<=fim):[];                  // marcos dentro da janela
     const vis=s=>s.pontos.filter(p=>p[0]>=ini);
     const log=!!cfg.log, tr=v=>log?Math.log(1+v/100):v;
     let ys=cfg.series.flatMap(s=>vis(s).map(p=>p[1]));
@@ -423,8 +425,8 @@ function Grafico(raiz,cfg){
     // marcos (emendas e leis complementares do tema escolhido)
     if(temMarcos){
       const y0=pb+30, gm=el('g',{class:'marcos-fx'});
-      const t=el('text',{x:M.l,y:y0+30,class:'t'},gm); const nm=cfg.marcos.filter(m=>m.data>=ini).length; t.textContent=cfg.marcos.length?(W<560?`${nm} marcos no período (longo: EC; curto: LC)`:`${nm} marcos no período (traço longo: emenda constitucional; curto: lei complementar)`):'Nenhum marco no filtro escolhido';
-      cfg.marcos.forEach(m=>{ if(m.data<ini||m.data>fim) return; const x=X(m.data); el('line',{class:m.sigla==='LC'?'lc':'ec',x1:x,x2:x,y1:m.sigla==='LC'?y0+8:y0,y2:y0+14},gm); });
+      const t=el('text',{x:M.l,y:y0+30,class:'t'},gm); const nm=mv.length; t.textContent=cfg.marcos.length?(W<560?`${nm} marcos no período (longo: EC; curto: LC)`:`${nm} marcos no período (traço longo: emenda constitucional; curto: lei complementar)`):'Nenhum marco no filtro escolhido';
+      mv.forEach(m=>{ const x=X(m.data); el('line',{class:m.sigla==='LC'?'lc':'ec',x1:x,x2:x,y1:m.sigla==='LC'?y0+8:y0,y2:y0+14},gm); });
     }
     // área de foco (mouse, toque e teclado)
     const foco=el('rect',{class:'foco',x:M.l,y:M.t,width:iw,height:ih+(temMarcos?faixaMarcos-14:0)});
@@ -442,24 +444,25 @@ function Grafico(raiz,cfg){
       dica.innerHTML=html; dica.classList.add('on');
       const w=caixa.clientWidth, dw=dica.offsetWidth, left=x+14+dw>w?x-14-dw:x+14; dica.style.left=Math.max(0,left)+'px'; dica.style.top=(M.t+4)+'px';
     };
+    const marcoPerto=px=>{ let b=null, d=7; for(const m of mv){ const k=abs(X(m.data)-px); if(k<d){ d=k; b=m; } } return b; };    // o marco a menos de 7 px do cursor
     const nearest=cx=>{ const r=svg.getBoundingClientRect(), x=(cx-r.left)*(W/r.width), t=t0+(x-M.l)/iw*(t1-t0); let lo2=0,hi2=base.length-1;
       while(hi2-lo2>1){ const m=(lo2+hi2)>>1; if(T(base[m][0])<t) lo2=m; else hi2=m; } return abs(T(base[lo2][0])-t)<abs(T(base[hi2][0])-t)?lo2:hi2; };
     foco.addEventListener('pointermove',e=>{ // marco próximo do cursor tem prioridade
       const r=svg.getBoundingClientRect(), px=(e.clientX-r.left)*(W/r.width), py=(e.clientY-r.top)*(H/r.height);
-      if(temMarcos&&py>pb+22){ const m=cfg.marcos.filter(q=>q.data>=ini&&q.data<=fim).sort((a,b)=>abs(X(a.data)-px)-abs(X(b.data)-px))[0];
-        if(m&&abs(X(m.data)-px)<7){ mira.style.display='none'; dica.innerHTML=`<b>${esc(m.rotulo)}</b> · ${dataBR(m.data)}${m.dataConfere===false&&m.dou?`<span class="l">data a conferir: o evento da Câmara e o DOU (${dataBR(m.dou)}) diferem</span>`:''}<span class="l">${esc(m.ementa.slice(0,220))}${m.ementa.length>220?'…':''}</span><span class="l">${esc(m.temas.join(' · '))}</span>`;
+      if(temMarcos&&py>pb+22){ const m=marcoPerto(px);
+        if(m){ mira.style.display='none'; dica.innerHTML=`<b>${esc(m.rotulo)}</b> · ${dataBR(m.data)}${m.dataConfere===false&&m.dou?`<span class="l">data a conferir: o evento da Câmara e o DOU (${dataBR(m.dou)}) diferem</span>`:''}<span class="l">${esc(m.ementa.slice(0,220))}${m.ementa.length>220?'…':''}</span><span class="l">${esc(m.temas.join(' · '))}</span>`;
           dica.classList.add('on'); const w=caixa.clientWidth, dw=dica.offsetWidth, left=X(m.data)+14+dw>w?X(m.data)-14-dw:X(m.data)+14; dica.style.left=Math.max(0,left)+'px'; dica.style.top=(M.t+4)+'px'; return; } }
       mostrar(nearest(e.clientX));
     });
     foco.addEventListener('pointerleave',()=>{ mira.style.display='none'; dica.classList.remove('on'); });
     foco.addEventListener('click',e=>{ if(temMarcos){ const r=svg.getBoundingClientRect(), px=(e.clientX-r.left)*(W/r.width), py=(e.clientY-r.top)*(H/r.height);
-      if(py>pb+22){ const m=cfg.marcos.filter(q=>q.data>=ini&&q.data<=fim).sort((a,b)=>abs(X(a.data)-px)-abs(X(b.data)-px))[0]; if(m&&abs(X(m.data)-px)<7) window.open(m.url,'_blank','noopener'); } } });
+      if(py>pb+22){ const m=marcoPerto(px); if(m) window.open(m.url,'_blank','noopener'); } } });
     svg.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'){ e.preventDefault(); mostrar((idx==null?base.length-1:idx)+(e.key==='ArrowLeft'?-1:1)); }
       if(e.key==='Escape'){ mira.style.display='none'; dica.classList.remove('on'); } });
     svg.addEventListener('blur',()=>{ mira.style.display='none'; dica.classList.remove('on'); });
     caixa.insertBefore(svg,caixa.firstChild);
   }
-  caixa.appendChild(dica); desenhar();
+  caixa.appendChild(dica); desenhar(); caixa._w=caixa.clientWidth;
   ro=new ResizeObserver(()=>{ const w=caixa.clientWidth; if(Math.abs(w-(caixa._w||0))>2){ caixa._w=w; desenhar(); } }); ro.observe(caixa);
   return {atualizar(novo){ Object.assign(cfg,novo); desenhar(); }};
 }
@@ -492,7 +495,7 @@ function blocoHTML(id,b){
 function numero(rot,valor,fato,det){ return `<div class="ind-n"><b>${valor}</b><span class="r">${rot}</span><span class="v">${fato||''}</span>${det?`<span class="v">${det}</span>`:''}</div>`; }
 
 function marcosFiltrados(){
-  if(!MAR) return [];
+  if(!MAR) return null;                  // sem marcos.json: sem faixa de marcos (e não "nenhum marco")
   return MAR.marcos.filter(m=>!ESTADO.tema||m.temas.includes(ESTADO.tema));
 }
 const GRAFICOS={};
@@ -541,7 +544,7 @@ function montarIndicador(id){
     legenda=`<span><i></i>Resultado primário (acima da linha, Tesouro)</span><span><i class="t"></i>Resultado nominal (abaixo da linha, Banco Central)</span><span>Eixo em R$ bilhões</span>`;
   }
   cfg.rotulo=b.titulo+'. '+b.definicao; cfg.marcos=marcosFiltrados();
-  l.innerHTML=legenda+(cfg.marcos.length!==undefined?'<span><i class="mk"></i>Marco: emenda constitucional ou lei complementar do tema escolhido</span>':'');
+  l.innerHTML=legenda+(Array.isArray(cfg.marcos)?'<span><i class="mk"></i>Marco: emenda constitucional ou lei complementar do tema escolhido</span>':'');
   const aplicar=p=>{ const [,o]=p; const fim=cfg.series[0].pontos.slice(-1)[0][0]; const novo={ini:null,log:false};
     if(o.anos){ const a=+fim.slice(0,4)-o.anos; novo.ini=`${a}-${fim.slice(5,7)}-01`; } else if(o.ini!==undefined) novo.ini=o.ini; novo.log=!!o.log; return novo; };
   const ini=aplicar(presets[padrao]); cfg.ini=ini.ini; cfg.log=ini.log;
@@ -556,8 +559,8 @@ function montarIndicador(id){
     b.metasPorAno.slice().reverse().map(m=>`<tr><td>${m.ano}${m.normas.length?' · '+m.normas.map(n=>'Res. CMN '+n).join(' e '):''}</td><td>${fmt(m.meta,2)}%</td><td>${fmt(m.tolerancia,2)} p.p.</td><td>${fmt(m.efetiva,2)}%</td></tr>`).join('')}</tbody></table></div>
     <p class="ind-fonte">De 1999 a 2024 a meta valia para o ano-calendário; desde jan/2025 é contínua (inflação em 12 meses, verificada todo mês). A linha da meta mostra o valor fixado em resolução do CMN para cada ano.</p>`;
   av.innerHTML=(notas?`<h4>Notas (fato datado, com fonte)</h4><ol>${notas}</ol>`:'<h4>Notas</h4><p class="ind-fonte">Nenhuma mudança de metodologia anotada nesta série.</p>')+extra
-    +`<h4>Valores</h4><p class="ind-fonte">Frequência da fonte: ${cfg.series[0].freq==='T'?'trimestral':'mensal'}, sem interpolação. <button class="limpar" type="button" data-tab>Mostrar a tabela</button></p><div class="tab-val" hidden></div>`;
-  av.querySelector('[data-tab]').addEventListener('click',e=>{ const box=av.querySelector('.tab-val:last-of-type'); box.hidden=false; e.target.hidden=true;
+    +`<h4>Valores</h4><p class="ind-fonte">Frequência da fonte: ${cfg.series[0].freq==='T'?'trimestral':'mensal'}, sem interpolação. <button class="limpar" type="button" data-tab>Mostrar a tabela</button></p><div class="tab-val valores" hidden></div>`;
+  av.querySelector('[data-tab]').addEventListener('click',e=>{ const box=av.querySelector('.tab-val.valores'); box.hidden=false; e.target.hidden=true;
     const ss=cfg.series; const datas=ss[0].pontos.map(p=>p[0]).reverse();
     box.innerHTML=`<table><thead><tr><th>Período</th>${ss.map((s,i)=>`<th>${esc(cfg.rotulos[i])}</th>`).join('')}</tr></thead><tbody>${datas.map(d=>`<tr><td>${cfg.rotData(d,ss[0].freq)}</td>${ss.map(s=>{const p=s.pontos.find(q=>q[0]===d);return `<td>${p?cfg.fmtV(p[1]):'—'}</td>`}).join('')}</tr>`).join('')}</tbody></table>`; });
 }
@@ -584,7 +587,7 @@ function passa(it){ return !ESTADO.tema||it.temas.includes(ESTADO.tema); }
 function listaAba(aba){
   if(aba==='sancionadas'){
     if(ESTADO.periodo!=='12m'){ // fora dos 12 meses: só o que há em todos os anos (marcos), sem resumo nem objetivo
-      const ano=+IND.hoje.slice(0,4), de={'5a':ano-5,'10a':ano-10,'tudo':0}[ESTADO.periodo];
+      const ano=+AG.hoje.slice(0,4), de={'5a':ano-5,'10a':ano-10,'tudo':0}[ESTADO.periodo];
       return MAR.marcos.filter(m=>(m.data.slice(0,4)>=de)&&(!ESTADO.tema||m.temas.includes(ESTADO.tema))).map(m=>({id:m.id,numero:m.numero,tipo:m.numero.slice(0,3),ementa:m.ementa,temas:m.temas,url:m.url,
         norma:{rotulo:m.rotulo,data:m.data,confere:m.dataConfere},semTexto:true})).sort((a,b)=>b.norma.data.localeCompare(a.norma.data));
     }
@@ -606,7 +609,7 @@ function cartao(it,aba){
   const aut=it.autoria&&it.autoria.principais&&it.autoria.principais.length
     ?`<span><b>Autoria (registro)</b> ${it.autoria.principais.map(a=>esc(a.nome)+(a.partido?` (${esc(a.partido)}-${esc(a.uf)})`:a.tipo&&!/Deputado/.test(a.tipo)?` (${esc(a.tipo)})`:'')).join(', ')}${it.autoria.total>it.autoria.principais.length?` e outros`:''}</span>`:'';
   const onde=it.situacao?`<span><b>Onde está</b> ${esc(it.orgao||'—')} · ${esc(it.situacao)}</span>`:'';
-  const dias=it.dias!=null&&aba!=='sancionadas'?`<span class="ag-dias"><b>${nf0.format(it.dias)}</b> dias sem movimentação (último andamento em ${dataBR(it.ultimoAndamento)})</span>`:'';
+  const nd=diasSem(it), dias=nd!=null&&aba!=='sancionadas'?`<span class="ag-dias"><b>${nf0.format(nd)}</b> dias sem movimentação (último andamento em ${dataBR(it.ultimoAndamento)})</span>`:'';
   let cab=`<b>${esc(it.numero)}</b>`;
   if(it.norma){ const n=it.norma; cab+=`<span>${esc(n.rotulo)} · ${dataBR(n.data)}</span>`;
     if(n.dou&&n.confere===false) cab+=`<span class="alerta">data a conferir: evento da Câmara em ${dataBR(n.data)}, DOU em ${dataBR(n.dou)}</span>`;

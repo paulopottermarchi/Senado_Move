@@ -27,7 +27,6 @@ import sys
 import time
 from datetime import datetime
 
-import resumos
 from resumos import BASE, CACHE, PRECOS, gravar_atomico, ler_json, texto_do_teor, url_teor
 
 ARQUIVO = BASE / "entradas" / "objetivos.json"
@@ -66,7 +65,7 @@ ESQUEMA = {
 }
 
 _CAB_JUST = re.compile(r"^\s*(JUSTIFICA[ÇC][ÃA]O|JUSTIFICATIVA)\s*:?\s*$", re.I | re.M)
-_EM = re.compile(r"Exposi[çc][ãa]o de Motivos\s*\(", re.I)
+_EM = re.compile(r"Exposi[çc][ãa]o\s+de\s+Motivos", re.I)
 _RUIDO = re.compile(r"\*CD\d+\*|Para verificar a assinatura[^\n]*|Autenticado Eletronicamente[^\n]*|"
                     r"Assinado (?:por|eletronicamente)[^\n]*|(?:PLP|PEC|PL|PDL)\s?n\.\s?\d+/\d+|Documento eletrônico assinado[^\n]*")
 
@@ -84,7 +83,7 @@ def secao_proposito(texto):
         fonte, s = "justificação", t[ms[-1].end():]
     else:
         for m in _EM.finditer(t):
-            if re.search(r"Senhor(?:a)?\s+Presidente", t[m.start():m.start() + 500]):
+            if re.search(r"Senhor(?:a)?\s+Presidente", t[m.start():m.start() + 500], re.I):
                 fonte, s = "exposição de motivos", t[m.start():]
                 break
     if s is None:
@@ -259,6 +258,7 @@ def main():
 
     if args.simular or not faltam:
         print("Simulação: nada enviado ao modelo." if args.simular else "Nada novo a enviar.")
+        # (a simulação não grava: ver o fim de main)
     elif not cliente:
         print("Sem ANTHROPIC_API_KEY no ambiente: nenhum objetivo novo nesta rodada.")
     else:
@@ -271,6 +271,9 @@ def main():
         if args.esperar:
             lotes = [l for l in lotes if l is not novo] + coletar(cliente, [novo], dados, secoes, args.esperar)
             gravar_atomico(LOTES, json.dumps(lotes, ensure_ascii=False, indent=1))
+    if args.simular:
+        print("Simulação: nenhum arquivo foi gravado.")
+        return
     gravar(dados)
     print(f"{ARQUIVO.name} gravado ({sum(1 for k, v in dados.items() if not k.startswith('_') and v.get('o'))} trechos confirmados).")
 
