@@ -4,7 +4,7 @@
 "_metodo":"Média simples de componentes de 0 a 100: apensados e votações nominais (escala logarítmica até o máximo desta página), placar (100 × (1 − |sim − não| ÷ (sim + não)) na votação final), urgência (100 se tramitou em urgência) e, só em PEC de deputado com registro completo, assinaturas (deputados que assinaram ÷ 513). Pesos iguais.",
 "_maximos":{"apensados":22,"nominais":20},
 "_fonte":"Dados Abertos da Câmara: /proposicoes/{id}, /autores e /tramitacoes; votações de proposicoes.json",
-"_gerado":"2026-10-08",
+"_gerado":"2026-10-09",
 "106701":{"pct":54,"componentes":{"apensados":{"n":12,"valor":82,"quais":["PL 1090/2003","PL 1100/2011","PL 1359/2015","PL 2854/2008","PL 3240/2004","PL 3710/2012","PL 3768/2008","PL 4184/2004","PL 4331/2012","PL 470/2007","PL 5762/2016","PL 9911/2018"]},"nominais":{"n":2,"valor":36},"placar":{"sim":427,"nao":1,"valor":0},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
 "146708":{"pct":7,"componentes":{"apensados":{"n":0,"valor":0,"quais":[]},"nominais":{"n":1,"valor":23},"placar":{"sim":397,"nao":9,"valor":4},"urgencia":{"sim":false,"texto":"Ordinário (Art. 151, III, RICD)","valor":0}}},
 "259094":{"pct":46,"componentes":{"apensados":{"n":2,"valor":35,"quais":["PEC 140/2012","PEC 45/2019"]},"nominais":{"n":19,"valor":98},"placar":{"sim":365,"nao":118,"valor":49},"urgencia":{"sim":false,"texto":"Especial (Art. 202 c/c 191, I, RICD)","valor":0}}},
