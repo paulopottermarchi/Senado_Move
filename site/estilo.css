@@ -63,6 +63,8 @@
 
 /* ---------- base ---------- */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+/* o reset acima zera também a margin:auto com que o navegador centra o <dialog> modal; sem esta regra ele abre colado no canto */
+dialog{margin:auto}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 [id]{scroll-margin-top:88px}
 body{font-family:var(--sans);background:var(--fundo);color:var(--tinta);font-size:15px;line-height:1.6;
