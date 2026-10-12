@@ -27,47 +27,103 @@
 <script src="site.js" defer></script>
 <style>
 
-.painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);
-        padding:24px 28px;margin-top:28px}
+/* ---------- redesenho dos gráficos (7/10/2026): a barra dos blocos, um ponto por deputado e a parcela de Sim por tema ----------
+   Só tokens do site (nada de cor nova). As duas cores dos blocos (--b0 e --b1) ficam fora da paleta do espectro, e cada bloco
+   tem também uma forma (círculo e losango), para a leitura não depender só da cor. */
+.sec-bl{margin-top:clamp(64px,8vw,112px)}
+.sec-bl[hidden]{display:none}
+.sec-cab{display:flex;flex-wrap:wrap;align-items:flex-end;gap:28px 64px}
+.sec-tit{flex:1 1 520px;min-width:0}
+.sec-tit .kicker{margin-bottom:16px}
+.sec-sub{flex:1 1 320px;max-width:520px;min-width:0;margin-top:0}
+.h2-bl{font-family:var(--cond);font-weight:600;font-size:clamp(40px,4.6vw,64px);line-height:.95;letter-spacing:0;text-transform:uppercase;text-wrap:balance}
+.h3-bl{font-family:var(--cond);font-weight:600;font-size:clamp(24px,2.2vw,30px);line-height:1;letter-spacing:.02em;text-transform:uppercase}
 
-/* os dois blocos */
-.blocos{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
-.bloco{border:1px solid var(--linha);border-radius:var(--raio-p);padding:16px 20px;border-top:4px solid var(--c);
-       transition:box-shadow var(--t)}
-.bloco:hover{box-shadow:var(--sombra-md)}
-.bloco h3{font-size:15px;font-weight:600}
-.bloco .n{font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.1;margin-top:4px}
-.bloco .n small{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--tinta2);margin-left:4px}
-.bloco p{font-size:13px;color:var(--tinta2);margin-top:8px}
-.bloco .partidos{display:flex;flex-wrap:wrap;gap:4px;margin-top:12px}
-.bloco .partidos span{font-size:12px;border:1px solid var(--linha);border-radius:999px;padding:1px 8px;color:var(--tinta2)}
-.bloco .partidos b{font-weight:600;color:var(--tinta)}
+/* o marcador de cada bloco: círculo (o 1º) e losango (os demais) */
+.sh{display:inline-block;flex:none;background:var(--c)}
+.sh0{width:12px;height:12px;border-radius:50%}
+.sh1{width:10px;height:10px;border-radius:2px;transform:rotate(45deg)}
 
-/* linhas por partido */
-.eixo{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;margin-top:24px;font-size:12px;color:var(--tinta3)}
-.eixo .reg{position:relative;height:16px}
-.eixo .reg span{position:absolute;transform:translateX(-50%)}
-.eixo .reg span:first-child{transform:none}
-.eixo .reg span:last-child{transform:translateX(-100%)}
-.linhas{margin-top:4px}
-.lp{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center;padding:4px 0;border-top:1px solid var(--linha2)}
-.lp-nome{font-size:13px;font-weight:500;line-height:1.25}
-.lp-nome small{display:block;font-weight:400;font-size:12px;color:var(--tinta3)}
-.qb{white-space:nowrap}
-.qb::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin:0 4px 0 2px;vertical-align:0}
-.trilho{position:relative;height:34px;background:linear-gradient(to right,transparent calc(50% - .5px),var(--linha) calc(50% - .5px),var(--linha) calc(50% + .5px),transparent calc(50% + .5px))}
-.pt{position:absolute;width:11px;height:11px;border-radius:50%;margin-left:-5.5px;border:1.5px solid var(--papel);
-    background:var(--c);cursor:pointer;padding:0;opacity:.9}
-.pt:hover,.pt:focus-visible{transform:scale(1.5);z-index:3;opacity:1}
-.pt.sel{transform:scale(1.9);z-index:4;opacity:1;box-shadow:0 0 0 2px var(--tinta)}
+/* a barra dos blocos e, embaixo de cada segmento, a mediana e os partidos */
+.barra-bl{display:flex;gap:6px;height:clamp(84px,7.8vw,112px);margin-top:clamp(32px,3.4vw,48px)}
+.seg-b{flex:var(--n) 1 0;min-width:48px;display:flex;align-items:center;gap:12px;padding:0 clamp(16px,1.7vw,24px);
+       border-radius:16px;background:var(--c);color:var(--sobre-inverso);overflow:hidden}
+.seg-n{font-family:var(--cond);font-weight:600;font-size:clamp(44px,4.4vw,64px);line-height:1}
+.seg-t{font-size:14px;font-weight:500}
+.blocos{display:flex;flex-wrap:wrap;gap:28px 6px;margin-top:28px}
+.bloco{flex:var(--n) 1 0;min-width:220px;padding:0 clamp(16px,1.7vw,24px)}
+.bloco h3{display:flex;align-items:center;gap:10px}
+.bloco .stat{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 16px;margin-top:18px}
+.bloco .stat b{font-family:var(--cond);font-weight:600;font-size:clamp(56px,5.6vw,80px);line-height:1;color:var(--c)}
+.bloco .stat span{max-width:240px;font-size:14px;color:var(--tinta3)}
+.bloco .partidos{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.bloco .partidos span{display:inline-flex;align-items:baseline;gap:6px;font-size:13px;line-height:1.5;color:var(--tinta2);
+                      border:1px solid var(--linha-forte);border-radius:999px;padding:3px 11px}
+.bloco .partidos b{font-weight:700;color:var(--tinta)}
+
+/* o painel de cada gráfico */
+.plot{--cl:232px;--cr:176px;--d:8px;background:var(--papel);border:1px solid var(--linha);border-radius:24px;box-shadow:var(--sombra);
+      padding:clamp(14px,2.2vw,32px);margin-top:clamp(40px,5vw,72px)}
+.sec-cab+.plot{margin-top:clamp(32px,3.4vw,48px)}
+.plot.tema{--cl:300px;--cr:200px}
+.plot-cab{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 32px}
+.plot-tit{flex:1 1 280px;min-width:0}
+.plot-tit p{margin-top:8px;font-size:14px;color:var(--tinta3)}
+.busca{flex:none;width:320px;max-width:100%}
+.busca label{display:block;margin-bottom:6px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta3)}
+.busca-in{position:relative;display:flex;align-items:center;gap:8px}
+.busca-in svg{position:absolute;left:16px;top:13px;width:18px;height:18px;fill:none;stroke:var(--tinta3);stroke-width:2;stroke-linecap:round;pointer-events:none}
+.busca .texto{flex:1 1 auto;width:auto;min-width:0;height:44px;padding:0 18px 0 44px;border-radius:999px;border-color:rgba(var(--tinta-rgb),.5)}
+.leg{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;margin-top:22px;font-size:13px;color:var(--tinta3)}
+.plot>.leg:first-child{margin-top:0}
+.leg>span{display:inline-flex;align-items:center;gap:8px}
+.leg .sh0{width:9px;height:9px}
+.leg .sh1{width:8px;height:8px;border-radius:1px}
+.leg .m{display:inline-block;width:2px;height:16px;border-radius:1px;background:var(--tinta)}
+.leg .tl-ex{display:inline-block;width:18px;height:12px;background:repeating-linear-gradient(90deg,var(--tinta) 0 3px,transparent 3px 5px)}
+.nota{margin-top:26px;max-width:820px;font-size:13px;color:var(--tinta3)}
+
+/* o cabeçalho com o eixo e as linhas dos dois gráficos dividem as mesmas colunas */
+.eixo,.lp,.tr{display:grid;grid-template-columns:var(--cl) minmax(0,1fr) var(--cr);column-gap:24px}
+.eixo{align-items:end;margin-top:26px;font-size:12px;color:var(--tinta3)}
+.eixo .c-l,.eixo .c-r{font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.eixo .c-r{display:flex;gap:8px}
+.eixo .c-r span:nth-child(1){width:64px;text-align:right}
+.eixo .c-r span:nth-child(2){width:64px}
+.eixo .c-r span:nth-child(3){width:32px}
+.eixo .reg{position:relative;height:18px}
+.eixo .reg span{position:absolute;top:0;transform:translateX(-50%)}
+.eixo .reg .mid{color:var(--tinta)}
+.eixo.t .reg{margin:0 48px}
+
+/* uma linha por partido, um ponto por deputado */
+.linhas{margin-top:8px}
+.lp{align-items:center;border-bottom:1px solid var(--linha)}
+.lp-nome{display:flex;align-items:center;min-width:0;font-size:15px;font-weight:600;line-height:1.25}
+.lp-nome small{display:none}
+.trilho,.hal{--g:rgba(var(--tinta-rgb),.12);--gf:rgba(var(--tinta-rgb),.4);
+  background:
+    linear-gradient(to right,transparent calc(50% - .5px),var(--gf) calc(50% - .5px),var(--gf) calc(50% + .5px),transparent calc(50% + .5px)),
+    linear-gradient(to right,var(--g) 1px,transparent 1px) 0 0/25% 100% repeat-x,
+    linear-gradient(to left,var(--g) 1px,transparent 1px) 100% 0/1px 100% no-repeat}
+.trilho{position:relative;height:40px}
+.pt{position:absolute;left:0;top:0;width:var(--d);height:var(--d);padding:0;border:1px solid var(--papel);border-radius:50%;
+    background:var(--c);cursor:pointer;opacity:.92;transform:translate(-50%,-50%) rotate(var(--r,0deg)) scale(var(--s,1))}
+.pt.b0{--c:var(--b0)}
+.pt.b1{--c:var(--b1);--r:45deg;width:calc(var(--d)*.82);height:calc(var(--d)*.82);border-radius:1px}
+.pt::before{content:"";position:absolute;inset:-6px}                 /* área de toque maior que o ponto */
+.pt:hover,.pt:focus-visible{--s:1.8;z-index:3;opacity:1}
+.pt.sel{--s:2.1;z-index:4;opacity:1;box-shadow:0 0 0 2px var(--tinta)}
 .pt.apaga{opacity:.18}
-.med{position:absolute;top:3px;bottom:3px;width:2px;margin-left:-1px;background:var(--tinta);opacity:.55;border-radius:1px}
-.leg{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:16px;font-size:13px;color:var(--tinta2);align-items:center}
-.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:8px;vertical-align:-1px}
-.leg .m{display:inline-block;width:2px;height:12px;background:var(--tinta);opacity:.55;margin-right:8px;vertical-align:-2px}
+.med{position:absolute;top:7px;bottom:7px;width:2px;margin-left:-1px;border-radius:1px;background:var(--tinta);pointer-events:none;z-index:2}
+.lp-st{display:flex;align-items:center;gap:8px}
+.lp-med{width:64px;text-align:right;font-family:var(--cond);font-weight:600;font-size:18px;line-height:1}
+.lp-bar{display:flex;flex:none;width:64px;height:6px;border-radius:3px;overflow:hidden;background:var(--linha-forte)}
+.lp-bar i{display:block}
+.lp-n{width:32px;font-size:13px;color:var(--tinta3)}
 
-/* busca e ficha */
-.busca{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px}
+
+/* ficha */
 
 .ficha{margin-top:20px;border:1px solid var(--linha);border-radius:var(--raio-p);padding:20px 20px}
 .ficha[hidden]{display:none}
@@ -101,39 +157,66 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
 .av-cx img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;z-index:1}
 .av-cx img.falhou{display:none}
 
-/* por tema: duas barras por categoria, uma por bloco */
-.tg{margin-top:20px}
-.tg h3{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta3);
-       padding-bottom:8px;border-bottom:1px solid var(--linha)}
-.tr{display:grid;grid-template-columns:230px minmax(0,1fr) 150px;gap:16px;align-items:center;padding:8px 0;border-bottom:1px solid var(--linha2)}
-.tr.fraco{opacity:.55}
-.tr-nome{font-size:14px;font-weight:500;line-height:1.3}
-.tr-nome small{display:block;font-weight:400;font-size:12px;color:var(--tinta3)}
-.tr-barras{display:grid;gap:4px}
-.tb{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:8px;align-items:center}
-.tb-trilho{height:8px;border-radius:4px;background:var(--linha2);overflow:hidden}
-.tb-trilho i{display:block;height:100%}
-.tb b{font-size:12px;font-weight:600;text-align:right}
-.tr-op{font-size:12px;color:var(--tinta2);text-align:right}
-.tr-op b{font-weight:600;color:var(--tinta)}
+/* por tema: a parcela de votos Sim de cada bloco, num eixo de 0 a 100%, e quantas leis dividiram os blocos */
+.tg h3{font-family:var(--cond);font-weight:600;font-size:20px;line-height:1;letter-spacing:.06em;text-transform:uppercase;
+       padding:30px 0 12px;border-bottom:1px solid var(--linha)}
+.tr{align-items:center;padding:8px 0;border-bottom:1px solid var(--linha)}
+.tr-nome{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:baseline;min-width:0}
+.tr-nome span{font-size:15px;font-weight:600;line-height:1.3}
+.tr-nome small{font-size:12px;color:var(--tinta3);white-space:nowrap}
+.tr-nome .fr{grid-column:1/-1;margin-top:2px;white-space:normal}      /* “poucas para comparar”, embaixo do nome */
+.tr-hal{position:relative;height:44px;min-width:0}
+.hal{position:absolute;left:48px;right:48px;top:0;bottom:0}
+.ponte{position:absolute;top:19px;height:6px;border-radius:3px;background:rgba(var(--tinta-rgb),.45)}
+.mk{position:absolute;top:22px;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--papel);background:var(--c)}
+.mk.m1{width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:2px;transform:rotate(45deg)}
+.vl{position:absolute;top:22px;transform:translateY(-50%);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--c)}
+.vl.e{transform:translate(-100%,-50%);margin-left:-15px}
+.vl.d{margin-left:15px}
+.tr.fraco .mk,.tr.fraco .ponte{opacity:.5}                           /* só o desenho esmaece; o texto fica com o contraste todo */
+.tr-op{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:13px;color:var(--tinta3)}
+.tr-op b{font-weight:700;color:var(--tinta)}
+.tl{position:relative;display:block;height:14px;width:calc(var(--nl)*5px - 2px);max-width:100%;
+    background:repeating-linear-gradient(90deg,var(--linha-forte) 0 3px,transparent 3px 5px)}
+.tl i{position:absolute;left:0;top:0;height:14px;width:calc(var(--nd)*5px - 2px);max-width:100%;
+      background:repeating-linear-gradient(90deg,var(--tinta) 0 3px,transparent 3px 5px)}
 
 /* pares improváveis */
-.pares{margin-top:16px}
+.pares{margin-top:0}
 .par{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--linha2)}
+.par:first-child{border-top:0;padding-top:0}
 .par .x{text-align:center;font-size:13px;line-height:1.25;min-width:120px}
 .par .x b{display:block;font-family:var(--serif);font-size:20px;font-weight:600}
 .par .x small{color:var(--tinta3);font-size:12px}
 .par .pessoa{border:none;padding:0}
 .par .pessoa:last-child{flex-direction:row-reverse;text-align:right}
 
+/* até 1100 px (tablet e celular) a linha de cada partido e de cada tema fica empilhada: o nome em cima e a trilha com a largura toda
+   embaixo; na largura de desktop, as três colunas deixariam o eixo estreito demais para ler. */
+@media(max-width:1100px){
+  .eixo{grid-template-columns:minmax(0,1fr)}
+  .eixo .c-l,.eixo .c-r{display:none}
+  .lp{grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:baseline;padding-top:4px}
+  .lp-nome{grid-row:1;grid-column:1;font-size:13px}
+  .lp-nome small{display:inline;margin-left:8px;font-size:12px;font-weight:400;color:var(--tinta3)}
+  .lp-st{grid-row:1;grid-column:2;gap:0}
+  .lp-bar,.lp-n{display:none}
+  .lp-med{width:auto;font-family:var(--sans);font-size:13px;font-weight:400;color:var(--tinta3)}
+  .lp-med::before{content:"mediana "}
+  .lp-med.sem{display:none}
+  .trilho{grid-row:2;grid-column:1/-1}
+  .tr{grid-template-columns:minmax(0,1fr);gap:8px;padding:14px 0}
+  .hal{left:44px;right:44px}
+  .eixo.t .reg{margin:0 44px}
+}
 @media(max-width:760px){
-  .blocos{grid-template-columns:1fr}
-  .painel{padding:20px}
-  .eixo,.lp{grid-template-columns:1fr;gap:2px}
-  .eixo>span:first-child{display:none}
-  .lp-nome small{display:inline;margin-left:8px}
-  .tr{grid-template-columns:1fr;gap:8px}
-  .tr-op{text-align:left}
+  .sec-cab{gap:20px}
+  .seg-b{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:0 12px}     /* o segmento estreito não comporta número e palavra lado a lado */
+  .seg-t{font-size:12px;line-height:1}
+  .blocos{flex-direction:column;gap:32px}
+  .bloco{flex:none;min-width:0}
+  .plot{--d:7px;border-radius:var(--raio)}
+  .busca{width:100%}
   .par{grid-template-columns:1fr;text-align:left}
   .par .x{text-align:left;display:flex;gap:8px;align-items:baseline}
   .par .pessoa:last-child{flex-direction:row;text-align:left}
@@ -183,37 +266,79 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
     </div>
   </div>
 
-  <section class="painel" aria-labelledby="t-blocos">
-    <h2 id="t-blocos">Os blocos que existem de fato</h2>
-    <p class="sub" id="subBlocos"></p>
+  <section class="sec-bl" aria-labelledby="t-blocos">
+    <div class="sec-cab">
+      <div class="sec-tit">
+        <p class="kicker">Agrupados só pelo voto, sem olhar o partido</p>
+        <h2 class="h2-bl" id="t-blocos">Os blocos que existem de fato</h2>
+      </div>
+      <p class="sub sec-sub" id="subBlocos"></p>
+    </div>
+
+    <div class="barra-bl" id="barraBl" role="img" aria-label=""></div>
     <div class="blocos" id="blocos"></div>
 
-    <div class="eixo" aria-hidden="true"><span></span>
-      <div class="reg"><span style="left:0">0%</span><span style="left:25%">25%</span><span style="left:50%">50%</span><span style="left:75%">75%</span><span style="left:100%">100%</span></div>
-    </div>
-    <div class="linhas" id="linhas"></div>
-    <div class="leg" id="leg"></div>
+    <div class="plot" id="plotBl" data-reveal>
+      <div class="plot-cab">
+        <div class="plot-tit">
+          <h3 class="h3-bl">Partido por partido</h3>
+          <p>Quanto mais à direita o ponto, mais vezes o deputado votou como o líder do Governo orientou.</p>
+        </div>
+        <div class="busca">
+          <label for="fDep">Buscar um deputado</label>
+          <div class="busca-in">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+            <input class="texto" id="fDep" type="search" list="listaDep" autocomplete="off">
+            <datalist id="listaDep"></datalist>
+            <button class="limpar" id="limpar" hidden>Limpar</button>
+          </div>
+        </div>
+      </div>
+      <div class="ficha" id="ficha" hidden aria-live="polite"></div>
 
-    <div class="busca">
-      <input class="texto" id="fDep" type="search" list="listaDep" placeholder="Buscar um deputado" autocomplete="off" aria-label="Buscar um deputado">
-      <datalist id="listaDep"></datalist>
-      <button class="limpar" id="limpar" hidden>Limpar</button>
+      <div class="leg" id="leg"></div>
+
+      <div class="eixo" aria-hidden="true"><span class="c-l">Partido</span>
+        <div class="reg"><span style="left:0">0%</span><span style="left:25%">25%</span><span class="mid" style="left:50%">50%</span><span style="left:75%">75%</span><span style="left:100%">100%</span></div>
+        <span class="c-r"><span>Mediana</span><span>Bloco</span><span>Dep.</span></span>
+      </div>
+      <div class="linhas" id="linhas"></div>
+
+      <p class="nota">A altura de cada ponto dentro da linha só serve para que os pontos não se sobreponham; não mede nada. Partidos com menos de 3 deputados ficam juntos, em “Outros”. O partido é o em que o deputado deu a maior parte dos votos no período.</p>
     </div>
-    <div class="ficha" id="ficha" hidden aria-live="polite"></div>
   </section>
 
-  <section class="painel" aria-labelledby="t-temas" id="secTemas" hidden>
-    <h2 id="t-temas">O que cada bloco aprovou, por tema</h2>
-    <p class="sub" id="subTemas"></p>
-    <div class="leg" id="legTemas"></div>
-    <div id="temas"></div>
+  <section class="sec-bl" aria-labelledby="t-temas" id="secTemas" hidden>
+    <div class="sec-cab">
+      <div class="sec-tit">
+        <p class="kicker" id="kickTemas"></p>
+        <h2 class="h2-bl" id="t-temas">O que cada bloco aprovou, por tema</h2>
+      </div>
+      <p class="sub sec-sub" id="subTemas"></p>
+    </div>
+    <div class="plot tema" data-reveal>
+      <div class="leg" id="legTemas"></div>
+      <div class="eixo t" aria-hidden="true"><span class="c-l">Tema</span>
+        <div class="reg"><span style="left:0">0%</span><span style="left:25%">25%</span><span class="mid" style="left:50%">50%</span><span style="left:75%">75%</span><span style="left:100%">100%</span></div>
+        <span class="c-r">Lados opostos</span>
+      </div>
+      <div id="temas"></div>
+      <p class="nota">A parcela é de votos Sim entre os votos Sim e Não; abstenção, obstrução e ausência não entram. Tema com menos de 3 leis aparece esmaecido: poucas leis para comparar. “Lados opostos” quer dizer que a maioria de um bloco votou Sim e a do outro, Não.</p>
+    </div>
   </section>
 
-  <section class="painel" aria-labelledby="t-pares">
-    <h2 id="t-pares">Pares improváveis</h2>
-    <p class="sub" id="subPares"></p>
-    <div class="pares" id="pares"></div>
-    <button class="mais" id="maisPares" hidden>Mostrar mais</button>
+  <section class="sec-bl" aria-labelledby="t-pares">
+    <div class="sec-cab">
+      <div class="sec-tit">
+        <p class="kicker">Partidos distantes no espectro</p>
+        <h2 class="h2-bl" id="t-pares">Pares improváveis</h2>
+      </div>
+      <p class="sub sec-sub" id="subPares"></p>
+    </div>
+    <div class="plot" data-reveal>
+      <div class="pares" id="pares"></div>
+      <button class="mais" id="maisPares" hidden>Mostrar mais</button>
+    </div>
   </section>
 </main>
 
@@ -297,6 +422,7 @@ const pctGov=id=>{const g=B.deputados[id]?.governo; return g?g[0]/g[1]:null;};
 // O nome de cada bloco sai do próprio dado: a mediana de votos como o Governo orientou.
 const nomeBloco=i=>B.blocos[i].medianaGoverno>=.5?'Acompanha o Governo':'Vota contra o Governo';
 const corBloco=i=>`var(--b${Math.min(i,1)})`;
+const formaBloco=i=>i===0?'sh0':'sh1';       // círculo para o 1º bloco, losango para os demais: a forma repete a cor
 
 async function carregar(){
   await Bandeiras.carregar();     // logos dos partidos (logos.py); sem o arquivo, só não mostra logo
@@ -309,14 +435,17 @@ async function carregar(){
   subBlocos.textContent=`${nf.format(B.votacoes)} votações nominais do Plenário. Cada linha abaixo é um partido; cada ponto, `+
     `um deputado, na posição da frequência com que votou como o líder do Governo orientou (${nf.format(B.votacoesComOrientacao)} `+
     `votações com orientação). A cor é o bloco em que a semelhança dos votos o colocou.`;
-  blocos.innerHTML=B.blocos.map((b,i)=>`<div class="bloco" style="--c:${corBloco(i)}">
-      <h3>${nomeBloco(i)}</h3>
-      <div class="n">${nf.format(b.n)}<small>deputados</small></div>
-      <p>Mediana: votaram como o Governo orientou em ${pc(b.medianaGoverno)} das vezes.</p>
+  // a barra: um segmento por bloco, na proporção dos deputados; embaixo de cada um, a mediana e os partidos que o compõem
+  barraBl.innerHTML=B.blocos.map((b,i)=>`<div class="seg-b" style="--n:${b.n};--c:${corBloco(i)}"><span class="seg-n">${nf.format(b.n)}</span><span class="seg-t">deputados</span></div>`).join('');
+  barraBl.setAttribute('aria-label',`${nf.format(Object.keys(B.deputados).length)} deputados em ${nb} blocos: `+
+    B.blocos.map((b,i)=>`${nf.format(b.n)} em “${nomeBloco(i)}”`).join(' e '));
+  blocos.innerHTML=B.blocos.map((b,i)=>`<div class="bloco" style="--n:${b.n};--c:${corBloco(i)}">
+      <h3 class="h3-bl"><i class="sh ${formaBloco(i)}"></i>${nomeBloco(i)}</h3>
+      <div class="stat"><b>${pc1(b.medianaGoverno)}</b><span>das votações, em mediana, no mesmo lado que o líder do Governo orientou</span></div>
       <div class="partidos">${Object.entries(b.partidos).map(([p,q])=>`<span>${esc(p)} <b>${q}</b></span>`).join('')}</div>
     </div>`).join('');
-  leg.innerHTML=B.blocos.map((b,i)=>`<span><i style="--c:${corBloco(i)}"></i>${nomeBloco(i)}</span>`).join('')+
-    '<span><span class="m"></span>mediana do partido</span><span>linha do meio: 50%</span>';
+  leg.innerHTML=B.blocos.map((b,i)=>`<span><i class="sh ${formaBloco(i)}" style="--c:${corBloco(i)}"></i>${nomeBloco(i)}</span>`).join('')+
+    '<span><i class="m"></i>mediana do partido</span><span>linha mais forte: 50%</span>';
   desenharLinhas();
   const nomes=Object.keys(B.nomes).map(id=>[id,`${N(id)[0]} (${N(id)[1]}-${N(id)[2]})`]).sort((a,b)=>a[1].localeCompare(b[1]));
   listaDep.innerHTML=nomes.map(([,t])=>`<option value="${esc(t)}">`).join('');
@@ -335,38 +464,79 @@ function desenharLinhas(){
   if(outros.length) linhasP.push([`Outros (${[...new Set(outros.map(id=>N(id)[1]))].join(', ')})`,outros,null]);
   linhas.innerHTML=linhasP.map(([p,ids,m])=>{
     const cont={}; ids.forEach(id=>{const b=B.deputados[id].bloco; cont[b]=(cont[b]||0)+1;});
-    // quantos do partido caíram em cada bloco, com a cor do bloco
-    const partes=B.blocos.map((_,i)=>cont[i]?`<span class="qb" style="--c:${corBloco(i)}" title="${cont[i]} em “${nomeBloco(i)}”">${cont[i]}</span>`:'').filter(Boolean);
-    // altura dentro da linha: fixa por deputado (não muda a cada visita), para os pontos não se sobreporem
-    const pts=ids.map(id=>{ const y=4+((+id*2654435761)%1000)/1000*19;
-      return `<button class="pt" data-id="${id}" style="left:${(pctGov(id)*100).toFixed(2)}%;top:${y.toFixed(1)}px;--c:${corBloco(B.deputados[id].bloco)}"
-        title="${esc(N(id)[0])} (${esc(rotPartido(id))}): votou como o Governo orientou em ${pc(pctGov(id))} · ${nomeBloco(B.deputados[id].bloco)}"
-        aria-label="${esc(N(id)[0])}, ${pc(pctGov(id))}"></button>`;}).join('');
-    return `<div class="lp"><div class="lp-nome">${Bandeiras.img(p,57,18,{vazio:false})}${esc(p)}<small>${ids.length} deputados${B.blocos.length>1&&partes.length>1?' · '+partes.join(' '):''}</small></div>
-      <div class="trilho">${m!=null?`<span class="med" style="left:${(m*100).toFixed(2)}%" title="Mediana do partido: ${pc(m)}"></span>`:''}${pts}</div></div>`;
+    // quantos do partido caíram em cada bloco: uma barrinha na cor de cada um (a legenda de texto vai no aria-label)
+    const barra=B.blocos.map((_,i)=>cont[i]?`<i style="flex:${cont[i]} 1 0;background:${corBloco(i)}" title="${cont[i]} em “${nomeBloco(i)}”"></i>`:'').join('');
+    const rotBarra=B.blocos.map((_,i)=>cont[i]?`${cont[i]} em “${nomeBloco(i)}”`:'').filter(Boolean).join(' e ');
+    // a altura de cada ponto na linha é decidida depois, em espalhar(), pela largura que a trilha tem
+    const pts=ids.map(id=>{ const v=pctGov(id), b=B.deputados[id].bloco;
+      return `<button class="pt b${Math.min(b,1)}" data-id="${id}" data-v="${v}" style="left:${(v*100).toFixed(2)}%"
+        title="${esc(N(id)[0])} (${esc(rotPartido(id))}): votou como o Governo orientou em ${pc(v)} · ${nomeBloco(b)}"
+        aria-label="${esc(N(id)[0])}, ${pc(v)}"></button>`;}).join('');
+    return `<div class="lp"><div class="lp-nome">${Bandeiras.img(p,57,18,{vazio:false})}${esc(p)}<small>· ${ids.length} dep.</small></div>
+      <div class="trilho">${pts}${m!=null?`<span class="med" style="left:${(m*100).toFixed(2)}%"></span>`:''}</div>
+      <div class="lp-st"><b class="lp-med${m==null?' sem':''}">${m==null?'—':pc(m)}</b><span class="lp-bar" role="img" aria-label="${esc(rotBarra)}">${barra}</span><span class="lp-n">${ids.length}</span></div></div>`;
   }).join('');
   linhas.querySelectorAll('.pt').forEach(b=>b.onclick=()=>selecionar(b.dataset.id,true));
+  espalhar();
 }
+
+// A altura de cada ponto dentro da linha serve só para que os pontos não se sobreponham; não mede nada (a posição no eixo é o dado).
+// Do menor ao maior valor, cada ponto fica na primeira altura livre (0, +1, −1, +2… até ±4 passos); se nenhuma está livre, na que mais folga deixa.
+// Depende da largura da trilha, então refaz quando ela muda; com a mesma largura, a mesma disposição.
+function espalhar(){
+  const tr=linhas.querySelector('.trilho'); if(!tr) return;
+  const W=tr.clientWidth; if(!W) return;
+  const D=parseFloat(getComputedStyle(linhas).getPropertyValue('--d'))||8, ST=D*.5, meio=tr.clientHeight/2, NIVEIS=[0,1,-1,2,-2,3,-3,4,-4];
+  linhas.querySelectorAll('.trilho').forEach(t=>{
+    const pts=[...t.querySelectorAll('.pt')].map(b=>({b,x:parseFloat(b.dataset.v)*W,id:+b.dataset.id})).sort((a,c)=>a.x-c.x||a.id-c.id);
+    const postos=[];
+    pts.forEach(p=>{
+      let melhor=0, folga=-1;
+      for(const n of NIVEIS){
+        const y=n*ST; let menor=99;
+        for(const q of postos){ const dx=q.x-p.x; if(dx>D*1.3||dx<-D*1.3) continue; const d=Math.hypot(dx,q.y-y); if(d<menor) menor=d; }
+        if(menor>=D){ melhor=y; break; }
+        if(menor>folga){ folga=menor; melhor=y; }
+      }
+      postos.push({x:p.x,y:melhor}); p.b.style.top=(meio+melhor).toFixed(1)+'px';
+    });
+  });
+}
+let _rz=0;
+new ResizeObserver(()=>{ cancelAnimationFrame(_rz); _rz=requestAnimationFrame(espalhar); }).observe(linhas);
 
 // Por tema: nas votações finais de texto-base (Sim = aprovar a lei), a parcela dos votos Sim
 // de cada bloco nas leis do tema. Mesmas categorias da página do deputado (temas.py).
 function desenharTemas(){
   const T=B.temas||[]; if(!T.length) return;
   secTemas.hidden=false;
+  kickTemas.textContent=`Votações finais de texto-base · ${nf.format(B.temasLeis)} leis`;
   subTemas.textContent=`Nas ${nf.format(B.temasLeis)} votações finais de texto-base — em que votar Sim é aprovar a lei —, `+
     `a parcela dos votos Sim de cada bloco nas leis de cada tema. As categorias são as mesmas da página do deputado, `+
     `pela classificação deste site a partir da ementa; uma lei pode ter mais de uma, e ${B.temasSemCategoria} ficaram sem categoria.`;
-  legTemas.innerHTML=B.blocos.map((b,i)=>`<span><i style="--c:${corBloco(i)}"></i>${nomeBloco(i)}</span>`).join('')+
-    '<span>“lados opostos”: a maioria de um bloco votou Sim e a do outro, Não</span>';
+  legTemas.innerHTML=B.blocos.map((b,i)=>`<span><i class="sh ${formaBloco(i)}" style="--c:${corBloco(i)}"></i>${nomeBloco(i)}</span>`).join('')+
+    '<span><i class="tl-ex"></i>cada risco é uma lei; os escuros, as de lados opostos</span>';
   const grupos=[...new Set(T.map(t=>t.grupo))];
-  temas.innerHTML=grupos.map(g=>`<div class="tg"><h3>${esc(g)}</h3>${T.filter(t=>t.grupo===g).map(t=>{
-      const barras=t.sim.map((v,i)=>v==null?'':`<div class="tb" title="${nomeBloco(i)}: ${nf.format(t.votos[i][0])} votos Sim e ${nf.format(t.votos[i][1])} Não">
-          <span class="tb-trilho"><i style="width:${(v*100).toFixed(1)}%;background:${corBloco(i)}"></i></span><b>${pc(v)}</b></div>`).join('');
-      return `<div class="tr${t.leis<3?' fraco':''}">
-        <div class="tr-nome">${esc(t.categoria)}<small>${t.leis} ${t.leis===1?'lei':'leis'}${t.leis<3?' · poucas para comparar':''}</small></div>
-        <div class="tr-barras">${barras}</div>
-        <div class="tr-op">${t.divergem?`lados opostos em <b>${t.divergem}</b> de ${t.leis}`:'mesmo lado em todas'}</div></div>`;
-    }).join('')}</div>`).join('');
+  temas.innerHTML=grupos.map(g=>`<div class="tg"><h3>${esc(g)}</h3>${T.filter(t=>t.grupo===g).map(linhaTema).join('')}</div>`).join('');
+}
+
+// Uma categoria: um marcador por bloco no eixo de 0 a 100% (a parcela de votos Sim), uma ponte entre o menor e o maior, o valor escrito
+// ao lado de cada ponta e, à direita, uma risca por lei (as escuras são as de lados opostos). Bloco sem votos na categoria não tem marcador.
+function linhaTema(t){
+  const itens=t.sim.map((v,i)=>v==null?null:{v,i}).filter(Boolean);
+  const um=itens.length===1, vs=itens.map(x=>x.v), lo=Math.min(...vs), hi=Math.max(...vs);
+  const doLo=itens.find(x=>x.v===lo), doHi=itens.find(x=>x.v===hi);
+  const marcadores=itens.map(({v,i})=>`<i class="mk m${Math.min(i,1)}" style="--c:${corBloco(i)};left:${(v*100).toFixed(1)}%"
+      title="${nomeBloco(i)}: ${nf.format(t.votos[i][0])} votos Sim e ${nf.format(t.votos[i][1])} Não"></i>`).join('');
+  const valores=!itens.length?'':(um?'':`<span class="vl e" style="--c:${corBloco(doLo.i)};left:${(lo*100).toFixed(1)}%">${pc1(lo)}</span>`)+
+    `<span class="vl d" style="--c:${corBloco(doHi.i)};left:${(hi*100).toFixed(1)}%">${pc1(hi)}</span>`;
+  const ponte=itens.length>1?`<i class="ponte" style="left:${(lo*100).toFixed(1)}%;width:${((hi-lo)*100).toFixed(1)}%"></i>`:'';
+  const rot=itens.map(({v,i})=>`${nomeBloco(i)}: ${pc1(v)} de votos Sim`).join('; ');
+  return `<div class="tr${t.leis<3?' fraco':''}">
+    <div class="tr-nome"><span>${esc(t.categoria)}</span><small>${t.leis} ${t.leis===1?'lei':'leis'}</small>${t.leis<3?'<small class="fr">poucas para comparar</small>':''}</div>
+    <div class="tr-hal"${rot?` role="img" aria-label="${esc(rot)}"`:''}><div class="hal">${ponte}${marcadores}${valores}</div></div>
+    <div class="tr-op"><span>${t.divergem?`lados opostos em <b>${t.divergem}</b> de ${t.leis}`:'mesmo lado em todas'}</span>
+      <span class="tl" style="--nl:${t.leis};--nd:${t.divergem||0}" aria-hidden="true"><i></i></span></div></div>`;
 }
 
 function pessoaHTML(id,direita){
@@ -416,7 +586,7 @@ function desenharPares(){
       `o deputado do partido mais à direita de cada par votou como o Governo orientou em ${pc(minGov)} ou mais das vezes.`:'');
   pares.innerHTML=L.slice(0,limitePares).map(([a,b,v,c])=>`<div class="par">${pessoaHTML(a)}
       <div class="x"><b>${pc1(v)}</b><small>de votos iguais em ${nf.format(c)} votações</small></div>${pessoaHTML(b)}</div>`).join('');
-  pares.querySelectorAll('.pessoa').forEach(x=>x.onclick=()=>{ selecionar(x.dataset.id,false); document.getElementById('t-blocos').scrollIntoView({behavior:'smooth'}); });
+  pares.querySelectorAll('.pessoa').forEach(x=>x.onclick=()=>{ selecionar(x.dataset.id,false); document.getElementById('plotBl').scrollIntoView({behavior:'smooth'}); });
   maisPares.hidden=L.length<=limitePares;
 }
 maisPares.onclick=()=>{limitePares+=PASSO; desenharPares();};

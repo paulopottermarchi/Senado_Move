@@ -9,6 +9,7 @@
 //   aneis   — quem vota com quem: dois anéis entrelaçados
 //   casas   — entre as casas: cúpula e bacia ligadas por um arco
 //   obras   — obras: estrutura em etapas, com guindaste
+//   moedas  — contexto econômico: pilhas de moedas e uma moeda de pé sobre o pódio (todas do mesmo tamanho: não desenha tendência)
 //   assento — ficha do deputado: um assento sobre os degraus, com o anel de foco
 //
 // Carregado por import('./modelos3d.js') depois da primeira pintura (site.js, Modelo3D), só se o navegador tem importmap e WebGL, a
@@ -56,6 +57,22 @@ function bacia({ R = 1.95, base = 0.55, escY = 0.6, cx = 0, cz = 0, ring = 32, m
   ci.push(anel(R * 1.06, base + escY * R, ring, cx, cz), anel(R * 0.5, base - 0.02, 20, cx, cz));
   return { pe, ci };
 }
+// Moeda deitada: a borda de baixo, a de cima, o aro gravado na face e as estrias do cilindro.
+const moedaDeitada = (R, h, y, cx, cz, { n = 36, estrias = 20, aro = false } = {}) => {
+  const l = [anel(R, y, n, cx, cz), anel(R, y + h, n, cx, cz)];
+  if (aro) l.push(anel(R * 0.72, y + h, n, cx, cz));
+  for (let k = 0; k < estrias; k++) { const a = k / estrias * PI * 2, x = cx + Math.cos(a) * R, z = cz + Math.sin(a) * R; l.push([[x, y, z], [x, y + h, z]]); }
+  return l;
+};
+// Moeda de pé: o disco no plano XY (a face para +z), com `t` de espessura, girado `giro` em torno de Y e apoiado em y = base.
+const moedaDePe = (R, t, base, cx, cz, giro, { n = 40, estrias = 28 } = {}) => {
+  const c = Math.cos(giro), s = Math.sin(giro);
+  const p = (x, y, z) => [cx + x * c + z * s, base + R + y, cz - x * s + z * c];
+  const disco = (r, z) => { const l = []; for (let i = 0; i <= n; i++) { const a = i / n * PI * 2; l.push(p(Math.cos(a) * r, Math.sin(a) * r, z)); } return l; };
+  const ls = [disco(R, t / 2), disco(R, -t / 2), disco(R * 0.74, t / 2), disco(R * 0.5, t / 2)];
+  for (let k = 0; k < estrias; k++) { const a = k / estrias * PI * 2; ls.push([p(Math.cos(a) * R, Math.sin(a) * R, t / 2), p(Math.cos(a) * R, Math.sin(a) * R, -t / 2)]); }
+  return ls;
+};
 const toro = (R, r, cx, cy, plano, n = 26, m = 10) => {
   const pt = (u, v) => {
     const a = u / n * PI * 2, b = v / m * PI * 2;
@@ -128,6 +145,18 @@ const MODELOS = {
       pe.push([[2.4, 0, 1.2], [2.4, 4.6, 1.2]], [[2.55, 0, 1.2], [2.55, 4.6, 1.2]]);
       for (let k = 0; k < 9; k++) { const yy = k * 0.575; pe.push([[2.4, yy, 1.2], [2.55, yy + 0.575, 1.2]]); }
       pe.push([[-2.6, 4.7, 1.2], [3.2, 4.7, 1.2]], [[-2.6, 4.9, 1.2], [3.2, 4.9, 1.2]], [[-0.6, 4.7, 1.2], [-0.6, 3.6, 1.2]]);
+      return { petroleo: pe, cinza: ci };
+    }
+  },
+  moedas: {
+    camera: { pos: [0, 4.0, 13.2], alvo: [0, 1.15, 0], fov: 28 },
+    linhas() {
+      const ci = [...caixa(6.6, 0.2, 3.2, -0.1), ...caixa(5.6, 0.2, 2.4, 0.1)];
+      const base = 0.2, pe = [];
+      // a pilha alta (sete moedas) e uma baixa (três) à frente; o aro gravado só na moeda de cima
+      for (let i = 0; i < 7; i++) pe.push(...moedaDeitada(0.95, 0.2, base + i * 0.2, -1.75, -0.2, { aro: i === 6 }));
+      for (let i = 0; i < 3; i++) pe.push(...moedaDeitada(0.8, 0.2, base + i * 0.2, -0.35, 0.85, { aro: i === 2, estrias: 16 }));
+      pe.push(...moedaDePe(1.3, 0.28, base, 1.95, -0.1, -0.85));
       return { petroleo: pe, cinza: ci };
     }
   },
