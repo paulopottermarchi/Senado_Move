@@ -406,3 +406,67 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 .metodo-fim{margin-top:64px;padding-top:32px;border-top:1px solid var(--linha)}
 .metodo-fim h2{font-family:var(--serif);font-size:clamp(24px,2.6vw,30px);font-weight:500;line-height:1.15;margin-bottom:8px}
 .metodo-fim .aviso{max-width:78ch;margin-top:16px}
+
+/* =====================================================================
+   DE ONDE VÊM AS LEIS (origem.js; usado em deputados.html, index.html e origem.html)
+   A composição das leis sancionadas por origem. Paleta NEUTRA à parte: os neutros --rampa1..7, que viram no tema escuro. As cinco cores
+   do espectro significam posição ideológica e NÃO entram aqui. Nenhum segmento depende só da cor: o Executivo se divide em três
+   caminhos que se distinguem por textura (liso, listrado, pontilhado), o que não tem origem classificada é hachurado, e rótulo e
+   valor vão em texto dentro do segmento quando cabe e SEMPRE na legenda. Texto sobre fundo liso usa --papel ou --tinta (contraste
+   medido nos dois temas); sobre textura ou fundo médio, o rótulo vai numa pílula.
+   ===================================================================== */
+.or{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;min-width:0}   /* minmax(0,…): sem isso a trilha vira a soma dos rótulos da barra e estoura o celular */
+.or-txt{font-family:var(--serif);font-size:clamp(20px,2.3vw,28px);line-height:1.32;font-weight:500;letter-spacing:-.01em;max-width:52ch;color:var(--tinta);text-wrap:pretty}
+.or-txt b{font-weight:600;font-variant-numeric:tabular-nums}
+.or-barra-box{padding-top:24px}
+.or-barra{display:flex;gap:3px;height:30px;min-width:0}
+.or-s{position:relative;display:flex;align-items:center;flex:var(--n,1) 1 0;min-width:3px;overflow:hidden;border-radius:4px}
+.or-g{position:relative;display:flex;gap:3px;flex:var(--n,1) 1 0;min-width:0}
+.or-g>.or-s{flex:var(--n,1) 1 0}
+.or-gt{position:absolute;left:0;right:0;top:-22px;height:18px;padding:0 2px 3px;border-bottom:2px solid var(--rampa4);font-size:12px;font-weight:600;
+       line-height:15px;color:var(--tinta2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.or-gt.curto .gv{display:none}
+.or-gt.oculto .gn{visibility:hidden}
+.or-r{flex:none;padding:0 10px;font-size:12px;font-weight:600;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums}
+.or-s.pilula .or-r{background:var(--papel);color:var(--tinta);border-radius:999px;padding:5px 8px;margin:0 5px;box-shadow:0 0 0 1px var(--linha-forte)}
+.or-s.so-valor .rt{display:none}
+.or-s.sem-rotulo .or-r{visibility:hidden}
+/* preenchimentos (a ordem é a de categorias do JSON; or-e0..2 são os três caminhos do Executivo) */
+.or-c0{background:var(--rampa1);color:var(--papel)}
+.or-c1{background:var(--rampa3);color:var(--papel)}
+.or-c2,.or-e0{background:var(--rampa5);color:var(--tinta)}
+.or-e1{background:repeating-linear-gradient(135deg,var(--rampa5) 0 4px,var(--rampa3) 4px 6px)}
+.or-e2{background:radial-gradient(circle,var(--rampa3) 1.3px,transparent 1.8px) 0 0/6px 6px,var(--rampa5)}
+.or-c3{background:var(--rampa2);color:var(--papel)}
+.or-c4{background:var(--rampa4)}
+.or-c5{background:var(--rampa6);box-shadow:inset 0 0 0 1px var(--rampa4)}
+.or-c6{background:var(--rampa7);box-shadow:inset 0 0 0 1px var(--rampa4)}
+.or-c7{background:repeating-linear-gradient(45deg,var(--rampa2) 0 3px,var(--rampa6) 3px 7px)}
+.or-c8{background:repeating-linear-gradient(135deg,var(--rampa3) 0 2px,transparent 2px 5px),repeating-linear-gradient(45deg,var(--rampa3) 0 2px,transparent 2px 5px),var(--papel);
+       box-shadow:inset 0 0 0 1px var(--rampa3)}
+/* legenda: todo segmento, com rótulo e valor em texto */
+.or-leg{list-style:none;margin:0;padding:0;columns:3 250px;column-gap:32px}
+.or-leg>li{break-inside:avoid;margin-bottom:12px}
+.or-leg li{display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:10px;align-items:start;font-size:13px;line-height:1.45;color:var(--tinta2)}
+.or-leg li>ul{grid-column:2;list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.or-leg b{font-weight:600;color:var(--tinta)}
+.or-sw{display:block;width:20px;height:14px;border-radius:3px;margin-top:3px;flex:none}
+.or-sw.vazio{background:none;box-shadow:none}
+.or-n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.or-nota,.or-pe{font-size:13px;line-height:1.55;color:var(--tinta3);max-width:78ch}
+.or-nota b,.or-pe b{font-weight:600;color:var(--tinta2)}
+.or-pe a,.or-nota a{color:var(--destaque)}
+/* variante compacta: a legenda numa linha corrida, com o Executivo achatado nos três caminhos */
+.or.compacta{gap:14px}
+.or.compacta .or-leg{columns:auto;display:flex;flex-wrap:wrap;gap:6px 22px}
+.or.compacta .or-leg>li{margin:0;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.or.compacta .or-sw{margin:0}
+.or.compacta .or-pe{font-size:12px}
+/* a faixa fina da página dos deputados (vista "Viraram lei") */
+.or-faixa{margin:16px 0 20px;padding:20px 24px;background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio-p)}
+.or-faixa .or-txt{font-size:clamp(17px,1.6vw,21px);max-width:none}
+@media(max-width:640px){
+  .or-barra{height:26px}
+  .or-faixa{padding:16px}
+  .or-leg{columns:1}
+}
