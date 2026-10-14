@@ -1,0 +1,39 @@
+{
+  "_fonte": "Nome oficial de cada órgão: campo `nome` do endpoint /orgaos/{id} da API de Dados Abertos da Câmara (https://dadosabertos.camara.leg.br/api/v2/orgaos/{id}), conferido em 12/10/2026. A CATEGORIA é decisão do projeto, aprovada em 12/10/2026. O campo `instituicao` é o rótulo da linha na página quando uma instituição tem mais de um id no cadastro da Câmara (TCU: 82 e 101582) ou quando o projeto agrupa órgãos de uma mesma instituição (decidido em 12/10/2026: o PGR é a chefia do MPF, que integra o MPU, então MPU e PGR formam uma linha só); os ids ficam separados no detalhe do JSON. Sem o campo, a linha leva o `nome` oficial.",
+  "_regra": "A origem de uma lei é a AUTORIA da proposição que virou lei, lida no arquivo proposicoesAutores (só proponente = 1), pelo identificador do autor na `uriAutor`: /deputados/{id} é autoria individual de deputado; /orgaos/{id} é um órgão, e a categoria sai DESTA tabela. NUNCA pelo valor do tipo de autor, pelo nome, pela ementa ou por texto livre. Id fora da tabela = \"Não classificado\", contado e mostrado. O valor \"Sociedade Civil\" do tipo de autor NÃO é usado: nos dados ele cobre PGR e CNJ, que são órgãos de justiça. \"Misto\" e \"Não classificado\" são calculados pelo script, não constam daqui. \"Iniciativa popular\" só entraria se houvesse autoria de iniciativa popular de fato nos dados; não há, e a categoria fica de fora.",
+  "categorias": [
+    "Deputados",
+    "Senado",
+    "Executivo",
+    "Judiciário",
+    "Ministério Público, Defensoria e controle",
+    "Órgãos colegiados da Câmara (Mesa e comissões)",
+    "Outros"
+  ],
+  "recursos": {
+    "deputados": {"categoria": "Deputados", "nome": "Deputado(a): autoria individual (uriAutor em /deputados/{id})", "fonte": "https://dadosabertos.camara.leg.br/api/v2/deputados/{id}"}
+  },
+  "orgaos": {
+    "78":     {"sigla": "SF",       "nome": "Senado Federal", "categoria": "Senado", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/78"},
+    "253":    {"sigla": "EXEC",     "nome": "Poder Executivo", "categoria": "Executivo", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/253"},
+    "60":     {"sigla": "PR",       "nome": "Presidência da República", "categoria": "Executivo", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/60"},
+    "80":     {"sigla": "STF",      "nome": "Supremo Tribunal Federal", "categoria": "Judiciário", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/80"},
+    "81":     {"sigla": "STJ",      "nome": "Superior Tribunal de Justiça", "categoria": "Judiciário", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/81"},
+    "275":    {"sigla": "TST",      "nome": "Tribunal Superior do Trabalho", "categoria": "Judiciário", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/275"},
+    "277":    {"sigla": "TSE",      "nome": "Tribunal Superior Eleitoral", "categoria": "Judiciário", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/277"},
+    "271":    {"sigla": "STM",      "nome": "Superior Tribunal Militar", "categoria": "Judiciário", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/271"},
+    "382":    {"sigla": "TJDFT",    "nome": "Tribunal de Justiça do Distrito Federal e dos Territórios", "categoria": "Judiciário", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/382"},
+    "100770": {"sigla": "CNJ",      "nome": "Conselho Nacional de Justiça", "categoria": "Judiciário", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/100770"},
+    "57":     {"sigla": "MPU",      "nome": "MINISTÉRIO PÚBLICO DA UNIÃO", "categoria": "Ministério Público, Defensoria e controle", "instituicao": "Ministério Público da União (inclui MPF e PGR)", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/57"},
+    "101772": {"sigla": "PGR",      "nome": "MPF - PGR - Procuradoria Geral da República", "categoria": "Ministério Público, Defensoria e controle", "instituicao": "Ministério Público da União (inclui MPF e PGR)", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/101772"},
+    "101131": {"sigla": "DPU",      "nome": "Defensoria Pública da União", "categoria": "Ministério Público, Defensoria e controle", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/101131"},
+    "82":     {"sigla": "TCU",      "nome": "Tribunal de Contas da União", "categoria": "Ministério Público, Defensoria e controle", "instituicao": "Tribunal de Contas da União", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/82"},
+    "101582": {"sigla": "TCU",      "nome": "Tribunal de Contas da União", "categoria": "Ministério Público, Defensoria e controle", "instituicao": "Tribunal de Contas da União", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/101582"},
+    "4":      {"sigla": "MESA",     "nome": "Mesa Diretora da Câmara dos Deputados", "categoria": "Órgãos colegiados da Câmara (Mesa e comissões)", "grupo": "Mesa Diretora", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/4"},
+    "5438":   {"sigla": "CLP",      "nome": "Comissão de Legislação Participativa", "categoria": "Órgãos colegiados da Câmara (Mesa e comissões)", "grupo": "Comissões", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/5438"},
+    "2018":   {"sigla": "CREDN",    "nome": "Comissão de Relações Exteriores e de Defesa Nacional", "categoria": "Órgãos colegiados da Câmara (Mesa e comissões)", "grupo": "Comissões", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/2018"},
+    "537480": {"sigla": "CPD",      "nome": "Comissão de Defesa dos Direitos das Pessoas com Deficiência", "categoria": "Órgãos colegiados da Câmara (Mesa e comissões)", "grupo": "Comissões", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/537480"},
+    "6066":   {"sigla": "CTUR",     "nome": "Comissão de Turismo", "categoria": "Órgãos colegiados da Câmara (Mesa e comissões)", "grupo": "Comissões", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/6066"},
+    "538490": {"sigla": "CECANCER", "nome": "Comissão especial destinada a acompanhar as ações de combate ao câncer no Brasil", "categoria": "Órgãos colegiados da Câmara (Mesa e comissões)", "grupo": "Comissões", "fonte": "https://dadosabertos.camara.leg.br/api/v2/orgaos/538490"}
+  }
+}
