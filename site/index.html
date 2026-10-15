@@ -876,7 +876,8 @@ const gValor=d=>gMedida==='apresentadas'?(d.apresentadas||0):(d.viraramLei??0);
 function gDesenhar(animar){
   const tela=document.getElementById('telaIni'); if(!tela||!deputados.length) return;
   const W=tela.clientWidth, H=tela.clientHeight; if(!W||!H) return;
-  const m={t:16,r:80,b:56,l:56}, pw=W-m.l-m.r, ph=H-m.t-m.b;
+  // celular: margens menores para o eixo X caber ("ESQUERDA", "CENTRO" e "DIREITA" se sobrepunham em 197 px de área útil)
+  const est=W<520, m=est?{t:16,r:52,b:56,l:46}:{t:16,r:80,b:56,l:56}, pw=W-m.l-m.r, ph=H-m.t-m.b, semX=W-m.r+(est?26:44);
   const max=Math.max(...deputados.map(gValor),1), lmax=Math.max(Math.log10(max),1e-9);
   const y=v=>gEscalaLog?m.t+ph-(Math.log10(Math.max(1,v))/lmax)*ph:m.t+ph-(v/max)*ph;
   const svg=svgEl('svg',{width:W,height:H,role:'img','aria-label':'Cada ponto é um deputado: a posição do partido no espectro na horizontal e as proposições apresentadas na vertical. Para chegar a um deputado pelo teclado, use a busca no topo da página.'});
@@ -893,7 +894,8 @@ function gDesenhar(animar){
   svg.appendChild(svgEl('rect',{x:m.l,y:m.t+ph+16,width:pw,height:6,rx:3,fill:'url(#gEsp)'}));
   const rot=(x,t,an,cls)=>{const e=svgEl('text',{x,y:m.t+ph+44,'text-anchor':an,class:cls||''}); e.textContent=t; svg.appendChild(e)};
   rot(m.l,'Esquerda','start','gr-rot'); rot(m.l+pw/2,'Centro','middle','gr-rot'); rot(m.l+pw,'Direita','end','gr-rot');
-  rot(W-m.r+44,'sem posição','middle','');
+  if(est){ const e=svgEl('text',{x:semX,y:m.t+ph+38,'text-anchor':'middle'}); [['sem',0],['posição',13]].forEach(([t,dy])=>{ const ts=svgEl('tspan',{x:semX,dy}); ts.textContent=t; e.appendChild(ts); }); svg.appendChild(e); }
+  else rot(semX,'sem posição','middle','');
 
   const M=window.Motion;
   const tam=W+'x'+H;
@@ -902,7 +904,7 @@ function gDesenhar(animar){
   if(gAnima){ gAnima.stop(); gAnima=null; }
   const mover=[];
   deputados.forEach(d=>{
-    const cx=d.x==null?W-m.r+44:m.l+d.x*pw, cy=y(gValor(d));
+    const cx=d.x==null?semX:m.l+d.x*pw, cy=y(gValor(d));
     let c=gCirc.get(d.id);
     if(!c){ c=svgEl('circle',{cx,cy,r:4,fill:E.corDoScore(d.score),class:'pt'}); c._d=d; gCirc.set(d.id,c); }
     else if(anima){

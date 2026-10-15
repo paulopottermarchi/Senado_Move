@@ -518,6 +518,13 @@ table.rank th{padding:0 8px 8px}
 .aba.on{border-bottom-color:var(--destaque-vivo)}
 .seg .rotulo{padding:0 4px 0 12px;margin:0}
 .seg-mini .pino{padding:4px 12px;font-size:12px}
+/* toque: alvos de ~40 px nos botões que ficavam com 18 a 31 px (o filtro de faixa da legenda, "ver a conta", Comprimida/Proporcional e o × dos balões) */
+@media(pointer:coarse){
+  .faixa{min-height:40px}
+  .saibamais{min-height:40px;padding:0 4px}
+  .seg-mini .pino{min-height:40px}
+  .pop-sair{width:44px;height:44px;top:2px;right:2px;display:grid;place-items:center}
+}
 /* controles: "o que mostrar" em cima, "filtrar" embaixo */
 .controles{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin:4px 0 16px}
 .linha-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}

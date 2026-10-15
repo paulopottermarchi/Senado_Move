@@ -128,6 +128,8 @@
 .lista-cab p{font-size:13px;color:var(--tinta3)}
 .aos-temas{display:none;font:inherit;font-size:13px;background:none;border:none;color:var(--link);
            cursor:pointer;padding:0;margin-bottom:12px}
+/* toque: alvos de 44 px; o "Também em…" cresce só a área de toque, sem mexer no texto */
+@media(pointer:coarse){.aos-temas{min-height:44px}.salto{position:relative}.salto::after{content:"";position:absolute;inset:-12px -6px}}
 
 .item{padding:16px 0 16px;border-bottom:1px solid var(--linha2)}
 .item-cab{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
