@@ -124,6 +124,7 @@ if(location.hash==='#semana') location.replace('index.html'+location.search+loca
 .ver-temas:hover{background:var(--inverso);color:var(--sobre-inverso)}
 .ver-temas[hidden]{display:none}
 .ver-leis{margin-top:16px}
+#fTemas{margin-top:16px}
 .secao{font-family:var(--serif);font-size:18px;font-weight:600;
        margin:24px 0 4px;padding-top:20px;border-top:1px solid var(--linha)}
 .secao-sub{font-size:12px;color:var(--tinta3);margin-bottom:12px}
@@ -619,6 +620,8 @@ table.perfil{width:100%;border-collapse:separate;border-spacing:3px;min-width:72
 table.perfil th{font-size:12px;font-weight:500;color:var(--tinta3);text-align:center;padding:0 4px 6px;line-height:1.3;vertical-align:bottom}
 table.perfil th.esq{text-align:left;width:128px}
 table.perfil th.col{cursor:pointer}
+/* o carimbo do bloco (temas.js) em cima do nome, centrados na coluna */
+table.perfil .ph{display:flex;flex-direction:column;align-items:center;gap:8px}
 table.perfil th.col:hover, table.perfil th.col.sel{color:var(--tinta)}
 table.perfil th.col.sel{font-weight:600}
 table.perfil td{height:36px;text-align:center;font-size:12.5px;font-weight:500;border-radius:var(--raio-c);background:var(--papel2)}
@@ -965,7 +968,8 @@ table.part tr.divisor td{position:static;box-shadow:none}
     <p class="origem" id="fOrigem"></p>
     <p class="origem" id="fMandatos"></p>
     <p class="origem" id="fEleicao"></p>
-    <a class="ver-temas" id="fTemas" href="#" hidden>Ver as proposições por tema</a>
+    <!-- o botão compartilhado (estilo.css .btn-tema); temas.js põe os símbolos das 3 categorias com mais proposições e o total -->
+    <a class="btn-tema" id="fTemas" href="#" hidden><span class="bt-ics" aria-hidden="true"></span><span class="bt-txt"><b>Ver as proposições por tema</b><small>todas as PEC e PL de autoria</small></span><span class="bt-seta" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
 
     <div class="partic" id="fPartic"></div>
 
@@ -1091,6 +1095,7 @@ table.part tr.divisor td{position:static;box-shadow:none}
      Só entram votações com registro de voto individual.</p>
 </div>
 
+<script src="temas.js"></script>
 <script>
 // As cores vêm de site.js (Espectro), que troca só o "direita" no tema escuro (#0c447c some sobre o fundo escuro). Este script
 // roda antes do site.js (que é defer): até ele chegar, vale a paleta clara, e a página repinta as peças estáticas quando ele chega.
@@ -2338,6 +2343,7 @@ function abrir(d){
   const lkTemas=document.getElementById('fTemas');
   lkTemas.hidden=demo;
   lkTemas.href=`deputado.html?id=${encodeURIComponent(d.id)}`;
+  if(!demo&&window.TemaIcone) TemaIcone.preencherBotao(lkTemas,`dados/temas/${encodeURIComponent(d.id)}.json`);
 
   const box=document.getElementById('fPartic');
   if(!d.votos||!d.votos.chamadas){
@@ -2668,7 +2674,7 @@ function partPerfil(){
     `as que não casam com nenhuma regra ficam sem tema (${nfBR(PIDX.periodos.find(p=>p.id===PART.id).semTema)} no período). Tema é classificação do site, não posição nem intenção. `+
     `Clique num bloco para filtrar a tabela. Partidos com menos de ${PIDX.minAutores} deputados autores ficam de fora.`;
   tb.innerHTML=`<thead><tr><th class="esq">Partido</th>${PIDX.blocos.map(b=>
-    `<th class="col${partEst.tema==='b'+b.i?' sel':''}" data-b="b${b.i}" title="Filtrar a tabela por ${esc(b.nome)}">${esc(b.nome)}</th>`).join('')}</tr></thead><tbody>`+
+    `<th class="col${partEst.tema==='b'+b.i?' sel':''}" data-b="b${b.i}" title="Filtrar a tabela por ${esc(b.nome)}"><span class="ph">${window.TemaIcone?TemaIcone.bloco(b.nome,28):''}<span>${esc(b.nome)}</span></span></th>`).join('')}</tr></thead><tbody>`+
     linhas.map((r,j)=>`<tr><td class="esq">${Bandeiras.img(r.s,PART.id,16)}${esc(r.s)}</td>${celulas[j].map(c=>{
       const a=c.x?(.07+.6*c.f/max):0;
       return `<td style="${a?`background:rgba(var(--tinta-rgb),${a.toFixed(2)});${txtCel(a)}`:''}"`+

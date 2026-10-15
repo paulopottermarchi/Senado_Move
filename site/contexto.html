@@ -48,7 +48,9 @@
 
 /* ---------- lista da agenda ---------- */
 .ag-grupo{margin-top:28px}
-.ag-grupo>h3{font-family:var(--serif);font-size:20px;font-weight:600;line-height:1.25;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.ag-grupo>h3{font-family:var(--serif);font-size:20px;font-weight:600;line-height:1.25;display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
+/* símbolo do tema oficial (temas.js): 24 px e vão de 12 px no título do grupo, centrado com o texto */
+.ag-grupo>h3 .ti-rot{align-items:center;gap:12px}
 .ag-grupo>h3 small{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--tinta3)}
 .ag-it{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,4fr);gap:8px 24px;padding:20px 0;border-top:1px solid var(--linha)}
 .ag-it:first-of-type{margin-top:12px}
@@ -75,7 +77,11 @@ details.ag-ement p{font-family:var(--serif);font-size:15px;line-height:1.55;marg
 .ag-meta b{font-weight:600;color:var(--tinta2)}
 .ag-meta a{color:var(--destaque)}
 .ag-tags{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:10px}
-.ag-tag{font-size:12px;color:var(--tinta2);border:1px solid var(--linha);border-radius:999px;padding:0 10px;line-height:1.7}
+.ag-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--tinta2);border:1px solid var(--linha);border-radius:999px;padding:3px 12px 3px 8px;line-height:1.4}
+/* botões do seletor de tema e nomes no texto corrido: o símbolo centrado na linha */
+.pino .ti-rot{align-items:center;vertical-align:middle}
+.pino .ti-rot>.ti{margin-top:0}
+.tema-ofi .ti-rot{gap:6px}
 .ag-dias{font-variant-numeric:tabular-nums}
 .ag-vazio{font-size:14px;color:var(--tinta3);margin-top:20px}
 .ag-pe{margin-top:24px;font-size:13px;color:var(--tinta3);line-height:1.6;max-width:90ch}
@@ -242,7 +248,7 @@ dialog.entenda .fechar{margin-top:20px}
     <header>
       <h2 id="agTit">Agenda legislativa na Câmara</h2>
       <p class="sub">Propostas de emenda à Constituição (PEC) e projetos de lei complementar (PLP) cujo tema oficial, segundo a própria Câmara, é
-        <b>Economia</b> ou <b>Finanças Públicas e Orçamento</b>. O tema não é escolha do site: vem do registro de cada proposição.
+        <b class="tema-ofi">Economia</b> ou <b class="tema-ofi">Finanças Públicas e Orçamento</b>. O tema não é escolha do site: vem do registro de cada proposição.
         Cada lista segue a ordem das datas, nunca uma ordem de “importância”.</p>
     </header>
 
@@ -343,6 +349,7 @@ dialog.entenda .fechar{margin-top:20px}
   </div>
 </footer>
 
+<script src="temas.js"></script>
 <script>
 "use strict";
 const nf0=new Intl.NumberFormat('pt-BR');
@@ -361,6 +368,11 @@ const buscaJson=async u=>{ try{ const r=await fetch(u,{cache:'no-cache'}); if(!r
 let IND=null, AG=null, MAR=null, MAN=null;
 const ESTADO={tema:'', aba:'sancionadas', pl:false, periodo:'12m', ordem:'desc', mostrar:{}};
 const TEMAS=['Economia','Finanças Públicas e Orçamento'];
+// Símbolo do tema oficial (temas.js) ao lado do nome. Os dois temas são os da Câmara, não as 27 categorias do site: o módulo empresta o
+// desenho do mais próximo pelo nome. Sem o módulo, só o nome — o nome sempre aparece, o desenho é auxílio.
+const tOf=(n,px)=>window.TemaIcone?TemaIcone.rotuloOficial(n,n,px||18):esc(n);
+const tIc=(n,px)=>window.TemaIcone?TemaIcone.oficial(n,px||18):'';
+document.querySelectorAll('.tema-ofi').forEach(b=>{ b.innerHTML=tOf(b.textContent.trim(),16); });
 
 /* ===================================================================== gráfico */
 function nice(min,max,n){
@@ -494,7 +506,7 @@ function Grafico(raiz,cfg){
     foco.addEventListener('pointermove',e=>{ // marco próximo do cursor tem prioridade
       const r=svg.getBoundingClientRect(), px=(e.clientX-r.left)*(W/r.width), py=(e.clientY-r.top)*(H/r.height);
       if(temMarcos&&py>pb+22){ const m=marcoPerto(px);
-        if(m){ mira.style.display='none'; dica.innerHTML=`<b>${esc(m.rotulo)}</b> · ${dataBR(m.data)}${m.dataConfere===false&&m.dou?`<span class="l">data a conferir: o evento da Câmara e o DOU (${dataBR(m.dou)}) diferem</span>`:''}<span class="l">${esc(m.ementa.slice(0,220))}${m.ementa.length>220?'…':''}</span><span class="l">${esc(m.temas.join(' · '))}</span>`;
+        if(m){ mira.style.display='none'; dica.innerHTML=`<b>${esc(m.rotulo)}</b> · ${dataBR(m.data)}${m.dataConfere===false&&m.dou?`<span class="l">data a conferir: o evento da Câmara e o DOU (${dataBR(m.dou)}) diferem</span>`:''}<span class="l">${esc(m.ementa.slice(0,220))}${m.ementa.length>220?'…':''}</span><span class="l">${m.temas.map(t=>tOf(t,16)).join(' · ')}</span>`;
           dica.classList.add('on'); const w=caixa.clientWidth, dw=dica.offsetWidth, left=X(m.data)+14+dw>w?X(m.data)-14-dw:X(m.data)+14; dica.style.left=Math.max(0,left)+'px'; dica.style.top=(M.t+4)+'px'; return; } }
       mostrar(nearest(e.clientX));
     });
@@ -690,7 +702,7 @@ function cartao(it,aba){
   else cab+=`<span>apresentada em ${dataBR(it.apresentacao)}</span>`;
   return `<article class="ag-it" id="p${it.id}"><div class="ag-num">${cab}</div><div class="ag-corpo">${ia}${obj}
     <div class="ag-meta">${aut}${onde}${dias}<a href="${esc(it.url)}" target="_blank" rel="noopener">Ficha na Câmara ↗</a></div>
-    <div class="ag-tags">${it.temas.map(t=>`<span class="ag-tag">${esc(t)}</span>`).join('')}</div></div></article>`;
+    <div class="ag-tags">${it.temas.map(t=>`<span class="ag-tag">${tIc(t,18)}${esc(t)}</span>`).join('')}</div></div></article>`;
 }
 function ordenar(l,aba){
   const chave=aba==='sancionadas'?(x=>x.norma.data):aba==='paradas'||aba==='emTramitacao'?(x=>x.ultimoAndamento):(x=>x.norma.data);
@@ -714,7 +726,7 @@ function desenharAba(){
     corpo=grupos.map(t=>{
       const itens=lista.filter(it=>it.temas.includes(t)); if(!itens.length) return '';
       const k=`${aba}|${t}`, n=ESTADO.mostrar[k]||10, ambos=itens.filter(it=>it.temas.length>1).length;
-      return `<div class="ag-grupo"><h3>${esc(t)} <small>${nf0.format(itens.length)} proposições${ambos?` · ${ambos} também em ${esc(TEMAS.find(x=>x!==t))}`:''}</small></h3>
+      return `<div class="ag-grupo"><h3>${tOf(t,24)} <small>${nf0.format(itens.length)} proposições${ambos?` · ${ambos} também em ${tOf(TEMAS.find(x=>x!==t),16)}`:''}</small></h3>
         ${itens.slice(0,n).map(it=>cartao(it,aba)).join('')}
         ${itens.length>n?`<button class="mais" type="button" data-mais="${esc(k)}">Mostrar mais ${Math.min(10,itens.length-n)} de ${nf0.format(itens.length-n)}</button>`:''}</div>`; }).join('');
   }
@@ -742,7 +754,7 @@ function desenharAbas(){
 }
 function desenharTemas(){
   const box=document.getElementById('temas'), opts=[['','Todos os dois'],...TEMAS.map(t=>[t,t])];
-  box.innerHTML=opts.map(([v,t])=>`<button class="pino${ESTADO.tema===v?' on':''}" type="button" data-t="${esc(v)}">${esc(t)}</button>`).join('');
+  box.innerHTML=opts.map(([v,t])=>`<button class="pino${ESTADO.tema===v?' on':''}" type="button" data-t="${esc(v)}">${v?tOf(t,18):esc(t)}</button>`).join('');
   box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ ESTADO.tema=b.dataset.t; desenharTemas(); desenharAbas(); if(IND) atualizarMarcos(); }));
   document.getElementById('temasNota').textContent=MAR?`${nf0.format(marcosFiltrados().length)} marcos (EC e LC) com esse tema desde 1988`:'';
 }

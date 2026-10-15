@@ -470,3 +470,174 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
   .or-faixa{padding:16px}
   .or-leg{columns:1}
 }
+
+/* SÍMBOLOS DOS TEMAS (temas.js): um desenho para cada bloco e cada categoria de tema.
+   Uma tinta só (a do texto, nos dois temas): tema não tem ideologia, então nada de cores do espectro, de partido ou de bloco de voto.
+   O NOME VAI SEMPRE AO LADO: o desenho ajuda a achar, o texto diz qual é. Categoria a partir de 16 px; o bloco usa o carimbo. */
+.ti{display:inline-block;flex:none;vertical-align:-.2em;color:inherit;overflow:visible}
+.ti-rot{display:inline-flex;align-items:flex-start;gap:8px;max-width:100%;vertical-align:top}
+.ti-rot>span{min-width:0}
+.ti-rot>.ti{margin-top:.12em}
+@supports (height:1lh){.ti-rot>.ti{margin-top:calc((1lh - var(--ti,16px))/2)}}
+.ti-rot-b{align-items:center;gap:12px}
+.ti-carimbo{display:inline-grid;place-items:center;flex:none;width:var(--tc,28px);height:var(--tc,28px);border-radius:calc(var(--tc,28px)*.3);
+            background:var(--inverso);color:var(--sobre-inverso)}
+.ti-carimbo .ti{vertical-align:0;margin:0}
+@media (forced-colors:active){.ti-carimbo{forced-color-adjust:none;background:CanvasText;color:Canvas}}
+@media print{.ti-carimbo{background:none;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}}
+
+/* BOTÃO "VER AS PROPOSIÇÕES POR TEMA" (temas.js: TemaIcone.botao e preencherBotao) — a porta de entrada da página por tema de um parlamentar.
+   Pílula na cor invertida do texto (vale nos dois temas), com os símbolos das 3 categorias em que o parlamentar mais tem proposições
+   (decorativos: o texto do botão diz tudo), o total e a seta que avança no hover. Uma tinta só: tema não tem ideologia. */
+.btn-tema{display:inline-flex;align-items:center;gap:14px;max-width:100%;min-height:60px;padding:10px 12px 10px 16px;border-radius:999px;
+          background:var(--inverso);color:var(--sobre-inverso);text-decoration:none;box-shadow:var(--sombra-md);
+          transition:transform var(--t),box-shadow var(--t)}
+.btn-tema:hover{transform:translateY(-1px);box-shadow:var(--sombra-lg)}
+.btn-tema:active{transform:scale(.985)}
+.btn-tema:focus-visible{outline:none;box-shadow:var(--anel),var(--sombra-md)}
+.bt-ics{display:inline-flex;flex:none;padding-left:10px}
+.bt-ics:empty{display:none}
+.bt-ic{display:grid;place-items:center;width:36px;height:36px;margin-left:-10px;border-radius:50%;
+       background:#2a3649;background:color-mix(in srgb,var(--inverso) 80%,var(--sobre-inverso));box-shadow:0 0 0 2px var(--inverso)}
+.bt-txt{display:block;min-width:0;text-align:left}
+.bt-txt b{display:block;font-size:15px;font-weight:600;line-height:1.25}
+.bt-txt small{display:block;font-size:12px;line-height:1.35;margin-top:2px;color:var(--inverso-2)}
+.bt-seta{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:50%;background:var(--sobre-inverso);color:var(--inverso);
+         transition:transform var(--t)}
+.bt-seta svg{width:18px;height:18px}
+.btn-tema:hover .bt-seta{transform:translateX(3px)}
+.btn-tema[hidden]{display:none}
+/* o par discreto do botão: contorno, para um segundo destino (ex.: a página do parlamentar na Casa) */
+.btn-sec{display:inline-flex;align-items:center;gap:8px;min-height:60px;padding:0 22px;border-radius:999px;border:1px solid var(--linha-forte);
+         background:var(--papel);color:var(--tinta);font-size:14px;font-weight:500;text-decoration:none;
+         transition:border-color var(--t),box-shadow var(--t),transform var(--t)}
+.btn-sec:hover{border-color:var(--tinta);box-shadow:var(--sombra)}
+.btn-sec:active{transform:scale(.985)}
+.btn-sec svg{width:16px;height:16px}
+.acoes-tema{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px}
+@media(max-width:560px){.btn-tema{width:100%;justify-content:space-between}.btn-sec{width:100%;justify-content:center}}
+@media(prefers-reduced-motion:reduce){.btn-tema,.btn-sec,.bt-seta{transition:none}.btn-tema:hover{transform:none}.btn-tema:hover .bt-seta{transform:none}}
+@media print{.btn-tema,.btn-sec{display:none}}
+
+/* PAINÉIS DE PERFIL (paineis.js; senador.html e deputado.html): o cartão (.cx), os blocos de números, os medidores, a barra de votos, a linha do tempo e os
+   mandatos. O mesmo desenho nas duas Casas. Uma tinta só (a do texto) e a rampa de neutros: perfil de parlamentar não usa as cores do espectro. */
+/* ---- grade dos cartões: os números em cima, com a largura toda; "Como vota" e "Mandatos" lado a lado ---- */
+.paineis{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;margin-top:28px}
+.cx{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);padding:24px;min-width:0}
+.cx[hidden]{display:none}
+.cx-cab{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 16px}
+.cx-cab h2{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.2}
+.cx-cab .kick{font-size:12px;color:var(--tinta3)}
+@media(max-width:900px){.cx{padding:20px}}
+
+/* ---- "O que fez no Senado": cinco números, cada um com o que é; "viraram lei" mostra a proporção ao lado do volume ---- */
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:18px}
+.tile{border:1px solid var(--linha2);border-radius:var(--raio-p);padding:14px 16px 16px;background:var(--papel2,var(--papel));min-width:0}
+.tile b{display:block;font-family:var(--cond);font-size:48px;font-weight:600;line-height:1;letter-spacing:0}
+.tile .rot{display:block;margin-top:8px;font-size:13px;font-weight:600;color:var(--tinta);line-height:1.3}
+.tile small{display:block;margin-top:3px;font-size:12px;color:var(--tinta3);line-height:1.4}
+.tile .mini{height:5px;border-radius:3px;background:var(--linha);margin-top:12px;overflow:hidden}
+.tile .mini i{display:block;height:100%;border-radius:3px;background:var(--tinta)}
+@media(max-width:1040px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:560px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tile b{font-size:40px}}
+.espec{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px 36px;align-items:center;margin-top:20px;padding-top:20px;border-top:1px solid var(--linha2)}
+.espec-t{font-size:13px;color:var(--tinta2);line-height:1.55}
+.espec-t b{color:var(--tinta);font-weight:600}
+@media(max-width:760px){.espec{grid-template-columns:minmax(0,1fr)}}
+
+/* ---- régua de 0 a 100 %, usada nos medidores e na posição no espectro ---- */
+.regua{position:relative;height:30px;margin-top:10px}
+.regua .trilha{position:absolute;left:0;right:0;top:13px;height:4px;border-radius:2px;background:var(--linha)}
+.regua .faixa{position:absolute;top:10px;height:10px;border-radius:5px;background:var(--rampa5);opacity:.7}
+.regua .tique{position:absolute;top:6px;width:2px;height:18px;margin-left:-1px;border-radius:1px;background:var(--tinta2)}
+.regua .marca{position:absolute;top:6px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--tinta);
+              border:3px solid var(--papel);box-shadow:0 0 0 1px var(--tinta)}
+.regua-leg{display:flex;justify-content:space-between;font-size:11px;color:var(--tinta3);margin-top:1px}
+
+/* ---- "Como vota": três medidores, o texto de leitura recolhido ---- */
+.meds{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:18px}
+.med{border:1px solid var(--linha2);border-radius:var(--raio-p);padding:16px 18px 18px;background:var(--papel2,var(--papel));min-width:0}
+.med-topo{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.med-nome{font-size:14px;font-weight:600}
+.med-val{font-family:var(--cond);font-size:42px;font-weight:600;line-height:1;letter-spacing:0}
+.med-leg{font-size:13px;color:var(--tinta2);line-height:1.5;margin-top:4px;max-width:64ch}
+.med-leg b{color:var(--tinta);font-weight:600}
+.chave{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:12px;color:var(--tinta3)}
+.chave span{display:inline-flex;align-items:center;gap:6px}
+.chave i{display:inline-block;flex:none}
+.k-ele{width:10px;height:10px;border-radius:50%;background:var(--tinta)}
+.k-med{width:2px;height:12px;border-radius:1px;background:var(--tinta2)}
+.k-faixa{width:16px;height:8px;border-radius:4px;background:var(--rampa5);opacity:.7}
+.votos-barra{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--linha2);margin-top:12px}
+.votos-barra i{display:block;height:100%;border-right:1px solid var(--papel)}
+.votos-barra i:last-child{border-right:none}
+.votos-chaves{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:10px;font-size:12px;color:var(--tinta2)}
+.votos-chaves span{display:inline-flex;align-items:center;gap:6px}
+.votos-chaves em{display:inline-block;width:10px;height:10px;border-radius:3px;box-shadow:inset 0 0 0 1px var(--rampa4)}
+.votos-chaves b{font-weight:600;color:var(--tinta)}
+
+/* ---- leitura recolhida: o texto de enquadramento fica a um clique, não no meio do caminho ---- */
+.como{margin-top:16px;font-size:13px;color:var(--tinta2)}
+.como summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;list-style:none;font-weight:500;color:var(--tinta2)}
+.como summary::-webkit-details-marker{display:none}
+.como summary::before{content:"+";display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1px solid var(--linha-forte);
+                      font-size:14px;line-height:1;color:var(--tinta2);transition:background-color var(--t),color var(--t)}
+.como[open] summary::before{content:"−"}
+.como summary:hover::before{background:var(--inverso);color:var(--sobre-inverso);border-color:var(--inverso)}
+.como p{margin-top:8px;line-height:1.6;max-width:70ch}
+.como a{color:var(--link)}
+
+/* ---- "Mandatos, suplentes e saída": a linha do tempo e um cartão por mandato ---- */
+.mand-grade{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px 40px;margin-top:16px;align-items:start}
+@media(max-width:900px){.mand-grade{grid-template-columns:minmax(0,1fr)}}
+.mand-status{font-size:14px;color:var(--tinta2);line-height:1.55}
+.mand-status b{color:var(--tinta);font-weight:600}
+.tl{margin-top:16px}
+.tl-trilha{position:relative;height:30px;border-radius:9px;background:var(--linha2)}
+.tl-mand{position:absolute;top:0;bottom:0;border:1.5px solid var(--tinta3);border-radius:9px;background:transparent}
+.tl-ex{position:absolute;top:9px;height:12px;border-radius:6px;background:var(--tinta)}
+.tl-hoje{position:absolute;top:-5px;bottom:-5px;width:2px;margin-left:-1px;border-radius:1px;background:var(--destaque-vivo)}
+.tl-anos{position:relative;height:18px;margin-top:4px;font-size:11px;color:var(--tinta3)}
+.tl-anos span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.tl-anos span:first-child{transform:none}
+.tl-anos span:last-child{transform:translateX(-100%)}
+.tl-chave{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--tinta3);margin-top:4px}
+.tl-chave span{display:inline-flex;align-items:center;gap:6px}
+.tl-chave i{display:inline-block;flex:none}
+.c-mand{width:16px;height:10px;border:1.5px solid var(--tinta3);border-radius:5px}
+.c-ex{width:16px;height:8px;border-radius:4px;background:var(--tinta)}
+.c-hoje{width:2px;height:12px;border-radius:1px;background:var(--destaque-vivo)}
+.mandatos{list-style:none;display:grid;gap:10px;padding:0;margin:0}
+.mandato{border:1px solid var(--linha2);border-radius:var(--raio-p);padding:14px 16px;background:var(--papel2,var(--papel))}
+.mandato-cab{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.mandato-cab b{font-size:14px;font-weight:600;margin-right:4px}
+.etq{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--linha2);color:var(--tinta2);white-space:nowrap}
+.etq.on{background:var(--inverso);color:var(--sobre-inverso)}
+.mandato p{font-size:13px;color:var(--tinta2);margin-top:8px;line-height:1.5}
+.sups{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.sup{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:1.4;padding:3px 12px 3px 8px;border:1px dashed var(--linha-forte);border-radius:999px;color:var(--tinta3);cursor:help}
+.sup i{font-style:normal;font-weight:600}
+.sup.assumiu{border:1px solid var(--tinta);color:var(--tinta)}
+
+/* COMO VOTOU, POR TEMA (paineis.js: votosTema; dentro do cartão "Como vota" de senador.html e deputado.html). Uma linha por tipo de voto, com o tom da barra de votos
+   no marcador, e os temas como chips (carimbo do bloco e número). Tinta neutra: tema não tem ideologia. */
+.vt{margin-top:22px;padding-top:20px;border-top:1px solid var(--linha2)}
+.vt-cab{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 16px}
+.vt-cab h3{font-family:var(--serif);font-size:18px;font-weight:600;line-height:1.25}
+.vt-cab .kick{font-size:12px;color:var(--tinta3)}
+.vt-linha{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 20px;align-items:start;padding:14px 0;border-bottom:1px solid var(--linha2)}
+.vt-linha:last-child{border-bottom:none}
+.vt-voto{display:grid;grid-template-columns:10px minmax(0,1fr);column-gap:8px;align-items:center}
+.vt-voto i{width:10px;height:10px;border-radius:3px;box-shadow:inset 0 0 0 1px var(--rampa4)}
+.vt-voto b{font-size:15px;font-weight:600}
+.vt-voto span{grid-column:2;font-size:12px;color:var(--tinta3)}
+.vt-chips{display:flex;flex-wrap:wrap;gap:8px}
+.tv{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border:1px solid var(--linha);border-radius:999px;background:var(--papel2,var(--papel));
+    font-size:13px;line-height:1.3;color:var(--tinta);cursor:help}
+.tv b{font-weight:600;font-variant-numeric:tabular-nums}
+.tv.tv-c{padding-left:10px}
+.tv.tv-c .ti{margin-right:-2px}
+.tv.nulo{padding-left:12px;border-style:dashed;color:var(--tinta3)}
+.vt-vazio{font-size:13px;color:var(--tinta3)}
+.vt-cat{margin-top:4px}
+@media(max-width:700px){.vt-linha{grid-template-columns:minmax(0,1fr)}}

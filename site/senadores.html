@@ -75,6 +75,7 @@
 .nums span{font-size:12px;color:var(--tinta2)}
 .f-txt{font-size:14px;line-height:1.6;margin-top:12px;max-width:74ch;color:var(--tinta2)}
 .f-txt b{color:var(--tinta);font-weight:600}
+#ficha .btn-tema{max-width:100%}
 .leis{list-style:none;margin-top:8px}
 .leis li{padding:8px 0;border-top:1px solid var(--linha2);font-size:14px}
 .leis small{display:block;color:var(--tinta3);font-size:12px}
@@ -525,6 +526,7 @@ table.part tr.divisor:hover td{background:none}
   </div>
 </footer>
 
+<script src="temas.js"></script>
 <script>
 'use strict';
 const $=s=>document.querySelector(s);
@@ -724,6 +726,9 @@ function abrir(id){
       <div><b>${nf.format(r.processos||0)}</b><span>proposições relatadas (${nf.format(r.deliberadas||0)} ${r.deliberadas===1?'deliberada':'deliberadas'})</span></div>
       <div><b>${v.votacoes?nf.format((v.sim||0)+(v.nao||0)+(v.abstencao||0)):'—'}</b><span>${vv?`votou${v.votacoes?` em ${nf.format(v.votacoes)} votações nominais desde 2023`:''}`:'votos nominais só existem desde 2023'}</span></div>
     </div>
+    <div class="acoes-tema">${window.TemaIcone
+      ?TemaIcone.botao({id:'btnTemaFicha',href:`senador.html?id=${s.id}`,titulo:'Ver as proposições por tema',sub:`${nf.format(s.apresentadas||0)} PEC e PL como primeiro autor`})
+      :`<a class="btn-tema" href="senador.html?id=${s.id}"><span class="bt-txt"><b>Ver as proposições por tema</b></span></a>`}</div>
     <p class="f-txt">${exTxt}${saiu&&!leg?'Já deixou o Senado: os números acima são da carreira inteira; escolha uma legislatura no filtro para ver o que fez em cada uma.':
       `${leg?`Na legislatura ${rotuloLeg(lg)}`:'Nesta legislatura'}, apresentou <b>${nf.format(n.apresentadas||0)}</b> PEC e PL; ${n.viraramLei?`<b>${nf.format(n.viraramLei)}</b> já ${n.viraramLei>1?'viraram':'virou'} lei`:'nenhum virou lei ainda'}.`}
       ${(()=>{ const q=pos(s); return q.score!=null
@@ -734,6 +739,7 @@ function abrir(id){
     ${vv?textoGoverno(s):''}
     ${blocoSuplentes(s)}
     ${leis&&!leg?`<p class="f-txt"><b>O que virou lei</b> (primeiro autor):</p><ul class="leis">${leis}</ul>`:''}`;
+  if(window.TemaIcone) TemaIcone.preencherBotao(document.getElementById('btnTemaFicha'),`dados/senadores/${s.id}.json`);   // os símbolos das 3 categorias com mais proposições chegam depois
   grafico();                       // destaca o ponto, que fica visível atrás do fundo da janela
   abrirJanela(); dlgFicha.scrollTop=0;
 }

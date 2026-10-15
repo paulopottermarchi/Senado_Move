@@ -65,7 +65,7 @@
 .plot{--cl:232px;--cr:176px;--d:8px;background:var(--papel);border:1px solid var(--linha);border-radius:24px;box-shadow:var(--sombra);
       padding:clamp(14px,2.2vw,32px);margin-top:clamp(40px,5vw,72px)}
 .sec-cab+.plot{margin-top:clamp(32px,3.4vw,48px)}
-.plot.tema{--cl:300px;--cr:200px}
+.plot.tema{--cl:344px;--cr:200px}       /* 300 → 344: o símbolo de 22 px e o vão de 10 px tiram 32 px do nome */
 .plot-cab{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 32px}
 .plot-tit{flex:1 1 280px;min-width:0}
 .plot-tit p{margin-top:8px;font-size:14px;color:var(--tinta3)}
@@ -160,11 +160,12 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
 /* por tema: a parcela de votos Sim de cada bloco, num eixo de 0 a 100%, e quantas leis dividiram os blocos */
 .tg h3{font-family:var(--cond);font-weight:600;font-size:20px;line-height:1;letter-spacing:.06em;text-transform:uppercase;
        padding:30px 0 12px;border-bottom:1px solid var(--linha)}
-.tr{align-items:center;padding:8px 0;border-bottom:1px solid var(--linha)}
+.tr{align-items:center;padding:10px 0;border-bottom:1px solid var(--linha)}
 .tr-nome{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:baseline;min-width:0}
 .tr-nome span{font-size:15px;font-weight:600;line-height:1.3}
 .tr-nome small{font-size:12px;color:var(--tinta3);white-space:nowrap}
-.tr-nome .fr{grid-column:1/-1;margin-top:2px;white-space:normal}      /* “poucas para comparar”, embaixo do nome */
+.tr-nome .ti-rot{gap:10px}
+.tr-nome .fr{grid-column:1/-1;margin-top:2px;white-space:normal;padding-left:32px}      /* “poucas para comparar”, embaixo do nome (alinhado a ele, depois do símbolo de 22 px + 10 px) */
 .tr-hal{position:relative;height:44px;min-width:0}
 .hal{position:absolute;left:48px;right:48px;top:0;bottom:0}
 .ponte{position:absolute;top:19px;height:6px;border-radius:3px;background:rgba(var(--tinta-rgb),.45)}
@@ -398,6 +399,7 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
   </div>
 </footer>
 
+<script src="temas.js"></script>
 <script>
 const nf=new Intl.NumberFormat('pt-BR');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -516,7 +518,9 @@ function desenharTemas(){
   legTemas.innerHTML=B.blocos.map((b,i)=>`<span><i class="sh ${formaBloco(i)}" style="--c:${corBloco(i)}"></i>${nomeBloco(i)}</span>`).join('')+
     '<span><i class="tl-ex"></i>cada risco é uma lei; os escuros, as de lados opostos</span>';
   const grupos=[...new Set(T.map(t=>t.grupo))];
-  temas.innerHTML=grupos.map(g=>`<div class="tg"><h3>${esc(g)}</h3>${T.filter(t=>t.grupo===g).map(linhaTema).join('')}</div>`).join('');
+  // o símbolo (temas.js) ajuda a achar o tema; o nome fica sempre escrito ao lado, e sem o módulo sai só o nome
+  const tBloco=g=>window.TemaIcone?TemaIcone.rotuloBloco(g,g,28):esc(g);
+  temas.innerHTML=grupos.map(g=>`<div class="tg"><h3>${tBloco(g)}</h3>${T.filter(t=>t.grupo===g).map(linhaTema).join('')}</div>`).join('');
 }
 
 // Uma categoria: um marcador por bloco no eixo de 0 a 100% (a parcela de votos Sim), uma ponte entre o menor e o maior, o valor escrito
@@ -532,7 +536,7 @@ function linhaTema(t){
   const ponte=itens.length>1?`<i class="ponte" style="left:${(lo*100).toFixed(1)}%;width:${((hi-lo)*100).toFixed(1)}%"></i>`:'';
   const rot=itens.map(({v,i})=>`${nomeBloco(i)}: ${pc1(v)} de votos Sim`).join('; ');
   return `<div class="tr${t.leis<3?' fraco':''}">
-    <div class="tr-nome"><span>${esc(t.categoria)}</span><small>${t.leis} ${t.leis===1?'lei':'leis'}</small>${t.leis<3?'<small class="fr">poucas para comparar</small>':''}</div>
+    <div class="tr-nome"><span>${window.TemaIcone?TemaIcone.rotulo(t.categoria,t.categoria,22):esc(t.categoria)}</span><small>${t.leis} ${t.leis===1?'lei':'leis'}</small>${t.leis<3?'<small class="fr">poucas para comparar</small>':''}</div>
     <div class="tr-hal"${rot?` role="img" aria-label="${esc(rot)}"`:''}><div class="hal">${ponte}${marcadores}${valores}</div></div>
     <div class="tr-op"><span>${t.divergem?`lados opostos em <b>${t.divergem}</b> de ${t.leis}`:'mesmo lado em todas'}</span>
       <span class="tl" style="--nl:${t.leis};--nd:${t.divergem||0}" aria-hidden="true"><i></i></span></div></div>`;

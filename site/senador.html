@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-escuro-ok data-ed>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Senador: proposições por tema | Câmara Aberta</title>
+<meta name="description" content="Todas as PEC e PL de que o senador é o primeiro autor, por tema, com a situação de cada uma, como vota e os mandatos e suplentes.">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Câmara Aberta">
+<meta property="og:title" content="Senador: proposições por tema | Câmara Aberta">
+<meta property="og:description" content="Todas as PEC e PL de que o senador é o primeiro autor, por tema, com a situação de cada uma, como vota e os mandatos e suplentes.">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Cpath d='M8 13.5h16a8 8 0 0 1-16 0z' fill='%232dd4bf'/%3E%3Crect x='7' y='23.5' width='18' height='2' rx='1' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
+<link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
+<script src="site.js" defer></script>
+<style>
+/* Mesmos tokens do estilo.css e de deputado.html (esta página é a dele, para o Senado). As cores do espectro NÃO aparecem nesta página:
+   tema não tem ideologia, e colorir categorias com a paleta do eixo X sugeriria que tem. */
+
+.volta{display:inline-block;margin-top:28px;font-size:13px;color:var(--tinta2);text-decoration:none}
+.volta:hover{color:var(--tinta);text-decoration:underline}
+
+/* ---------- cabeçalho ---------- */
+.cab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:24px 40px;align-items:center;padding:24px 0 8px}
+.cab-txt{display:flex;gap:20px;align-items:center;min-width:0}
+.cab h1{font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:0;line-height:.92;max-width:none;
+  font-size:clamp(44px,6.4vw,92px);text-wrap:balance}
+@media(max-width:900px){.cab{grid-template-columns:minmax(0,1fr)}}
+.cab .quem{font-size:14px;color:var(--tinta3);margin-top:4px}
+.frase{font-family:var(--serif);font-size:clamp(17px,2.1vw,20px);line-height:1.45;
+       color:var(--tinta);max-width:58ch;margin:12px 0 0}
+.frase b{font-weight:600}
+/* com quem vota (blocos.json) */
+.cqv{margin-top:20px;background:var(--papel,#fff);border:1px solid var(--linha);border-radius:12px;padding:16px 20px;max-width:760px}
+.cqv[hidden]{display:none}
+.cqv h2{font-size:15px;font-weight:600}
+.cqv-av{font-size:13px;color:var(--tinta3);margin-top:4px}
+.cqv-txt{font-size:14px;line-height:1.6;margin-top:8px}
+.cqv-txt b{font-weight:600}
+.cqv-regua{position:relative;height:28px;margin-top:8px}
+.cqv-regua .base{position:absolute;left:0;right:0;top:13px;height:2px;background:var(--linha);border-radius:1px}
+.cqv-regua .faixa{position:absolute;top:9px;height:10px;background:var(--linha2,var(--linha2));border:1px solid var(--linha);border-radius:var(--raio-c)}
+.cqv-regua .md{position:absolute;top:5px;width:2px;height:18px;margin-left:-1px;background:var(--tinta)}
+.cqv-regua .eu{position:absolute;top:6px;width:16px;height:16px;margin-left:-8px;border-radius:50%;border:2px solid var(--papel);box-shadow:0 0 0 1px var(--tinta)}
+.noto-meses{display:flex;align-items:flex-end;gap:4px;height:46px;margin-top:12px}
+.noto-meses i{flex:1;background:var(--tinta2);opacity:.55;border-radius:2px 2px 0 0;min-height:2px}
+.noto-meses i:hover{opacity:1}
+.cqv-leg{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:var(--tinta3)}
+.ob-n{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px}
+.ob-n div{min-width:120px}
+.ob-n b{display:block;font-family:var(--serif,Georgia,serif);font-size:30px;font-weight:600;line-height:1.1}
+.ob-n span{font-size:13px;color:var(--tinta2)}
+.ob-l{list-style:none;margin-top:12px}
+.ob-l li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:8px 0;border-top:1px solid var(--linha2,var(--linha2));font-size:14px}
+.ob-l small{display:block;color:var(--tinta3);font-size:12px}
+.ob-l .v{text-align:right;font-weight:600;white-space:nowrap}
+.carreira{font-size:13px;color:var(--tinta3);margin-top:8px}
+
+.av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
+       background:var(--linha2);overflow:hidden;vertical-align:middle}
+.av-cx .av-ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+               font-weight:600;color:var(--tinta3);letter-spacing:-.02em;line-height:1}
+.av-cx img.av{position:absolute;inset:0;width:100%;height:100%;z-index:1;
+              object-fit:cover;object-position:center 22%;display:block;border:none}
+.av-cx img.av.falhou{display:none}
+
+/* ---------- controles (mesmos .pino do protótipo) ---------- */
+.controles{display:flex;flex-wrap:wrap;gap:8px 0;align-items:center;margin:24px 0 16px}
+.bloco{display:flex;gap:4px;align-items:center}
+.bloco+.bloco{margin-left:8px;padding-left:16px;border-left:1px solid var(--linha)}
+.rotulo{font-size:13px;color:var(--tinta3);margin-right:4px}
+
+.filtro{font:inherit;font-size:14px;line-height:1.4;padding:8px 16px;border:1px solid var(--linha);
+        border-radius:var(--raio-p);background:var(--papel);color:var(--tinta);width:240px;max-width:100%;
+        transition:border-color var(--t),box-shadow var(--t)}
+.filtro:hover{border-color:var(--linha-forte)}
+.filtro:focus{outline:none;border-color:var(--destaque-vivo);box-shadow:var(--anel)}
+.filtro::placeholder{color:var(--tinta3)}
+
+/* ---------- painel: índice + lista ---------- */
+.painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio-c);
+        padding:0;margin-top:0;display:grid;grid-template-columns:330px minmax(0,1fr);align-items:start}
+.indice{padding:20px 20px 20px;border-right:1px solid var(--linha);position:sticky;top:0;
+        max-height:100vh;overflow-y:auto}
+.lista{padding:20px 24px 24px;min-height:60vh}
+
+.todas{width:100%;display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+       font:inherit;font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;
+       padding:8px 8px;margin:0 -8px 8px;border-radius:var(--raio-c);color:var(--tinta);text-align:left}
+.bl{margin-top:16px;padding-top:12px;border-top:1px solid var(--linha2)}
+.bl-cab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:4px}
+.bl-cab h2{font-family:var(--serif);font-size:16px;font-weight:600;line-height:1.25}
+.bl-cab span{font-size:12px;color:var(--tinta3);white-space:nowrap}
+
+/* a haste de 3px é a mesma da tabela "Composição" do gráfico */
+.cat{display:block;font:inherit;background:none;border:none;cursor:pointer;
+     text-align:left;padding:8px 8px 8px;margin:0 -8px;border-radius:var(--raio-c);color:var(--tinta2);
+     width:calc(100% + 16px)}
+.cat-l{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13px;line-height:1.35}
+.cat-l b{font-weight:500;color:var(--tinta);font-size:13px}
+.haste{display:block;height:3px;background:var(--linha2);border-radius:2px;margin-top:4px}
+.haste i{display:block;height:100%;border-radius:2px;background:var(--tinta3)}
+.cat:hover,.todas:hover{background:var(--linha2);color:var(--tinta)}
+.cat[aria-pressed="true"],.todas[aria-pressed="true"]{background:var(--inverso);color:var(--sobre-inverso)}
+.cat[aria-pressed="true"] .cat-l b{color:var(--sobre-inverso)}
+.cat[aria-pressed="true"] .haste{background:var(--inverso-3)}
+.cat[aria-pressed="true"] .haste i{background:var(--sobre-inverso)}
+.nc{margin-top:16px;padding-top:12px;border-top:1px solid var(--linha2)}
+.obs{font-size:12px;color:var(--tinta3);line-height:1.5;margin-top:16px}
+
+.lista-cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;
+           padding-bottom:12px;border-bottom:1px solid var(--linha)}
+.lista-cab h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.2}
+.lista-cab p{font-size:13px;color:var(--tinta3)}
+.aos-temas{display:none;font:inherit;font-size:13px;background:none;border:none;color:var(--link);
+           cursor:pointer;padding:0;margin-bottom:12px}
+
+.item{padding:16px 0 16px;border-bottom:1px solid var(--linha2)}
+.item-cab{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.item-num{font-weight:600;font-size:14px;color:var(--tinta);text-decoration:none}
+.item-num:hover{text-decoration:underline}
+.item-data{font-size:12px;color:var(--tinta3)}
+.selo{font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;white-space:nowrap;
+      background:var(--inverso);color:var(--sobre-inverso)}
+.item-not{font-size:13px;color:var(--tinta2);margin-top:4px}
+.item-tempo{font-size:13px;color:var(--tinta2);margin-top:4px;max-width:72ch}
+.item-tempo .caminho{display:block;color:var(--tinta3)}
+.item-not span{color:var(--tinta3)}
+.item-ementa{font-size:15px;line-height:1.5;margin-top:4px;max-width:72ch}
+/* passo 8: resumo por IA com a ementa oficial a um clique */
+.oficial{margin-top:4px;max-width:72ch}
+.oficial summary{cursor:pointer;font-size:12px;color:var(--tinta3);line-height:1.5}
+.oficial summary b{font-weight:500;color:var(--tinta2);text-decoration:underline;text-underline-offset:2px}
+.oficial p{font-size:14px;color:var(--tinta2);margin-top:4px;line-height:1.5}
+.oficial a{font-size:13px;color:var(--tinta2)}
+.item-sit{font-size:13px;color:var(--tinta2);margin-top:8px}
+.porque{font-size:12px;color:var(--tinta3);margin-top:4px;line-height:1.7;max-width:76ch}
+.porque q{color:var(--tinta2)}
+.salto{font:inherit;font-size:12px;background:none;border:none;padding:0;color:var(--link);
+       cursor:pointer;text-decoration:underline;text-decoration-color:rgba(15,118,110,.35);
+       text-underline-offset:2px}
+.salto:hover{text-decoration-color:var(--link)}
+/* com o símbolo, o nome fica dentro de um flex e perde o sublinhado do botão: repete nele */
+.salto .ti-rot>span{text-decoration:underline;text-decoration-color:rgba(15,118,110,.35);text-underline-offset:2px}
+.salto:hover .ti-rot>span{text-decoration-color:var(--link)}
+/* o título do bloco é serifado de 16 px: o carimbo de 28 px fica centrado com o nome */
+.bl-cab h2{min-width:0}
+.bl-cab{margin-bottom:8px}
+/* título da categoria aberta: o símbolo de 28 px respira, centrado na primeira linha */
+.lista-cab h2 .ti-rot{gap:12px;align-items:center}
+.cat-l .ti-rot{gap:10px}
+
+.vazio{font-size:14px;color:var(--tinta2);padding:24px 0;max-width:56ch}
+
+.aviso{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio-c);
+       padding:24px 24px;margin-top:28px;max-width:640px}
+.aviso h1{font-family:var(--serif);font-size:24px;font-weight:600;margin-bottom:8px}
+.aviso p{font-size:14px;color:var(--tinta2);margin-top:8px}
+.aviso code{font-family:ui-monospace,monospace;font-size:13px;background:var(--linha2);
+            padding:1px 4px;border-radius:999px}
+
+.rodape{font-size:12px;color:var(--tinta3);margin:16px 0 48px;line-height:1.6;max-width:80ch}
+
+@media(max-width:820px){
+  .painel{grid-template-columns:1fr}
+  .indice{position:static;max-height:none;border-right:none;border-bottom:1px solid var(--linha)}
+  .lista{min-height:0;padding:20px 20px 24px}
+}
+
+/* ===== acabamento comum (estilo.css): cartão com sombra suave ===== */
+
+.volta{margin-top:24px}
+.painel{border-radius:var(--raio);box-shadow:var(--sombra)}   /* sem overflow:hidden: quebraria o índice fixo */
+.indice{top:64px;max-height:calc(100vh - 64px)}   /* fixo abaixo da barra, não embaixo dela */
+
+
+@media(max-width:820px){
+  .aos-temas{display:inline-block}
+  .bloco+.bloco{margin-left:0;padding-left:0;border-left:none}
+  .controles{gap:12px 16px}
+  .filtro{width:100%}
+}
+
+</style>
+<style>
+/* ===== só desta página (o resto vem da página do deputado: mesmo painel, mesmo índice, mesma lista) ===== */
+.quem a{color:var(--link)}
+.saiu{font-size:14px;color:var(--tinta2);margin-top:12px;max-width:60ch}
+.por-tema{scroll-margin-top:84px}
+
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+    <nav class="nav" aria-label="Páginas do site">
+      <a href="deputados.html">Deputados</a>
+      <a href="senadores.html" aria-current="page">Senadores</a>
+      <a href="leis.html">Leis votadas</a>
+      <a href="blocos.html">Quem vota com quem</a>
+      <a href="fluxo.html">Entre as casas</a>
+      <a href="obras.html">Obras</a>
+      <a href="contexto.html">Economia</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <a class="volta" href="senadores.html">← Voltar aos senadores</a>
+  <main id="raiz" aria-live="polite"></main>
+</div>
+
+<footer class="rodape-global">
+  <div class="wrap">
+    <div class="rg">
+      <div class="rg-sobre">
+        <a class="marca" href="index.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+        <p>O que o Congresso propõe, aprova e vota, a partir de dados públicos oficiais atualizados todos os dias.</p>
+      </div>
+      <nav class="rg-col" aria-label="Páginas">
+        <h2>Páginas</h2>
+        <a href="index.html">Início</a>
+        <a href="deputados.html">Deputados</a>
+        <a href="senadores.html">Senadores</a>
+        <a href="leis.html">Leis votadas</a>
+        <a href="blocos.html">Quem vota com quem</a>
+        <a href="fluxo.html">Entre as casas</a>
+        <a href="obras.html">Obras</a>
+      <a href="contexto.html">Contexto econômico</a>
+      <a href="origem.html">De onde vêm as leis</a>
+      </nav>
+      <div class="rg-col">
+        <h2>Fontes</h2>
+        <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Câmara dos Deputados</a>
+        <a href="https://legis.senado.leg.br/dadosabertos/" target="_blank" rel="noopener">Senado Federal</a>
+        <a href="https://www.tse.jus.br" target="_blank" rel="noopener">Tribunal Superior Eleitoral</a>
+        <a href="https://dataverse.harvard.edu/dataverse/bls" target="_blank" rel="noopener">Brazilian Legislative Survey</a>
+        <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a>
+      </div>
+      <div class="rg-col">
+        <h2>Projeto</h2>
+        <a href="index.html#sobre">Sobre os dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">Código e dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/issues" target="_blank" rel="noopener">Informar um erro</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a>
+      </div>
+    </div>
+    <div class="rg-pe"><p>Site independente, sem vínculo com a Câmara dos Deputados, o Senado Federal ou o TSE.
+      Os números vêm das fontes oficiais citadas; as escolhas de método estão escritas em cada página.</p></div>
+  </div>
+</footer>
+
+<script src="temas.js"></script>
+<script src="paineis.js"></script>
+<script>
+const NF=new Intl.NumberFormat('pt-BR');
+// símbolo do tema (temas.js) ao lado do nome; sem o módulo, só o nome — o nome sempre aparece, o desenho é auxílio
+const tBloco=n=>window.TemaIcone?TemaIcone.rotuloBloco(n,n,28):esc(n);
+const tCat=(n,px)=>window.TemaIcone?TemaIcone.rotulo(n,n,px||16):esc(n);
+const MESES=['jan.','fev.','mar.','abr.','maio','jun.','jul.','ago.','set.','out.','nov.','dez.'];
+const PASSO=40;
+
+let tax=null, sen=null, dep=null, SEN=[], sel=null, limite=PASSO;
+const filtro={tipo:'',lei:false,texto:'',leg:true};
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const semAcento=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const plural=(n,um,varios)=>n===1?um:varios;
+const dataBR=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)}`:'—';
+function data(d){
+  if(!d) return '';
+  const [a,m,dia]=d.split('-');
+  return `${+dia} ${MESES[+m-1]} ${a}`;
+}
+function iniciais(nome){
+  const p=nome.trim().split(/\s+/).filter(w=>w.length>2);
+  return ((p[0]||nome)[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase();
+}
+// Foto oficial do Senado. O endereço que a API dá (www…/senadorNNNN.jpg) redireciona duas vezes até
+// legis.senado.leg.br/senadores/fotos-oficiais/NNNN: pede o destino direto e, se falhar, o da API.
+// Sem nenhuma das duas, ficam as iniciais que estão por baixo.
+function retrato(s,px){
+  const api=(s.urlFoto||'').replace('http://','https://');
+  const direta=`https://legis.senado.leg.br/senadores/fotos-oficiais/${encodeURIComponent(s.id)}`;
+  return `<span class="av-cx" style="width:${px}px;height:${px}px" aria-hidden="true"
+    ><span class="av-ini" style="font-size:${Math.round(px*.36)}px">${iniciais(s.nome)}</span><img class="av" src="${direta}" data-api="${esc(api)}" alt=""
+    loading="lazy" onerror="fotoFalhou(this)"></span>`;
+}
+function fotoFalhou(img){
+  const api=img.dataset.api;
+  if(api){ img.dataset.api=''; img.src=api; } else img.classList.add('falhou');
+}
+const urlMateria=m=>`https://www25.senado.leg.br/web/atividade/materias/-/materia/${m}`;
+const minus=t=>t?t.charAt(0).toLowerCase()+t.slice(1):'';
+// A situação do Senado vem em caixa alta ("AGUARDANDO DESPACHO"): vai para caixa de frase, sem mexer no texto
+const frasal=t=>t?t.charAt(0)+t.slice(1).toLowerCase():'';
+
+function aviso(tit,html){
+  document.getElementById('raiz').innerHTML=`<div class="aviso"><h1>${tit}</h1>${html}</div>`;
+}
+const json=u=>fetch(u,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
+
+async function iniciar(){
+  const q=new URLSearchParams(location.search);
+  const id=q.get('id');
+  if(!id||!/^\d+$/.test(id)){
+    aviso('Escolha um senador','<p>Esta página mostra as proposições de um senador por tema. '+
+      'Abra a ficha de alguém na <a href="senadores.html">página dos senadores</a> e siga o link '+
+      '“Ver as proposições por tema”.</p>');
+    return;
+  }
+  const [rt,lista,rd]=await Promise.all([json('dados/temas/taxonomia.json'),json('dados/senadores.json'),json(`dados/senadores/${id}.json`)]);
+  if(!rt||!lista){
+    aviso('Não foi possível ler os dados','<p>Faltam <code>dados/temas/taxonomia.json</code> ou <code>dados/senadores.json</code>. '+
+      'Sirva o site com <code>python -m http.server 8000 --bind 127.0.0.1 --directory site</code> e abra '+
+      '<code>http://localhost:8000/senador.html?id='+esc(id)+'</code>; o navegador não lê arquivos locais abertos direto do disco.</p>');
+    return;
+  }
+  tax=rt; SEN=lista;
+  sen=lista.find(x=>String(x.id)===id)||null;
+  if(!sen){                         // quem já saiu do Senado fica em outro arquivo, que só se baixa quando alguém o procura
+    const ant=await json('dados/senadores_antigos.json');
+    sen=(ant||[]).find(x=>String(x.id)===id)||null;
+  }
+  if(!sen||!rd){
+    aviso('Senador sem dados de tema','<p>Não há dados deste senador para o código '+esc(id)+'. '+
+      'Confira o link ou rode <code>python scripts/senador_paginas.py</code> para gerar os arquivos em <code>dados/senadores/</code>.</p>');
+    return;
+  }
+  dep=rd;
+  const t=q.get('tema');
+  sel = t==='todas'||t==='nc' ? t : (t!=null&&/^\d+$/.test(t)&&tax.categorias[+t]!=null ? +t : null);
+  montar();
+}
+
+// ---------- os três cartões: o desenho é de paineis.js (o mesmo do deputado.html); aqui só o que é do Senado ----------
+const {pct1,pct0,medianaDe,comoLer,periodosTxt,medidor,tiles,espectro,barra,TONS,linhaDoTempo,etq}=Paineis;
+const taxaOri=s=>{const o=s.difOrientacao; return o&&o.diferentes!=null&&o.comparaveis?o.diferentes/o.comparaveis:null;};
+const taxaGov=s=>{const g=s.governo; return g&&g.alinhados!=null&&g.comparaveis?g.alinhados/g.comparaveis:null;};
+// motivo oficial registrado pelo Senado quando o senador não votou — como vem, sem taxa
+const MOTIVO={'AP':'atividade parlamentar','P-NRV':'presente sem registrar voto','LS':'licença saúde','MIS':'missão da Casa',
+  'Presidente (art. 51 RISF)':'presidindo a sessão','NCom':'não compareceu','LP':'licença particular','LAP':'licença paternidade',
+  'NA':'dispositivo não citado'};
+// como o voto de cada votação nominal foi registrado: Sim, Não, abstenção e, nas demais, o motivo oficial do Senado
+function barraVotos(v){
+  const seg=[['Sim',v.sim||0,TONS[0]],['Não',v.nao||0,TONS[1]],['Abstenção',v.abstencao||0,TONS[2]]];
+  Object.entries(v.outros||{}).sort((a,b)=>b[1]-a[1]).forEach(([k,n],i)=>seg.push([MOTIVO[k]||k,n,TONS[3+Math.min(i,2)]]));
+  return barra(seg);
+}
+
+// ---------- O que fez no Senado: cinco números, cada um com o que é, e a posição do partido no espectro ----------
+function atividade(s){
+  const el=document.getElementById('ativ'); if(!el) return;
+  const r=s.relatorias||{}, v=s.votos||{};
+  const total=(s.pecs||0)+(s.leis||0), vl=s.viraramLei||0;
+  const votou=v.votacoes?(v.sim||0)+(v.nao||0)+(v.abstencao||0):null;
+  el.hidden=false;
+  el.innerHTML=`<div class="cx-cab"><h2 id="ativTit">O que fez no Senado</h2><span class="kick">carreira inteira, como primeiro autor</span></div>
+    ${tiles([
+      {n:NF.format(s.pecs||0),rot:'PEC',sub:'propostas de emenda à Constituição'},
+      {n:NF.format(s.leis||0),rot:'Projetos de lei',sub:'inclui os antigos PLS, projetos de lei do Senado'},
+      {n:NF.format(vl),rot:'Viraram lei',sub:`de ${NF.format(total)} apresentadas`,mini:{v:vl,total}},
+      {n:NF.format(r.processos||0),rot:'Relatadas',sub:`${NF.format(r.deliberadas||0)} ${r.deliberadas===1?'deliberada':'deliberadas'}; relator é designado, é contexto`},
+      {n:votou==null?'—':NF.format(votou),rot:'Votos nominais',sub:v.votacoes?`em ${NF.format(v.votacoes)} votações desde 2023`:'só existem desde 2023'}])}
+    ${espectro({score:s.score,ideX:s.ideX,partido:s.partido,nota:s.scoreNota})}
+    ${comoLer(`<p>Apresentar projeto é de graça e a maioria não chega a votação: por isso o que virou lei fica ao lado do volume, e a barra mostra a proporção, nunca uma nota.
+      “Viraram lei” é a situação oficial “transformada em norma jurídica”. Relatoria é designação do presidente da comissão, não escolha do senador: entra só como contexto.
+      Conta o que ele apresentou como PRIMEIRO autor; coautoria não entra.</p>`)}`;
+}
+
+// ---------- Como vota: três medidores (alinhamento ao Governo, votos diferentes da bancada e como o voto foi registrado) ----------
+function comoVota(s){
+  const el=document.getElementById('cqv'); if(!el) return;
+  const v=s.votos, g=taxaGov(s), o=taxaOri(s);
+  if(!v&&!s.governo&&!s.difOrientacao) return;        // sem voto nominal desde 2023: o cartão nem aparece
+  const colegas=SEN.filter(x=>x.partido===s.partido&&x.id!==s.id);
+  const faixa=(f,eu)=>{ const xs=colegas.map(f).filter(x=>x!=null); return xs.length&&eu!=null?{lo:Math.min(...xs,eu),hi:Math.max(...xs,eu)}:{lo:null,hi:null}; };
+  const medG=medianaDe(SEN.map(taxaGov).filter(x=>x!=null)), medO=medianaDe(SEN.map(taxaOri).filter(x=>x!=null));
+  let meds='';
+  if(s.governo){
+    meds+=g==null
+      ?(s.governo.nota?medidor({nome:'Alinhamento ao Governo',val:'—',leg:`Sem número: ${esc(s.governo.nota)}.`}):'')
+      :medidor({nome:'Alinhamento ao Governo',val:pct1(g),v:g,...faixa(taxaGov,g),med:medG,rotMed:'mediana do Senado',
+          leg:`Votou como o líder do Governo orientou em <b>${NF.format(s.governo.alinhados)}</b> das ${NF.format(s.governo.comparaveis)} votações em que ele orientou Sim ou Não.`,
+          aria:`${pct1(g)} de alinhamento ao Governo${medG!=null?`; mediana do Senado ${pct1(medG)}`:''}`});
+  }
+  if(s.difOrientacao){
+    meds+=o==null
+      ?(s.difOrientacao.nota?medidor({nome:'Votou diferente da própria bancada',val:'—',leg:`Sem número: ${esc(s.difOrientacao.nota)}.`}):'')
+      :medidor({nome:'Votou diferente da própria bancada',val:pct1(o),v:o,...faixa(taxaOri,o),med:medO,rotMed:'mediana do Senado',
+          leg:`Votou diferente da orientação registrada do próprio partido em <b>${NF.format(s.difOrientacao.diferentes)}</b> das ${NF.format(s.difOrientacao.comparaveis)} votações em que ele orientou Sim ou Não. Orientação liberada não conta.`,
+          aria:`${pct1(o)} dos votos diferentes da orientação do partido${medO!=null?`; mediana do Senado ${pct1(medO)}`:''}`});
+  }
+  if(v&&v.votacoes){
+    meds+=`<div class="med"><div class="med-topo"><span class="med-nome">Como o voto foi registrado</span><span class="med-val">${NF.format(v.votacoes)}</span></div>
+      <p class="med-leg">votações nominais abertas do Plenário. O Senado registra todo senador em cada uma e, quando ele não votou, o motivo oficial.</p>
+      ${barraVotos(v)}</div>`;
+  }
+  // Como votou, por tema: o tema da matéria votada em cada Sim, Não e abstenção (senador_paginas.py → votosTema), pela classificação deste site.
+  const vtm=dep&&dep.votosTema&&v?dep.votosTema:null;
+  const vt=vtm?Paineis.votosTema({tax,unidade:'votações',
+    linhas:[{rot:'Sim',k:0,n:v.sim||0,d:vtm.sim},{rot:'Não',k:1,n:v.nao||0,d:vtm.nao},{rot:'Abstenção',k:2,n:v.abstencao||0,d:vtm.abstencao}],
+    nota:'Cada voto conta no tema da matéria votada, pela ementa e pela classificação deste site (não do Senado). A unidade é a votação: uma matéria com vários turnos ou destaques conta em cada uma, '+
+         'e uma com mais de um tema conta em cada tema, então a soma passa do total. Votações de requerimentos, mensagens e similares não têm tema e ficam em “Outras votações”; '+
+         'a proposição cuja ementa não casa com nenhuma regra de tema, em “Sem categoria”.'}):'';
+  el.hidden=false;
+  el.innerHTML=`<div class="cx-cab"><h2 id="cqvTit">Como vota</h2><span class="kick">votações nominais abertas do Plenário, desde 2023</span></div>
+    <div class="meds">${meds}</div>${vt}
+    ${comoLer(`<p>Votar junto não é pensar igual. O alinhamento ao Governo mede proximidade com o governo do momento, e o governo muda: não é ideologia, lealdade nem mérito.
+      Votar diferente da orientação da própria bancada pode ser convicção, pauta do estado ou acordo; o número mede quantas vezes, não por quê.
+      Não há taxa de presença: quem não votou tem o motivo oficial registrado (licença, missão, atividade parlamentar…), e o Senado não permite deduzir ausência.
+      A mediana é a dos senadores em exercício com número. <a href="senadores.html?id=${s.id}">Ver na tabela dos senadores</a>.</p>`)}`;
+}
+
+// ---------- Mandatos, suplentes e saída (senado.py: mandatosDetalhe, saida) ----------
+function mandatos(s){
+  const el=document.getElementById('mand'); if(!el) return;
+  const cron=[...(s.mandatosDetalhe||[])].sort((a,b)=>(a.de||'').localeCompare(b.de||'')); if(!cron.length) return;
+  const ms=[...cron].reverse();
+  const AFASTA=/^(Licença|Afastamento)/i;
+  const sd=s.saida
+    ?`Deixou o Senado em <b>${dataBR(s.saida.data)}</b>${s.saida.causa?`: ${esc(minus(s.saida.causa))}`:''}.`
+    :`<b>Está no cargo</b>${ms[0]&&ms[0].ate?`; o mandato vai até ${dataBR(ms[0].ate)}`:''}.`;
+  const itens=ms.map(m=>{
+    const emCurso=(m.ate||'')>=HOJE;
+    const ex=m.exercicios.length?`Em exercício: ${periodosTxt(m.exercicios)}.`:'Sem período em exercício registrado.';
+    const sups=m.como==='Titular'
+      ?(m.suplentes&&m.suplentes.length
+        ?`<div class="sups">${m.suplentes.map(([o,id,nome,e])=>`<span class="sup${e.length?' assumiu':''}" title="${esc(e.length?`Assumiu: ${periodosTxt(e)}`:'Não consta que tenha assumido')}"><i>${esc(o)}</i>${esc(nome)}</span>`).join('')}</div>`
+        :'<p>Sem suplentes no registro do Senado.</p>')
+      :(m.titular?`<p>Foi suplente de ${esc(m.titular[1])}.</p>`:'');
+    return `<li class="mandato"><div class="mandato-cab"><b>${esc((m.de||'').slice(0,4))}–${esc((m.ate||'').slice(0,4))} · ${esc(m.uf||'')}</b>
+        ${etq((m.como||'').toLowerCase(),true)}${etq(emCurso?'em curso':'encerrado')}</div>
+      <p>${ex}</p>${sups}</li>`;
+  }).join('');
+  const resumo=cron.map(m=>`mandato de ${(m.de||'').slice(0,4)} a ${(m.ate||'').slice(0,4)}`).join('; ');
+  const linha=linhaDoTempo({hoje:HOJE,aria:`Linha do tempo: ${resumo}`,
+    mandatos:cron.map(m=>({de:m.de,ate:m.ate,titulo:`Mandato ${(m.de||'').slice(0,4)}–${(m.ate||'').slice(0,4)}`})),
+    exercicios:cron.flatMap(m=>m.exercicios).map(e=>({de:e[0],ate:e[1],titulo:'Em exercício: '+periodosTxt([e])}))});
+  el.hidden=false;
+  el.innerHTML=`<div class="cx-cab"><h2 id="mandTit">Mandatos, suplentes e saída</h2><span class="kick">registro do Senado, desde 2003</span></div>
+    <div class="mand-grade"><div><p class="mand-status">${sd}</p>${linha}</div>
+      <ul class="mandatos">${itens}</ul></div>
+    ${comoLer(`<p>Do registro de mandatos e de exercício do Senado, desde a 52ª legislatura (2003). Contorno cheio no suplente quer dizer que ele assumiu o mandato em algum período;
+      tracejado, que não consta que tenha assumido (o que o registro diz, não uma garantia de que nunca assumiu). Licença e afastamento não são saída: o mandato segue.
+      ${s.saida&&AFASTA.test(s.saida.causa||'')?'Neste caso, a saída registrada é uma licença ou afastamento.':''}</p>`)}`;
+}
+
+function montar(){
+  const s=sen, d=dep, apres=d.pecs+d.leis, vl=d.viraramLei, saiu=!!d.saiu;
+  document.title=`${s.nome}: proposições por tema | Câmara Aberta`;
+  const antes=d.props.filter(p=>p.d<tax.inicioLegislatura).length, depois=d.props.length-antes;
+  // "Nesta legislatura" só existe para quem esteve em exercício nela (em exercício hoje, ou saiu depois do início dela); quem está em
+  // exercício e já apresentou algo nela abre nela, e os outros abrem na carreira inteira
+  const naLeg=!saiu||(s.saida&&s.saida.data>=tax.inicioLegislatura);
+  const comPeriodo=naLeg&&antes>0&&depois>0;
+  filtro.leg = comPeriodo ? !saiu : false;
+  const mand=(s.mandato&&s.mandato[0])?` · mandato de ${esc(s.mandato[0].slice(0,4))} a ${esc((s.mandato[1]||'').slice(0,4))}`:'';
+  const quem=`${esc(s.partido||'sem partido')} de ${esc(s.uf||'')}${s.participacao?` · ${esc(s.participacao.toLowerCase())}`:''}${mand}`;
+  // O botão que leva à lista por tema (os símbolos são os das 3 categorias com mais proposições) e, ao lado, a página do senador na Casa.
+  const sub=window.TemaIcone?TemaIcone.resumoDoBotao(d.props,tax.categorias):`${d.props.length} proposições`;
+  const botaoTema=window.TemaIcone
+    ?TemaIcone.botao({href:'#por-tema',titulo:'Ver as proposições por tema',sub,nomes:TemaIcone.maisFrequentes(d.props,tax.categorias,3)})
+    :`<a class="btn-tema" href="#por-tema"><span class="bt-txt"><b>Ver as proposições por tema</b><small>${esc(sub)}</small></span></a>`;
+  const seta='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+  const naCasa=s.url?`<a class="btn-sec" href="${esc(s.url.replace('http://','https://'))}" target="_blank" rel="noopener">Página no Senado ${seta}</a>`:'';
+  document.getElementById('raiz').innerHTML=`
+    <header class="cab">
+      <div class="cab-txt">${retrato(s,72)}
+        <div><h1>${esc(s.nome)}</h1>
+          <div class="quem">${quem}</div></div></div>
+      <figure class="modelo-ed" aria-hidden="true"><img src="img/cupula-senado.svg" alt="" width="480" height="360" decoding="async"></figure>
+    </header>
+    <p class="frase">${esc(d.frase||'')}</p>
+    <div class="acoes-tema">${botaoTema}${naCasa}</div>
+    ${saiu?`<p class="saiu">${s.saida?`Deixou o Senado em ${dataBR(s.saida.data)}${s.saida.causa?`: ${esc(minus(s.saida.causa))}`:''}.`:'Já deixou o Senado.'} A frase e os números são da carreira inteira.</p>`:''}
+    ${!saiu&&antes?`<p class="carreira">Somando mandatos anteriores: ${NF.format(apres)} ${plural(apres,'proposição','proposições')}
+      (${NF.format(d.pecs)} ${plural(d.pecs,'PEC','PECs')} e ${NF.format(d.leis)} ${plural(d.leis,'projeto de lei','projetos de lei')}),
+      ${vl===0?'nenhuma virou lei':`${NF.format(vl)} ${plural(vl,'virou lei','viraram lei')}`}.</p>`:''}
+    <div class="paineis">
+      <section class="cx cx-ativ" id="ativ" hidden aria-labelledby="ativTit"></section>
+      <section class="cx cx-voto" id="cqv" hidden aria-labelledby="cqvTit"></section>
+      <section class="cx cx-mand" id="mand" hidden aria-labelledby="mandTit"></section>
+    </div>
+
+    <div class="controles por-tema" id="por-tema">
+      ${comPeriodo?`<div class="bloco"><span class="rotulo">Período</span>
+        <button class="pino${filtro.leg?' on':''}" data-leg="1">Nesta legislatura</button>
+        <button class="pino${filtro.leg?'':' on'}" data-leg="0">Toda a carreira</button></div>`:''}
+      <div class="bloco"><span class="rotulo">Tipo</span>
+        <button class="pino on" data-tipo="">Todas</button>
+        <button class="pino" data-tipo="PEC">PEC</button>
+        <button class="pino" data-tipo="PL">PL</button></div>
+      <div class="bloco"><span class="rotulo">Situação</span>
+        <button class="pino on" data-lei="0">Todas</button>
+        <button class="pino" data-lei="1">Viraram lei</button></div>
+      <div class="bloco"><input class="filtro" id="filtro" type="search" autocomplete="off"
+        placeholder="Filtrar pela ementa" aria-label="Filtrar pela ementa"></div>
+    </div>
+
+    <div class="painel">
+      <nav class="indice" id="indice" aria-label="Temas"></nav>
+      <section class="lista" id="lista" aria-labelledby="listaTit"></section>
+    </div>
+    <p class="rodape">Categorias atribuídas por este site a partir da ementa oficial do Senado, com as mesmas regras de palavras-chave da página do deputado. É
+      interpretação do site, não classificação do Senado, e pode conter erros; o Senado não entrega a indexação junto da lista de autoria, então a
+      proposição cuja ementa não casa com nenhuma regra fica sem categoria (nunca some). Cada proposição mostra o termo que a colocou na categoria,
+      para conferência. Conta só o que o senador apresentou como PRIMEIRO autor (a coautoria e as assinaturas de apoiamento não entram), PEC e projeto de lei
+      (o PLS, projeto de lei do Senado até 2018, conta como PL); um projeto que o Senado registra em várias fases conta uma vez. A situação é a oficial do Senado;
+      “sem andamento” não diz por quê (relator, pauta, acordo, outra Casa). A frase do topo e o período padrão contam desde ${data(tax.inicioLegislatura)}, início
+      da legislatura atual. Regras de tema na versão ${esc(tax.versao)}, página na versão ${esc(d.versao||'')}, dados de ${data(tax.geradoEm)}.</p>`;
+
+  atividade(s); comoVota(s); mandatos(s);       // os cartões ficam no HTML de cima: só dá para preenchê-los depois de montá-lo
+  document.querySelectorAll('[data-leg]').forEach(b=>b.onclick=()=>{
+    filtro.leg=b.dataset.leg==='1'; ligar('[data-leg]',b); limite=PASSO; desenhar();
+  });
+  document.querySelectorAll('[data-tipo]').forEach(b=>b.onclick=()=>{
+    filtro.tipo=b.dataset.tipo; ligar('[data-tipo]',b); limite=PASSO; desenhar();
+  });
+  document.querySelectorAll('[data-lei]').forEach(b=>b.onclick=()=>{
+    filtro.lei=b.dataset.lei==='1'; ligar('[data-lei]',b); limite=PASSO; desenhar();
+  });
+  let t; document.getElementById('filtro').oninput=e=>{
+    clearTimeout(t); t=setTimeout(()=>{filtro.texto=semAcento(e.target.value.trim());limite=PASSO;desenhar()},120);
+  };
+  desenhar();
+}
+function ligar(sel_,b){document.querySelectorAll(sel_).forEach(x=>x.classList.toggle('on',x===b))}
+
+function visiveis(){
+  return dep.props.filter(p=>(!filtro.leg||p.d>=tax.inicioLegislatura)&&
+    (!filtro.tipo||p.t===filtro.tipo)&&(!filtro.lei||p.l)&&
+    (!filtro.texto||semAcento(p.e+' '+p.i).includes(filtro.texto)));
+}
+
+function desenhar(){
+  const vis=visiveis();
+  const porCat=new Array(tax.categorias.length).fill(0);
+  let nc=0;
+  vis.forEach(p=>{ if(!p.c.length) nc++; p.c.forEach(([i])=>porCat[i]++); });
+  // seleção padrão: a categoria com mais proposições; sem nenhuma, a lista completa
+  if(sel==null||(typeof sel==='number'&&!porCat[sel])){
+    const m=Math.max(0,...porCat);
+    sel = m ? porCat.indexOf(m) : 'todas';
+  }
+  const max=Math.max(1,...porCat);
+  const nBloco=b=>vis.filter(p=>p.c.some(([i])=>b.categorias.includes(i))).length;
+
+  const blocos=tax.blocos.map(b=>{
+    const cats=b.categorias.filter(i=>porCat[i]).sort((x,y)=>porCat[y]-porCat[x]);
+    if(!cats.length) return '';
+    const n=nBloco(b);
+    return `<div class="bl"><div class="bl-cab"><h2>${tBloco(b.nome)}</h2>
+      <span>${NF.format(n)} ${plural(n,'proposição','proposições')}</span></div>
+      ${cats.map(i=>`<button class="cat" data-cat="${i}" aria-pressed="${sel===i}">
+        <span class="cat-l"><span>${tCat(tax.categorias[i],18)}</span><b>${NF.format(porCat[i])}</b></span>
+        <span class="haste"><i style="width:${(porCat[i]/max*100).toFixed(1)}%"></i></span></button>`).join('')}
+    </div>`;
+  }).join('');
+
+  document.getElementById('indice').innerHTML=`
+    <button class="todas" data-cat="todas" aria-pressed="${sel==='todas'}">
+      <span>Todas as proposições</span><span>${NF.format(vis.length)}</span></button>
+    ${blocos}
+    ${nc?`<div class="nc"><button class="cat" data-cat="nc" aria-pressed="${sel==='nc'}">
+      <span class="cat-l"><span>Sem categoria</span><b>${NF.format(nc)}</b></span></button></div>`:''}
+    <p class="obs">Uma proposição pode estar em mais de uma categoria. Por isso as categorias
+      de um bloco somam mais que o total do bloco.</p>`;
+  document.querySelectorAll('#indice [data-cat]').forEach(b=>b.onclick=()=>escolher(b.dataset.cat,true));
+
+  lista(vis);
+}
+
+function escolher(v,rolar){
+  sel = v==='todas'||v==='nc' ? v : +v;
+  limite=PASSO;
+  const q=new URLSearchParams(location.search); q.set('tema',String(sel));
+  history.replaceState(null,'',`?${q}`);
+  desenhar();
+  if(rolar&&window.matchMedia('(max-width:820px)').matches){
+    const liso=!window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    document.getElementById('lista').scrollIntoView({behavior:liso?'smooth':'auto',block:'start'});
+  }
+}
+
+function lista(vis){
+  const box=document.getElementById('lista');
+  const itens = sel==='todas' ? vis
+              : sel==='nc' ? vis.filter(p=>!p.c.length)
+              : vis.filter(p=>p.c.some(([i])=>i===sel));
+  const tit = sel==='todas' ? 'Todas as proposições' : sel==='nc' ? 'Sem categoria' : tax.categorias[sel];
+  const n=itens.length;
+  const nome = filtro.tipo==='PEC' ? plural(n,'PEC','PECs')
+             : filtro.tipo==='PL' ? plural(n,'projeto de lei','projetos de lei')
+             : plural(n,'proposição','proposições');
+  const qtd = `${NF.format(n)} ${nome}`+(filtro.lei?plural(n,' que virou lei',' que viraram lei'):'')+
+              (filtro.texto?', com o filtro de texto':'');
+  let html=`<button class="aos-temas" id="aosTemas">Ver todos os temas</button>
+    <div class="lista-cab"><h2 id="listaTit">${typeof sel==='number'?tCat(tit,28):esc(tit)}</h2>
+    <p>${qtd}${n>1?', da mais recente para a mais antiga':''}</p></div>`;
+  if(!n){
+    html+=`<p class="vazio">${dep.props.length
+      ? 'Nenhuma proposição com esses filtros. Troque o tipo, a situação ou o texto do filtro.'
+      : 'Este senador não tem PEC nem projeto de lei como primeiro autor.'}</p>`;
+    if(dep.props.length&&filtro.leg&&!vis.length) html=html.replace('Nenhuma proposição com esses filtros.',
+      'Nenhuma proposição nesta legislatura com esses filtros. Veja “Toda a carreira”.');
+  }else{
+    html+=itens.slice(0,limite).map(p=>item(p)).join('');
+    if(n>limite) html+=`<button class="mais" id="mais">Mostrar mais ${Math.min(PASSO,n-limite)} de ${NF.format(n-limite)} restantes</button>`;
+  }
+  box.innerHTML=html;
+  const m=document.getElementById('mais'); if(m) m.onclick=()=>{limite+=PASSO;lista(vis)};
+  document.getElementById('aosTemas').onclick=()=>document.getElementById('indice').scrollIntoView({block:'start'});
+  box.querySelectorAll('.salto').forEach(b=>b.onclick=()=>escolher(b.dataset.cat,true));
+}
+
+// Tempo de cada proposição, só do que o registro do Senado traz: a data de apresentação, a situação atual e desde quando ela está
+// registrada e, se virou lei, o número e a data da norma. O Senado não entrega o caminho por órgão junto da lista, então aqui não há "caminho".
+// "Sem andamento" não diz por quê: pode ser espera de relator, de pauta, da outra Casa.
+const HOJE=new Date().toISOString().slice(0,10);
+const dias=(a,b)=>Math.round((Date.parse(b)-Date.parse(a))/864e5);
+function duracao(n){
+  if(n<1) return 'no mesmo dia';
+  if(n<31) return `${n} dia${n>1?'s':''}`;
+  const m=Math.round(n/30.44); if(m<12) return `${m} ${m>1?'meses':'mês'}`;
+  const a=Math.floor(m/12), r=m%12;
+  return `${a} ano${a>1?'s':''}${r?` e ${r} ${r>1?'meses':'mês'}`:''}`;
+}
+function tempo(p){
+  const l=[];
+  if(p.l){
+    const m=/(\d{2})\/(\d{2})\/(\d{4})\s*$/.exec(p.nl||'');
+    const norma=(p.nl||'').replace(/\s+de\s+\d{2}\/\d{2}\/\d{4}\s*$/,'');
+    if(m){ const d=`${m[3]}-${m[2]}-${m[1]}`; l.push(`Virou lei em ${data(d)} (${esc(norma)}), ${duracao(dias(p.d,d))} depois de apresentada.`); }
+    else l.push(p.nl?`Virou lei: ${esc(p.nl)}.`:'Virou lei.');
+  }else if(p.tr){
+    l.push(p.u?`Em tramitação. A situação atual está registrada desde ${data(p.u)}, há ${duracao(dias(p.u,HOJE))}.`:'Em tramitação.');
+  }else if(p.u){
+    l.push(`Fora de tramitação: a situação atual foi registrada em ${data(p.u)}, ${duracao(dias(p.d,p.u))} depois de apresentada.`);
+  }
+  return l.length?`<p class="item-tempo">${l.join(' ')}</p>`:'';
+}
+
+function item(p){
+  let porque;
+  if(!p.c.length){
+    porque='Nenhuma regra de tema casou com a ementa.';
+  }else if(typeof sel==='number'){
+    const [,termo]=p.c.find(([i])=>i===sel);
+    const outras=p.c.filter(([i])=>i!==sel);
+    porque=`Nesta categoria pelo termo <q>${esc(termo)}</q>, na ementa.`+
+      (outras.length?` Também em ${outras.map(([i])=>
+        `<button class="salto" data-cat="${i}">${tCat(tax.categorias[i])}</button>`).join(', ')}.`:'');
+  }else{
+    porque='Categorias: '+p.c.map(([i,termo])=>
+      `<button class="salto" data-cat="${i}">${tCat(tax.categorias[i])}</button> (<q>${esc(termo)}</q>)`).join(', ')+', na ementa.';
+  }
+  return `<article class="item">
+    <div class="item-cab"><a class="item-num" href="${urlMateria(p.m)}" target="_blank" rel="noopener"
+      title="Abrir a ficha da matéria no Senado">${esc(p.i)}</a>
+      <span class="item-data">apresentada em ${data(p.d)}</span>
+      ${p.l?'<span class="selo">Virou lei</span>':''}</div>
+    <p class="item-ementa">${esc(p.e)||'<i>Sem ementa no registro do Senado.</i>'}</p>
+    ${p.s?`<p class="item-sit">Situação no Senado: ${esc(frasal(p.s))}</p>`:''}
+    ${tempo(p)}
+    <p class="porque">${porque}</p>
+  </article>`;
+}
+
+iniciar();
+</script>
+</body>
+</html>
