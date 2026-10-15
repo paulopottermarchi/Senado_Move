@@ -162,6 +162,12 @@ jobs:
       - name: Página de cada senador
         run: python scripts/passo.py --opcional senador_paginas.py
 
+      # Quem vota com quem, versão do Senado (blocos.html, botão "Senado"): o mesmo cálculo de blocos.py sobre as votações nominais
+      # abertas do Plenário que o passo "Senadores" deixou em cache. Confere os Sim e Não contra o senadores.json antes de gravar;
+      # opcional porque, se falhar, a rodada segue e o arquivo anterior fica (sem ele, o botão avisa que ainda não há dados).
+      - name: Blocos de voto do Senado
+        run: python scripts/passo.py --opcional blocos_senado.py
+
       # Aba "Partidos": proposições por partido, por legislatura desde 1991 e por tema, dos arquivos anuais
       # em lote da Câmara (a 1ª rodada baixa ~700 MB; as seguintes só relêem o que mudou). Usa o
       # deputados.json já com os votos, o blocos.json e a coesão que o votos.py deixou no cache.

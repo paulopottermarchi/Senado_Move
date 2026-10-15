@@ -83,6 +83,13 @@
 .leg .tl-ex{display:inline-block;width:18px;height:12px;background:repeating-linear-gradient(90deg,var(--tinta) 0 3px,transparent 3px 5px)}
 .nota{margin-top:26px;max-width:820px;font-size:13px;color:var(--tinta3)}
 
+/* o botão que troca de Casa (Câmara × Senado), no cabeçalho */
+.casa-sel{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-top:28px}
+.casa-sel>span{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta3)}
+.casa-sel .pino{min-height:44px;padding:0 24px;font-size:14px}
+.casa-aviso{margin-top:12px;max-width:60ch;font-size:13px;color:var(--tinta2)}
+.casa-aviso[hidden]{display:none}
+
 /* o cabeçalho com o eixo e as linhas dos dois gráficos dividem as mesmas colunas */
 .eixo,.lp,.tr{display:grid;grid-template-columns:var(--cl) minmax(0,1fr) var(--cr);column-gap:24px}
 .eixo{align-items:end;margin-top:26px;font-size:12px;color:var(--tinta3)}
@@ -246,20 +253,26 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
   <div class="capa">
     <div class="hero-ed">
       <div class="txt">
-    <p class="kicker">Votações nominais do Plenário · 2023 a 2026</p>
+    <p class="kicker" id="kickCapa">Votações nominais do Plenário · 2023 a 2026</p>
       <h1 class="t-grande">Quem vota junto com quem</h1>
     <p class="chamada" id="chamada">Agrupando os deputados só pela semelhança dos votos, sem olhar o partido.</p>
+    <div class="casa-sel"><span id="rotCasa">Ver os votos de</span>
+      <div class="seg" role="group" aria-labelledby="rotCasa" id="casaSel">
+        <button class="pino on" type="button" data-casa="c" aria-pressed="true">Câmara</button>
+        <button class="pino" type="button" data-casa="s" aria-pressed="false">Senado</button>
+      </div></div>
+    <p class="casa-aviso" id="casaAviso" role="status" hidden></p>
       </div>
       <div class="lado"><figure class="modelo-ed" data-modelo="aneis" aria-hidden="true"><img src="img/modelo-aneis.svg" alt="" width="480" height="360" decoding="async"></figure></div>
     </div>
 
     <div class="aviso" role="note">
-      <p><b>Votar junto não é pensar igual.</b> No voto nominal, o que mais separa os deputados é apoiar ou
+      <p id="avisoA"><b>Votar junto não é pensar igual.</b> No voto nominal, o que mais separa os deputados é apoiar ou
          não o governo do momento — o Governo federal, desde 2023. Os blocos abaixo saem só da semelhança dos
          votos, sem olhar partido nem orientação, e coincidem quase exatamente com seguir ou não o que o líder
          do Governo orientou. Por isso o espectro do gráfico principal vem de uma pesquisa com os próprios
          deputados, e não de votos: são duas coisas diferentes, e o site mostra as duas.</p>
-      <p>Dois deputados que votam igual podem ter motivos diferentes: acordo de bancada, cargo no governo,
+      <p id="avisoB">Dois deputados que votam igual podem ter motivos diferentes: acordo de bancada, cargo no governo,
          convicção, pedido da base. A página mostra quem votou junto, não por quê. O partido de cada um é
          aquele em que deu a maior parte dos votos no período <span id="trocas"></span>.</p>
     </div>
@@ -281,10 +294,10 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
       <div class="plot-cab">
         <div class="plot-tit">
           <h3 class="h3-bl">Partido por partido</h3>
-          <p>Quanto mais à direita o ponto, mais vezes o deputado votou como o líder do Governo orientou.</p>
+          <p id="ptPartido">Quanto mais à direita o ponto, mais vezes o deputado votou como o líder do Governo orientou.</p>
         </div>
         <div class="busca">
-          <label for="fDep">Buscar um deputado</label>
+          <label for="fDep" id="lbBusca">Buscar um deputado</label>
           <div class="busca-in">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
             <input class="texto" id="fDep" type="search" list="listaDep" autocomplete="off">
@@ -299,11 +312,11 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
 
       <div class="eixo" aria-hidden="true"><span class="c-l">Partido</span>
         <div class="reg"><span style="left:0">0%</span><span style="left:25%">25%</span><span class="mid" style="left:50%">50%</span><span style="left:75%">75%</span><span style="left:100%">100%</span></div>
-        <span class="c-r"><span>Mediana</span><span>Bloco</span><span>Dep.</span></span>
+        <span class="c-r"><span>Mediana</span><span>Bloco</span><span id="cDep">Dep.</span></span>
       </div>
       <div class="linhas" id="linhas"></div>
 
-      <p class="nota">A altura de cada ponto dentro da linha só serve para que os pontos não se sobreponham; não mede nada. Partidos com menos de 3 deputados ficam juntos, em “Outros”. O partido é o em que o deputado deu a maior parte dos votos no período.</p>
+      <p class="nota" id="notaPlot">A altura de cada ponto dentro da linha só serve para que os pontos não se sobreponham; não mede nada. Partidos com menos de 3 deputados ficam juntos, em “Outros”. O partido é o em que o deputado deu a maior parte dos votos no período.</p>
     </div>
   </section>
 
@@ -344,16 +357,16 @@ h4{font-size:14px;font-weight:600;margin-top:16px}
 <footer class="rodape-site">
   <div class="wrap">
     <h2>Como é calculado</h2>
-    <p>Votos de cada deputado nas votações nominais do Plenário, de 2023 a 2026 (Dados Abertos da Câmara dos
+    <p id="calcA">Votos de cada deputado nas votações nominais do Plenário, de 2023 a 2026 (Dados Abertos da Câmara dos
        Deputados). Só Sim e Não: abstenção, obstrução e ausência não entram. A concordância entre dois deputados
        é a parcela das votações em que os dois votaram Sim ou Não e votaram igual; par com menos de 100 votações
        em comum não entra, e deputado com menos de 100 votos Sim ou Não no Plenário também não.</p>
-    <p>Os blocos saem de um agrupamento hierárquico por concordância média, sem usar o partido. O número de
+    <p id="calcB">Os blocos saem de um agrupamento hierárquico por concordância média, sem usar o partido. O número de
        blocos não é escolhido pelo site: o corte fica onde a concordância despenca de uma fusão para a seguinte.
        A frequência com que cada deputado votou como o Governo orientou vem das orientações de bancada
        registradas pela Câmara (bancada "Governo", orientação Sim ou Não), e só aparece para quem tem pelo menos
        50 dessas votações.</p>
-    <p>Pares improváveis: deputados de partidos a pelo menos 4 pontos de distância na escala do espectro (média
+    <p id="calcC">Pares improváveis: deputados de partidos a pelo menos 4 pontos de distância na escala do espectro (média
        das respostas da wave 9, de 2021, do Brazilian Legislative Survey, de Power e Zucco, calculada por este
        site), que votaram pelo mesmo partido em pelo menos 75% das vezes, com 200 ou mais votações em comum e 90%
        ou mais de votos iguais. Partidos sem posição no espectro, como a União Brasil, não entram.</p>
@@ -407,6 +420,20 @@ const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(
 const pc=v=>Math.round(v*100)+'%';
 const pc1=v=>(v*100).toFixed(1).replace('.',',')+'%';
 let B=null, SEL=null, PASSO=12, limitePares=PASSO;
+// Duas Casas, o mesmo código: blocos.json (Câmara) e blocos_senado.json (Senado) têm o mesmo formato; o campo `deputados` de cada um guarda os
+// parlamentares da Casa. Só mudam as palavras, a foto e os links, que ficam aqui.
+const CASAS={
+  c:{id:'c',arq:'dados/blocos.json',sing:'deputado',plu:'deputados',Plu:'Deputados',abrev:'dep.',Abrev:'Dep.',
+     foto:id=>`https://www.camara.leg.br/internet/deputado/bandep/${id}.jpg`,
+     links:id=>`<a href="deputado.html?id=${id}">Proposições por tema</a><a href="leis.html?dep=${id}">Leis em que votou diferente do partido</a>`},
+  s:{id:'s',arq:'dados/blocos_senado.json',sing:'senador',plu:'senadores',Plu:'Senadores',abrev:'sen.',Abrev:'Sen.',
+     foto:id=>`https://legis.senado.leg.br/senadores/fotos-oficiais/${encodeURIComponent(id)}`,
+     links:id=>`<a href="senador.html?id=${id}">Proposições por tema</a><a href="senadores.html?id=${id}">Ficha no gráfico dos senadores</a>`}
+};
+let CASA=CASAS.c, NOMES=[];
+const DADOS={};                                   // cada arquivo é lido uma vez; trocar de Casa de novo não baixa nada
+// Endereço da página: a Câmara é o padrão (blocos.html?dep=…); o Senado leva ?casa=s.
+const urlCasa=dep=>{ const q=new URLSearchParams(); if(CASA.id==='s') q.set('casa','s'); if(dep) q.set('dep',dep); const s=q.toString(); return 'blocos.html'+(s?'?'+s:''); };
 
 function iniciais(nome){
   const p=String(nome).trim().split(/\s+/).filter(w=>w.length>2);
@@ -414,31 +441,63 @@ function iniciais(nome){
 }
 function retrato(id,nome,px){
   return `<span class="av-cx" style="width:${px}px;height:${px}px" aria-hidden="true"><span class="av-ini">${esc(iniciais(nome))}</span>`+
-    `<img src="https://www.camara.leg.br/internet/deputado/bandep/${id}.jpg" alt="" loading="lazy" onerror="this.classList.add('falhou')"></span>`;
+    `<img src="${CASA.foto(id)}" alt="" loading="lazy" onerror="this.classList.add('falhou')"></span>`;
 }
 // [nome, partido no período, UF, score, partido hoje]
 const N=id=>B.nomes[id]||['?','?','?',null,'?'];
 const rotPartido=id=>{const [,p,uf,,hoje]=N(id); return `${p}-${uf}`+(hoje&&hoje!==p?` (hoje ${hoje})`:'');};
 const pctGov=id=>{const g=B.deputados[id]?.governo; return g?g[0]/g[1]:null;};
-// O nome de cada bloco sai do próprio dado: a mediana de votos como o Governo orientou.
-const nomeBloco=i=>B.blocos[i].medianaGoverno>=.5?'Acompanha o Governo':'Vota contra o Governo';
+// O nome de cada bloco sai do próprio dado: a mediana de votos como o Governo orientou. Quando um bloco fica acima de 50% e o outro abaixo,
+// um acompanha e o outro vota contra; quando os dois ficam do mesmo lado (o Senado: 93% e 57%), a diferença é de grau, e o nome diz isso.
+function nomesDosBlocos(){
+  const m=B.blocos.map(b=>b.medianaGoverno);
+  if(m.some(v=>v==null)) return m.map((_,i)=>`Bloco ${i+1}`);
+  if(Math.min(...m)<.5&&Math.max(...m)>=.5) return m.map(v=>v>=.5?'Acompanha o Governo':'Vota contra o Governo');
+  const alto=Math.max(...m), baixo=Math.min(...m);
+  return m.map(v=>v===alto?'Mais perto do Governo':v===baixo?'Mais longe do Governo':'No meio');
+}
+const nomeBloco=i=>NOMES[i];
+const refBloco=i=>/^(Acompanha|Vota contra)/.test(NOMES[i])?`que ${NOMES[i].replace(/^./,c=>c.toLowerCase())}`:`“${NOMES[i]}”`;
 const corBloco=i=>`var(--b${Math.min(i,1)})`;
 const formaBloco=i=>i===0?'sh0':'sh1';       // círculo para o 1º bloco, losango para os demais: a forma repete a cor
 
-async function carregar(){
-  await Bandeiras.carregar();     // logos dos partidos (logos.py); sem o arquivo, só não mostra logo
-  B=await (await fetch('dados/blocos.json',{cache:'no-cache'})).json();
-  const c=B.corte, nb=B.blocos.length;
-  chamada.textContent=`Agrupando os ${nf.format(Object.keys(B.deputados).length)} deputados só pela semelhança dos votos, `+
-    `sem olhar o partido, aparecem ${nb} blocos. Dentro de cada um, os deputados votam igual em ${pc(c.concordanciaDentro)} `+
-    `ou mais das vezes; entre os blocos, só ${pc(c.concordanciaEntre)}. Nenhum deles é um partido.`;
-  trocas.textContent=B.trocaramDePartido?`(${B.trocaramDePartido} dos deputados desta página estão hoje em outro partido)`:'';
-  subBlocos.textContent=`${nf.format(B.votacoes)} votações nominais do Plenário. Cada linha abaixo é um partido; cada ponto, `+
-    `um deputado, na posição da frequência com que votou como o líder do Governo orientou (${nf.format(B.votacoesComOrientacao)} `+
+// Os textos que dizem "deputado" ou "Câmara" na página: os mesmos nas duas Casas, com as palavras e os números de cada uma.
+function aplicarTextos(){
+  const c=CASA, r=B.regras, s=c.id==='s', mg=r.minGoverno||50, pl=c.plu;
+  kickCapa.textContent=`Votações nominais ${s?'abertas ':''}do Plenário · 2023 a 2026`;
+  const medidas=B.blocos.map(b=>b.medianaGoverno), maior=Math.max(...medidas), menor=Math.min(...medidas);
+  avisoA.innerHTML=s
+    ?`<b>Votar junto não é pensar igual.</b> Os blocos abaixo saem só da semelhança dos votos, sem olhar partido nem orientação. Para comparar, a página mostra com que frequência cada senador votou como o líder do Governo orientou: no bloco mais próximo do Governo, em ${pc(maior)} das votações, em mediana; no outro, em ${pc(menor)}. `+
+      `O espectro do gráfico principal dos senadores é a posição do partido numa pesquisa com deputados federais, e não de votos: são duas coisas diferentes, e o site mostra as duas.`
+    :`<b>Votar junto não é pensar igual.</b> No voto nominal, o que mais separa os deputados é apoiar ou não o governo do momento — o Governo federal, desde 2023. Os blocos abaixo saem só da semelhança dos votos, sem olhar partido nem orientação, e coincidem quase exatamente com seguir ou não o que o líder do Governo orientou. Por isso o espectro do gráfico principal vem de uma pesquisa com os próprios deputados, e não de votos: são duas coisas diferentes, e o site mostra as duas.`;
+  const trocas=B.trocaramDePartido?`(${B.trocaramDePartido} dos ${pl} desta página estão hoje em outro partido)`:'';
+  avisoB.innerHTML=`Dois ${pl} que votam igual podem ter motivos diferentes: acordo de bancada, cargo no governo, convicção, pedido da base. A página mostra quem votou junto, não por quê. O partido de cada um é aquele em que deu a maior parte dos votos no período ${trocas}.`+
+    (s?` Só entram as votações nominais abertas: as secretas e as simbólicas não registram o voto de cada senador.`:'');
+  ptPartido.textContent=`Quanto mais à direita o ponto, mais vezes o ${c.sing} votou como o líder do Governo orientou.`;
+  lbBusca.textContent=`Buscar um ${c.sing}`;
+  cDep.textContent=c.Abrev;
+  notaPlot.textContent=`A altura de cada ponto dentro da linha só serve para que os pontos não se sobreponham; não mede nada. Partidos com menos de 3 ${pl} ficam juntos, em “Outros”. O partido é o em que o ${c.sing} deu a maior parte dos votos no período.`;
+  calcA.textContent=s
+    ?`Votos de cada senador nas votações nominais abertas do Plenário, desde fevereiro de 2023 (Dados Abertos do Senado Federal). Só Sim e Não: abstenção, obstrução, presença sem registro de voto, licença e missão não entram, e as votações secretas ficam de fora. A concordância entre dois senadores é a parcela das votações em que os dois votaram Sim ou Não e votaram igual; par com menos de ${r.minComuns} votações em comum não entra, e senador com menos de ${r.minVotos} votos Sim ou Não também não. O Senado tem bem menos votações nominais abertas que a Câmara, por isso os mínimos são menores.`
+    :`Votos de cada deputado nas votações nominais do Plenário, de 2023 a 2026 (Dados Abertos da Câmara dos Deputados). Só Sim e Não: abstenção, obstrução e ausência não entram. A concordância entre dois deputados é a parcela das votações em que os dois votaram Sim ou Não e votaram igual; par com menos de ${r.minComuns} votações em comum não entra, e deputado com menos de ${r.minVotos} votos Sim ou Não no Plenário também não.`;
+  calcB.textContent=`Os blocos saem de um agrupamento hierárquico por concordância média, sem usar o partido. O número de blocos não é escolhido pelo site: o corte fica onde a concordância despenca de uma fusão para a seguinte. A frequência com que cada ${c.sing} votou como o Governo orientou vem das orientações de bancada registradas ${s?'pelo Senado (líder do Governo':'pela Câmara (bancada "Governo"'}, orientação Sim ou Não), e só aparece para quem tem pelo menos ${mg} dessas votações.`;
+  calcC.textContent=`Pares improváveis: ${pl} de partidos a pelo menos ${r.distOpostos} pontos de distância na escala do espectro (média das respostas da wave 9, de 2021, do Brazilian Legislative Survey, de Power e Zucco, calculada por este site), que votaram pelo mesmo partido em pelo menos 75% das vezes, com ${2*r.minComuns} ou mais votações em comum e ${pc(r.parMin)} ou mais de votos iguais. Partidos sem posição no espectro, como a União Brasil, não entram.`;
+}
+
+// Desenha a página inteira com os dados da Casa escolhida (B) e as palavras dela (CASA).
+function desenhar(){
+  NOMES=nomesDosBlocos();
+  const c=B.corte, nb=B.blocos.length, pl=CASA.plu;
+  aplicarTextos();
+  chamada.textContent=`Agrupando os ${nf.format(Object.keys(B.deputados).length)} ${pl} só pela semelhança dos votos, `+
+    `sem olhar o partido, aparecem ${nb} blocos. Dentro de cada um, os ${pl} votam igual em ${pc(c.concordanciaDentro)} `+
+    `ou mais das vezes; entre os blocos, ${c.concordanciaDentro-c.concordanciaEntre>=.15?'só ':''}${pc(c.concordanciaEntre)}. Nenhum deles é um partido.`;   // "só" quando a diferença é grande (Câmara: 63% × 47%); no Senado é de 10 pontos e o número fala sozinho
+  subBlocos.textContent=`${nf.format(B.votacoes)} votações nominais ${CASA.id==='s'?'abertas ':''}do Plenário. Cada linha abaixo é um partido; cada ponto, `+
+    `um ${CASA.sing}, na posição da frequência com que votou como o líder do Governo orientou (${nf.format(B.votacoesComOrientacao)} `+
     `votações com orientação). A cor é o bloco em que a semelhança dos votos o colocou.`;
-  // a barra: um segmento por bloco, na proporção dos deputados; embaixo de cada um, a mediana e os partidos que o compõem
-  barraBl.innerHTML=B.blocos.map((b,i)=>`<div class="seg-b" style="--n:${b.n};--c:${corBloco(i)}"><span class="seg-n">${nf.format(b.n)}</span><span class="seg-t">deputados</span></div>`).join('');
-  barraBl.setAttribute('aria-label',`${nf.format(Object.keys(B.deputados).length)} deputados em ${nb} blocos: `+
+  // a barra: um segmento por bloco, na proporção dos parlamentares; embaixo de cada um, a mediana e os partidos que o compõem
+  barraBl.innerHTML=B.blocos.map((b,i)=>`<div class="seg-b" style="--n:${b.n};--c:${corBloco(i)}"><span class="seg-n">${nf.format(b.n)}</span><span class="seg-t">${pl}</span></div>`).join('');
+  barraBl.setAttribute('aria-label',`${nf.format(Object.keys(B.deputados).length)} ${pl} em ${nb} blocos: `+
     B.blocos.map((b,i)=>`${nf.format(b.n)} em “${nomeBloco(i)}”`).join(' e '));
   blocos.innerHTML=B.blocos.map((b,i)=>`<div class="bloco" style="--n:${b.n};--c:${corBloco(i)}">
       <h3 class="h3-bl"><i class="sh ${formaBloco(i)}"></i>${nomeBloco(i)}</h3>
@@ -447,13 +506,35 @@ async function carregar(){
     </div>`).join('');
   leg.innerHTML=B.blocos.map((b,i)=>`<span><i class="sh ${formaBloco(i)}" style="--c:${corBloco(i)}"></i>${nomeBloco(i)}</span>`).join('')+
     '<span><i class="m"></i>mediana do partido</span><span>linha mais forte: 50%</span>';
+  SEL=null; fDep.value=''; limpar.hidden=true; ficha.hidden=true; limitePares=PASSO;
   desenharLinhas();
   const nomes=Object.keys(B.nomes).map(id=>[id,`${N(id)[0]} (${N(id)[1]}-${N(id)[2]})`]).sort((a,b)=>a[1].localeCompare(b[1]));
   listaDep.innerHTML=nomes.map(([,t])=>`<option value="${esc(t)}">`).join('');
   desenharPares();
   desenharTemas();
-  const q=new URLSearchParams(location.search).get('dep');
-  if(q&&B.nomes[q]) selecionar(q,false);
+}
+
+async function dadosDe(c){
+  if(DADOS[c]) return DADOS[c];
+  try{ const r=await fetch(CASAS[c].arq,{cache:'no-cache'}); if(!r.ok) return null; return DADOS[c]=await r.json(); }
+  catch(e){ return null; }
+}
+function marcarBotoes(){
+  casaSel.querySelectorAll('[data-casa]').forEach(b=>{ const on=b.dataset.casa===CASA.id; b.classList.toggle('on',on); b.setAttribute('aria-pressed',String(on)); });
+}
+// Troca de Casa. Sem o arquivo da outra Casa (o do Senado só existe depois da rodada diária que o gera), avisa e fica onde estava.
+async function trocarCasa(c,dep,manterAviso){
+  const d=await dadosDe(c);
+  if(!d){
+    casaAviso.textContent=c==='s'?'Os dados do Senado ainda não foram gerados: entram com a próxima atualização diária.':'Não foi possível carregar os dados desta Casa.';
+    casaAviso.hidden=false; marcarBotoes(); return false;
+  }
+  if(!manterAviso) casaAviso.hidden=true;       // na volta forçada à Câmara, o aviso do Senado fica
+  CASA=CASAS[c]; B=d;
+  marcarBotoes(); desenhar();
+  history.replaceState(null,'',urlCasa(null));
+  if(dep&&B.nomes[dep]) selecionar(dep,false);
+  return true;
 }
 
 function desenharLinhas(){
@@ -473,7 +554,7 @@ function desenharLinhas(){
       return `<button class="pt b${Math.min(b,1)}" data-id="${id}" data-v="${v}" style="left:${(v*100).toFixed(2)}%"
         title="${esc(N(id)[0])} (${esc(rotPartido(id))}): votou como o Governo orientou em ${pc(v)} · ${nomeBloco(b)}"
         aria-label="${esc(N(id)[0])}, ${pc(v)}"></button>`;}).join('');
-    return `<div class="lp"><div class="lp-nome">${Bandeiras.img(p,57,18,{vazio:false})}${esc(p)}<small>· ${ids.length} dep.</small></div>
+    return `<div class="lp"><div class="lp-nome">${Bandeiras.img(p,57,18,{vazio:false})}${esc(p)}<small>· ${ids.length} ${CASA.abrev}</small></div>
       <div class="trilho">${pts}${m!=null?`<span class="med" style="left:${(m*100).toFixed(2)}%"></span>`:''}</div>
       <div class="lp-st"><b class="lp-med${m==null?' sem':''}">${m==null?'—':pc(m)}</b><span class="lp-bar" role="img" aria-label="${esc(rotBarra)}">${barra}</span><span class="lp-n">${ids.length}</span></div></div>`;
   }).join('');
@@ -509,8 +590,9 @@ new ResizeObserver(()=>{ cancelAnimationFrame(_rz); _rz=requestAnimationFrame(es
 // Por tema: nas votações finais de texto-base (Sim = aprovar a lei), a parcela dos votos Sim
 // de cada bloco nas leis do tema. Mesmas categorias da página do deputado (temas.py).
 function desenharTemas(){
-  const T=B.temas||[]; if(!T.length) return;
-  secTemas.hidden=false;
+  const T=B.temas||[];
+  secTemas.hidden=!T.length;       // o Senado não tem esta seção (ver blocos_senado.py): sem a votação de texto-base, o Sim não quer dizer aprovar
+  if(!T.length) return;
   kickTemas.textContent=`Votações finais de texto-base · ${nf.format(B.temasLeis)} leis`;
   subTemas.textContent=`Nas ${nf.format(B.temasLeis)} votações finais de texto-base — em que votar Sim é aprovar a lei —, `+
     `a parcela dos votos Sim de cada bloco nas leis de cada tema. As categorias são as mesmas da página do deputado, `+
@@ -550,7 +632,7 @@ function pessoaHTML(id,direita){
 function selecionar(id,rolar){
   SEL=id; const d=B.deputados[id]; if(!d) return;
   fDep.value=`${N(id)[0]} (${N(id)[1]}-${N(id)[2]})`; limpar.hidden=false;
-  history.replaceState(null,'',`blocos.html?dep=${id}`);
+  history.replaceState(null,'',urlCasa(id));
   linhas.querySelectorAll('.pt').forEach(b=>{ b.classList.toggle('sel',b.dataset.id===id); b.classList.toggle('apaga',b.dataset.id!==id); });
   const g=pctGov(id), p=N(id)[1], mp=B.medianaGovernoPorPartido[p];
   const ps=Object.keys(B.deputados).filter(x=>N(x)[1]===p&&pctGov(x)!=null).map(pctGov);
@@ -560,21 +642,25 @@ function selecionar(id,rolar){
   ficha.hidden=false;
   ficha.style.setProperty('--c',corBloco(d.bloco));
   ficha.innerHTML=`<div class="f-cab">${retrato(id,N(id)[0],56)}<div><h3>${esc(N(id)[0])}</h3><p>${esc(rotPartido(id))} · ${nomeBloco(d.bloco)}</p></div></div>
-    <p class="f-txt">${g==null?'Menos de 50 votações com orientação do Governo: sem porcentagem.'
-      :`Votou como o líder do Governo orientou em <b>${pc(g)}</b> das ${nf.format(d.governo[1])} votações em que houve orientação e voto Sim ou Não do deputado.${compara}`}</p>
+    <p class="f-txt">${g==null?`Menos de ${B.regras.minGoverno||50} votações com orientação do Governo: sem porcentagem.`
+      :`Votou como o líder do Governo orientou em <b>${pc(g)}</b> das ${nf.format(d.governo[1])} votações em que houve orientação e voto Sim ou Não do ${CASA.sing}.${compara}`}</p>
     ${g==null?'':`<div class="regua" role="img" aria-label="${pc(g)}; colegas de partido de ${pc(lo)} a ${pc(hi)}, mediana ${pc(mp)}">
       <span class="base"></span>${lo!=null?`<span class="faixa" style="left:${lo*100}%;width:${(hi-lo)*100}%" title="Colegas de partido: de ${pc(lo)} a ${pc(hi)}"></span>`:''}
       ${mp!=null?`<span class="md" style="left:${mp*100}%" title="Mediana do partido: ${pc(mp)}"></span>`:''}<span class="eu" style="left:${g*100}%"></span></div>
       <div class="regua-leg"><span>0%: sempre contra a orientação</span><span>faixa cinza: colegas de partido</span><span>100%: sempre a favor</span></div>`}
     <h4>Vota mais parecido com</h4>
     <div class="pessoas">${d.parecidos.map(([o,v,c])=>pessoaHTML(o,`<span class="pct">${pc1(v)}<small>em ${nf.format(c)}</small></span>`)).join('')}</div>
-    <div class="f-links"><a href="deputado.html?id=${id}">Proposições por tema</a><a href="leis.html?dep=${id}">Leis em que votou diferente do partido</a></div>`;
+    <div class="f-links">${CASA.links(id)}</div>`;
   ficha.querySelectorAll('.pessoa').forEach(b=>b.onclick=()=>selecionar(b.dataset.id,true));
   if(rolar) ficha.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function desenharPares(){
   const L=B.improvaveis;
+  if(!L.length){
+    subPares.textContent=`Nenhum par de ${CASA.plu} de partidos distantes no espectro (pelo menos ${nf.format(B.regras.distOpostos)} pontos na escala de 1 a 10) votou igual em ${pc(B.regras.parMin)} ou mais das votações em comum.`;
+    pares.innerHTML=''; maisPares.hidden=true; return;
+  }
   // A descrição sai do dado: quais partidos se juntam e em que bloco estão — nada fixo no texto.
   const comb={}, blocosPar=new Set(); let minGov=1;
   L.forEach(([a,b])=>{ const [x,y]=[a,b].map(String).sort((i,j)=>N(i)[3]-N(j)[3]);
@@ -583,10 +669,10 @@ function desenharPares(){
     const g=pctGov(y); if(g!=null) minGov=Math.min(minGov,g); });
   const combTxt=Object.entries(comb).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${k} (${n})`).join(', ');
   const mesmoBloco=blocosPar.size===1?[...blocosPar][0].split('-'):null;
-  subPares.textContent=`Deputados de partidos distantes no espectro — pelo menos ${nf.format(B.regras.distOpostos)} pontos na escala de 1 a 10 — `+
+  subPares.textContent=`${CASA.Plu} de partidos distantes no espectro — pelo menos ${nf.format(B.regras.distOpostos)} pontos na escala de 1 a 10 — `+
     `que votaram igual em ${pc(B.regras.parMin)} ou mais das votações em comum. São ${nf.format(B.improvaveisTotal)} pares: ${combTxt}.`+
-    (mesmoBloco&&mesmoBloco[0]===mesmoBloco[1]?` Todos no bloco que ${nomeBloco(+mesmoBloco[0]).replace(/^./,c=>c.toLowerCase())}: `+
-      `o deputado do partido mais à direita de cada par votou como o Governo orientou em ${pc(minGov)} ou mais das vezes.`:'');
+    (mesmoBloco&&mesmoBloco[0]===mesmoBloco[1]?` Todos no bloco ${refBloco(+mesmoBloco[0])}: `+
+      `o ${CASA.sing} do partido mais à direita de cada par votou como o Governo orientou em ${pc(minGov)} ou mais das vezes.`:'');
   pares.innerHTML=L.slice(0,limitePares).map(([a,b,v,c])=>`<div class="par">${pessoaHTML(a)}
       <div class="x"><b>${pc1(v)}</b><small>de votos iguais em ${nf.format(c)} votações</small></div>${pessoaHTML(b)}</div>`).join('');
   pares.querySelectorAll('.pessoa').forEach(x=>x.onclick=()=>{ selecionar(x.dataset.id,false); document.getElementById('plotBl').scrollIntoView({behavior:'smooth'}); });
@@ -600,9 +686,16 @@ fDep.onchange=fDep.oninput=()=>{
   if(achou.length===1) selecionar(achou[0],true);
 };
 limpar.onclick=()=>{ SEL=null; fDep.value=''; limpar.hidden=true; ficha.hidden=true;
-  linhas.querySelectorAll('.pt').forEach(b=>b.classList.remove('sel','apaga')); history.replaceState(null,'','blocos.html'); };
+  linhas.querySelectorAll('.pt').forEach(b=>b.classList.remove('sel','apaga')); history.replaceState(null,'',urlCasa(null)); };
 // site.js é defer: Bandeiras só existe depois do parse
-document.addEventListener('DOMContentLoaded',()=>carregar().catch(()=>{ chamada.textContent='Não foi possível carregar blocos.json. Abra o site por um servidor (não direto do disco).'; }));
+casaSel.addEventListener('click',e=>{ const b=e.target.closest('[data-casa]'); if(b&&b.dataset.casa!==CASA.id) trocarCasa(b.dataset.casa,null); });
+document.addEventListener('DOMContentLoaded',async()=>{
+  const q=new URLSearchParams(location.search), c0=q.get('casa')==='s'?'s':'c', dep=q.get('dep');
+  await Bandeiras.carregar();     // logos dos partidos (logos.py); sem o arquivo, só não mostra logo
+  // sem o arquivo do Senado (?casa=s antes da primeira rodada que o gera), cai na Câmara, com o aviso
+  if(!(await trocarCasa(c0,dep))&&c0==='s') await trocarCasa('c',dep,true);
+  if(!B) chamada.textContent='Não foi possível carregar os dados. Abra o site por um servidor (não direto do disco).';
+});
 </script>
 </body>
 </html>

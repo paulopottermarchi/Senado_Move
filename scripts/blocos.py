@@ -5,6 +5,9 @@ Uso:
     python scripts/blocos.py               # depois de votos.py; lê cache/bulk/, grava blocos.json
     python scripts/blocos.py --atualizar   # rebaixa as orientações do ano corrente (rodada diária)
 
+O mesmo cálculo roda para o Senado em blocos_senado.py, que importa `calcular` daqui: um método só
+para as duas Casas, com os mínimos de cada uma.
+
 Nenhuma chamada à API. Fontes: votacoes-{ano}, votacoesVotos-{ano} e
 votacoesOrientacoes-{ano} (Dados Abertos da Câmara, os mesmos arquivos de votos.py).
 
@@ -40,6 +43,7 @@ import votos
 SAIDA = coleta.DADOS / "blocos.json"
 MIN_VOTOS = 100      # votos Sim/Não no Plenário para o deputado entrar
 MIN_COMUNS = 100     # votações em comum para um par contar
+MIN_GOVERNO = 50     # votações com orientação do Governo para o deputado ter a porcentagem
 DIST_OPOSTOS = 4.0   # pontos na escala 1–10 para dois partidos serem "de lados opostos"
 PAR_MIN = 0.90       # concordância mínima de um par improvável
 N_PARECIDOS = 5
@@ -51,49 +55,19 @@ def mediana(xs):
     return None if not n else (xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2)
 
 
-def main():
-    import argparse
-    ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
-    ap.add_argument("--atualizar", action="store_true",
-                    help="baixar de novo as orientações do ano corrente (os votos, votos.py já rebaixa)")
-    args = ap.parse_args()
-    sys.stdout.reconfigure(encoding="utf-8")
-    deputados = json.loads(coleta.SAIDA.read_text(encoding="utf-8"))
-    info = {d["id"]: d for d in deputados}
+def calcular(ids, sim, nao, gov, siglas, info, regras):
+    """O cálculo dos blocos, igual para a Câmara e para o Senado.
 
-    print("Lendo votações do Plenário (cache/bulk/)…", flush=True)
-    vot = {r["id"]: r for r in votos.linhas("votacoes", votos.ANOS)}
-    plen = sorted((i for i, v in vot.items() if v["siglaOrgao"] == "PLEN"),
-                  key=lambda i: vot[i]["dataHoraRegistro"])
-    bit = {v: k for k, v in enumerate(plen)}
-    governo = {r["idVotacao"]: r["orientacao"]
-               for r in votos.linhas("votacoesOrientacoes", votos.ANOS, args.atualizar)
-               if r["siglaBancada"] == "Governo" and r["orientacao"] in (votos.SIM, votos.NAO)}
+    ids     parlamentares que entram (já com o mínimo de votos Sim/Não da Casa)
+    sim/nao um inteiro por parlamentar, com um bit por votação nominal (Sim e Não separados)
+    gov     id → [votações com orientação do Governo, quantas votou como ele]
+    siglas  id → Counter do partido NA DATA DO VOTO, voto a voto
+    info    id → {"nome", "uf", "partido"}; "partido" é o de hoje, ou None para quem já saiu
+    regras  {"minComuns", "minGoverno", "distOpostos", "parMin"}
 
-    # Votos como bits: um inteiro por deputado para Sim e outro para Não. A concordância
-    # de um par é uma contagem de bits — 118 mil pares em menos de um segundo.
-    sim, nao = defaultdict(int), defaultdict(int)
-    gov = defaultdict(lambda: [0, 0])   # [votações com orientação, votou como o Governo]
-    siglas = defaultdict(Counter)       # partido NA DATA DO VOTO, voto a voto
-    nominais = set()
-    for r in votos.linhas("votacoesVotos", votos.ANOS):
-        j = bit.get(r["idVotacao"])
-        if j is None or r["voto"] not in (votos.SIM, votos.NAO):
-            continue
-        nominais.add(j)
-        d = int(r["deputado_id"])
-        siglas[d][r["deputado_siglaPartido"]] += 1
-        if r["voto"] == votos.SIM:
-            sim[d] |= 1 << j
-        else:
-            nao[d] |= 1 << j
-        o = governo.get(r["idVotacao"])
-        if o:
-            gov[d][0] += 1
-            gov[d][1] += r["voto"] == o
-
-    ids = [d["id"] for d in deputados if (sim[d["id"]] | nao[d["id"]]).bit_count() >= MIN_VOTOS]
-
+    Devolve (parte, blocos, bloco_de, partido): `parte` é o que vai para o JSON (corte, blocos, nomes, deputados,
+    improvaveis…); `deputados` guarda os parlamentares da Casa, com o mesmo nome de campo nas duas."""
+    min_comuns, min_gov = regras["minComuns"], regras["minGoverno"]
     # Partido de cada deputado NO PERÍODO: aquele em que deu a maior parte dos votos. O de
     # hoje engana — medido: 155 dos deputados atuais trocaram de partido (janela de 2026),
     # e Túlio Gadêlha, hoje PSD, votou 837 vezes pela REDE e 52 pelo PSD. Composição dos
@@ -111,7 +85,7 @@ def main():
         for b in range(a + 1, n):
             sb, nb = sim[ids[b]], nao[ids[b]]
             c = (va & (sb | nb)).bit_count()
-            if c >= MIN_COMUNS:
+            if c >= min_comuns:
                 ig[a][b] = ig[b][a] = ((sa & sb) | (na & nb)).bit_count()
                 cm[a][b] = cm[b][a] = c
 
@@ -158,7 +132,7 @@ def main():
     # ------------------------------------------------ por deputado
     por_partido = defaultdict(list)
     for d in ids:
-        if pct(d) is not None and gov[d][0] >= 50:
+        if pct(d) is not None and gov[d][0] >= min_gov:
             por_partido[partido[d]].append(pct(d))
     saida_dep = {}
     for a, d in enumerate(ids):
@@ -166,7 +140,7 @@ def main():
                            reverse=True)[:N_PARECIDOS]
         saida_dep[str(d)] = {
             "bloco": bloco_de[d],
-            "governo": [gov[d][1], gov[d][0]] if gov[d][0] >= 50 else None,
+            "governo": [gov[d][1], gov[d][0]] if gov[d][0] >= min_gov else None,
             "parecidos": [[b, round(v, 3), c] for v, c, b in parecidos],
         }
     medianas = {p: round(mediana(xs), 3) for p, xs in por_partido.items() if len(xs) >= 3}
@@ -178,13 +152,80 @@ def main():
     for a in range(n):
         for b in range(a + 1, n):
             sa, sb = score(ids[a]), score(ids[b])
-            if (cm[a][b] < 2 * MIN_COMUNS or sa is None or sb is None or abs(sa - sb) < DIST_OPOSTOS
+            if (cm[a][b] < 2 * min_comuns or sa is None or sb is None or abs(sa - sb) < regras["distOpostos"]
                     or fatia[ids[a]] < 0.75 or fatia[ids[b]] < 0.75):
                 continue
             v = ig[a][b] / cm[a][b]
-            if v >= PAR_MIN:
+            if v >= regras["parMin"]:
                 improvaveis.append([ids[a], ids[b], round(v, 3), cm[a][b]])
     improvaveis.sort(key=lambda x: (-x[2], -x[3]))
+
+    # Sanidade: todo deputado com número está num bloco, e os blocos somam o universo.
+    assert sum(len(g) for g in blocos) == n == len(saida_dep)
+
+    parte = {
+        "regras": dict(regras),
+        "corte": {"blocos": k, "concordanciaDentro": round(dentro, 3), "concordanciaEntre": round(entre, 3)},
+        "blocos": saida_blocos,
+        "medianaGovernoPorPartido": medianas,
+        # [nome, partido no período, UF, score desse partido, partido hoje (None: já saiu)]
+        "nomes": {str(d): [info[d]["nome"], partido[d], info[d]["uf"], score(d), info[d]["partido"]] for d in ids},
+        "trocaramDePartido": sum(1 for d in ids if info[d]["partido"] and partido[d] != info[d]["partido"]),
+        "deputados": saida_dep,
+        "improvaveis": improvaveis[:60],
+        "improvaveisTotal": len(improvaveis),
+    }
+    return parte, blocos, bloco_de, partido
+
+
+def main():
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    ap.add_argument("--atualizar", action="store_true",
+                    help="baixar de novo as orientações do ano corrente (os votos, votos.py já rebaixa)")
+    args = ap.parse_args()
+    sys.stdout.reconfigure(encoding="utf-8")
+    deputados = json.loads(coleta.SAIDA.read_text(encoding="utf-8"))
+    info = {d["id"]: d for d in deputados}
+
+    print("Lendo votações do Plenário (cache/bulk/)…", flush=True)
+    vot = {r["id"]: r for r in votos.linhas("votacoes", votos.ANOS)}
+    plen = sorted((i for i, v in vot.items() if v["siglaOrgao"] == "PLEN"),
+                  key=lambda i: vot[i]["dataHoraRegistro"])
+    bit = {v: k for k, v in enumerate(plen)}
+    governo = {r["idVotacao"]: r["orientacao"]
+               for r in votos.linhas("votacoesOrientacoes", votos.ANOS, args.atualizar)
+               if r["siglaBancada"] == "Governo" and r["orientacao"] in (votos.SIM, votos.NAO)}
+
+    # Votos como bits: um inteiro por deputado para Sim e outro para Não. A concordância
+    # de um par é uma contagem de bits — 118 mil pares em menos de um segundo.
+    sim, nao = defaultdict(int), defaultdict(int)
+    gov = defaultdict(lambda: [0, 0])   # [votações com orientação, votou como o Governo]
+    siglas = defaultdict(Counter)       # partido NA DATA DO VOTO, voto a voto
+    nominais = set()
+    for r in votos.linhas("votacoesVotos", votos.ANOS):
+        j = bit.get(r["idVotacao"])
+        if j is None or r["voto"] not in (votos.SIM, votos.NAO):
+            continue
+        nominais.add(j)
+        d = int(r["deputado_id"])
+        siglas[d][r["deputado_siglaPartido"]] += 1
+        if r["voto"] == votos.SIM:
+            sim[d] |= 1 << j
+        else:
+            nao[d] |= 1 << j
+        o = governo.get(r["idVotacao"])
+        if o:
+            gov[d][0] += 1
+            gov[d][1] += r["voto"] == o
+
+    ids = [d["id"] for d in deputados if (sim[d["id"]] | nao[d["id"]]).bit_count() >= MIN_VOTOS]
+    regras = {"minVotos": MIN_VOTOS, "minComuns": MIN_COMUNS, "distOpostos": DIST_OPOSTOS, "parMin": PAR_MIN,
+              "minGoverno": MIN_GOVERNO}
+    parte, blocos, bloco_de, partido = calcular(ids, sim, nao, gov, siglas, info, regras)
+    n, k = len(ids), len(blocos)
+    saida_blocos, improvaveis = parte["blocos"], parte["improvaveis"]
+    dentro, entre = parte["corte"]["concordanciaDentro"], parte["corte"]["concordanciaEntre"]
 
     # ------------------------------------------------ o que cada bloco aprovou, por tema
     # Só as votações finais de texto-base (proposicoes.json), onde Sim = aprovar a lei.
@@ -193,7 +234,7 @@ def main():
     # do deputado (temas.classificar, gravadas por votos.py em proposicoes.json).
     from temas import BLOCOS, CURTO
     de_curto = {v: k for k, v in CURTO.items()}
-    leis =coleta.ler_cache(votos.PROPOSICOES) or []
+    leis = coleta.ler_cache(votos.PROPOSICOES) or []
     por_tema = defaultdict(lambda: {"leis": 0, "votos": [[0, 0] for _ in blocos], "divergem": 0})
     sem_tema = 0
     for lei in leis:
@@ -231,27 +272,13 @@ def main():
                 "sim": [round(s / (s + n), 3) if s + n else None for s, n in t["votos"]],
             })
 
-    # Sanidade: todo deputado com número está num bloco, e os blocos somam o universo.
-    assert sum(len(g) for g in blocos) == n == len(saida_dep)
-
     obj = {
         "_fonte": "Dados Abertos da Câmara: votacoes, votacoesVotos e votacoesOrientacoes, "
                   "votações nominais do Plenário, votos Sim e Não",
         "_gerado": datetime.now().date().isoformat(),
         "votacoes": len(nominais),
         "votacoesComOrientacao": sum(1 for i in governo if vot.get(i, {}).get("siglaOrgao") == "PLEN"),
-        "regras": {"minVotos": MIN_VOTOS, "minComuns": MIN_COMUNS, "distOpostos": DIST_OPOSTOS,
-                   "parMin": PAR_MIN},
-        "corte": {"blocos": k, "concordanciaDentro": round(dentro, 3), "concordanciaEntre": round(entre, 3)},
-        "blocos": saida_blocos,
-        "medianaGovernoPorPartido": medianas,
-        # [nome, partido no período, UF, score desse partido, partido hoje]
-        "nomes": {str(d): [info[d]["nome"], partido[d], info[d]["uf"], score(d), info[d]["partido"]]
-                  for d in ids},
-        "trocaramDePartido": sum(1 for d in ids if partido[d] != info[d]["partido"]),
-        "deputados": saida_dep,
-        "improvaveis": improvaveis[:60],
-        "improvaveisTotal": len(improvaveis),
+        **parte,
         "temas": temas_saida,
         "temasLeis": len(leis),
         "temasSemCategoria": sem_tema,
@@ -267,7 +294,7 @@ def main():
         print(f"   bloco {nb + 1}: {b['n']} deputados, votam com o Governo (mediana) "
               f"{b['medianaGoverno']:.0%} · " + ", ".join(f"{p} {q}" for p, q in list(b["partidos"].items())[:9]))
     print(f"Pares improváveis (partidos a {DIST_OPOSTOS:g}+ pontos, {PAR_MIN:.0%}+ de concordância): "
-          f"{len(improvaveis)}")
+          f"{parte['improvaveisTotal']}")
     for a, b, v, c in improvaveis[:5]:
         print(f"   {v:.1%} em {c}: {info[a]['nome']} ({partido[a]}) × {info[b]['nome']} ({partido[b]})")
     print(f"Por tema ({len(leis)} leis; {sem_tema} sem categoria) — % de Sim de cada bloco, maiorias opostas:")
