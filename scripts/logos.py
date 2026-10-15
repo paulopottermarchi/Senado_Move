@@ -65,9 +65,15 @@ def siglas_usadas():
         s.update(json.loads((DADOS / "partidos" / "governo.json").read_text(encoding="utf-8"))["partidos"])
     except FileNotFoundError:
         pass
-    for arq, campo in (("deputados.json", "partido"), ("senadores.json", "partido")):
+    for arq, campo in (("deputados.json", "partido"), ("senadores.json", "partido"), ("senadores_antigos.json", "partido")):
         try:
             s.update(x[campo] for x in json.loads((DADOS / arq).read_text(encoding="utf-8")) if x.get(campo))
+        except FileNotFoundError:
+            pass
+    for arq in ("senadores.json", "senadores_antigos.json"):    # o partido de cada senador NA legislatura (`posicao`), que muda de uma para outra
+        try:
+            for x in json.loads((DADOS / arq).read_text(encoding="utf-8")):
+                s.update(po["partido"] for po in (x.get("posicao") or {}).values() if po.get("partido"))
         except FileNotFoundError:
             pass
     s.difference_update({SEM_PARTIDO, "S/Partido"})   # sem partido não é partido (o Senado escreve de outro jeito)

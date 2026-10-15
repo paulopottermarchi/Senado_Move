@@ -1,0 +1,24 @@
+{
+  "_fonte": "Complemento da lista de mandatos presidenciais que scripts/contexto.py consulta no Wikidata (API, cargo \"Presidente do Brasil\", Q5176750, uma declaração P39 por mandato). As DATAS dos mandatos vêm do Wikidata, não daqui. Este arquivo só traz (1) o nome curto de cada presidente, usado nos rótulos dos gráficos (os mesmos de governos.json: Lula I, Dilma II…), e (2) as duas posses em exercício.",
+  "_regra": "A marca de cada mandato é o dia em que a pessoa assumiu a Presidência da República, inclusive em exercício. O Wikidata registra a data da efetivação (Itamar Franco em 29/12/1992, Michel Temer em 31/8/2016); nos dois casos a pessoa já exercia a Presidência desde que o Senado afastou o titular. É a mesma regra de governos.json, que começa o governo Temer em 12/5/2016. A exceção só vale enquanto o Wikidata trouxer exatamente a data de efetivação declarada aqui; se mudar, o bloco de mandatos aborta e o arquivo anterior fica.",
+  "nomes": {
+    "Q244997": {"curto": "Sarney"},
+    "Q236503": {"curto": "Collor"},
+    "Q485946": {"curto": "Itamar"},
+    "Q230578": {"curto": "FHC"},
+    "Q37181": {"curto": "Lula"},
+    "Q40722": {"curto": "Dilma"},
+    "Q463533": {"curto": "Temer"},
+    "Q10304982": {"curto": "Bolsonaro"}
+  },
+  "posses_em_exercicio": [
+    {"item": "Q485946", "inicio": "1992-10-02", "efetivadoEm": "1992-12-29",
+     "nota": "Assumiu a Presidência em exercício em 2/10/1992, quando o Senado afastou Fernando Collor até concluir o julgamento; foi efetivado em 29/12/1992, dia em que Collor renunciou.",
+     "fonte": {"nome": "Câmara dos Deputados, cronologia \"20 anos do impeachment\" (entradas de 2/10 e 29/12/1992)",
+               "url": "https://www2.camara.leg.br/atividade-legislativa/plenario/discursos/escrevendohistoria/destaque-de-materias/20-anos-do-impeachment"}},
+    {"item": "Q463533", "inicio": "2016-05-12", "efetivadoEm": "2016-08-31",
+     "nota": "Assumiu a Presidência em exercício em 12/5/2016, quando o Senado afastou Dilma Rousseff por até 180 dias; foi efetivado em 31/8/2016, quando o Senado decidiu a perda do cargo dela.",
+     "fonte": {"nome": "Agência Brasil, 12/5/2016: \"Dilma será afastada do cargo por até 180 dias; Temer assume presidência\"",
+               "url": "https://agenciabrasil.ebc.com.br/politica/noticia/2016-05/dilma-sera-afastada-do-cargo-por-ate-180-dias-temer-assume-presidencia"}}
+  ]
+}
