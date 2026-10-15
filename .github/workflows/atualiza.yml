@@ -157,6 +157,11 @@ jobs:
       - name: Temas e frase-resumo
         run: python scripts/passo.py temas.py
 
+      # Página de cada senador (senador.html): as PEC e PL de que é o primeiro autor, por tema. Lê só o cache do passo "Senadores" e
+      # confere as contagens contra senadores.json; opcional porque, se falhar, a rodada segue e o arquivo anterior fica.
+      - name: Página de cada senador
+        run: python scripts/passo.py --opcional senador_paginas.py
+
       # Aba "Partidos": proposições por partido, por legislatura desde 1991 e por tema, dos arquivos anuais
       # em lote da Câmara (a 1ª rodada baixa ~700 MB; as seguintes só relêem o que mudou). Usa o
       # deputados.json já com os votos, o blocos.json e a coesão que o votos.py deixou no cache.

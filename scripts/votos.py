@@ -30,7 +30,7 @@ from collections import Counter, defaultdict
 from datetime import datetime
 
 import coleta  # a allowlist, o status e as faixas são os da Etapa A — nunca duplicar
-from temas import CATEGORIAS, CURTO, classificar  # a mesma classificação da página por tema
+from temas import BLOCOS as BLOCOS_TEMA, CATEGORIAS, CURTO, classificar  # a mesma classificação da página por tema (BLOCOS aqui é outra coisa: os blocos parlamentares)
 import resumos  # passo 8: resumo do inteiro teor, gerado por resumos.py
 import tramitacoes  # etapas da tramitação; tramitacoes.py baixa, aqui só se lê o cache
 
@@ -510,10 +510,36 @@ def main():
     for idv in ids_sel:
         for r in votos[idv]:
             por_dep[int(r["deputado_id"])][r["voto"]] += 1
+
+    # Como votou, POR TEMA: cada voto Sim, Não ou Abstenção conta no tema (ou nos temas) da lei votada, pela mesma classificação da
+    # página por tema (temas.classificar sobre a ementa). A unidade é a votação final de texto-base, uma por lei. Uma lei com mais de um
+    # tema conta em cada um (as parcelas somam mais que o total); a que não casa com regra nenhuma vai em "s" (sem categoria), nunca some.
+    # "b" = por bloco (a lei conta uma vez no bloco, mesmo com duas categorias nele), "c" = por categoria; ambos na ordem de taxonomia.json.
+    ementa_de = {x["idVotacao"]: x["ementa"] or "" for x in saida}
+    cats_de = {idv: sorted({i for i, _, _ in classificar(ementa_de.get(idv, ""), "")}) for idv in ids_sel}
+    bloco_de = {CATEGORIAS.index(c): bi for bi, (_, cs) in enumerate(BLOCOS_TEMA) for c in cs}
+    por_tema = defaultdict(lambda: {t: {"b": [0] * len(BLOCOS_TEMA), "c": [0] * len(CATEGORIAS), "s": 0} for t in (SIM, NAO, ABST)})
+    for idv in ids_sel:
+        cats = cats_de[idv]
+        blocos_da_lei = sorted({bloco_de[i] for i in cats})
+        for r in votos[idv]:
+            t = r["voto"]
+            if t not in (SIM, NAO, ABST):
+                continue                                         # obstrução e presidência não são voto
+            a = por_tema[int(r["deputado_id"])][t]
+            for b in blocos_da_lei:
+                a["b"][b] += 1
+            for i in cats:
+                a["c"][i] += 1
+            if not cats:
+                a["s"] += 1
     for d in deputados:
         c = por_dep.get(d["id"], Counter())
         d["votos"] = {"chamadas": sum(c.values()), "sim": c[SIM], "nao": c[NAO],
                       "abstencao": c[ABST]}
+        if d["votos"]["chamadas"]:
+            pt = por_tema[d["id"]]
+            d["votos"]["temas"] = {"sim": pt[SIM], "nao": pt[NAO], "abstencao": pt[ABST]}
 
     # Orientação da bancada: todas as votações nominais do Plenário, não só as 164 de texto-base.
     plen = [i for i in votos if (votacoes.get(i) or {}).get("siglaOrgao") == "PLEN"]
