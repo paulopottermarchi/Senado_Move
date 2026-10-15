@@ -20,8 +20,9 @@ dos Deputados, o Senado Federal ou o TSE.
 | **Início** (`index.html`) | A porta de entrada: busca de deputado, um cartão para cada página, "Esta semana na Câmara" (o que virou lei, andou ou foi apresentado nos últimos 7 dias, a pauta do Plenário e as notícias) e o espectro político em cada região do país. |
 | **Deputados** (`deputados.html`) | Onde cada um dos 513 deputados está no espectro político e quanto propôs — com alternância entre proposições *apresentadas* e as que *viraram lei*. Ranking (com votação, votos, conversão, orientação e alinhamento ao Governo), partidos e as votações mais disputadas e mais consensuais. |
 | **Partidos** (aba da página inicial) | As proposições de cada partido, por legislatura desde 1991 e por tema: proposições distintas, conversão, quem concentra o volume e perfil por tema; alinhamento ao Governo governo a governo, desde 2003; na legislatura atual, também coesão e posição no espectro. |
-| **Perfil do deputado** (`deputado.html?id=…`) | Todas as PEC e PL de autoria, por tema, com o tempo e o caminho de cada uma na Câmara; com quem vota; leituras na Wikipédia; obras com emenda dele. |
+| **Perfil do deputado** (`deputado.html?id=…`) | Todas as PEC e PL de autoria, por tema, com o tempo e o caminho de cada uma na Câmara. Em cartões: o que fez (com as aprovadas em Plenário ao lado das que viraram lei), como vota (alinhamento ao Governo e votos diferentes da orientação da própria bancada, com a mediana da Câmara e os colegas de partido ao lado, **o tema das leis em que votou Sim, Não ou se absteve** (por bloco e por categoria, com a contagem de cada um) e quem vota parecido), **mandatos** (linha do tempo desde 2003, a condição de posse e a eleição de 2022), leituras na Wikipédia e obras com emenda dele. Mesmo desenho do perfil do senador. |
 | **Senadores** (`senadores.html`) | Os 81 senadores no mesmo gráfico: autoria, leis, relatorias e votos no Plenário, com composição da esquerda à direita, alinhamento ao Governo e filtro de legislatura desde 2003, com todos os que exerceram o mandato (inclusive quem já saiu), seus suplentes e a data e a causa da saída. Em abas: gráfico, tabela e **partidos** (proposições, conversão, alinhamento ao Governo e coesão de cada bancada, na legislatura atual e, quando o arquivo dos senadores que já saíram existe, nas anteriores desde 2003; calculado no navegador a partir dos mesmos arquivos). A ficha de cada senador abre sobre a página. |
+| **Perfil do senador** (`senador.html?id=…`) | Para cada senador, em exercício ou que já saiu: todas as PEC e PL de que é o **primeiro autor**, por tema (as mesmas categorias do perfil do deputado, atribuídas pela ementa oficial do Senado), com a situação de cada uma e, nas que viraram lei, o número e a data da norma; como vota (alinhamento ao Governo e votos diferentes da orientação da própria bancada, com a mediana do Senado ao lado, e o tema das matérias em que votou Sim, Não ou se absteve, com a contagem de cada um), mandatos, suplentes e saída. É a mesma lista que dá os números do gráfico, conferida contra `senadores.json` a cada rodada. Não tem o caminho por órgão (o Senado não o entrega junto da lista de autoria), nem leituras na Wikipédia nem obras com emenda. |
 | **Leis votadas** (`leis.html`) | As votações finais nominais desde 2023: placar, posição média de quem votou sim e não, adesão por faixa do espectro, quem votou diferente da orientação da própria bancada, enquete da Câmara e consulta do Senado. |
 | **Quem vota com quem** (`blocos.html`) | Os blocos que se formam pela semelhança dos votos, sem olhar o partido. |
 | **Entre as casas** (`fluxo.html`) | Proposições aprovadas numa casa e remetidas à outra (Câmara → Senado e Senado → Câmara): quantas viraram lei, quanto tempo levaram na casa revisora e em que órgão estão paradas. A unidade é a proposição, nunca o parlamentar. |
@@ -40,7 +41,7 @@ dos Deputados, o Senado Federal ou o TSE.
 - **Enquadramento antes do número.** Votar diferente da orientação da própria bancada não é traição por definição; aditivo
   de contrato não é irregularidade; leitura na Wikipédia mede procura, não aprovação.
 - **As cores do espectro só representam ideologia.** Tema, bloco de voto e valor de obra usam
-  tinta neutra ou cores fora dessa paleta.
+  tinta neutra ou cores fora dessa paleta. Os símbolos dos temas (abaixo) seguem a mesma regra.
 
 ## Método, em resumo
 
@@ -141,15 +142,16 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 ```
 site/                 o que vai ao ar — o GitHub Pages publica a pasta inteira, e só ela
   index.html          página inicial; deputados.html, a dos deputados (prototipo.html só redireciona)
-  deputado.html  leis.html  blocos.html  fluxo.html  obras.html  senadores.html  contexto.html
+  deputado.html  senador.html  leis.html  blocos.html  fluxo.html  obras.html  senadores.html  contexto.html
   origem.html         "De onde vêm as leis": fora da barra do topo (inicial, deputados, ficha e rodapé levam a ela)
   origem.js           a barra de composição e o texto de "De onde vêm as leis", iguais nas quatro telas que os mostram
-  estilo.css  site.js  motion-init.js  favicon.ico
+  estilo.css  site.js  temas.js  paineis.js  motion-init.js  favicon.ico     (temas.js: símbolos dos temas e o botão por tema; paineis.js: as peças dos perfis de parlamentar)
   cena3d.js  modelos3d.js  cupula3d.js  plenario3d.js   3D sob demanda: base comum, modelos do topo, plenário dos senadores
   img/                imagem estática de cada modelo (a mesma câmera do 3D, para quem não tem WebGL)
   vendor/             Motion, Three.js e a fonte condensada, em versão fixa
   dados/              os JSON que as páginas leem, gerados pelos scripts
     temas/            um arquivo por deputado, a taxonomia e o resumo
+    senadores/        um arquivo por senador (os de hoje e os que já saíram) e a frase de cada um
 scripts/              coleta e processamento, em Python (mapa_origem.json: autor → categoria, com a fonte de cada nome)
 entradas/             tabelas fixas e resultados pagos, versionados e não publicados
                       (ideologia.json, eleicao2022.json, governos.json, logos_partidos.json, resumos por IA,
@@ -186,7 +188,7 @@ completa da rodada diária está no workflow:
 
 ```
 atualiza → coleta → votos → blocos → notoriedade → wikipedia → noticias → youtube → enquetes
-→ ecidadania → resumos → obras → senado → tramitacoes → temas → partidos → governo → logos → fluxo → origem_leis → semana
+→ ecidadania → resumos → obras → senado → tramitacoes → temas → senador_paginas → partidos → governo → logos → fluxo → origem_leis → semana
 ```
 
 Para ver o site, sirva a pasta `site/` (o navegador não carrega os JSON de arquivos abertos direto
@@ -251,7 +253,14 @@ com os dados do dia anterior. Para publicar pela primeira vez: *Settings → Pag
   que só a Câmara registra entra com a marca "data não confirmada pelo Senado". As leis da ficha de um deputado, as de "Leis
   votadas" e as desta página são conjuntos diferentes.
 - **Categorias de tema** são classificação deste site por palavras-chave da ementa, com o termo que
-  definiu cada uma sempre visível. A precisão ainda não foi medida.
+  definiu cada uma sempre visível. A precisão ainda não foi medida. No perfil do senador as mesmas regras valem só sobre a ementa do Senado (sem a
+  indexação oficial, que o Senado não entrega junto da lista de autoria); a ementa que não casa com nenhuma regra fica "sem categoria", e a página
+  diz quantas.
+- **Símbolos dos temas.** Cada um dos 7 blocos e das 27 categorias tem um desenho, nas páginas que mostram tema (ficha por tema do deputado, Leis
+  votadas, "Esta semana", Quem vota com quem, o perfil por tema dos partidos, o perfil do senador e o Contexto econômico, onde os dois temas oficiais da Câmara
+  emprestam o desenho de duas categorias). São desenhos originais deste projeto (`site/temas.js`), em uma
+  tinta só, a do texto, nos dois temas: ajudam a achar o tema, não dizem qual é. O nome fica sempre escrito ao lado, e sem o módulo as páginas
+  mostram só o nome. O símbolo é um auxílio e não carrega ideologia, posição política nem importância.
 
 ## Licença
 

@@ -42,18 +42,21 @@
 .frase{font-family:var(--serif);font-size:clamp(17px,2.1vw,20px);line-height:1.45;
        color:var(--tinta);max-width:58ch;margin:12px 0 0}
 .frase b{font-weight:600}
-/* com quem vota (blocos.json) */
-.cqv{margin-top:20px;background:var(--papel,#fff);border:1px solid var(--linha);border-radius:12px;padding:16px 20px;max-width:760px}
-.cqv[hidden]{display:none}
-.cqv h2{font-size:15px;font-weight:600}
+/* o cartão (.cx), os blocos de números, os medidores e a linha do tempo vêm do estilo.css ("PAINÉIS DE PERFIL") */
 .cqv-av{font-size:13px;color:var(--tinta3);margin-top:4px}
 .cqv-txt{font-size:14px;line-height:1.6;margin-top:8px}
 .cqv-txt b{font-weight:600}
-.cqv-regua{position:relative;height:28px;margin-top:8px}
-.cqv-regua .base{position:absolute;left:0;right:0;top:13px;height:2px;background:var(--linha);border-radius:1px}
-.cqv-regua .faixa{position:absolute;top:9px;height:10px;background:var(--linha2,var(--linha2));border:1px solid var(--linha);border-radius:var(--raio-c)}
-.cqv-regua .md{position:absolute;top:5px;width:2px;height:18px;margin-left:-1px;background:var(--tinta)}
-.cqv-regua .eu{position:absolute;top:6px;width:16px;height:16px;margin-left:-8px;border-radius:50%;border:2px solid var(--papel);box-shadow:0 0 0 1px var(--tinta)}
+.cqv-txt a,.cqv-av a{color:var(--link)}
+.por-tema{scroll-margin-top:84px}
+.paineis-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:20px;align-items:start}
+.paineis-2:not(:has(.cx:not([hidden]))){display:none}
+/* quem vota mais parecido: chips que levam à página de quem vota com quem */
+.parecidos{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px}
+.parecidos .rot{font-size:13px;font-weight:600;margin-right:4px}
+.par{display:inline-flex;align-items:baseline;gap:6px;padding:4px 12px;border:1px solid var(--linha-forte);border-radius:999px;font-size:12px;color:var(--tinta2);text-decoration:none;transition:border-color var(--t),color var(--t)}
+.par b{font-weight:600;color:var(--tinta)}
+.par:hover{border-color:var(--tinta);color:var(--tinta)}
+.par.todos{border-style:dashed;color:var(--link)}
 .noto-meses{display:flex;align-items:flex-end;gap:4px;height:46px;margin-top:12px}
 .noto-meses i{flex:1;background:var(--tinta2);opacity:.55;border-radius:2px 2px 0 0;min-height:2px}
 .noto-meses i:hover{opacity:1}
@@ -146,12 +149,21 @@
 .oficial p{font-size:14px;color:var(--tinta2);margin-top:4px;line-height:1.5}
 .oficial a{font-size:13px;color:var(--tinta2)}
 .item-sit{font-size:13px;color:var(--tinta2);margin-top:8px}
-.porque{font-size:12px;color:var(--tinta3);margin-top:4px;line-height:1.5;max-width:76ch}
+.porque{font-size:12px;color:var(--tinta3);margin-top:4px;line-height:1.7;max-width:76ch}
 .porque q{color:var(--tinta2)}
 .salto{font:inherit;font-size:12px;background:none;border:none;padding:0;color:var(--link);
        cursor:pointer;text-decoration:underline;text-decoration-color:rgba(15,118,110,.35);
        text-underline-offset:2px}
 .salto:hover{text-decoration-color:var(--link)}
+/* com o símbolo, o nome fica dentro de um flex e perde o sublinhado do botão: repete nele */
+.salto .ti-rot>span{text-decoration:underline;text-decoration-color:rgba(15,118,110,.35);text-underline-offset:2px}
+.salto:hover .ti-rot>span{text-decoration-color:var(--link)}
+/* o título do bloco é serifado de 16 px: o carimbo de 28 px fica centrado com o nome */
+.bl-cab h2{min-width:0}
+.bl-cab{margin-bottom:8px}
+/* título da categoria aberta: o símbolo de 28 px respira, centrado na primeira linha */
+.lista-cab h2 .ti-rot{gap:12px;align-items:center}
+.cat-l .ti-rot{gap:10px}
 
 .vazio{font-size:14px;color:var(--tinta2);padding:24px 0;max-width:56ch}
 
@@ -246,12 +258,18 @@
   </div>
 </footer>
 
+<script src="temas.js"></script>
+<script src="paineis.js"></script>
 <script>
 const NF=new Intl.NumberFormat('pt-BR');
+// símbolo do tema (temas.js) ao lado do nome; sem o módulo, só o nome — o nome sempre aparece, o desenho é auxílio
+const tBloco=n=>window.TemaIcone?TemaIcone.rotuloBloco(n,n,28):esc(n);
+const tCat=(n,px)=>window.TemaIcone?TemaIcone.rotulo(n,n,px||16):esc(n);
 const MESES=['jan.','fev.','mar.','abr.','maio','jun.','jul.','ago.','set.','out.','nov.','dez.'];
 const PASSO=40;
 
 let tax=null, dep=null, sel=null, limite=PASSO;
+let DD=null, DEPS=[], LEGS=[], BL=null;          // deputados.json (o registro do deputado e dos colegas), legislaturas.json e blocos.json
 const filtro={tipo:'',lei:false,texto:'',leg:true};
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -289,6 +307,8 @@ async function iniciar(){
     return;
   }
   const pNoticias=carregarNoticias();      // sai junto dos dados do deputado, não depois deles
+  const buscaJson=u=>fetch(u,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
+  const pBase=Promise.all([buscaJson('dados/deputados.json'),buscaJson('dados/legislaturas.json'),buscaJson('dados/blocos.json')]);
   try{
     const [rt,rd]=await Promise.all([
       fetch('dados/temas/taxonomia.json',{cache:'no-cache'}),
@@ -310,37 +330,154 @@ async function iniciar(){
     return;
   }
   await pNoticias;
+  const [lstDep,lstLeg,blocos]=await pBase;
+  DEPS=lstDep||[]; DD=DEPS.find(x=>String(x.id)===id)||null; LEGS=lstLeg||[]; BL=blocos;
   const t=q.get('tema');
   sel = t==='todas'||t==='nc' ? t : (t!=null&&/^\d+$/.test(t)&&tax.categorias[+t]!=null ? +t : null);
   montar();
 }
 
-// Com quem vota (blocos.py → blocos.json). Mede apoio ao governo do momento e semelhança
-// de voto, não ideologia: por isso fica separado do espectro e diz isso antes do número.
-async function comQuemVota(id){
-  let B; try{ const r=await fetch('dados/blocos.json',{cache:'no-cache'}); if(!r.ok) return; B=await r.json(); }catch(e){ return; }
-  const d=B.deputados[String(id)], el=document.getElementById('cqv');
-  if(!d||!el) return;
-  const N=i=>B.nomes[i]||['?','?','?'], p=N(String(id))[1], hoje=N(String(id))[4];
-  const g=d.governo?d.governo[0]/d.governo[1]:null, mp=B.medianaGovernoPorPartido[p];
-  const ps=Object.keys(B.deputados).filter(x=>N(x)[1]===p&&B.deputados[x].governo).map(x=>B.deputados[x].governo[0]/B.deputados[x].governo[1]);
-  const lo=ps.length?Math.min(...ps):null, hi=ps.length?Math.max(...ps):null;
-  const pc=v=>Math.round(v*100)+'%';
-  const bloco=B.blocos[d.bloco].medianaGoverno>=.5?'que acompanha o Governo':'que vota contra o Governo';
-  const cor=d.bloco===0?'var(--b0)':'var(--b1)';
+// ---------- os cartões: o desenho é de paineis.js (o mesmo do senador.html); aqui só o que é da Câmara ----------
+// Os números vêm de deputados.json (o registro do deputado), blocos.json (alinhamento ao Governo e semelhança de voto) e legislaturas.json.
+// Sem um deles, o cartão que dependia dele não aparece; os outros seguem.
+const {pct1,pct0,medianaDe,comoLer,medidor,tiles,espectro,barra,TONS,linhaDoTempo,etq,periodosTxt,dataBR}=Paineis;
+const cab=(id,tit,kick)=>`<div class="cx-cab"><h2 id="${id}">${tit}</h2>${kick?`<span class="kick">${kick}</span>`:''}</div>`;
+const taxaDiv=d=>{const o=d.difOrientacao; return o&&o.diferentes!=null&&o.comparaveis?o.diferentes/o.comparaveis:null;};
+
+// ---------- O que fez na Câmara: cinco números, cada um com o que é, e a posição do partido no espectro ----------
+function atividade(){
+  const el=document.getElementById('ativ'), D=DD; if(!el||!D) return;
+  const total=(D.pecs||0)+(D.leis||0), vl=D.viraramLei||0, v=D.votos;
+  const part=v?(v.sim||0)+(v.nao||0)+(v.abstencao||0):null;
   el.hidden=false;
-  el.innerHTML=`<h2 id="cqvTit">Com quem vota</h2>
-    <p class="cqv-av">Votar junto não é pensar igual: no voto nominal, o que mais separa os deputados é apoiar ou não o governo do momento.</p>
-    <p class="cqv-txt">${g==null?'Menos de 50 votações com orientação do Governo: sem porcentagem.'
-      :`Votou como o líder do Governo orientou em <b>${pc(g)}</b> das ${NF.format(d.governo[1])} votações do Plenário em que houve orientação`+
-       `${mp!=null?` — a mediana do ${esc(p)}${hoje&&hoje!==p?' (partido em que mais votou no período)':''} é ${pc(mp)}`:''}. `}
-      Pela semelhança dos votos, sem olhar o partido, está no bloco ${bloco}.</p>
-    ${g==null?'':`<div class="cqv-regua" role="img" aria-label="${pc(g)}; colegas de partido de ${pc(lo)} a ${pc(hi)}">
-      <span class="base"></span>${lo!=null?`<span class="faixa" style="left:${lo*100}%;width:${(hi-lo)*100}%"></span>`:''}
-      ${mp!=null?`<span class="md" style="left:${mp*100}%"></span>`:''}<span class="eu" style="left:${g*100}%;background:${cor}"></span></div>
-      <div class="cqv-leg"><span>0%: sempre contra a orientação</span><span>cinza: colegas de partido · traço: mediana</span><span>100%</span></div>`}
-    <p class="cqv-txt">Vota mais parecido com ${d.parecidos.map(([o,v])=>`<a href="blocos.html?dep=${o}">${esc(N(String(o))[0])}</a> (${esc(N(String(o))[1])}, ${pc(v)})`).join(', ')}.
-      <a href="blocos.html?dep=${id}">Ver quem vota com quem</a></p>`;
+  el.innerHTML=`${cab('ativTit','O que fez na Câmara','carreira inteira, como autor')}
+    ${tiles([
+      {n:NF.format(D.pecs||0),rot:'PEC',sub:'propostas de emenda à Constituição'},
+      {n:NF.format(D.leis||0),rot:'Projetos de lei',sub:'de autoria'},
+      {n:NF.format(vl),rot:'Viraram lei',sub:`de ${NF.format(total)} apresentadas`,mini:{v:vl,total}},
+      {n:NF.format(D.aprovadasPlenario||0),rot:'Aprovadas em Plenário',sub:'texto-base; pode aguardar o Senado'},
+      {n:part==null?'—':NF.format(part),rot:'Votos registrados',sub:v?`em ${NF.format(v.chamadas)} votações finais de texto-base`:'só existem desde 2023'}])}
+    ${espectro({score:D.score,ideX:D.ideX,partido:D.partido,nota:D.scoreNota})}
+    ${comoLer(`<p>Apresentar projeto é de graça e a maioria não chega a votação: por isso o que virou lei fica ao lado do volume, e a barra mostra a proporção, nunca uma nota.
+      Conta só a autoria (proponente 1), sem as assinaturas de apoiamento que a PEC exige${D._apoiamentoPEC?` (${NF.format(D._apoiamentoPEC)} PEC assinadas como apoio não entram)`:''}.
+      “Viraram lei” é a situação oficial “transformado em norma jurídica”. <b>Aprovadas em Plenário</b> e <b>viraram lei</b> são medidas diferentes e nenhuma contém a outra:
+      parte das leis saiu conclusivamente das comissões, sem voto em Plenário, e parte do que passou no Plenário ainda aguarda o Senado.
+      Relatorias não aparecem: a API da Câmara não permite listar o que cada deputado relatou.</p>`)}`;
+}
+
+// ---------- Como vota: três medidores e quem vota parecido (blocos.py → blocos.json) ----------
+// Mede proximidade com o governo do momento e semelhança de voto, não ideologia: por isso diz isso antes do número, no "Como ler".
+function comoVota(){
+  const el=document.getElementById('cqv'), D=DD, B=BL; if(!el||!D) return;
+  const id=String(D.id), v=D.votos, o=taxaDiv(D);
+  const N=i=>(B&&B.nomes&&B.nomes[i])||['?','?','?'], bd=B&&B.deputados?B.deputados[id]:null;
+  const g=bd&&bd.governo?bd.governo[0]/bd.governo[1]:null;
+  if(!v&&!D.difOrientacao&&g==null&&!bd) return;
+  let meds='';
+  if(B&&bd){
+    const p=N(id)[1], hoje=N(id)[4], mp=B.medianaGovernoPorPartido?B.medianaGovernoPorPartido[p]:null;
+    const taxa=x=>B.deputados[x].governo?B.deputados[x].governo[0]/B.deputados[x].governo[1]:null;
+    const todos=Object.keys(B.deputados).map(taxa).filter(x=>x!=null);
+    const colegas=Object.keys(B.deputados).filter(x=>x!==id&&N(x)[1]===p).map(taxa).filter(x=>x!=null);
+    const medC=medianaDe(todos);
+    meds+=g==null
+      ?medidor({nome:'Alinhamento ao Governo',val:'—',leg:'Menos de 50 votações com orientação do Governo: sem porcentagem.'})
+      :medidor({nome:'Alinhamento ao Governo',val:pct1(g),v:g,lo:colegas.length?Math.min(...colegas,g):null,hi:colegas.length?Math.max(...colegas,g):null,med:medC,rotMed:'mediana da Câmara',
+          leg:`Votou como o líder do Governo orientou em <b>${NF.format(bd.governo[0])}</b> das ${NF.format(bd.governo[1])} votações do Plenário em que houve orientação.`+
+              `${mp!=null?` A mediana do ${esc(p)}${hoje&&hoje!==p?' (partido em que mais votou no período)':''} é ${pct0(mp)}.`:''}`,
+          aria:`${pct1(g)} de alinhamento ao Governo${medC!=null?`; mediana da Câmara ${pct1(medC)}`:''}`});
+  }
+  if(D.difOrientacao){
+    const NIVEL={partido:'pelo próprio partido',federacao:'pela federação',bloco:'pelo bloco em que o partido estava'};
+    const niveis=Object.entries(D.difOrientacao.niveis||{}).filter(([,x])=>x[0]).map(([k,[n,x]])=>`${NIVEL[k]||k} em ${NF.format(n)} (diferente em ${NF.format(x)})`);
+    if(o==null){
+      meds+=D.difOrientacao.nota?medidor({nome:'Votou diferente da própria bancada',val:'—',leg:`Sem número: ${esc(D.difOrientacao.nota)}.`}):'';
+    }else{
+      const colegas=DEPS.filter(x=>x.id!==D.id&&x.partido===D.partido).map(taxaDiv).filter(x=>x!=null);
+      const medD=medianaDe(DEPS.map(taxaDiv).filter(x=>x!=null));
+      meds+=medidor({nome:'Votou diferente da própria bancada',val:pct1(o),v:o,lo:colegas.length?Math.min(...colegas,o):null,hi:colegas.length?Math.max(...colegas,o):null,med:medD,rotMed:'mediana da Câmara',
+        leg:`Votou diferente da orientação registrada da própria bancada em <b>${NF.format(D.difOrientacao.diferentes)}</b> das ${NF.format(D.difOrientacao.comparaveis)} votações nominais do Plenário em que ela orientou Sim ou Não. Orientação liberada não conta.`+
+            `${niveis.length?`<br><small>Orientação registrada ${niveis.join('; ')}.</small>`:''}`,
+        aria:`${pct1(o)} dos votos diferentes da orientação da bancada${medD!=null?`; mediana da Câmara ${pct1(medD)}`:''}`});
+    }
+  }
+  if(v&&v.chamadas){
+    const part=(v.sim||0)+(v.nao||0)+(v.abstencao||0), outros=v.chamadas-part;      // obstrução ou presidindo a sessão (Art. 17)
+    meds+=`<div class="med"><div class="med-topo"><span class="med-nome">Como o voto foi registrado</span><span class="med-val">${NF.format(v.chamadas)}</span></div>
+      <p class="med-leg">votações finais de texto-base com o voto dele registrado. Quem não aparece pode ter faltado, estar de licença ou em missão, ou nem estar em exercício: o registro não diz qual.</p>
+      ${barra([['Sim',v.sim||0,TONS[0]],['Não',v.nao||0,TONS[1]],['Abstenção',v.abstencao||0,TONS[2]],['obstrução ou presidindo a sessão',outros,TONS[3]]])}</div>`;
+  }
+  const parecidos=bd&&bd.parecidos&&bd.parecidos.length&&B.blocos&&B.blocos[bd.bloco]
+    ?`<div class="parecidos"><span class="rot">Vota mais parecido com</span>${bd.parecidos.map(([o2,x])=>
+        `<a class="par" href="blocos.html?dep=${o2}"><b>${esc(N(String(o2))[0])}</b> ${esc(N(String(o2))[1])}, ${pct0(x)}</a>`).join('')}
+        <a class="par todos" href="blocos.html?dep=${D.id}">Ver quem vota com quem</a></div>
+      <p class="med-leg">Pela semelhança dos votos, sem olhar o partido, está no bloco ${B.blocos[bd.bloco].medianaGoverno>=.5?'que acompanha o Governo':'que vota contra o Governo'}.</p>`:'';
+  // Como votou, por tema: o tema da lei votada em cada Sim, Não e abstenção (votos.py → votos.temas), pela classificação deste site.
+  const vt=v&&v.temas?Paineis.votosTema({tax,unidade:'votações',
+    linhas:[{rot:'Sim',k:0,n:v.sim||0,d:v.temas.sim},{rot:'Não',k:1,n:v.nao||0,d:v.temas.nao},{rot:'Abstenção',k:2,n:v.abstencao||0,d:v.temas.abstencao}],
+    nota:'Cada voto conta no tema da lei votada, pela ementa e pela classificação deste site (não da Câmara). A unidade é a votação final de texto-base, uma por lei; '+
+         'uma lei com mais de um tema conta em cada um, então a soma passa do total. Sim é votar a favor da lei e Não, contra. “Sem categoria” é a lei cuja ementa não casa com nenhuma regra de tema.'}):'';
+  if(!meds&&!parecidos&&!vt) return;
+  el.hidden=false;
+  el.innerHTML=`${cab('cqvTit','Como vota','votações nominais do Plenário, desde 2023')}
+    <div class="meds">${meds}</div>${vt}${parecidos}
+    ${comoLer(`<p>Votar junto não é pensar igual: no voto nominal, o que mais separa os deputados é apoiar ou não o governo do momento, e o governo muda. O alinhamento ao Governo mede
+      proximidade com o governo, não ideologia, lealdade nem mérito. Votar diferente da orientação da própria bancada pode ser convicção, compromisso com a base ou acordo; o número
+      mede quantas vezes, não por quê. A orientação é a da liderança mais estreita que orientou (partido, federação ou bloco): quando o partido está num bloco, quem orienta é o líder do
+      bloco, e é por isso que a quebra por nível fica sempre à vista. Não há taxa de presença: quem não tem voto registrado pode ter faltado, estar de licença, em missão ou fora do mandato.
+      A mediana é a dos deputados com número.</p>`)}`;
+}
+
+// ---------- Mandatos (coleta.py: mandatos, porLegislatura, condicaoPosse; eleicao.py: a eleição de 2022) ----------
+// Eleição de 2022 só com o nome batendo exatamente com o do TSE (o site não atribui votos por nome parecido).
+function textoEleicao(d){
+  const q=d.quocienteUF;
+  const regra=q?` O quociente eleitoral de ${esc(d.uf)} foi ${NF.format(q)} votos (${NF.format(d.validosUF)} válidos ÷ ${d.vagasUF} vagas).`:'';
+  if(d.votosRecebidos==null)
+    return `Eleição de 2022: o nome usado na Câmara não coincide com o nome de urna no resultado do TSE, então a votação não é mostrada — o site não atribui votos por nome parecido.${regra}`;
+  const x=q?(d.votosRecebidos/q).toFixed(2).replace('.',','):null;
+  const st=(d.situacaoEleicao||'').toLowerCase();
+  // eleicaoNota: posse como titular sem constar como eleito na totalização de 2022
+  const sit=!st?'':d.eleicaoNota
+    ? ` Na totalização do TSE de 26/12/2022 constava como ${esc(st)}; tomou posse como titular depois.`
+    : ` Situação na totalização do TSE: ${esc(st)}.`;
+  return `Eleição de 2022: ${NF.format(d.votosRecebidos)} votos`+(x?`, ${x}× o quociente eleitoral de ${esc(d.uf)}`:'')+`.${regra}${sit} Fonte: TSE.`;
+}
+function mandatos(){
+  const el=document.getElementById('mand'), D=DD, L=LEGS; if(!el||!D||!L||!L.length) return;
+  const ms=D.mandatos||{}, pl=D.porLegislatura||{};
+  const ids=[...new Set([...Object.keys(ms),...Object.keys(pl)])].sort((a,b)=>b-a);
+  if(!ids.length) return;
+  const atual=String(L[L.length-1].id), lg=i=>L.find(x=>String(x.id)===String(i));
+  const rot=i=>{const l=lg(i); return l?`${l.inicio.slice(0,4)}–${l.fim.slice(0,4)}`:`${i}ª legislatura`;};
+  const pers=i=>(ms[i]||[]).map(p=>[p.de,p.ate,null]);
+  const emAtual=(ms[atual]||[]).some(p=>!p.ate);
+  const ultimo=Object.values(ms).flat().map(p=>p.ate||HOJE).sort().slice(-1)[0];
+  const sd=emAtual
+    ?`<b>Em exercício</b>${D.condicaoPosse?`, ${esc(D.condicaoPosse.toLowerCase())} na legislatura atual`:''} · ${esc(D.partido||'')} de ${esc(D.uf||'')}${D.federacao?`, federação ${esc(D.federacao)}`:''}.`
+    :(ultimo?`Último período em exercício registrado terminou em <b>${dataBR(ultimo)}</b>.`:'Sem período em exercício registrado.');
+  const cron=Object.keys(ms).filter(i=>lg(i)).sort((a,b)=>a-b);
+  const linha=cron.length?linhaDoTempo({hoje:HOJE,rotMandato:'legislatura',aria:`Linha do tempo: exercício em ${cron.map(rot).join(', ')}`,
+    mandatos:cron.map(i=>({de:lg(i).inicio,ate:lg(i).fim,titulo:`Legislatura ${rot(i)}`})),
+    exercicios:cron.flatMap(i=>ms[i].map(p=>({de:p.de,ate:p.ate,titulo:'Em exercício: '+periodosTxt([[p.de,p.ate,null]])})))}):'';
+  const itens=ids.map(i=>{
+    const l=lg(i), ehAtual=String(i)===atual, emCurso=l?l.fim>=HOJE:false, r=pl[i];
+    const ex=ms[i]?`Em exercício: ${periodosTxt(pers(i))}.`
+      :'O histórico da Câmara não registra período em exercício nesta legislatura (a base começa em 2003); ela aparece por ter proposição apresentada nela.';
+    const prop=r?`Apresentou <b>${NF.format(r.apresentadas)}</b> ${r.apresentadas===1?'proposição':'proposições'} (${NF.format(r.pecs)} ${r.pecs===1?'PEC':'PECs'} e ${NF.format(r.leis)} ${r.leis===1?'projeto de lei':'projetos de lei'}); `+
+      `${r.viraramLei?`${NF.format(r.viraramLei)} ${r.viraramLei===1?'virou lei':'viraram lei'}`:'nenhuma virou lei'}.`:'';
+    return `<li class="mandato"><div class="mandato-cab"><b>${esc(rot(i))}${ehAtual&&D.uf?` · ${esc(D.uf)}`:''}</b>
+        ${ehAtual&&D.condicaoPosse?etq(D.condicaoPosse.toLowerCase(),true):''}${etq(emCurso?'em curso':'encerrada')}</div>
+      <p>${ex}</p>${prop?`<p>${prop}</p>`:''}${ehAtual?`<p>${textoEleicao(D)}</p>`:''}</li>`;
+  }).join('');
+  el.hidden=false;
+  el.innerHTML=`${cab('mandTit','Mandatos','histórico de exercício da Câmara, desde 2003')}
+    <div class="mand-grade"><div><p class="mand-status">${sd}</p>${linha}</div>
+      <ul class="mandatos">${itens}</ul></div>
+    ${comoLer(`<p>Do histórico oficial de exercício da Câmara, que só registra períodos a partir de 2003 (a 52ª legislatura): mandatos anteriores não aparecem, e uma legislatura anterior só entra se houver
+      proposição apresentada nela. “Em exercício” é o intervalo em que o histórico registra a situação “Exercício”; licença e afastamento viram um vazio no meio do preenchimento, e quem assumiu
+      como suplente tem o período próprio. A condição de posse (titular ou suplente) vale para a legislatura atual. As proposições de cada legislatura contam pela data de apresentação, e
+      “viraram lei” é o que hoje consta como lei entre as apresentadas nela.</p>`)}`;
 }
 
 // Notoriedade (wikipedia.py → wikipedia.json): leituras do artigo na Wikipédia.
@@ -364,14 +501,14 @@ async function notoriedade(id){
   if(!el) return;
   el.hidden=false;
   // wikipedia.json ausente (ainda não gerado) não é "sem artigo": aí só o YouTube
-  if(!w&&!W._fonte){ el.innerHTML=`<h2 id="notoTit">Notoriedade</h2>${yt}`; return; }
-  if(!w){ el.innerHTML=`<h2 id="notoTit">Notoriedade</h2><p class="cqv-txt">Sem artigo na Wikipédia ligado a este deputado
+  if(!w&&!W._fonte){ el.innerHTML=`${cab('notoTit','Notoriedade','procura, não aprovação')}${yt}`; return; }
+  if(!w){ el.innerHTML=`${cab('notoTit','Notoriedade','procura, não aprovação')}<p class="cqv-txt">Sem artigo na Wikipédia ligado a este deputado
     pelo identificador da Câmara. Não ter artigo ligado não quer dizer que ninguém procure por ele.</p>${yt}`; return; }
   const max=Math.max(1,...w.mensal), meses=W._meses||[];
   const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
   const barras=w.mensal.map((v,i)=>`<i style="height:${Math.max(2,v/max*100).toFixed(1)}%" title="${meses[i]?MES[+meses[i].slice(5,7)-1]+'/'+meses[i].slice(2,4):''}: ${NF.format(v)} leituras"></i>`).join('');
   const url='https://pt.wikipedia.org/wiki/'+encodeURIComponent(w.artigo.replace(/ /g,'_'));
-  el.innerHTML=`<h2 id="notoTit">Notoriedade</h2>
+  el.innerHTML=`${cab('notoTit','Notoriedade','procura, não aprovação')}
     <p class="cqv-av">Mede procura, não aprovação nem trabalho: escândalo também gera leitura.</p>
     <p class="cqv-txt">O artigo na Wikipédia foi lido <b>${NF.format(w.visitas90)}</b> vezes nos últimos 90 dias${
       w.pico&&w.pico[1]?`, com pico de ${NF.format(w.pico[1])} em ${w.pico[0].slice(8,10)}/${w.pico[0].slice(5,7)}`:''}.
@@ -392,9 +529,9 @@ async function obrasDoDeputado(id,uf){
   const sinal=v=>(v>0?'+':'−')+Math.abs(v).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
   const escopo=`${NF.format(O._obrasAcompanhadas)} obras de ${esc(O._uf)} com contrato federal que o site acompanha, por ora`;
   el.hidden=false;
-  if(!lista.length){ el.innerHTML=`<h2 id="obrasTit">Obras com emenda deste deputado</h2>
+  if(!lista.length){ el.innerHTML=`${cab('obrasTit','Obras com emenda',`obras de ${esc(O._uf)} com contrato federal`)}
     <p class="cqv-txt">Nenhuma emenda deste deputado nas ${escopo}.</p>`; return; }
-  el.innerHTML=`<h2 id="obrasTit">Obras com emenda deste deputado</h2>
+  el.innerHTML=`${cab('obrasTit','Obras com emenda',`obras de ${esc(O._uf)} com contrato federal`)}
     <p class="cqv-av">A emenda manda dinheiro para a obra; quem contrata e assina os aditivos é o órgão que executa. O número diz
       em quantas obras há emenda deste deputado e o contrato cresceu, não que a emenda tenha causado o aumento — que pode ser reajuste de preços.</p>
     <div class="ob-n"><div><b>${NF.format(cresceu.length)}</b><span>com emenda deste deputado em que o contrato cresceu depois da assinatura</span></div>
@@ -411,9 +548,13 @@ function montar(){
   const d=dep, apres=d.pecs+d.leis, vl=d.viraramLei;
   document.title=`${d.nome}: proposições por tema | Câmara Aberta`;
   const antes=d.props.filter(p=>p.d<tax.inicioLegislatura).length;
-  comQuemVota(d.id);
-  notoriedade(d.id);
-  obrasDoDeputado(d.id,d.uf);
+  // O botão que leva à lista por tema (os símbolos são os das 3 categorias com mais proposições) e, ao lado, a página do deputado na Casa.
+  const sub=window.TemaIcone?TemaIcone.resumoDoBotao(d.props,tax.categorias):`${d.props.length} proposições`;
+  const botaoTema=window.TemaIcone
+    ?TemaIcone.botao({href:'#por-tema',titulo:'Ver as proposições por tema',sub,nomes:TemaIcone.maisFrequentes(d.props,tax.categorias,3)})
+    :`<a class="btn-tema" href="#por-tema"><span class="bt-txt"><b>Ver as proposições por tema</b><small>${esc(sub)}</small></span></a>`;
+  const seta='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+  const naCasa=`<a class="btn-sec" href="https://www.camara.leg.br/deputados/${encodeURIComponent(d.id)}" target="_blank" rel="noopener">Página na Câmara ${seta}</a>`;
   document.getElementById('raiz').innerHTML=`
     <header class="cab">
       <div class="cab-txt">${retrato(d,72)}
@@ -422,14 +563,21 @@ function montar(){
       <figure class="modelo-ed" data-modelo="assento" aria-hidden="true"><img src="img/modelo-assento.svg" alt="" width="480" height="360" decoding="async"></figure>
     </header>
     <p class="frase">${esc(d.frase||'')}</p>
+    <div class="acoes-tema">${botaoTema}${naCasa}</div>
     ${antes?`<p class="carreira">Somando mandatos anteriores: ${NF.format(apres)} ${plural(apres,'proposição','proposições')}
       (${NF.format(d.pecs)} ${plural(d.pecs,'PEC','PECs')} e ${NF.format(d.leis)} ${plural(d.leis,'projeto de lei','projetos de lei')}),
       ${vl===0?'nenhuma virou lei':`${NF.format(vl)} ${plural(vl,'virou lei','viraram lei')}`}.</p>`:''}
-    <section class="cqv" id="cqv" hidden aria-labelledby="cqvTit"></section>
-    <section class="cqv" id="noto" hidden aria-labelledby="notoTit"></section>
-    <section class="cqv" id="obrasDep" hidden aria-labelledby="obrasTit"></section>
+    <div class="paineis">
+      <section class="cx cx-ativ" id="ativ" hidden aria-labelledby="ativTit"></section>
+      <section class="cx cx-voto" id="cqv" hidden aria-labelledby="cqvTit"></section>
+      <section class="cx cx-mand" id="mand" hidden aria-labelledby="mandTit"></section>
+      <div class="paineis-2">
+        <section class="cx" id="noto" hidden aria-labelledby="notoTit"></section>
+        <section class="cx" id="obrasDep" hidden aria-labelledby="obrasTit"></section>
+      </div>
+    </div>
 
-    <div class="controles">
+    <div class="controles por-tema" id="por-tema">
       ${antes?`<div class="bloco"><span class="rotulo">Período</span>
         <button class="pino on" data-leg="1">Nesta legislatura</button>
         <button class="pino" data-leg="0">Toda a carreira</button></div>`:''}
@@ -454,6 +602,8 @@ function montar(){
       padrão contam desde ${data(tax.inicioLegislatura)}, início da legislatura atual. Regras na
       versão ${esc(tax.versao)}, dados de ${data(tax.geradoEm)}.</p>`;
   if(window.Modelo3D) Modelo3D.varrer();       // o modelo entra depois que a ficha é montada (a página é desenhada por script)
+  atividade(); comoVota(); mandatos();          // os cartões ficam no HTML de cima: só dá para preenchê-los depois de montá-lo
+  notoriedade(d.id); obrasDoDeputado(d.id,d.uf);
 
   document.querySelectorAll('[data-leg]').forEach(b=>b.onclick=()=>{
     filtro.leg=b.dataset.leg==='1'; ligar('[data-leg]',b); limite=PASSO; desenhar();
@@ -494,10 +644,10 @@ function desenhar(){
     const cats=b.categorias.filter(i=>porCat[i]).sort((x,y)=>porCat[y]-porCat[x]);
     if(!cats.length) return '';
     const n=nBloco(b);
-    return `<div class="bl"><div class="bl-cab"><h2>${esc(b.nome)}</h2>
+    return `<div class="bl"><div class="bl-cab"><h2>${tBloco(b.nome)}</h2>
       <span>${NF.format(n)} ${plural(n,'proposição','proposições')}</span></div>
       ${cats.map(i=>`<button class="cat" data-cat="${i}" aria-pressed="${sel===i}">
-        <span class="cat-l"><span>${esc(tax.categorias[i])}</span><b>${NF.format(porCat[i])}</b></span>
+        <span class="cat-l"><span>${tCat(tax.categorias[i],18)}</span><b>${NF.format(porCat[i])}</b></span>
         <span class="haste"><i style="width:${(porCat[i]/max*100).toFixed(1)}%"></i></span></button>`).join('')}
     </div>`;
   }).join('');
@@ -540,7 +690,7 @@ function lista(vis){
   const qtd = `${NF.format(n)} ${nome}`+(filtro.lei?plural(n,' que virou lei',' que viraram lei'):'')+
               (filtro.texto?', com o filtro de texto':'');
   let html=`<button class="aos-temas" id="aosTemas">Ver todos os temas</button>
-    <div class="lista-cab"><h2 id="listaTit">${esc(tit)}</h2>
+    <div class="lista-cab"><h2 id="listaTit">${typeof sel==='number'?tCat(tit,28):esc(tit)}</h2>
     <p>${qtd}${n>1?', da mais recente para a mais antiga':''}</p></div>`;
   if(!n){
     html+=`<p class="vazio">${dep.props.length
@@ -623,10 +773,10 @@ function item(p){
     const outras=p.c.filter(([i])=>i!==sel);
     porque=`Nesta categoria pelo termo <q>${esc(termo)}</q>, ${fonteTxt(fonte)}.`+
       (outras.length?` Também em ${outras.map(([i])=>
-        `<button class="salto" data-cat="${i}">${esc(tax.categorias[i])}</button>`).join(', ')}.`:'');
+        `<button class="salto" data-cat="${i}">${tCat(tax.categorias[i])}</button>`).join(', ')}.`:'');
   }else{
     porque='Categorias: '+p.c.map(([i,termo])=>
-      `<button class="salto" data-cat="${i}">${esc(tax.categorias[i])}</button> (<q>${esc(termo)}</q>)`).join(', ')+
+      `<button class="salto" data-cat="${i}">${tCat(tax.categorias[i])}</button> (<q>${esc(termo)}</q>)`).join(', ')+
       `, ${fonteTxt(p.c[0][2])}.`;
   }
   return `<article class="item">

@@ -377,7 +377,7 @@ def identidade_do_ex(cod, atualizar):
     return idp, man
 
 
-def autor_principal(cod, p, atualizar):
+def autor_principal(cod, p, atualizar, validade_det=timedelta(days=30)):
     """É o primeiro autor? Um autor só no texto, sem mais ninguém: sim (a consulta foi pelo código dele). Vários — ou
     "Senador X e outros.", em que X é o PRIMEIRO e quem consultou pode ser só um dos que assinaram —: o de ordem 1 no
     detalhe do processo, pelo código. Medido em 5/10/2026: tratar "e outros" como autor único atribuía ao senador
@@ -385,10 +385,31 @@ def autor_principal(cod, p, atualizar):
     autoria = p.get("autoria") or ""
     if len(re.findall(r"\bSenador(?:a)?\s", autoria)) <= 1 and "," not in autoria and "outros" not in autoria.lower():
         return True
-    det = buscar(f"processo/{p['id']}.json", f"/processo/{p['id']}", False, timedelta(days=30))
+    det = buscar(f"processo/{p['id']}.json", f"/processo/{p['id']}", False, validade_det)
     ai = (det or {}).get("autoriaIniciativa") if isinstance(det, dict) else None
     primeiro = min(ai or [], key=lambda a: a.get("ordem") or 99, default=None)
     return bool(primeiro) and str(primeiro.get("codigoParlamentar")) == str(cod)
+
+
+def proposicoes_de(cod, atualizar, validade, validade_det=timedelta(days=30)):
+    """As PEC e os PL de que o senador é o PRIMEIRO autor, uma entrada por número: (`candidatos`, `meus`).
+    É a lista de que saem todos os números (pecs, leis, apresentadas, viraramLei, porLegislatura) e, em senador_paginas.py, a lista
+    de proposições da página de cada senador — uma regra só, para a página somar o mesmo que o gráfico.
+
+    Um projeto, várias fases: o Senado registra a volta da Câmara como outro processo
+    ("PL 1958/2021 (Substitutivo-CD)", "(fase 2)", "(Emenda-CD)") — medido: 127 números
+    repetidos. Conta uma vez pelo número; vale o registro com a lei, se alguma fase virou lei."""
+    procs = buscar(f"autorias/{cod}.json", "/processo", atualizar, validade, codigoParlamentarAutor=cod)
+    candidatos = [x for x in procs if (x.get("identificacao") or "").split(" ")[0] in TIPOS
+                  and autor_principal(cod, x, atualizar, validade_det)]
+    por_numero = {}
+    for x in candidatos:
+        base = re.sub(r"\s*\(.*?\)", "", x["identificacao"]).strip()
+        atual = por_numero.get(base)
+        if atual is None or ((x.get("situacaoAtual") or "") in LEI and (atual.get("situacaoAtual") or "") not in LEI):
+            por_numero[base] = {**x, "identificacao": base} if atual is None else {**x, "identificacao": base,
+                                                                                   "dataApresentacao": atual.get("dataApresentacao")}
+    return candidatos, list(por_numero.values())
 
 
 AUTORES_LEIS = CACHE_S / "autores_leis.json"
@@ -473,20 +494,7 @@ def main():
     def coletar(cod, idp, man, validade, com_votos):
         """Um senador, do mesmo jeito para quem está e para quem já saiu. `validade`: o cache de quem saiu vale 30 dias (o que
         muda, ali, é só um projeto antigo virar lei); `com_votos`: só quem exerceu desde 2023 tem voto para ler."""
-        procs = buscar(f"autorias/{cod}.json", "/processo", args.atualizar, validade, codigoParlamentarAutor=cod)
-        candidatos = [x for x in procs if (x.get("identificacao") or "").split(" ")[0] in TIPOS
-                      and autor_principal(cod, x, args.atualizar)]
-        # Um projeto, várias fases: o Senado registra a volta da Câmara como outro processo
-        # ("PL 1958/2021 (Substitutivo-CD)", "(fase 2)", "(Emenda-CD)") — medido: 127 números
-        # repetidos. Conta uma vez pelo número; vale o registro com a lei, se alguma fase virou lei.
-        por_numero = {}
-        for x in candidatos:
-            base = re.sub(r"\s*\(.*?\)", "", x["identificacao"]).strip()
-            atual = por_numero.get(base)
-            if atual is None or ((x.get("situacaoAtual") or "") in LEI and (atual.get("situacaoAtual") or "") not in LEI):
-                por_numero[base] = {**x, "identificacao": base} if atual is None else {**x, "identificacao": base,
-                                                                                       "dataApresentacao": atual.get("dataApresentacao")}
-        meus = list(por_numero.values())
+        candidatos, meus = proposicoes_de(cod, args.atualizar, validade)
         n_tipo = Counter(tipo_de(x["identificacao"]) for x in meus)
         leis = [x for x in meus if (x.get("situacaoAtual") or "") in LEI]
         nesta = [x for x in meus if (x.get("dataApresentacao") or "") >= INICIO_LEGISLATURA]

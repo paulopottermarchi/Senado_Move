@@ -183,8 +183,8 @@
 .sem-and{font-size:12px;color:var(--tinta3);margin-top:2px}
 .sem-mais{font-size:12px;color:var(--tinta3);padding-top:8px}
 .semana-pe{font-size:12px;color:var(--tinta3);margin-top:24px;line-height:1.6;max-width:80ch}
-.sem-cat{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.sem-cat span{font-size:11px;line-height:1.5;color:var(--tinta2);border:1px solid var(--linha-forte);border-radius:999px;padding:0 8px;cursor:help}
+.sem-cat{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.sem-cat span{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:1.4;color:var(--tinta2);border:1px solid var(--linha-forte);border-radius:999px;padding:3px 12px 3px 8px;cursor:help}
 .sem-cat span.nula{border-style:dashed;color:var(--tinta3);cursor:default}
 .sem-mais-btn{font:inherit;font-size:13px;font-weight:500;color:var(--tinta);background:var(--linha2);border:none;
               border-radius:var(--raio-p);padding:8px 16px;margin-top:12px;cursor:pointer}
@@ -320,7 +320,7 @@
               fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l5 5" stroke="currentColor"
               stroke-width="1.8" stroke-linecap="round"/></svg>
             <input id="busca" type="search" autocomplete="off" spellcheck="false"
-                   placeholder="Nome do deputado ou partido" aria-label="Busque um deputado pelo nome ou partido">
+                   placeholder="Nome do deputado, do senador ou partido" aria-label="Busque um deputado ou senador pelo nome, ou pelo partido">
             <div class="achados" id="achados"></div>
           </div>
           <a class="btn-cta" href="#grafico">Ver o gráfico
@@ -552,6 +552,7 @@
 </footer>
 
 
+<script src="temas.js"></script>
 <script>
 const nf=new Intl.NumberFormat('pt-BR');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -595,7 +596,8 @@ function semCategorias(x){
   const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
   return `<div class="sem-cat">${x.temas.map(([nome,termo,fonte])=>{
     const porque=`Nesta categoria pelo termo “${termo}”, na ${fonte==='k'?'indexação da Câmara':'ementa'}`;
-    return `<span title="${esc(porque)}" aria-label="${esc(cap(nome)+'. '+porque)}">${esc(cap(nome))}</span>`;
+    // o símbolo (temas.js) é só auxílio: o nome da categoria está sempre escrito ao lado
+    return `<span title="${esc(porque)}" aria-label="${esc(cap(nome)+'. '+porque)}">${window.TemaIcone?TemaIcone.cat(nome,18):''}${esc(cap(nome))}</span>`;
   }).join('')}</div>`;
 }
 // Três itens à vista por lista; o resto (até o que semana.json traz) abre num clique.
@@ -659,7 +661,8 @@ async function carregarSemana(){
     at.hidden=false;
   }
   const box=document.getElementById('semana');
-  const temas=(s.novas.temas||[]).map(([t,n])=>`${t} (${n})`).join(', ');
+  // já em HTML: o texto de cada tema é escapado dentro de TemaIcone.rotulo (ou aqui, se o módulo não carregou)
+  const temas=(s.novas.temas||[]).map(([t,n])=>window.TemaIcone?TemaIcone.rotulo(t,`${t} (${n})`,18):esc(`${t} (${n})`)).join(', ');
   const hora=`${+s.geradoEm.slice(11,13)}h${s.geradoEm.slice(14,16)}`;
   box.innerHTML=`<div class="wrap">
     <div class="sem-topo">
@@ -680,7 +683,7 @@ async function carregarSemana(){
         ${s.andaram.total?semLista(s.andaram,x=>`${esc(x.andamento)}${x.situacao?`. Situação agora: ${esc(x.situacao)}`:''}`)
           :'<p class="sem-obs">Nenhum andamento registrado.</p>'}</div>
       <div class="sem-col"><h3>Novas</h3>
-        ${temas?`<p class="sem-obs">Temas mais frequentes: ${esc(temas)}.</p>`:''}
+        ${temas?`<p class="sem-obs">Temas mais frequentes: ${temas}.</p>`:''}
         ${semLista(s.novas,null)}</div>
     </div>
     ${blocoNoticias(noticias)}
@@ -733,21 +736,37 @@ function retrato(d,px){
   const img=d.urlFoto?`<img class="av" src="${esc(d.urlFoto)}" alt="" loading="lazy" decoding="async" onerror="this.classList.add('falhou')">`:'';
   return `<span class="av-cx" style="width:${px}px;height:${px}px" aria-hidden="true"><span class="av-ini" style="font-size:${Math.round(px*.36)}px">${esc(iniciais(d.nome))}</span>${img}</span>`;
 }
+// Os senadores em exercício entram na busca, mas só são baixados quando alguém começa a digitar (a inicial não paga por isso).
+let senadores=[], FRASES_S={}, pSen=null;
+function carregarSenadores(){
+  if(!pSen) pSen=Promise.all([
+    fetch('dados/senadores.json',{cache:'no-cache'}).then(r=>r.ok?r.json():[]).catch(()=>[]),
+    fetch('dados/senadores/resumo.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null)
+  ]).then(([s,r])=>{
+    senadores=s.map(x=>({id:x.id,nome:x.nome,partido:x.partido,uf:x.uf,score:x.score??null,senador:true,
+      urlFoto:`https://legis.senado.leg.br/senadores/fotos-oficiais/${encodeURIComponent(x.id)}`}));    // o endereço direto: o da API redireciona duas vezes
+    FRASES_S=(r||{}).frases||{};
+  });
+  return pSen;
+}
+const hrefDe=d=>`${d.senador?'senador':'deputado'}.html?id=${encodeURIComponent(d.id)}`;
 function ligarBusca(){
   const campo=document.getElementById('busca'), lista=document.getElementById('achados');
   let sel=-1, atuais=[];
-  const ir=d=>{ location.href=`deputado.html?id=${encodeURIComponent(d.id)}`; };
+  const ir=d=>{ location.href=hrefDe(d); };
   campo.addEventListener('input',()=>{
     const q=norm(campo.value.trim());
     if(q.length<2){ lista.classList.remove('on'); return; }
-    atuais=deputados.filter(d=>norm(d.nome).includes(q)||norm(d.partido).includes(q)).slice(0,25);
+    if(!pSen) carregarSenadores().then(()=>{ if(norm(campo.value.trim()).length>=2) campo.dispatchEvent(new Event('input')); });
+    atuais=[...deputados.filter(d=>norm(d.nome).includes(q)||norm(d.partido).includes(q)).slice(0,20),
+            ...senadores.filter(d=>norm(d.nome).includes(q)||norm(d.partido).includes(q)).slice(0,10)];
     sel=-1;
-    lista.innerHTML=atuais.length?atuais.map(d=>`<a class="achado" href="deputado.html?id=${encodeURIComponent(d.id)}">
+    lista.innerHTML=atuais.length?atuais.map(d=>{ const fr=(d.senador?FRASES_S:FRASES)[d.id]; return `<a class="achado" href="${hrefDe(d)}">
         ${retrato(d,30)}
-        <div class="achado-txt"><b><span class="pastilha" style="background:${E.corDoScore(d.score,true)}"></span>${esc(d.nome)}</b>${FRASES[d.id]
-          ?`<i class="achado-fr">${esc(FRASES[d.id])}</i>`:''}</div>
-        <span>${esc(d.partido)} de ${esc(d.uf)}</span></a>`).join('')
-      :'<div class="nada">Nenhum deputado com esse nome.</div>';
+        <div class="achado-txt"><b><span class="pastilha" style="background:${E.corDoScore(d.score,true)}"></span>${esc(d.nome)}</b>${fr
+          ?`<i class="achado-fr">${esc(fr)}</i>`:''}</div>
+        <span>${d.senador?'Senado · ':''}${esc(d.partido)} de ${esc(d.uf)}</span></a>`; }).join('')
+      :'<div class="nada">Nenhum deputado ou senador com esse nome.</div>';
     lista.classList.add('on');
   });
   campo.addEventListener('keydown',e=>{

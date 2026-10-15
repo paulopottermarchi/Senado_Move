@@ -207,20 +207,23 @@ def num(n):
     return f"{n:,}".replace(",", ".")
 
 
-def frase(props):
+def frase(props, desde=INICIO_LEGISLATURA, quando="Nesta legislatura"):
     """Frase-resumo da legislatura, por modelo fixo: só números e nomes de categoria,
     nenhum adjetivo, nenhum LLM. As mesmas entradas dão sempre a mesma frase.
+
+    `desde` e `quando` existem para senador_paginas.py: quem já saiu do Senado não tem "esta legislatura",
+    e a frase dele é da carreira (`desde=""`, `quando="Na carreira"`). Os padrões são os da Câmara.
 
     Regras (ver CLAUDE.md, "Frase-resumo"):
     - conta só PEC e PL de autoria apresentadas desde INICIO_LEGISLATURA;
     - "sobretudo em" só com 5+ proposições e para até 2 categorias que tenham, cada uma,
       ao menos 20% delas (mínimo 2). Sem concentração, a frase não cita tema;
     - "virou lei" é a situação oficial; homenagens entre as leis são ditas à parte."""
-    leg = [p for p in props if p["d"] >= INICIO_LEGISLATURA]
+    leg = [p for p in props if p["d"] >= desde]
     n = len(leg)
     if not n:
-        return "Nesta legislatura, não apresentou PEC nem projeto de lei como autor."
-    s = f"Nesta legislatura, apresentou {num(n)} {'proposição' if n == 1 else 'proposições'}"
+        return f"{quando}, não apresentou PEC nem projeto de lei como autor."
+    s = f"{quando}, apresentou {num(n)} {'proposição' if n == 1 else 'proposições'}"
     cont = Counter(i for p in leg for i, _, _ in p["c"])
     corte = max(2, -(-n // 5))
     fortes = [(i, k) for i, k in cont.most_common() if k >= corte][:2]

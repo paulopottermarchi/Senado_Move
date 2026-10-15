@@ -55,8 +55,8 @@
 .oficial summary b{font-weight:500;color:var(--tinta2);text-decoration:underline;text-underline-offset:2px}
 .oficial p{font-size:14px;color:var(--tinta2);margin-top:8px;line-height:1.5}
 .oficial a{font-size:13px;color:var(--tinta2)}
-.cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
-.cats span{font-size:11px;color:var(--tinta2);border:1px solid var(--linha);border-radius:999px;padding:0 8px;cursor:help}
+.cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.cats span{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:1.4;color:var(--tinta2);border:1px solid var(--linha);border-radius:999px;padding:3px 12px 3px 8px;cursor:help}
 .med{font-size:13px;color:var(--tinta2);margin-top:4px}
 
 .div{margin-top:16px;padding-top:16px;border-top:1px solid var(--linha2)}
@@ -337,6 +337,7 @@ a.pessoa:hover{border-color:var(--linha-forte);box-shadow:var(--sombra);transfor
   </div>
 </footer>
 
+<script src="temas.js"></script>
 <script>
 // As cores vêm de site.js (Espectro), que troca só o "direita" no tema escuro. Este script pode rodar antes do site.js (defer): até ele
 // chegar vale a paleta clara.
@@ -643,7 +644,7 @@ function cartao(l,dep){
   const med=(l.scoreMedioSim!=null||l.scoreMedioNao!=null)
     ?`<p class="med">Posição média de quem votou sim: <b>${l.scoreMedioSim==null?'—':l.scoreMedioSim.toFixed(1).replace('.',',')}</b> · de quem votou não: <b>${l.scoreMedioNao==null?'—':l.scoreMedioNao.toFixed(1).replace('.',',')}</b> (de 1, esquerda, a 10, direita)</p>`:'';
   const cats=(l.temas||[]).length?`<div class="cats">${l.temas.map(([n,t,o])=>
-    `<span title="Nesta categoria pelo termo “${esc(t)}”, na ementa">${esc(cap(n))}</span>`).join('')}</div>`:'';
+    `<span title="Nesta categoria pelo termo “${esc(t)}”, na ementa">${window.TemaIcone?TemaIcone.cat(n,18):''}${esc(cap(n))}</span>`).join('')}</div>`:'';
   const anterior=l.enq&&l.enq.numeroNaEnquete?`<span class="chip-lei tra" title="A Câmara renumerou a proposição; a enquete ficou com o número antigo">com número anterior: ${esc(l.enq.numeroNaEnquete)}</span>`:'';
   const dif=(!SEM_DIF&&l.div.length)?`<span class="chip-lei" title="Votos Sim ou Não contra a orientação registrada da própria bancada">${l.div.length} ${l.div.length===1?'voto diferente':'votos diferentes'} da bancada</span>`:'';
   const MESC=['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'];
