@@ -158,6 +158,8 @@
 /* com o símbolo, o nome fica dentro de um flex e perde o sublinhado do botão: repete nele */
 .salto .ti-rot>span{text-decoration:underline;text-decoration-color:rgba(15,118,110,.35);text-underline-offset:2px}
 .salto:hover .ti-rot>span{text-decoration-color:var(--link)}
+/* toque: "Também em…" fica com 20 px de altura; a área de toque cresce sem mexer no texto */
+@media(pointer:coarse){.aos-temas{min-height:44px}.salto{position:relative}.salto::after{content:"";position:absolute;inset:-12px -6px}}
 /* o título do bloco é serifado de 16 px: o carimbo de 28 px fica centrado com o nome */
 .bl-cab h2{min-width:0}
 .bl-cab{margin-bottom:8px}

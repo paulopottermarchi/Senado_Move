@@ -148,6 +148,8 @@ h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25;lett
       background:var(--papel);color:var(--tinta2);border-radius:var(--raio-p);cursor:pointer;white-space:nowrap}
 .pino:hover{border-color:var(--linha-forte);color:var(--tinta);box-shadow:var(--sombra)}
 .pino.on{background:var(--inverso);border-color:var(--inverso);color:var(--sobre-inverso);box-shadow:none}
+/* celular: um rótulo longo quebra em vez de alargar o botão além da tela ("Economia, indústria, comércio e empreendedorismo" em votos.html dava 371 px) */
+@media(max-width:560px){.pino{white-space:normal;max-width:100%;text-align:left}}
 
 /* grupo segmentado */
 .seg{display:inline-flex;align-items:center;gap:4px;padding:4px;background:var(--linha2);border-radius:var(--raio-p)}
@@ -562,6 +564,7 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 .cx .med-val{font-family:var(--cond);font-size:42px;font-weight:600;line-height:1;letter-spacing:0}
 .cx .med-leg{font-size:13px;color:var(--tinta2);line-height:1.5;margin-top:4px;max-width:64ch}
 .cx .med-leg b{color:var(--tinta);font-weight:600}
+.cx .med-leg small{font-size:12px}                    /* o <small> padrão dá 10,8 px: abaixo do mínimo legível */
 .cx .chave{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:12px;color:var(--tinta3)}
 .cx .chave span{display:inline-flex;align-items:center;gap:6px}
 .cx .chave i{display:inline-block;flex:none}

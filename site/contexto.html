@@ -409,13 +409,15 @@ function Grafico(raiz,cfg){
   }
   function desenhar(){
     caixa.querySelectorAll('svg').forEach(e=>e.remove());
-    const W=Math.max(300,caixa.clientWidth), H0=cfg.altura||(W<560?250:320);
+    // Tela estreita (celular): sem reservar a margem direita dos rótulos diretos (a legenda embaixo já nomeia cada série), o desenho usa a largura
+    // real da caixa em vez de um mínimo de 300 escalado para baixo, e ganha altura: na largura de 291 px o gráfico ficava com ~172 × 150 px de área útil.
+    const W=Math.max(240,caixa.clientWidth), estreito=W<560, H0=cfg.altura||(estreito?300:320);
     const temMarcos=Array.isArray(cfg.marcos);
     const faixaMarcos=temMarcos?60:0;
-    const M={t:14,r:W<560?84:132,b:26+faixaMarcos,l:W<560?44:54};
+    const M={t:14,r:estreito?16:132,b:26+faixaMarcos,l:estreito?44:54};
     const [ini,fim]=janela(), t0=T(ini), t1=T(fim), iw=W-M.l-M.r;
     // mandatos presidenciais na janela: a faixa de rótulos fica ACIMA do gráfico e a altura cresce na mesma medida (o gráfico em si não encolhe)
-    const rotMand=colocarMandatos(Array.isArray(cfg.mandatos)?cfg.mandatos.filter(m=>m.inicio>=ini&&m.inicio<=fim):[],d=>M.l+(T(d)-t0)/(t1-t0||1)*iw,W,W<560?3:2);
+    const rotMand=colocarMandatos(Array.isArray(cfg.mandatos)?cfg.mandatos.filter(m=>m.inicio>=ini&&m.inicio<=fim):[],d=>M.l+(T(d)-t0)/(t1-t0||1)*iw,W,estreito?3:2);
     const faixaMand=rotMand.itens.length?rotMand.linhas*14+10:0;
     const H=H0+faixaMand; M.t=14+faixaMand;
     const ih=H-M.t-M.b, pb=M.t+ih;   // pb: base do gráfico; abaixo dela, o eixo e os marcos
@@ -437,7 +439,8 @@ function Grafico(raiz,cfg){
     ticks.forEach(v=>{ const y=Y(v); el('line',{x1:M.l,x2:W-M.r,y1:y,y2:y},g); const tx=el('text',{x:M.l-8,y:y+4,'text-anchor':'end'},g); tx.textContent=String(fy(v)).replace(/^-/,'−'); });
     if(lo<0&&hi>0){ const gz=el('g',{class:'eixo-zero'}); el('line',{x1:M.l,x2:W-M.r,y1:Y(0),y2:Y(0)},gz); }
     // eixo x: anos
-    const a0=+ini.slice(0,4), a1=+fim.slice(0,4), anos=a1-a0, passo=anos>60?10:anos>30?5:anos>14?2:1;
+    // o passo dos anos vem da largura: o menor que deixa ~38 px por ano escrito (no celular, de 5 em 5 em vez de 2 em 2, que se sobrepunham)
+    const a0=+ini.slice(0,4), a1=+fim.slice(0,4), anos=a1-a0, passo=[1,2,5,10,20].find(p=>Math.ceil(anos/p)*38<=iw)||20;
     const gx=el('g',{class:'eixo'});
     for(let a=Math.ceil(a0/passo)*passo;a<=a1;a+=passo){ const x=X(`${a}-01-01`); if(x<M.l-1||x>W-M.r+1) continue;
       el('line',{x1:x,x2:x,y1:pb,y2:pb+4,stroke:'var(--linha-forte)'},gx);
@@ -471,7 +474,7 @@ function Grafico(raiz,cfg){
     // rótulos diretos no fim das linhas (afastados se colidirem)
     const rot=cfg.series.map((s,i)=>{ const p=vis(s).slice(-1)[0]; return p&&{i,y:Y(p[1]),txt:cfg.rotulos?cfg.rotulos[i]:s.nome,x:X(p[0])}; }).filter(Boolean).sort((a,b)=>a.y-b.y);
     for(let k=1;k<rot.length;k++) if(rot[k].y-rot[k-1].y<14) rot[k].y=rot[k-1].y+14;
-    rot.forEach(r=>{ const tx=el('text',{x:r.x+6,y:r.y+4,class:'rot-s'+r.i}); tx.textContent=r.txt; });
+    if(!estreito) rot.forEach(r=>{ const tx=el('text',{x:r.x+6,y:r.y+4,class:'rot-s'+r.i}); tx.textContent=r.txt; });
     // anotações (fato datado e fonte, listadas sob o gráfico)
     (cfg.anotacoes||[]).forEach((n,k)=>{
       if(n.data<ini||n.data>fim) return; const x=X(n.data);
