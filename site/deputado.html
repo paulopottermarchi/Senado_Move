@@ -413,7 +413,7 @@ function comoVota(){
         <a class="par todos" href="blocos.html?dep=${D.id}">Ver quem vota com quem</a></div>
       <p class="med-leg">Pela semelhança dos votos, sem olhar o partido, está no bloco ${B.blocos[bd.bloco].medianaGoverno>=.5?'que acompanha o Governo':'que vota contra o Governo'}.</p>`:'';
   // Como votou, por tema: o tema da lei votada em cada Sim, Não e abstenção (votos.py → votos.temas), pela classificação deste site.
-  const vt=v&&v.temas?Paineis.votosTema({tax,unidade:'votações',
+  const vt=v&&v.temas?Paineis.votosTema({tax,unidade:'votações',href:(n,i)=>`votos.html?casa=c&id=${D.id}&tema=${n}${n==='b'||n==='c'?i:''}`,
     linhas:[{rot:'Sim',k:0,n:v.sim||0,d:v.temas.sim},{rot:'Não',k:1,n:v.nao||0,d:v.temas.nao},{rot:'Abstenção',k:2,n:v.abstencao||0,d:v.temas.abstencao}],
     nota:'Cada voto conta no tema da lei votada, pela ementa e pela classificação deste site (não da Câmara). A unidade é a votação final de texto-base, uma por lei; '+
          'uma lei com mais de um tema conta em cada um, então a soma passa do total. Sim é votar a favor da lei e Não, contra. “Sem categoria” é a lei cuja ementa não casa com nenhuma regra de tema.'}):'';

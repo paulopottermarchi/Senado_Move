@@ -28,6 +28,7 @@ import senado
 import temas
 
 SAIDA = coleta.DADOS / "senadores"
+VOTOS_DIR = SAIDA / "votos"
 VERSAO = "2026-10-15.2"           # mudar a cada alteração de regra deste script: vai para a página
 LONGA = timedelta(days=36500)     # o cache vale sempre aqui: quem o renova é o senado.py, no começo da rodada
 # Votações cuja matéria é uma proposição legislativa (tem ementa de lei, então dá para classificar por tema). Requerimento, mensagem, ofício etc.
@@ -65,11 +66,13 @@ def votos_por_tema(cod):
     1º/2/2023, com o voto do senador registrado) e a MESMA regra de senado.py; a unidade é a VOTAÇÃO, então uma matéria com vários turnos ou
     destaques conta em cada votação. Matéria que não é proposição legislativa (requerimento, mensagem…) vai em `o`; proposição cuja ementa não
     casa com regra nenhuma, em `s`. `b` = por bloco (a matéria conta uma vez no bloco), `c` = por categoria, na ordem de taxonomia.json.
-    Devolve (votosTema, total de votações, por tipo de voto) para a conferência contra senadores.json."""
+    Devolve (votosTema, total de votações, por tipo de voto, lista, matérias): os dois primeiros para a conferência contra senadores.json; `lista` e
+    `materias` para a página "quais votações" (uma linha por votação: sequencial, código da matéria, data, resultado, voto S/N/A, descrição)."""
     vt = coleta.ler_cache(senado.CACHE_S / "votos" / f"{cod}.json") or []
     novo = lambda: {"b": [0] * len(temas.BLOCOS), "c": [0] * len(temas.CATEGORIAS), "s": 0, "o": 0}
     por = {k: novo() for k in VOTO.values()}
     total, tipos = 0, Counter()
+    lista, materias = [], {}
     for v in vt:
         if v.get("votacaoSecreta") in ("S", True) or (v.get("dataSessao") or "") < senado.INICIO_LEGISLATURA:
             continue
@@ -82,17 +85,42 @@ def votos_por_tema(cod):
             if k is None:
                 continue                                 # licença, missão, presidindo… não é voto: o senado.py guarda à parte
             a = por[k]
-            if (v.get("sigla") or "") not in SIGLAS_LEGISLATIVAS:
+            legislativa = (v.get("sigla") or "") in SIGLAS_LEGISLATIVAS
+            cats = sorted({i for i, _, _ in temas.classificar(" ".join((v.get("ementa") or "").split()), "")}) if legislativa else None
+            mat = str(v.get("codigoMateria"))
+            materias.setdefault(mat, [v.get("identificacao"), " ".join((v.get("ementa") or "").split()), cats])
+            lista.append([v.get("sequencialVotacao") or v.get("codigoSessaoVotacao"), mat, (v.get("dataSessao") or "")[:10],
+                          v.get("resultadoVotacao"), {"sim": "S", "nao": "N", "abstencao": "A"}[k],
+                          " ".join((v.get("descricaoVotacao") or "").split())])
+            if not legislativa:
                 a["o"] += 1
                 continue
-            cats = sorted({i for i, _, _ in temas.classificar(" ".join((v.get("ementa") or "").split()), "")})
             for b in sorted({BLOCO_DE[i] for i in cats}):
                 a["b"][b] += 1
             for i in cats:
                 a["c"][i] += 1
             if not cats:
                 a["s"] += 1
-    return por, total, tipos
+    lista.sort(key=lambda x: (x[2], x[0] or 0), reverse=True)
+    return por, total, tipos, lista, materias
+
+
+def contagem_da_lista(lista, materias):
+    """Refaz as contagens por tema a partir da LISTA da página: tem de dar o mesmo que `votosTema` (conferência no main)."""
+    por = {k: {"b": [0] * len(temas.BLOCOS), "c": [0] * len(temas.CATEGORIAS), "s": 0, "o": 0} for k in VOTO.values()}
+    nome = {"S": "sim", "N": "nao", "A": "abstencao"}
+    for _, mat, _, _, letra, _ in lista:
+        a, cats = por[nome[letra]], materias[mat][2]
+        if cats is None:
+            a["o"] += 1
+        elif not cats:
+            a["s"] += 1
+        else:
+            for b in sorted({BLOCO_DE[i] for i in cats}):
+                a["b"][b] += 1
+            for i in cats:
+                a["c"][i] += 1
+    return por
 
 
 def main():
@@ -108,6 +136,7 @@ def main():
 
     saidas, divergencias, sem_cache = {}, [], []
     votos_total = Counter()
+    listas = {}
     distintas, leis_sem_norma = {}, []
     for s, saiu in todos:
         cod = s["id"]
@@ -142,7 +171,10 @@ def main():
             if not (senado.CACHE_S / "votos" / f"{cod}.json").exists():
                 divergencias.append(f"{s['nome']}: sem cache de votos (rode senado.py)")
                 continue
-            por, total, tipos = votos_por_tema(cod)
+            por, total, tipos, lista, materias = votos_por_tema(cod)
+            if contagem_da_lista(lista, materias) != por:
+                divergencias.append(f"{s['nome']}: a lista de votações não reproduz os votos por tema")
+            listas[cod] = {"id": cod, "nome": s["nome"], "partido": s.get("partido"), "uf": s.get("uf"), "materias": materias, "votos": lista}
             esperado = (vref["votacoes"], vref["sim"], vref["nao"], vref["abstencao"])
             obtido = (total, tipos["sim"], tipos["nao"], tipos["abstencao"])
             if esperado != obtido:
@@ -178,6 +210,14 @@ def main():
     temas.gravar_se_mudou(SAIDA / "resumo.json", {"inicioLegislatura": temas.INICIO_LEGISLATURA, "versao": VERSAO,
                                                   "temasVersao": temas.VERSAO, "geradoEm": date.today().isoformat(),
                                                   "frases": frases})
+    # senadores/votos/{código}.json: cada votação em que votou Sim, Não ou se absteve, com a matéria, a descrição e o voto (página "quais votações").
+    # Só os arquivos de quem tem votos; o que sobrou de quem saiu da lista é apagado.
+    VOTOS_DIR.mkdir(exist_ok=True)
+    for velho in VOTOS_DIR.glob("*.json"):
+        if velho.stem not in {str(c) for c in listas}:
+            velho.unlink()
+    for cod, obj in listas.items():
+        temas.gravar_se_mudou(VOTOS_DIR / f"{cod}.json", {**obj, "versao": VERSAO})
 
     total = len(distintas)
     sem_tema = sum(1 for c in distintas.values() if not c)
