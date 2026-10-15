@@ -144,6 +144,8 @@ jobs:
         run: python scripts/passo.py --opcional obras.py
 
       # Senadores (Dados Abertos do Senado, sem chave): autoria, leis, relatorias e votos.
+      # Inclui os 309 que já saíram (senadores_antigos.json): a frio leva ~16 min; --minutos (25) limita o tempo, o cache guarda o
+      # que foi e o arquivo só é regravado com todos prontos.
       - name: Senadores
         run: python scripts/passo.py --opcional senado.py
 
