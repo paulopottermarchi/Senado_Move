@@ -4,7 +4,7 @@
 "_metodo":"Média simples de componentes de 0 a 100: apensados e votações nominais (escala logarítmica até o máximo desta página), placar (100 × (1 − |sim − não| ÷ (sim + não)) na votação final), urgência (100 se tramitou em urgência) e, só em PEC de deputado com registro completo, assinaturas (deputados que assinaram ÷ 513). Pesos iguais.",
 "_maximos":{"apensados":22,"nominais":20},
 "_fonte":"Dados Abertos da Câmara: /proposicoes/{id}, /autores e /tramitacoes; votações de proposicoes.json",
-"_gerado":"2026-10-14",
+"_gerado":"2026-10-15",
 "106701":{"pct":54,"componentes":{"apensados":{"n":12,"valor":82,"quais":["PL 1090/2003","PL 1100/2011","PL 1359/2015","PL 2854/2008","PL 3240/2004","PL 3710/2012","PL 3768/2008","PL 4184/2004","PL 4331/2012","PL 470/2007","PL 5762/2016","PL 9911/2018"]},"nominais":{"n":2,"valor":36},"placar":{"sim":427,"nao":1,"valor":0},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
 "146708":{"pct":7,"componentes":{"apensados":{"n":0,"valor":0,"quais":[]},"nominais":{"n":1,"valor":23},"placar":{"sim":397,"nao":9,"valor":4},"urgencia":{"sim":false,"texto":"Ordinário (Art. 151, III, RICD)","valor":0}}},
 "259094":{"pct":46,"componentes":{"apensados":{"n":2,"valor":35,"quais":["PEC 140/2012","PEC 45/2019"]},"nominais":{"n":19,"valor":98},"placar":{"sim":365,"nao":118,"valor":49},"urgencia":{"sim":false,"texto":"Especial (Art. 202 c/c 191, I, RICD)","valor":0}}},
@@ -41,6 +41,7 @@
 "2231632":{"pct":56,"componentes":{"apensados":{"n":0,"valor":0,"quais":[]},"nominais":{"n":2,"valor":36},"placar":{"sim":240,"nao":180,"valor":86},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
 "2233324":{"pct":66,"componentes":{"apensados":{"n":1,"valor":22,"quais":["PL 1086/2023"]},"nominais":{"n":8,"valor":72},"placar":{"sim":233,"nao":125,"valor":70},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
 "2233802":{"pct":19,"componentes":{"apensados":{"n":1,"valor":22,"quais":["PEC 8/2025"]},"nominais":{"n":3,"valor":46},"placar":{"sim":461,"nao":19,"valor":8},"urgencia":{"sim":false,"texto":"Especial (Art. 202 c/c 191, I, RICD)","valor":0}}},
+"2236186":{"pct":51,"componentes":{"apensados":{"n":0,"valor":0,"quais":[]},"nominais":{"n":1,"valor":23},"placar":{"sim":252,"nao":176,"valor":82},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
 "2237596":{"pct":37,"componentes":{"apensados":{"n":1,"valor":22,"quais":["PL 2216/2025"]},"nominais":{"n":1,"valor":23},"placar":{"sim":386,"nao":7,"valor":4},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
 "2238434":{"pct":58,"componentes":{"apensados":{"n":3,"valor":44,"quais":["PL 4025/2021","PL 4196/2023","PL 5216/2023"]},"nominais":{"n":10,"valor":79},"placar":{"sim":429,"nao":19,"valor":8},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
 "2252295":{"pct":50,"componentes":{"apensados":{"n":1,"valor":22,"quais":["PL 2585/2020"]},"nominais":{"n":3,"valor":46},"placar":{"sim":352,"nao":63,"valor":30},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
@@ -168,5 +169,6 @@
 "2611313":{"pct":36,"componentes":{"apensados":{"n":0,"valor":0,"quais":[]},"nominais":{"n":1,"valor":23},"placar":{"sim":346,"nao":46,"valor":23},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
 "2611717":{"pct":38,"componentes":{"apensados":{"n":0,"valor":0,"quais":[]},"nominais":{"n":2,"valor":36},"placar":{"sim":391,"nao":33,"valor":16},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
 "2611992":{"pct":34,"componentes":{"apensados":{"n":0,"valor":0,"quais":[]},"nominais":{"n":1,"valor":23},"placar":{"sim":327,"nao":26,"valor":15},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
-"2618177":{"pct":50,"componentes":{"apensados":{"n":0,"valor":0,"quais":[]},"nominais":{"n":3,"valor":46},"placar":{"sim":318,"nao":113,"valor":52},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}}
+"2618177":{"pct":50,"componentes":{"apensados":{"n":0,"valor":0,"quais":[]},"nominais":{"n":3,"valor":46},"placar":{"sim":318,"nao":113,"valor":52},"urgencia":{"sim":true,"texto":"Urgência (Art. 155, RICD)","valor":100}}},
+"2635476":{"pct":40,"componentes":{"apensados":{"n":1,"valor":22,"quais":["PLP 267/2026"]},"nominais":{"n":2,"valor":36},"placar":{"sim":461,"nao":4,"valor":2},"urgencia":{"sim":true,"texto":"Urgência (Art. 64, CF)","valor":100}}}
 }

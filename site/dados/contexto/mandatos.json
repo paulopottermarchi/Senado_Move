@@ -1,0 +1,19 @@
+{"geradoEm":"2026-10-15T10:01-03:00",
+"hoje":"2026-10-15",
+"consultadoEm":"2026-10-15T10:01-03:00",
+"fonte":{"nome":"Wikidata","cargo":"Presidente do Brasil","url":"https://www.wikidata.org/wiki/Q5176750"},
+"regra":"Cada marca é o dia em que a pessoa assumiu a Presidência da República, inclusive em exercício. É só referência de calendário.",
+"mandatos":[
+{"rotulo":"Sarney","presidente":"José Sarney","inicio":"1985-03-15","item":"Q244997","url":"https://www.wikidata.org/wiki/Q244997"},
+{"rotulo":"Collor","presidente":"Fernando Collor","inicio":"1990-03-15","item":"Q236503","url":"https://www.wikidata.org/wiki/Q236503"},
+{"rotulo":"Itamar","presidente":"Itamar Franco","inicio":"1992-10-02","item":"Q485946","url":"https://www.wikidata.org/wiki/Q485946","efetivadoEm":"1992-12-29","nota":"Assumiu a Presidência em exercício em 2/10/1992, quando o Senado afastou Fernando Collor até concluir o julgamento; foi efetivado em 29/12/1992, dia em que Collor renunciou.","fonteNota":{"nome":"Câmara dos Deputados, cronologia \"20 anos do impeachment\" (entradas de 2/10 e 29/12/1992)","url":"https://www2.camara.leg.br/atividade-legislativa/plenario/discursos/escrevendohistoria/destaque-de-materias/20-anos-do-impeachment"}},
+{"rotulo":"FHC I","presidente":"Fernando Henrique Cardoso","inicio":"1995-01-01","item":"Q230578","url":"https://www.wikidata.org/wiki/Q230578"},
+{"rotulo":"FHC II","presidente":"Fernando Henrique Cardoso","inicio":"1999-01-01","item":"Q230578","url":"https://www.wikidata.org/wiki/Q230578"},
+{"rotulo":"Lula I","presidente":"Luiz Inácio Lula da Silva","inicio":"2003-01-01","item":"Q37181","url":"https://www.wikidata.org/wiki/Q37181"},
+{"rotulo":"Lula II","presidente":"Luiz Inácio Lula da Silva","inicio":"2007-01-01","item":"Q37181","url":"https://www.wikidata.org/wiki/Q37181"},
+{"rotulo":"Dilma I","presidente":"Dilma Rousseff","inicio":"2011-01-01","item":"Q40722","url":"https://www.wikidata.org/wiki/Q40722"},
+{"rotulo":"Dilma II","presidente":"Dilma Rousseff","inicio":"2015-01-01","item":"Q40722","url":"https://www.wikidata.org/wiki/Q40722"},
+{"rotulo":"Temer","presidente":"Michel Temer","inicio":"2016-05-12","item":"Q463533","url":"https://www.wikidata.org/wiki/Q463533","efetivadoEm":"2016-08-31","nota":"Assumiu a Presidência em exercício em 12/5/2016, quando o Senado afastou Dilma Rousseff por até 180 dias; foi efetivado em 31/8/2016, quando o Senado decidiu a perda do cargo dela.","fonteNota":{"nome":"Agência Brasil, 12/5/2016: \"Dilma será afastada do cargo por até 180 dias; Temer assume presidência\"","url":"https://agenciabrasil.ebc.com.br/politica/noticia/2016-05/dilma-sera-afastada-do-cargo-por-ate-180-dias-temer-assume-presidencia"}},
+{"rotulo":"Bolsonaro","presidente":"Jair Bolsonaro","inicio":"2019-01-01","item":"Q10304982","url":"https://www.wikidata.org/wiki/Q10304982"},
+{"rotulo":"Lula III","presidente":"Luiz Inácio Lula da Silva","inicio":"2023-01-01","item":"Q37181","url":"https://www.wikidata.org/wiki/Q37181"}
+]}
