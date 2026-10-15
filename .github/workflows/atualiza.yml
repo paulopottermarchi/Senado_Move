@@ -183,6 +183,14 @@ jobs:
       - name: Fluxo entre as casas
         run: python scripts/passo.py --opcional fluxo.py --limite 9000
 
+      # De onde vêm as leis: a origem (autoria) das leis sancionadas na legislatura. A lista de leis vem do Senado
+      # (/processo, normaGerada), a autoria dos arquivos em lote da Câmara; a ligação é só por identificador exato.
+      # Depois do fluxo, de que reaproveita o fluxo.json e o cache de detalhes do Senado. O JSON só é regravado se as
+      # checagens passam, inclusive a contagem por ano e tipo conferida à mão no Planalto (entradas/origem_leis_referencia.json);
+      # senão fica o anterior. Falha não para a rodada (a página só fica sem dados novos).
+      - name: De onde vêm as leis
+        run: python scripts/passo.py --opcional origem_leis.py
+
       - name: Esta semana na Câmara
         run: python scripts/passo.py semana.py
 

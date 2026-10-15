@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-escuro-ok data-ed>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>De onde vêm as leis | Câmara Aberta</title>
+<meta name="description" content="Quem escreve as leis que viram lei? A origem, pela autoria da proposição, de cada lei ordinária e complementar sancionada na legislatura atual: deputados, Senado, Executivo, tribunais e outros órgãos.">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Câmara Aberta">
+<meta property="og:title" content="De onde vêm as leis | Câmara Aberta">
+<meta property="og:description" content="Quem escreve as leis que viram lei? A origem, pela autoria da proposição, de cada lei sancionada na legislatura atual, com o link do Planalto e da ficha de cada uma.">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Cpath d='M8 13.5h16a8 8 0 0 1-16 0z' fill='%232dd4bf'/%3E%3Crect x='7' y='23.5' width='18' height='2' rx='1' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
+<link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Three.js 0.180.0, versionado em vendor/three/ (sem CDN). O importmap só diz onde fica; nada é baixado até alguém dar import('three'),
+     o que cena3d.js faz sob demanda (modelo do topo, depois da primeira pintura). -->
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
+<!-- Motion (animação), versionado em vendor/. Se não carregar, o onerror solta o que o CSS escondeu e o site segue sem animação. -->
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
+<script src="site.js" defer></script>
+<script src="origem.js" defer></script>
+<style>
+/* De onde vêm as leis. Tinta neutra: a origem de uma lei não é posição ideológica, então nada aqui usa a cor do espectro. */
+.painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);padding:24px 28px;margin-top:28px}
+.painel h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25}
+.og-sub{margin-top:8px;max-width:72ch;font-size:14px;line-height:1.6;color:var(--tinta2)}
+.og-sub b{font-weight:600;color:var(--tinta)}
+.og-vazio{margin-top:28px;font-size:14px;color:var(--tinta2);max-width:72ch}
+
+table.og{width:100%;border-collapse:collapse;font-size:14px;margin-top:20px}
+table.og th{font-size:12px;font-weight:500;color:var(--tinta3);text-align:left;padding:0 12px 8px;border-bottom:1px solid var(--linha);vertical-align:bottom;line-height:1.3}
+table.og th small{display:block;font-weight:400;font-size:11px;color:var(--tinta3);margin-top:2px}
+table.og th.d,table.og td.d{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.og td{padding:10px 12px;border-bottom:1px solid var(--linha2);vertical-align:top;line-height:1.45}
+table.og td small{display:block;font-size:12px;color:var(--tinta3);line-height:1.45;margin-top:2px}
+table.og td b{font-weight:600}
+table.og tr.filho td:first-child{padding-left:40px;color:var(--tinta2)}
+table.og tfoot td{font-weight:600;border-top:1px solid var(--linha-forte);border-bottom:0}
+table.og tr.a-parte td{border-top:1px dashed var(--linha-forte);background:var(--papel2);color:var(--tinta2)}
+.og-rolagem{overflow-x:auto;margin:0 -4px;padding:0 4px}
+.og-or .or-sw{display:inline-block;vertical-align:-2px;margin:0 8px 0 0}
+.og-nota{margin-top:12px;font-size:13px;line-height:1.6;color:var(--tinta3);max-width:78ch}
+.og-nota b{font-weight:600;color:var(--tinta2)}
+.og-nota a,.og-sub a{color:var(--destaque)}
+.og-ec{margin-top:16px}
+.og-ec summary{cursor:pointer;font-size:14px;font-weight:600}
+.og-ec ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px;font-size:13px;color:var(--tinta2)}
+
+.og-filtros{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;margin-top:20px}
+.og-campo{display:grid;gap:4px;font-size:12px;font-weight:500;color:var(--tinta3);min-width:0}
+.og-campo .sel,.og-campo .texto{min-width:150px}
+.og-conta{margin-top:14px;font-size:13px;color:var(--tinta2)}
+.og-tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--tinta2);border:1px solid var(--linha-forte);border-radius:999px;padding:0 8px;margin:4px 6px 0 0;white-space:nowrap}
+.og-lk{white-space:nowrap}
+.og-lk a{color:var(--destaque)}
+.og-pag{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px;font-size:13px;color:var(--tinta2)}
+.og-pag .pino:disabled{opacity:.45;cursor:default}
+.og-sem{padding:24px 12px;text-align:center;color:var(--tinta3)}
+
+.og-como{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;margin-top:16px}
+.og-como>*{min-width:0}
+.og-como h3{font-size:15px;font-weight:600;line-height:1.3;margin-bottom:6px}
+.og-como p,.og-como li{font-size:14px;line-height:1.6;color:var(--tinta2);max-width:78ch}
+.og-como p b,.og-como li b{font-weight:600;color:var(--tinta)}
+.og-exc{border:1px solid var(--linha);border-radius:var(--raio-p);padding:14px 18px;margin-top:10px;max-width:84ch}
+.og-exc p{font-size:13px}
+.og-exc .og-lks{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:13px}
+.og-exc .og-lks a{color:var(--destaque)}
+.og-fixa{font-family:var(--serif);font-size:18px;line-height:1.45;font-weight:500;color:var(--tinta);max-width:60ch}
+
+@media(max-width:820px){
+  .painel{padding:20px}
+  table.og{min-width:560px}
+  table.og.larga{min-width:760px}
+}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+    <nav class="nav" aria-label="Páginas do site">
+      <a href="deputados.html">Deputados</a>
+      <a href="senadores.html">Senadores</a>
+      <a href="leis.html">Leis votadas</a>
+      <a href="blocos.html">Quem vota com quem</a>
+      <a href="fluxo.html">Entre as casas</a>
+      <a href="obras.html">Obras</a>
+      <a href="contexto.html">Economia</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="conteudo">
+  <div class="capa">
+    <div class="hero-ed">
+      <div class="txt">
+        <p class="kicker">Leis sancionadas · legislatura atual</p>
+        <h1 class="t-grande">De onde vêm as leis</h1>
+        <p class="chamada" id="chamada">Quem escreve as leis que viram lei? Esta página conta de onde nasceu cada lei sancionada na legislatura atual, pela autoria da proposição.</p>
+      </div>
+      <div class="lado"><figure class="modelo-ed" data-modelo="folhas" aria-hidden="true"><img src="img/modelo-folhas.svg" alt="" width="480" height="360" decoding="async"></figure></div>
+    </div>
+
+    <div class="aviso" role="note">
+      <p><b>A origem é a autoria da proposição que virou lei. Não indica quem a aprovou nem quem mais contribuiu para o texto final.</b></p>
+      <p><b>A página não avalia ninguém.</b> Diz de onde nasceu cada lei, não quem trabalhou mais: a proposta de um deputado, do Senado, do Executivo ou de um tribunal
+         chega à mesma sanção. O número de leis na ficha de um deputado é outro recorte: só as de autoria dele, em toda a carreira.</p>
+      <p><b>“Leis votadas” é outro conjunto.</b> <a href="leis.html">Aquela página</a> traz as votações finais de texto-base no Plenário da Câmara, de propostas que podem ainda estar no
+         Senado, ter sido rejeitadas ou ser emendas constitucionais. Esta conta as leis já sancionadas, tenham passado ou não por votação nominal.</p>
+    </div>
+  </div>
+
+  <p class="og-vazio" id="vazio" hidden>Os dados desta página ainda não foram gerados. Eles saem da rodada diária (<code>origem_leis.py</code>); se a rodada falhar, a página mantém a versão anterior e mostra a data dela.</p>
+
+  <section class="painel" id="composicao" aria-labelledby="compTit" hidden>
+    <h2 id="compTit">Quem escreveu as leis</h2>
+    <p class="og-sub" id="compSub"></p>
+    <div id="comp" style="margin-top:20px"></div>
+    <div class="og-rolagem"><table class="og og-or" id="tabComp"><caption class="so-leitor">Leis por origem, com e sem as leis de PLN</caption></table></div>
+  </section>
+
+  <section class="painel" id="anos" aria-labelledby="anosTit" hidden>
+    <h2 id="anosTit">Por ano e por tipo de norma</h2>
+    <p class="og-sub" id="anosSub"></p>
+    <div class="og-rolagem"><table class="og" id="tabAnos"><caption class="so-leitor">Leis sancionadas por ano e por tipo; emendas constitucionais em linha própria, fora da conta</caption></table></div>
+    <p class="og-nota" id="ecNota"></p>
+    <details class="og-ec" id="ecLista"><summary id="ecResumo"></summary><ul id="ecItens"></ul></details>
+  </section>
+
+  <section class="painel" id="instituicoes" aria-labelledby="instTit" hidden>
+    <h2 id="instTit">Por instituição</h2>
+    <p class="og-sub" id="instSub"></p>
+    <div class="og-rolagem"><table class="og og-or larga" id="tabInst"><caption class="so-leitor">Leis por instituição de origem</caption></table></div>
+    <p class="og-nota" id="instNota"></p>
+  </section>
+
+  <section class="painel" id="lista" aria-labelledby="listaTit" hidden>
+    <h2 id="listaTit">As leis, uma a uma</h2>
+    <p class="og-sub">Cada linha traz a lei, a data, a origem, a via pela qual a lei foi ligada à proposição e os links do Planalto (a lei) e das fichas oficiais (a proposição).</p>
+    <div class="og-filtros" role="group" aria-label="Filtrar as leis">
+      <label class="og-campo">Origem <select class="sel" id="fOrigem"></select></label>
+      <label class="og-campo">Ano <select class="sel" id="fAno"></select></label>
+      <label class="og-campo">Tipo <select class="sel" id="fTipo"><option value="">Todos</option><option value="LEI">Lei ordinária</option><option value="LC">Lei complementar</option></select></label>
+      <label class="og-campo">Via de ligação <select class="sel" id="fVia"></select></label>
+      <label class="og-campo">Número da lei <input class="texto" id="fBusca" type="search" inputmode="numeric" autocomplete="off" placeholder="ex.: 14785"></label>
+      <button class="limpar" id="fLimpar" type="button" hidden>Limpar filtros</button>
+    </div>
+    <p class="og-conta" id="conta" aria-live="polite"></p>
+    <div class="og-rolagem"><table class="og og-or larga" id="tabLista"></table></div>
+    <div class="og-pag" id="pag"></div>
+  </section>
+
+  <section class="painel" id="como" aria-labelledby="comoTit" hidden>
+    <h2 id="comoTit">Como foi classificado</h2>
+    <div class="og-como" id="comoCorpo"></div>
+  </section>
+</main>
+
+<footer class="rodape-site">
+  <div class="wrap">
+    <h2>De onde vem cada número</h2>
+    <p>A lista de leis é a do Senado (<a href="https://legis.senado.leg.br/dadosabertos/" target="_blank" rel="noopener">Dados Abertos do Senado</a>, registro de cada processo com a norma gerada).
+       A autoria vem dos arquivos de autores da <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Câmara dos Deputados</a>, e a categoria de cada autor, de uma tabela de
+       órgãos aberta no código. O link de cada lei leva ao <a href="https://www.planalto.gov.br/ccivil_03/" target="_blank" rel="noopener">Planalto</a>, que é quem publica a norma.</p>
+    <p><span id="rodapeRef"></span>Quando um dado não pôde ser ligado com segurança, a lei aparece como “Não classificado”, nunca com palpite. Código e dados abertos no
+       <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">GitHub</a>.</p>
+  </div>
+</footer>
+<footer class="rodape-global">
+  <div class="wrap">
+    <div class="rg">
+      <div class="rg-sobre">
+        <a class="marca" href="index.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+        <p>O que o Congresso propõe, aprova e vota, a partir de dados públicos oficiais atualizados todos os dias.</p>
+      </div>
+      <nav class="rg-col" aria-label="Páginas">
+        <h2>Páginas</h2>
+        <a href="index.html">Início</a>
+        <a href="deputados.html">Deputados</a>
+        <a href="senadores.html">Senadores</a>
+        <a href="leis.html">Leis votadas</a>
+        <a href="blocos.html">Quem vota com quem</a>
+        <a href="fluxo.html">Entre as casas</a>
+        <a href="obras.html">Obras</a>
+      <a href="contexto.html">Contexto econômico</a>
+        <a href="origem.html" aria-current="page">De onde vêm as leis</a>
+      </nav>
+      <div class="rg-col">
+        <h2>Fontes</h2>
+        <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Câmara dos Deputados</a>
+        <a href="https://legis.senado.leg.br/dadosabertos/" target="_blank" rel="noopener">Senado Federal</a>
+        <a href="https://www.tse.jus.br" target="_blank" rel="noopener">Tribunal Superior Eleitoral</a>
+        <a href="https://dataverse.harvard.edu/dataverse/bls" target="_blank" rel="noopener">Brazilian Legislative Survey</a>
+        <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a>
+      </div>
+      <div class="rg-col">
+        <h2>Projeto</h2>
+        <a href="index.html#sobre">Sobre os dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">Código e dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/issues" target="_blank" rel="noopener">Informar um erro</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a>
+      </div>
+    </div>
+    <div class="rg-pe"><p>Site independente, sem vínculo com a Câmara dos Deputados, o Senado Federal ou o TSE.
+      Os números vêm das fontes oficiais citadas; as escolhas de método estão escritas em cada página.</p></div>
+  </div>
+</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+let D=null, LINHAS=[], FILTRO={origem:'',ano:'',tipo:'',via:'',q:''}, PAG=1;
+const POR_PAGINA=25;
+
+function iniciar(){
+  OrigemLeis.carregar().then(d=>{
+    if(!d||!d.campos||!d.normas){ $('vazio').hidden=false; return; }
+    D=d;
+    LINHAS=d.normas.map(r=>{ const o={}; d.campos.forEach((c,i)=>o[c]=r[i]); return o; })
+                   .sort((a,b)=>a.data<b.data?1:a.data>b.data?-1:b.numero-a.numero);
+    abertura(); composicao(); anos(); instituicoes(); lista(); como();
+    ['composicao','anos','instituicoes','lista','como'].forEach(id=>$(id).hidden=false);
+  });
+}
+
+const U=()=>D.urls;
+const urlPlanalto=(tipo,numero,data)=>U().planalto[tipo].replace('{ano}',data.slice(0,4)).replace('{numero}',numero);
+const urlCamara=id=>U().camara.replace('{idCamara}',id);
+const urlSenado=cod=>U().senado.replace('{codSenado}',cod);
+const nomeLei=(tipo,numero)=>`${tipo==='LC'?'Lei Complementar':'Lei'} nº ${OrigemLeis.num(numero)}`;
+const iCat=nome=>D.categorias.indexOf(nome);
+const clsCat=i=>i===2?'or-e0':'or-c'+i;                       // Executivo na tabela: o liso do primeiro caminho
+const sw=cls=>`<i class="or-sw ${cls}" aria-hidden="true"></i>`;
+
+// ---------- abertura: a pergunta, o período e a data de geração ----------
+function abertura(){
+  const r=OrigemLeis.resumo(D), L=OrigemLeis.dataLonga;
+  $('chamada').innerHTML=`Quem escreve as leis que viram lei? Leis ordinárias e complementares sancionadas de <b>${L(r.inicio)}</b> `+
+    (r.ultima?`até <b>${L(r.ultima)}</b>, a data da lei mais recente. `:'')+`Dados gerados em <b>${L(r.gerado)}</b>.`;
+}
+
+// ---------- composição: UMA barra, os dois totais no texto, e a tabela com e sem as PLN ----------
+function composicao(){
+  const r=OrigemLeis.resumo(D), O=OrigemLeis;
+  $('compSub').textContent='Cada segmento é a parcela das leis sancionadas cuja proposição de origem tem autor naquele grupo. O Executivo aparece dividido nos três caminhos por onde as propostas dele chegam: projeto de lei, medida provisória convertida e PLN (créditos e orçamento).';
+  O.montar($('comp'),D,{});
+  const c=D.composicao.comPLN, s=D.composicao.semPLN;
+  const linha=(rot,qa,qb,cls,filho)=>`<tr${filho?' class="filho"':''}><td>${sw(cls)}${filho?O.esc(rot):`<b>${O.esc(rot)}</b>`}</td>`+
+    `<td class="d">${O.num(qa)}</td><td class="d">${O.pct(qa,c.total)}</td><td class="d">${O.num(qb)}</td><td class="d">${O.pct(qb,s.total)}</td></tr>`;
+  let corpo='';
+  D.categorias.forEach((nome,i)=>{
+    const qa=c.categorias[nome]||0, qb=s.categorias[nome]||0;
+    if(!qa&&!qb) return;
+    corpo+=linha(nome,qa,qb,clsCat(i));
+    if(nome==='Executivo') D.vias.forEach((v,j)=>{ const a=c.executivoPorVia[v]||0, b=s.executivoPorVia[v]||0; corpo+=linha(v,a,b,'or-e'+j,true); });
+  });
+  const nc=c.categorias['Não classificado']||0;
+  $('tabComp').innerHTML=`<caption class="so-leitor">Leis por origem, com e sem as leis de PLN</caption>`+
+    `<thead><tr><th>Origem</th><th class="d">Todas as leis</th><th class="d">%</th><th class="d">Sem as PLN</th><th class="d">%</th></tr></thead><tbody>${corpo}</tbody>`+
+    `<tfoot><tr><td>Total</td><td class="d">${O.num(c.total)}</td><td class="d">100,0%</td><td class="d">${O.num(s.total)}</td><td class="d">100,0%</td></tr></tfoot>`;
+}
+
+// ---------- por ano e por tipo; as emendas constitucionais em linha própria ----------
+function anos(){
+  const O=OrigemLeis, pa=D.totais.porAno, ec=D.emendas||[], ecAno={};
+  ec.forEach(e=>ecAno[e.data.slice(0,4)]=(ecAno[e.data.slice(0,4)]||0)+1);
+  const ys=[...new Set([...Object.keys(pa),...Object.keys(ecAno)])].sort();
+  const ini=D.legislatura.inicio, ult=D.legislatura.ultimaLei;
+  const rotAno=y=>{ let t=y;
+    if(y===ini.slice(0,4)&&ini.slice(5)!=='01-01') t+=`<small>desde ${O.dataLonga(ini).replace(/\/\d+$/,'')}</small>`;
+    if(ult&&y===ult.slice(0,4)&&ult.slice(5)<'12-31') t+=`<small>até ${O.dataLonga(ult).replace(/\/\d+$/,'')}</small>`;
+    return t; };
+  const cel=(f)=>ys.map(y=>`<td class="d">${O.num(f(y))}</td>`).join('');
+  const tot=f=>ys.reduce((a,y)=>a+f(y),0);
+  const fo=y=>(pa[y]||{}).ordinarias||0, fc=y=>(pa[y]||{}).complementares||0, fe=y=>ecAno[y]||0;
+  $('anosSub').textContent='Leis ordinárias e leis complementares, pela data da lei (a sanção ou a promulgação), não pela data da votação.';
+  $('tabAnos').innerHTML=`<caption class="so-leitor">Leis sancionadas por ano e por tipo; emendas constitucionais em linha própria, fora da conta</caption>`+
+    `<thead><tr><th>Tipo de norma</th>${ys.map(y=>`<th class="d">${rotAno(y)}</th>`).join('')}<th class="d">Total</th></tr></thead><tbody>`+
+    `<tr><td><b>Leis ordinárias</b></td>${cel(fo)}<td class="d"><b>${O.num(tot(fo))}</b></td></tr>`+
+    `<tr><td><b>Leis complementares</b></td>${cel(fc)}<td class="d"><b>${O.num(tot(fc))}</b></td></tr></tbody>`+
+    `<tfoot><tr><td>Total de leis</td>${cel(y=>fo(y)+fc(y))}<td class="d">${O.num(tot(y=>fo(y)+fc(y)))}</td></tr>`+
+    `<tr class="a-parte"><td><b>Emendas constitucionais</b><small>à parte, fora da conta</small></td>${cel(fe)}<td class="d"><b>${O.num(ec.length)}</b></td></tr></tfoot>`;
+  $('ecNota').innerHTML='<b>Por que as emendas ficam de fora.</b> Emenda constitucional muda a Constituição e é promulgada pelas Mesas da Câmara e do Senado, sem sanção do Presidente. '+
+    'Não é lei ordinária nem complementar, então não entra na conta de “leis sancionadas”. Ficam aqui, contadas e listadas, para ninguém procurá-las.';
+  $('ecResumo').textContent=`As ${O.num(ec.length)} emendas constitucionais da legislatura`;
+  $('ecItens').innerHTML=ec.map(e=>`<li><b>Emenda Constitucional nº ${e.numero}</b>, de ${O.dataCurta(e.data)} · ${O.esc(e.processos.join(', '))} · `+
+    `<a href="${urlPlanalto('EC',e.numero,e.data)}" target="_blank" rel="noopener">Planalto</a>`+
+    (e.codSenado?` · <a href="${urlSenado(e.codSenado)}" target="_blank" rel="noopener">Senado</a>`:'')+`</li>`).join('');
+  $('ecLista').hidden=!ec.length;
+}
+
+// ---------- por instituição ----------
+function instituicoes(){
+  const O=OrigemLeis, total=D.composicao.comPLN.total, soma=D.orgaos.reduce((a,o)=>a+o.leis,0);
+  $('instSub').textContent='Uma linha por instituição, com o número de leis em que alguma proposição de origem tem autor dela. Deputados somam todos os deputados, sem nome: a página não compara pessoas.';
+  const lin=o=>{
+    const i=iCat(o.categoria), det=(o.detalhe||[]).length>1
+      ? `<small>${o.detalhe.map(x=>`${O.esc(x.nome)} (${O.num(x.leis)})`).join(' · ')}</small>`:'';
+    return `<tr><td><b>${O.esc(o.nome)}</b>${det}${o.grupo&&o.grupo!==o.nome?`<small>${O.esc(o.grupo)}</small>`:''}</td>`+
+      `<td>${sw(clsCat(i))}${O.esc(o.categoria)}</td><td class="d">${O.num(o.leis)}</td><td class="d">${O.pct(o.leis,total)}</td></tr>`;
+  };
+  $('tabInst').innerHTML=`<caption class="so-leitor">Leis por instituição de origem</caption><thead><tr><th>Instituição</th><th>Origem</th><th class="d">Leis</th><th class="d">% das leis</th></tr></thead><tbody>${D.orgaos.map(lin).join('')}</tbody>`;
+  $('instNota').innerHTML=soma>total
+    ? `Uma lei com autores de mais de uma instituição conta em cada uma; por isso a soma da coluna (${O.num(soma)}) passa do total de leis (${O.num(total)}).`
+    : `Cada lei tem autor de uma única instituição: a soma da coluna (${O.num(soma)}) é o total de leis.`;
+}
+
+// ---------- a lista de leis: filtros, busca por número e paginação ----------
+function lista(){
+  const O=OrigemLeis, c=D.composicao.comPLN;
+  const opcs=['<option value="">Todas</option>'];
+  D.categorias.forEach((nome,i)=>{
+    if(!(c.categorias[nome]>0)) return;
+    opcs.push(`<option value="c${i}">${O.esc(nome)}</option>`);
+    if(nome==='Executivo') D.vias.forEach((v,j)=>{ if(c.executivoPorVia[v]>0) opcs.push(`<option value="e${j}">Executivo: ${O.esc(v)}</option>`); });
+  });
+  $('fOrigem').innerHTML=opcs.join('');
+  $('fAno').innerHTML='<option value="">Todos</option>'+[...new Set(LINHAS.map(l=>l.data.slice(0,4)))].sort().reverse().map(y=>`<option>${y}</option>`).join('');
+  $('fVia').innerHTML='<option value="">Todas</option>'+(D.viasLigacao||[]).filter(v=>(D.totais.porVia||{})[v]>0).map(v=>`<option value="${v}">${O.esc((O.VIA[v]||{rot:v}).rot)}</option>`).join('');
+  const lerFiltro=()=>{ FILTRO={origem:$('fOrigem').value,ano:$('fAno').value,tipo:$('fTipo').value,via:$('fVia').value,q:$('fBusca').value.replace(/\D/g,'')}; PAG=1; desenharLista(); };
+  ['fOrigem','fAno','fTipo','fVia'].forEach(id=>$(id).addEventListener('change',lerFiltro));
+  $('fBusca').addEventListener('input',lerFiltro);
+  $('fLimpar').onclick=()=>{ ['fOrigem','fAno','fTipo','fVia'].forEach(id=>$(id).value=''); $('fBusca').value=''; lerFiltro(); };
+  desenharLista();
+}
+function passa(l){
+  const f=FILTRO;
+  if(f.origem){ if(f.origem[0]==='c'){ if(l.categoria!==+f.origem.slice(1)) return false; } else if(l.viaExecutivo!==+f.origem.slice(1)) return false; }
+  if(f.ano&&l.data.slice(0,4)!==f.ano) return false;
+  if(f.tipo&&l.tipo!==f.tipo) return false;
+  if(f.via&&l.via!==f.via) return false;
+  if(f.q&&!String(l.numero).includes(f.q)) return false;
+  return true;
+}
+function desenharLista(){
+  const O=OrigemLeis, ok=LINHAS.filter(passa), paginas=Math.max(1,Math.ceil(ok.length/POR_PAGINA));
+  PAG=Math.min(PAG,paginas);
+  const ini=(PAG-1)*POR_PAGINA, fatia=ok.slice(ini,ini+POR_PAGINA);
+  $('fLimpar').hidden=!(FILTRO.origem||FILTRO.ano||FILTRO.tipo||FILTRO.via||FILTRO.q);
+  $('conta').textContent=ok.length
+    ? `${ok.length===LINHAS.length?'Todas as':'Mostrando'} ${O.num(ok.length)} ${O.plural(ok.length,'lei','leis')}`+(ok.length>POR_PAGINA?` · linhas ${O.num(ini+1)} a ${O.num(ini+fatia.length)}`:'')+'.'
+    : 'Nenhuma lei com esses filtros.';
+  const linha=l=>{
+    const cat=D.categorias[l.categoria], exec=l.viaExecutivo!=null?D.vias[l.viaExecutivo]:null;
+    const cls=l.viaExecutivo!=null?'or-e'+l.viaExecutivo:clsCat(l.categoria);
+    const tags=[];
+    if(l.marcas.includes('dataCamaraDiverge')) tags.push(['data da Câmara diferente',`A Câmara registra ${O.dataCurta(l.dataCamara)}; vale a data do Senado.`]);
+    if(l.marcas.includes('dataNaoConfirmadaSenado')) tags.push(['data não confirmada pelo Senado','A lei não está no registro do Senado; a data é a do registro da Câmara.']);
+    if(l.marcas.includes('excecaoCurada')) tags.push(['exceção curada','Veja “Como foi classificado”.']);
+    const via=D.viasLigacao&&l.via?(O.VIA[l.via]||{rot:l.via}):{rot:'sem proposição ligada'};
+    const lk=[`<a href="${urlPlanalto(l.tipo,l.numero,l.data)}" target="_blank" rel="noopener">Planalto</a>`]
+      .concat((l.idCamara||[]).map(id=>`<a href="${urlCamara(id)}" target="_blank" rel="noopener">Câmara</a>`))
+      .concat(l.codSenado?[`<a href="${urlSenado(l.codSenado)}" target="_blank" rel="noopener">Senado</a>`]:[]);
+    return `<tr><td><b>${nomeLei(l.tipo,l.numero)}</b><small>${l.tipo==='LC'?'complementar':'ordinária'}</small></td><td class="d">${O.dataCurta(l.data)}</td>`+
+      `<td>${sw(cls)}${O.esc(cat)}${exec?`<small>${O.esc(exec)}</small>`:''}<small>proposição: ${O.esc(l.proposicao||'não ligada')}</small>`+
+      `${tags.map(t=>`<span class="og-tag" title="${O.esc(t[1])}">${O.esc(t[0])}</span>`).join('')}</td>`+
+      `<td title="${O.esc(via.desc||'')}">${O.esc(via.rot)}</td><td class="og-lk">${lk.join(' · ')}</td></tr>`;
+  };
+  $('tabLista').innerHTML=`<caption class="so-leitor">Leis sancionadas na legislatura</caption>`+
+    `<thead><tr><th>Lei</th><th class="d">Data</th><th>Origem</th><th>Via de ligação</th><th>Links</th></tr></thead><tbody>`+
+    (fatia.length?fatia.map(linha).join(''):`<tr><td colspan="5" class="og-sem">Nenhuma lei com esses filtros.</td></tr>`)+'</tbody>';
+  $('pag').innerHTML=paginas>1
+    ? `<button class="pino" id="pAnt" type="button" ${PAG<=1?'disabled':''}>← Anterior</button>`+
+      `<span>Página ${O.num(PAG)} de ${O.num(paginas)}</span>`+
+      `<button class="pino" id="pPro" type="button" ${PAG>=paginas?'disabled':''}>Próxima →</button>` : '';
+  if(paginas>1){
+    const ir=n=>{ PAG=n; desenharLista(); $('lista').scrollIntoView({block:'start'}); };
+    $('pAnt').onclick=()=>ir(PAG-1); $('pPro').onclick=()=>ir(PAG+1);
+  }
+}
+
+// ---------- como foi classificado: a regra, as vias com a conta de cada uma, as exceções, a lei só da Câmara ----------
+function como(){
+  const O=OrigemLeis, t=D.totais, porVia=t.porVia||{}, r=O.resumo(D);
+  const vias=(D.viasLigacao||[]).map(v=>{ const x=O.VIA[v]||{rot:v,desc:''};
+    return `<tr><td><b>${O.esc(x.rot)}</b></td><td>${O.esc(x.desc)}</td><td class="d">${O.num(porVia[v]||0)}</td></tr>`; }).join('');
+  const exc=(D.excecoes||[]).map(x=>`<div class="og-exc"><p><b>${O.esc(x.proposicao)} → ${O.esc(x.tipo)} nº ${O.num(x.numero)}, de ${O.dataCurta(x.data)}</b> · origem ${O.esc(x.categoria)} · verificada em ${O.dataCurta(x.verificadoEm)} · `+
+      `${x.necessaria?'decisiva para a lei entrar na conta':'não é mais necessária (as outras vias já ligam a lei)'}</p>`+
+      `<p>${O.esc(x.motivo)}</p><div class="og-lks"><a href="${O.esc(x.urlPlanalto)}" target="_blank" rel="noopener">Planalto: número e data da lei</a>`+
+      `<a href="${O.esc(x.urlProposicao)}" target="_blank" rel="noopener">Ficha da proposição: autoria</a></div></div>`).join('');
+  const soCamara=LINHAS.filter(l=>l.marcas.includes('dataNaoConfirmadaSenado'));
+  const dc=LINHAS.filter(l=>l.marcas.includes('dataCamaraDiverge'));
+  const div=D.divergentes||[];
+  const ref=D.referencia&&D.referencia.conferida?D.referencia:null;
+  const refTxt=ref?ref.linhas.map(l=>`${O.num(l.totalPipeline)} ${l.tipo==='emendas'?'emendas constitucionais':l.tipo==='ordinarias'?'leis ordinárias':'leis complementares'} até ${O.dataLonga(l.ate)}`).join('; '):'';
+  // O rodapé não afirma conferência que não existe: legislatura sem referência (a 58ª, por exemplo) diz que não foi conferida.
+  $('rodapeRef').textContent=ref
+    ?`A contagem de leis por ano e tipo foi conferida à mão na lista oficial do Planalto em ${O.dataLonga(ref.conferidoEm)}, e a rodada diária só grava o resultado se continuar batendo. `
+    :'A contagem de leis desta legislatura ainda não foi conferida à mão na lista oficial do Planalto. ';
+  $('comoCorpo').innerHTML=
+    `<div><h3>A regra</h3><p>A origem de uma lei é a <b>autoria da proposição que virou lei</b>. O programa lê, no arquivo de autores da Câmara, quem assina a proposição como autor, e classifica pelo <b>identificador do autor</b>: um deputado, ou um órgão (Senado, Executivo, tribunal…), conforme uma tabela aberta no código. Nunca por nome, por ementa nem por texto livre. Autor que não está na tabela é “Não classificado”; autores de origens diferentes na mesma proposição são “Misto”.</p></div>`+
+    `<div><h3>Como cada lei é ligada à proposição</h3><p>A lista de leis é a do Senado; a Câmara só informa a autoria. A ligação entre a lei e a proposição é só por número ou identificador exato, em quatro vias, e cada lei guarda a que decidiu.</p>`+
+    `<div class="og-rolagem"><table class="og"><thead><tr><th>Via</th><th>O que é</th><th class="d">Leis</th></tr></thead><tbody>${vias}</tbody></table></div></div>`+
+    `<div><h3>Exceções curadas: ${O.num((D.excecoes||[]).length)} (o limite é ${O.num(t.excecoesTeto||5)})</h3><p>Quando a Câmara registra a lei com um número que o Senado e o Planalto contradizem, só uma exceção resolve, e ela exige os dois links oficiais: o do Planalto, que prova o número e a data, e o da ficha da proposição, que prova a autoria.</p>${exc||'<p>Nenhuma.</p>'}</div>`+
+    `<div><h3>Data não confirmada pelo Senado</h3>${soCamara.length
+      ? `<p>${soCamara.map(l=>`<b>${nomeLei(l.tipo,l.numero)}</b> (${O.esc(l.proposicao||'')}, origem ${O.esc(D.categorias[l.categoria])})`).join('; ')} ${O.plural(soCamara.length,'não está','não estão')} no registro do Senado. ${O.plural(soCamara.length,'Entra','Entram')} com a data do registro da Câmara, marcada na lista; confira no link do Planalto.</p>`
+      : '<p>Nenhum caso: toda lei está no registro do Senado.</p>'}</div>`+
+    `<div><h3>Datas e divergências</h3><p>${dc.length?`Em <b>${O.num(dc.length)}</b> ${O.plural(dc.length,'lei','leis')} a Câmara registra outra data; vale a do Senado, e a lista marca cada uma.`:'Em nenhuma lei a Câmara registra data diferente da do Senado.'} `+
+      `${div.length?`<b>${O.num(div.length)}</b> ${O.plural(div.length,'lei ficou fora da conta','leis ficaram fora da conta')} porque a Câmara e o Senado discordam do número: ${div.map(x=>O.esc(x.detalhe)).join('; ')}.`:'<b>Nenhuma lei</b> ficou fora da conta por divergência de número entre as fontes.'} `+
+      `${r.nc?`<b>${O.num(r.nc)}</b> ${O.plural(r.nc,'lei está','leis estão')} sem origem classificada.`:'<b>Não classificado:</b> nenhum caso.'}</p></div>`+
+    (ref?`<div><h3>Conferência com o Planalto</h3><p>A contagem por ano e tipo foi conferida à mão na lista oficial do Planalto em ${O.dataLonga(ref.conferidoEm)} (${O.esc(refTxt)}). A rodada diária só grava o resultado se a contagem continuar batendo.</p></div>`:'<div><h3>Conferência com o Planalto</h3><p>A contagem de leis desta legislatura ainda não foi conferida à mão na lista oficial do Planalto.</p></div>')+
+    `<p class="og-fixa">${O.esc(O.FRASE_FIXA)}</p>`;
+}
+
+document.addEventListener('DOMContentLoaded',iniciar);
+</script>
+</body>
+</html>

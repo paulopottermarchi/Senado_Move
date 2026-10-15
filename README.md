@@ -27,6 +27,7 @@ dos Deputados, o Senado Federal ou o TSE.
 | **Entre as casas** (`fluxo.html`) | Proposições aprovadas numa casa e remetidas à outra (Câmara → Senado e Senado → Câmara): quantas viraram lei, quanto tempo levaram na casa revisora e em que órgão estão paradas. A unidade é a proposição, nunca o parlamentar. |
 | **Obras** (`obras.html`) | Obras federais em São Paulo com contrato no Contratos.gov.br: quanto o contrato cresceu, termo a termo, com os documentos oficiais. |
 | **Contexto econômico** (`contexto.html`) | O que o Congresso está fazendo em matéria econômica (PEC e PLP de tema oficial Economia ou Finanças Públicas e Orçamento: sancionadas, em tramitação e paradas há mais de um ano), ao lado das séries oficiais de inflação e meta, PIB, despesa, dívida e resultado do governo. Os dois lados ficam separados: a página não liga lei a indicador, não julga número e diz isso no topo. |
+| **[De onde vêm as leis](site/origem.html)** (`origem.html`) | De quem era a proposição que virou lei, entre as leis ordinárias e complementares sancionadas na legislatura atual: deputados, Senado, Executivo (projeto de lei, medida provisória convertida ou PLN), Judiciário, Ministério Público, Defensoria e controle, e órgãos da Câmara. A origem é a autoria, não diz quem aprovou nem quem ajudou a escrever o texto. Fica fora da barra do topo: abre pela página inicial, pela visão "Viraram lei" de Deputados, pela ficha de cada deputado e por um link no rodapé de todas as páginas. |
 
 ## Princípios
 
@@ -93,6 +94,22 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
   receber); nunca por título ou ementa. Sem vínculo confirmado, a proposição fica fora das contas e é contada. Desfecho vem
   de campo estruturado, rejeitada se distingue de arquivada, e "parada" descreve (mais de 365 dias sem andamento), nunca
   acusa de atraso. Nada de autor, relator ou presidente de comissão: agrega por tipo, direção e órgão.
+- **De onde vêm as leis** (`scripts/origem_leis.py`). **A origem é a autoria da proposição que virou lei. Não indica quem a
+  aprovou nem quem mais contribuiu para o texto final.** Entram as leis ordinárias e complementares da legislatura atual, pela
+  data da norma, uma vez cada; as emendas constitucionais não são sancionadas e ficam numa linha à parte. **Quem define a lista
+  é o Senado** (campo `normaGerada` de `/processo`), porque uma lei de hoje pode vir de um PLS de 2007; a Câmara só informa a
+  autoria. A ligação entre a lei e a proposição é **só por identificador exato** (o mesmo nas duas Casas, o que o Senado
+  registra como número da outra Casa, ou o número de lei que a própria Câmara grava na tramitação, desde que uma única
+  proposição o reivindique), nunca por título, ementa ou nome. O autor (`proponente = 1`, pelo identificador dele) vira
+  categoria pela tabela `scripts/mapa_origem.json`, com a fonte oficial de cada nome. Lei sem proposição achada fica "Não
+  classificada", e a divergência de número entre as Casas fica fora da conta e é listada. O Executivo aparece em três partes
+  (projeto de lei, medida provisória convertida e PLN, as leis de crédito e orçamento) e a página dá o total com e sem as PLN.
+  A data é a do Senado: onde a Câmara registra outra, a do Senado foi a que o Planalto confirmou, em todos os casos
+  conferidos. A contagem por ano e tipo é comparada com a que foi conferida à mão nas listas do Planalto
+  (`entradas/origem_leis_referencia.json`; o script nunca consulta o site do Planalto), e as exceções curadas, cada uma com
+  os links oficiais e a data da verificação, ficam em `entradas/normas_excecoes.json` (teto de 5). O script **falha de
+  propósito** se a data de hoje passar do fim da legislatura configurada em `legislaturas.json`: a 58ª começa em 1º/2/2027, e
+  sem isso a 57ª continuaria sendo contada como a atual. Falhou, o site mantém o JSON anterior e mostra a data dele.
 - **Alinhamento ao Governo (deputados e senadores)**: coluna no ranking dos deputados e na tabela dos senadores. É a parcela dos
   votos Sim ou Não, nas votações nominais do Plenário desde 2023 em que o líder do Governo orientou Sim ou Não (o registro de
   orientação de cada Casa), em que a pessoa votou como ele orientou; mínimo de 50 votações na Câmara e 30 no Senado. Mede
@@ -113,6 +130,7 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 | TSE — Divulgação de Resultados 2022 | votos de cada deputado e quociente eleitoral (tabela fixa em `entradas/`) |
 | Brazilian Legislative Survey (Power e Zucco) | posição dos partidos no espectro |
 | IBGE (API SIDRA), Banco Central (SGS e página de metas) e Tesouro Nacional (API de Séries Temporais) | IPCA, PIB, meta de inflação e banda, dívida, despesa, resultado primário e nominal do Governo Central |
+| Planalto (legislação) | endereço do texto de cada lei, só como link; a contagem de leis por ano e tipo foi conferida à mão nas listas do Planalto e está em `entradas/origem_leis_referencia.json` |
 | ObrasGov.br, Contratos.gov.br e CGU | obras, contratos, termos aditivos, emendas parlamentares, sanções (CEIS/CNEP) |
 | Enquetes e Agência Câmara (RSS) | enquete de cada lei votada; notícias ligadas às proposições |
 | Wikipédia (API de leituras) | leituras do artigo de cada deputado, ligado por identificador |
@@ -124,15 +142,18 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 site/                 o que vai ao ar — o GitHub Pages publica a pasta inteira, e só ela
   index.html          página inicial; deputados.html, a dos deputados (prototipo.html só redireciona)
   deputado.html  leis.html  blocos.html  fluxo.html  obras.html  senadores.html  contexto.html
+  origem.html         "De onde vêm as leis": fora da barra do topo (inicial, deputados, ficha e rodapé levam a ela)
+  origem.js           a barra de composição e o texto de "De onde vêm as leis", iguais nas quatro telas que os mostram
   estilo.css  site.js  motion-init.js  favicon.ico
   cena3d.js  modelos3d.js  cupula3d.js  plenario3d.js   3D sob demanda: base comum, modelos do topo, plenário dos senadores
   img/                imagem estática de cada modelo (a mesma câmera do 3D, para quem não tem WebGL)
   vendor/             Motion, Three.js e a fonte condensada, em versão fixa
   dados/              os JSON que as páginas leem, gerados pelos scripts
     temas/            um arquivo por deputado, a taxonomia e o resumo
-scripts/              coleta e processamento, em Python
+scripts/              coleta e processamento, em Python (mapa_origem.json: autor → categoria, com a fonte de cada nome)
 entradas/             tabelas fixas e resultados pagos, versionados e não publicados
-                      (ideologia.json, eleicao2022.json, governos.json, logos_partidos.json, resumos por IA)
+                      (ideologia.json, eleicao2022.json, governos.json, logos_partidos.json, resumos por IA,
+                      normas_excecoes.json e origem_leis_referencia.json, de "De onde vêm as leis")
 cache/                respostas cruas das APIs — fora do git (centenas de MB), regenerável
 .github/workflows/    a rodada diária
 ```
@@ -165,7 +186,7 @@ completa da rodada diária está no workflow:
 
 ```
 atualiza → coleta → votos → blocos → notoriedade → wikipedia → noticias → youtube → enquetes
-→ ecidadania → resumos → obras → senado → tramitacoes → temas → partidos → governo → logos → fluxo → semana
+→ ecidadania → resumos → obras → senado → tramitacoes → temas → partidos → governo → logos → fluxo → origem_leis → semana
 ```
 
 Para ver o site, sirva a pasta `site/` (o navegador não carrega os JSON de arquivos abertos direto
@@ -224,6 +245,11 @@ com os dados do dia anterior. Para publicar pela primeira vez: *Settings → Pag
 - **Contexto econômico**: só a Câmara e só dois temas oficiais (Economia e Finanças Públicas e Orçamento). PL ordinário entra apenas nas sancionadas dos
   últimos 12 meses; apensadas e proposições sem situação na API ficam fora das abas e são contadas. Antes de 2003 a Câmara não atribuiu tema a todas as
   proposições, então há anos sem marcos. O "objetivo declarado" é citação literal da justificação, nunca paráfrase de IA.
+- **De onde vêm as leis**: só a legislatura atual, e só leis ordinárias e complementares (as emendas constitucionais ficam à
+  parte). A lei só entra numa categoria se a ligação com a proposição for por identificador exato; do contrário fica "Não
+  classificada", e uma divergência de número entre as Casas a deixa fora da conta. O universo é o do registro do Senado, e uma lei
+  que só a Câmara registra entra com a marca "data não confirmada pelo Senado". As leis da ficha de um deputado, as de "Leis
+  votadas" e as desta página são conjuntos diferentes.
 - **Categorias de tema** são classificação deste site por palavras-chave da ementa, com o termo que
   definiu cada uma sempre visível. A precisão ainda não foi medida.
 

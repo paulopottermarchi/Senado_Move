@@ -29,6 +29,7 @@ if(location.hash==='#semana') location.replace('index.html'+location.search+loca
 <link rel="modulepreload" href="vendor/motion-14.0.0.js">
 <script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
 <script src="site.js" defer></script>
+<script src="origem.js" defer></script>
 <style>
 /* ---------- topo ---------- */
 .capa{padding:44px 0 28px}
@@ -765,6 +766,9 @@ table.part tr.divisor td{position:static;box-shadow:none}
       </div>
     </div>
 
+    <!-- De onde vêm as leis: só na vista "Viraram lei" (atualizarOrigem). O fato do conjunto das leis sancionadas, não dos deputados filtrados. -->
+    <section class="or-faixa" id="origemFaixa" aria-label="De onde vêm as leis sancionadas nesta legislatura" hidden></section>
+
     <div class="corpo">
       <div>
         <div class="tela" id="tela"><div class="dica" id="dica"></div></div>
@@ -909,6 +913,7 @@ table.part tr.divisor td{position:static;box-shadow:none}
         <a href="fluxo.html">Entre as casas</a>
         <a href="obras.html">Obras</a>
       <a href="contexto.html">Contexto econômico</a>
+      <a href="origem.html">De onde vêm as leis</a>
       </nav>
       <div class="rg-col">
         <h2>Fontes</h2>
@@ -954,6 +959,8 @@ table.part tr.divisor td{position:static;box-shadow:none}
       <div class="cel"><b id="fPlen">0</b><span>Aprov. Plenário</span></div>
     </div>
     <p class="origem" id="fDiverge"></p>
+    <!-- o fato do CONJUNTO das leis sancionadas (OrigemLeis.linhaFicha), nunca uma média por deputado -->
+    <p class="origem" id="fOrigemLeis" hidden></p>
     <p class="origem" id="fEspTxt"></p>
     <p class="origem" id="fOrigem"></p>
     <p class="origem" id="fMandatos"></p>
@@ -1243,7 +1250,8 @@ async function carregar(pFrases){
   const pLogos=Bandeiras.carregar();     // logos dos partidos (logos.py); sem o arquivo, a página só não mostra logo
   const pDep=buscaJson('dados/deputados.json'), pLeg=buscaJson('dados/legislaturas.json'),
         pWiki=buscaJson('dados/wikipedia.json'), pYt=buscaJson('dados/youtube.json'), pBlocos=buscaJson('dados/blocos.json'),
-        pProp=buscaJson('dados/proposicoes.json'), pEnq=buscaJson('dados/enquetes.json');
+        pProp=buscaJson('dados/proposicoes.json'), pEnq=buscaJson('dados/enquetes.json'),
+        pOrig=OrigemLeis.carregar();           // origem_leis.json (origem_leis.py); sem o arquivo, só não há faixa nem linha na ficha
   try{
     const reais=await pDep;
     if(!Array.isArray(reais)||!reais.length) throw 0;
@@ -1334,6 +1342,7 @@ async function carregar(pFrases){
   // referência para a ficha: a mediana da Câmara, não um ranking
   MEDIANA_DIV=medianaDe(deputados.map(taxaDiv));
   await Promise.all([pLogos,pFrases]);      // logos e frases (busca e ficha) já chegaram junto dos outros arquivos
+  ORIGEM=await pOrig;
   montarFiltros();
   // vem da página inicial: deputados.html?regiao=NE (ou ?uf=SP) abre o gráfico já filtrado
   {
@@ -1644,8 +1653,26 @@ function ligarPonto(c){
   c.addEventListener('click',()=>{ if(passa(d())) abrir(d()); });
 }
 
+// De onde vêm as leis: a faixa aparece só na vista "Viraram lei" e só quando faz sentido para o que o gráfico mostra. A origem foi
+// apurada para a legislatura atual; com um mandato antigo escolhido não há o que mostrar, e com a carreira inteira a faixa diz que é
+// só da legislatura atual. Os filtros de região e estado não mudam o fato: é o conjunto das leis, não dos deputados filtrados.
+let ORIGEM=null;
+function atualizarOrigem(){
+  const box=document.getElementById('origemFaixa');
+  if(!box) return;
+  const mostrar=!!ORIGEM&&!demo&&medida==='viraramLei'&&(!mandato||mandato===LEG_ATUAL());
+  box.hidden=!mostrar;
+  if(!mostrar) return;
+  const chave=mandato?'a':'c';
+  if(box.dataset.feito===chave) return;                    // só refaz quando o escopo muda
+  OrigemLeis.montar(box,ORIGEM,{compacta:true,link:'origem.html',
+    nota:mandato?'':'O gráfico abaixo soma todos os mandatos de cada deputado; esta faixa é só das leis sancionadas na legislatura atual.'});
+  box.dataset.feito=chave;
+}
+
 function desenhar(){
   atualizarLimpar();
+  atualizarOrigem();
   const W=tela.clientWidth,H=tela.clientHeight;
   if(!W||!H){                       // aba Ranking ativa: o scatter está oculto
     plenarioDesenhar(); contaDesenhar(); votosDesenhar(); rankDesenhar();
@@ -2259,6 +2286,12 @@ function abrir(d){
     (vl==null||ap==null||vl===ap) ? ''
     : ap<vl ? 'Aprovadas em Plenário é menor porque parte das leis foi aprovada direto nas comissões, sem ir a voto no Plenário.'
             : 'Aprovadas em Plenário é maior porque projetos já aprovados aqui ainda aguardam o Senado, então ainda não são lei.';
+
+  // De onde vêm as leis: o fato do conjunto, só quando o escopo da ficha é a legislatura atual (com um mandato antigo escolhido, os números
+  // acima são desse mandato e a origem das leis não foi apurada para ele).
+  const fOL=document.getElementById('fOrigemLeis');
+  const linhaOL=(ORIGEM&&!demo&&(!mandato||mandato===LEG_ATUAL()))?OrigemLeis.linhaFicha(ORIGEM,'origem.html'):'';
+  fOL.innerHTML=linhaOL; fOL.hidden=!linhaOL;
 
   // Só o número: a faixa não rotula o deputado (ver CLAUDE.md, "Os cortes em cinco
   // faixas foram ABANDONADOS na cor") — PL em 7,41 não é "centro-direita" por decreto nosso.

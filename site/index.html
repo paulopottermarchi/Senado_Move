@@ -27,6 +27,7 @@
 <link rel="modulepreload" href="vendor/motion-14.0.0.js">
 <script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
 <script src="site.js" defer></script>
+<script src="origem.js" defer></script>
 <style>
 /* =====================================================================
    Página inicial — redesenho editorial (6/10/2026): abertura escura com o número primeiro, o gráfico como protagonista, "Esta
@@ -188,6 +189,12 @@
 .sem-mais-btn{font:inherit;font-size:13px;font-weight:500;color:var(--tinta);background:var(--linha2);border:none;
               border-radius:var(--raio-p);padding:8px 16px;margin-top:12px;cursor:pointer}
 .sem-mais-btn:hover{background:var(--linha)}
+
+/* ---------- De onde vêm as leis: um achado curto, depois de "Esta semana" (a barra e a legenda são de estilo.css / origem.js) ---------- */
+.origem-ed{padding-bottom:clamp(24px,3vw,40px)}
+.origem-ed[hidden]{display:none}
+.origem-ed .h2-ed{margin-top:0}
+.origem-home{margin-top:36px;max-width:1040px}
 
 /* ---------- índice com hierarquia: as duas casas pesam mais que as quatro leituras ---------- */
 .indice .h2-ed{margin-top:0}
@@ -400,6 +407,17 @@
 <!-- ============ ESTA SEMANA (camada escura) ============ -->
 <section class="semana escuro" id="semana" hidden aria-labelledby="semanaTit"></section>
 
+<!-- ============ DE ONDE VÊM AS LEIS (origem_leis.json) ============
+     Fica DEPOIS de "Esta semana" de propósito: o link #semana rola até o bloco quando as fontes carregam, e esta seção, que só aparece
+     depois do fetch, não pode mexer na altura do que vem antes dele. Sem o arquivo, a seção nem aparece. -->
+<section class="sec-ed origem-ed" id="origem-leis" hidden aria-labelledby="origTit">
+  <div class="wrap">
+    <p class="kicker" data-reveal>Leis sancionadas nesta legislatura</p>
+    <h2 class="h2-ed largo" id="origTit" data-reveal>Quem escreve as leis que viram lei?</h2>
+    <div class="origem-home" id="origemHome" data-reveal></div>
+  </div>
+</section>
+
 <!-- ============ ÍNDICE COM HIERARQUIA ============ -->
 <section class="sec-ed indice" id="explore" aria-labelledby="expTit">
   <div class="wrap">
@@ -510,6 +528,7 @@
         <a href="fluxo.html">Entre as casas</a>
         <a href="obras.html">Obras</a>
       <a href="contexto.html">Contexto econômico</a>
+      <a href="origem.html">De onde vêm as leis</a>
       </nav>
       <div class="rg-col">
         <h2>Fontes</h2>
@@ -951,6 +970,16 @@ function preencherIndice(){
   if(window.Contar){ Contar.varrer(document.getElementById('explore')); Contar.varrer(document.getElementById('numHero')); }
 }
 
+// ---------- De onde vêm as leis (origem_leis.json, de origem_leis.py): independente dos demais arquivos ----------
+function carregarOrigem(){
+  OrigemLeis.carregar().then(d=>{
+    if(!d||!d.composicao.comPLN.total) return;          // sem arquivo (ainda não gerado) ou sem lei nesta legislatura: a seção nem aparece
+    OrigemLeis.montar(document.getElementById('origemHome'),d,{compacta:true,link:'origem.html'});
+    document.getElementById('origem-leis').hidden=false;
+    OrigemLeis.ajustar(document.getElementById('origemHome'));   // a barra só tem largura depois que a seção aparece
+  });
+}
+
 async function iniciar(){
   E=window.Espectro;
   window.addEventListener('tema',()=>{ if(deputados.length){ gDesenhar(false); mapaDesenhar(); } });   // as cores do espectro seguem o tema                         // site.js é defer: só existe depois do parse
@@ -959,6 +988,7 @@ async function iniciar(){
   document.getElementById('mTam').onclick=()=>{mapaProporcional=false;mTam.classList.add('on');mProp.classList.remove('on');mapaDesenhar();};
   document.getElementById('mProp').onclick=()=>{mapaProporcional=true;mProp.classList.add('on');mTam.classList.remove('on');mapaDesenhar();};
   carregarSemana();
+  carregarOrigem();
   const pIni=carregarInicio();                // resumo dos destinos, junto dos demais
   const pFrases=fetch('dados/temas/resumo.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);   // junto do deputados.json
   try{

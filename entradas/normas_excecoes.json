@@ -1,10 +1,31 @@
 {
-  "_nota": "Proposições que a Câmara registra como 'Transformado em Norma Jurídica' mas cujas tramitações NÃO trazem o evento de transformação (sem número nem data da norma). Cada linha só entra com fonte oficial que ligue a proposição à norma e dê a data; nunca por memória. contexto.py usa esta tabela apenas quando o registro da Câmara não tem o evento.",
+  "_nota": "Proposições que a Câmara registra como 'Transformado em Norma Jurídica' mas cujas tramitações NÃO trazem o evento de transformação com o número e a data da norma, ou o trazem com número que o Senado e o Planalto contradizem. Cada linha só entra com fonte oficial; nunca por memória. contexto.py usa esta tabela apenas quando o registro da Câmara não tem o evento. origem_leis.py a usa para lei ordinária e complementar (LEI/LC) e, para essas, EXIGE todos os campos: sigla e tipo (a norma), numero, ano, data, categoria (a origem que a autoria da proposição dá: o script confere e aborta se diferir), motivo, urlPlanalto (prova o número e a data da norma; o endereço tem de ser o da norma), urlProposicao (ficha oficial da proposição no Senado ou na Câmara; prova a autoria, que o Planalto sozinho não mostra) e verificadoEm (data em que alguém abriu os dois links). A exceção resolve a divergência de NÚMERO entre a Câmara e o Senado só quando o Planalto arbitra o número e a data (a data da exceção tem de ser a do Senado); divergência de número ou de norma sem exceção com os dois links continua excluindo a lei da conta. Teto: 5 exceções de LEI/LC; passando disso origem_leis.py aborta e é preciso avisar o usuário. O total aplicado aparece nos metadados do origem_leis.json e no resumo do passo. As entradas de emenda constitucional (EC) são só do contexto.py.",
   "normas": {
     "PEC 45/2019": {
       "sigla": "EC", "tipo": "Emenda Constitucional", "numero": 132, "ano": 2023, "data": "2023-12-20",
       "fonte": "Portal da Câmara dos Deputados, 'Após décadas de negociação, Congresso aprovou a reforma tributária em 2023': \"o principal tema aprovado pela Câmara dos Deputados em 2023 foi a reforma tributária (PEC 45/19)\" e \"a Emenda Constitucional 132, promulgada em 20 de dezembro\". Conferido em 6/10/2026.",
-      "url": "https://www.camara.leg.br/noticias/1028787-APOS-DECADAS-DE-NEGOCIACAO,-CONGRESSO-APROVOU-A-REFORMA-TRIBUTARIA-EM-2023"
+      "url": "https://www.camara.leg.br/noticias/1028787-APOS-DECADAS-DE-NEGOCIACAO,-CONGRESSO-APROVOU-A-REFORMA-TRIBUTARIA-EM-2023",
+      "urlOficial": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm"
+    },
+    "PL 10388/2018": {
+      "sigla": "LEI", "tipo": "Lei Ordinária", "numero": 15007, "ano": 2024, "data": "2024-10-17",
+      "categoria": "Deputados",
+      "motivo": "O evento 251 da Câmara, de 17/10/2024, vem sem o número da lei. O Planalto traz a Lei 15.007, de 17/10/2024, que denomina \"Passarela Aureliano Henriques Brotto\" a passarela do Km 201,7 da BR-116 em Arujá (SP); a ementa e o nome da passarela conferem com o PL 10388/2018, do deputado Marcio Alvino. Hoje o Senado também liga a lei a essa proposição (outrosNumeros e vínculo do fluxo.py), então a exceção deixou de ser necessária para a origem; fica registrada e o contexto.py ainda a usa.",
+      "urlPlanalto": "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/L15007.htm",
+      "urlProposicao": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2178315",
+      "verificadoEm": "2026-10-12",
+      "fonte": "Planalto, Leis Ordinárias de 2024: \"Lei nº 15.007, de 17.10.2024 … Denomina “Passarela Aureliano Henriques Brotto” a passarela situada no Km 201,7 da BR-116, na Rodovia Presidente Dutra, no Município de Arujá, no Estado de São Paulo\". É a lei do PL 10388/2018 (Marcio Alvino): a ementa e o nome da passarela conferem, e o evento 251 da Câmara, de 17/10/2024, vem sem número. Conferido em 12/10/2026.",
+      "url": "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/L15007.htm"
+    },
+    "PL 2787/2011": {
+      "sigla": "LEI", "tipo": "Lei Ordinária", "numero": 15330, "ano": 2026, "data": "2026-01-07",
+      "categoria": "Senado",
+      "motivo": "O evento 251 da Câmara para o PL 2787/2011 (7/1/2026) diz \"Transformado na Lei Ordinária 15329/2026. DOU 08/01/2026 PÁG 10 COL 02.\", texto idêntico ao do PL 2490/2022: a Câmara registra a Lei 15.329 em duas proposições e a Lei 15.330 em nenhuma. O Senado liga o PLS 2/2011 (\"Nº na Câmara dos Deputados: PL 2787/2011\") à Lei 15.330, de 07/01/2026. O Planalto confirma o lado do Senado: a Lei 15.330, de 7/1/2026, designa o açaí como fruta nacional (assunto do PL 2787/2011), e a Lei 15.329, da mesma data, altera o Decreto-Lei 401/1968 sobre o imposto de renda dos juros remetidos ao exterior (assunto do PL 2490/2022). O erro está no registro da Câmara; número e data da norma são os do Planalto e do Senado.",
+      "urlPlanalto": "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/L15330.htm",
+      "urlProposicao": "https://www25.senado.leg.br/web/atividade/materias/-/materia/98964",
+      "verificadoEm": "2026-10-12",
+      "fonte": "Planalto, Lei nº 15.330, de 7 de janeiro de 2026: \"Altera o art. 1º da Lei nº 11.675, de 19 de maio de 2008, para designar o açaí como fruta nacional.\" Senado, ficha do PLS 2/2011: \"Autoria: Senador Flexa Ribeiro (PSDB/PA) · Nº na Câmara dos Deputados: PL 2787/2011 · Norma Gerada: Lei nº 15.330 de 07/01/2026\". Conferido à mão no navegador em 12/10/2026.",
+      "url": "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/L15330.htm"
     }
   }
 }

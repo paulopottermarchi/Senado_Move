@@ -1,0 +1,35 @@
+{
+  "_nota": "Teste de regressão de scripts/origem_leis.py. Contagem de normas por ano e por tipo, e a faixa de números, conferidas À MÃO, no navegador, nas listas oficiais do Planalto em 12/10/2026. Só contagens, faixas, datas e endereços: nenhum conteúdo das páginas foi copiado, e o script nunca acessa o Planalto. A contagem que o pipeline acha até a data `ate` de cada tipo, e a faixa de números (contínua), têm de bater com esta; senão o script aborta sem gravar. Norma com data depois de `ate` ainda não foi conferida à mão. Contam as normas de 1º/2/2023 em diante (início da 57ª legislatura). A lista de leis ordinárias do Planalto tinha como última a de 29/9/2026 e a de leis complementares, a de 15/9/2026, quando foi lida. Ao começar outra legislatura, conferir de novo e acrescentar a chave dela.",
+  "legislaturas": {
+    "57": {
+      "inicio": "2023-02-01",
+      "conferidoEm": "2026-10-12",
+      "ordinarias": {
+        "ate": "2026-09-29",
+        "faixa": [14537, 15526],
+        "total": 990,
+        "porAno": {"2023": 255, "2024": 291, "2025": 239, "2026": 205},
+        "fonte": [
+          "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/_leis2023.htm",
+          "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/_leis2024.htm",
+          "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/_leis2025.htm",
+          "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/_leis2026.htm"
+        ]
+      },
+      "complementares": {
+        "ate": "2026-09-15",
+        "faixa": [198, 237],
+        "total": 40,
+        "porAno": {"2023": 7, "2024": 7, "2025": 13, "2026": 13},
+        "fonte": ["https://www.planalto.gov.br/ccivil_03/leis/lcp/quadro_lcp.htm"]
+      },
+      "emendas": {
+        "ate": "2026-05-05",
+        "faixa": [129, 139],
+        "total": 11,
+        "porAno": {"2023": 4, "2024": 3, "2025": 3, "2026": 1},
+        "fonte": ["https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/quadro_emc.htm"]
+      }
+    }
+  }
+}
