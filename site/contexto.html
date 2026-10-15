@@ -105,6 +105,10 @@ details.avanc a{color:var(--destaque)}
 .tab-val table{width:100%;border-collapse:collapse;font-size:13px}
 .tab-val th,.tab-val td{padding:6px 12px;text-align:right;border-bottom:1px solid var(--linha2)}
 .tab-val th:first-child,.tab-val td:first-child{text-align:left}
+.tab-val.tx{max-height:none;overflow-x:auto}
+.tab-val.tx th{position:static}
+.tab-val.tx th,.tab-val.tx td{text-align:left;vertical-align:top}
+.tab-val.tx td .peq{display:block;font-size:12px;line-height:1.5;color:var(--tinta3);margin-top:2px;max-width:70ch}
 .tab-val th{position:sticky;top:0;background:var(--papel);font-weight:600;color:var(--tinta2)}
 .btn-ent{font:inherit;font-size:13px;font-weight:500;color:var(--tinta);background:var(--papel);border:1px solid var(--linha-forte);border-radius:var(--raio-p);
          padding:6px 14px;cursor:pointer}
@@ -138,6 +142,11 @@ dialog.entenda .fechar{margin-top:20px}
 .gr .marcos-fx line{stroke:var(--tinta2);stroke-width:1.5}
 .gr .marcos-fx line.lc{stroke:var(--tinta3);stroke-width:1}
 .gr .marcos-fx text.t{fill:var(--tinta3);font-size:11px}
+/* início de cada mandato presidencial: traço tracejado neutro e o nome no alto. Anotação de calendário (fato datado e fonte), nunca faixa nem cor */
+.gr .mand-lin{stroke:var(--tinta3);stroke-opacity:.55;stroke-width:1;stroke-dasharray:4 3;fill:none}
+.gr .mand-pt{fill:var(--tinta3)}
+.gr .mand-rot{fill:var(--tinta2);font-size:11px;font-weight:500}
+.gr .foco-mand{fill:transparent;cursor:help}
 .gr .foco{fill:transparent;cursor:crosshair}
 .gr:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:4px;border-radius:4px}
 .dica{position:absolute;z-index:5;pointer-events:none;background:var(--inverso);color:var(--sobre-inverso);border-radius:var(--raio-p);padding:8px 12px;
@@ -151,6 +160,7 @@ dialog.entenda .fechar{margin-top:20px}
 .gr-leg i.b{height:10px;border:0;background:rgba(var(--tinta-rgb),.12);width:16px;vertical-align:-1px}
 .gr-leg i.m{border-top:1.25px dotted var(--tinta3)}
 .gr-leg i.mk{width:2px;height:12px;border:0;background:var(--tinta2);vertical-align:-2px;margin-right:6px}
+.gr-leg i.mp{width:0;height:12px;border:0;border-left:1.5px dashed var(--tinta3);vertical-align:-2px;margin-right:8px}
 .indisp{font-size:15px;color:var(--tinta3);padding:20px 0}
 
 /* ---------- método e IFI ---------- */
@@ -207,10 +217,15 @@ dialog.entenda .fechar{margin-top:20px}
       <h2 id="indTit">Números oficiais da economia</h2>
       <p class="sub">Cada série vai até onde a fonte oferece e começa onde a fonte começa: não há data inicial comum. Metodologias diferentes
         nunca são emendadas, e nada é interpolado. Os traços verticais sob cada gráfico marcam a data de emendas constitucionais e leis
-        complementares do tema escolhido na agenda legislativa, mais abaixo.</p>
+        complementares do tema escolhido na agenda legislativa, mais abaixo.<span id="subMand" hidden> No alto de cada gráfico, os traços tracejados com um nome marcam o início
+        de cada mandato presidencial, só como referência de calendário.</span></p>
       <p class="fixa">Este gráfico não mostra que uma lei causou a variação de nenhum indicador.</p>
     </header>
-    <div class="ind-grade" id="indGrade"><p class="indisp">Carregando…</p><noscript><p class="indisp">Esta página desenha os gráficos com JavaScript. Sem ele, os dados estão em <a href="dados/contexto/indicadores.json">indicadores.json</a>, <a href="dados/contexto/agenda.json">agenda.json</a> e <a href="dados/contexto/marcos.json">marcos.json</a>.</p></noscript></div>
+    <div class="ind-grade" id="indGrade"><p class="indisp">Carregando…</p><noscript><p class="indisp">Esta página desenha os gráficos com JavaScript. Sem ele, os dados estão em <a href="dados/contexto/indicadores.json">indicadores.json</a>, <a href="dados/contexto/agenda.json">agenda.json</a>, <a href="dados/contexto/marcos.json">marcos.json</a> e <a href="dados/contexto/mandatos.json">mandatos.json</a>.</p></noscript></div>
+    <details class="avanc" id="mandatosDet" hidden>
+      <summary>Início de cada mandato presidencial, com a fonte de cada data</summary>
+      <div id="mandatosLista"></div>
+    </details>
   </section>
 
   <section class="painel ind" id="ifiBloco" aria-labelledby="ifiTit" hidden>
@@ -248,7 +263,7 @@ dialog.entenda .fechar{margin-top:20px}
          (“+0,4 p.p. em 12 meses”) numa cor neutra, e nenhuma seta julga o número.</p>
       <p><b>Sem causa.</b> Nenhuma lei é ligada a um indicador, nenhum “efeito esperado” é calculado e não há comparação de antes e depois de uma
          lei. Não há faixas ou cores por presidente, governo ou partido; só anotações com fato datado e fonte (mudança de meta, mudança de
-         método da própria fonte).</p>
+         método da própria fonte e o início de cada mandato presidencial, que é só referência de calendário).</p>
       <p><b>Indisponível é indisponível.</b> Quando uma fonte não traz o dado, a página escreve “Dados indisponíveis”, nunca um valor estimado.</p>
       <p><b>Resumos e objetivos.</b> Só as abas “Sancionadas” e “Em tramitação” trazem resumo em linguagem comum, gerado por IA a partir do texto
          integral e sempre marcado “IA”, com a ementa oficial a um clique. O “objetivo declarado pelo autor” é uma citação copiada, palavra por
@@ -284,6 +299,8 @@ dialog.entenda .fechar{margin-top:20px}
        série 13521 do SGS e contra o IPCA; dívida, séries 13762 e 4536 do SGS (Banco Central); despesa, resultado primário e nominal, API de
        Séries Temporais do Tesouro Nacional (Resultado do Tesouro Nacional), em reais corrigidos pelo IPCA. A cada rodada a série inteira é
        baixada de novo, porque as fontes revisam o passado.</p>
+    <p id="fonteMand" hidden><b>Mandatos presidenciais:</b> Wikidata (cargo “Presidente do Brasil”), consultado por API. As posses em exercício de Itamar Franco e de Michel Temer têm
+       fonte própria, na lista “Início de cada mandato presidencial”, abaixo dos gráficos.</p>
     <p>Os critérios de escolha (temas, janelas, séries) estão no <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">repositório</a>.</p>
   </div>
 </footer>
@@ -340,7 +357,7 @@ const T=d=>Date.parse(d+'T00:00:00Z');
 const diasSem=it=>it.ultimoAndamento&&AG?Math.round((T(AG.hoje)-T(it.ultimoAndamento))/864e5):null;
 const buscaJson=async u=>{ try{ const r=await fetch(u,{cache:'no-cache'}); if(!r.ok) return null; return await r.json(); }catch(e){ return null; } };
 
-let IND=null, AG=null, MAR=null;
+let IND=null, AG=null, MAR=null, MAN=null;
 const ESTADO={tema:'', aba:'sancionadas', pl:false, periodo:'12m', ordem:'desc', mostrar:{}};
 const TEMAS=['Economia','Finanças Públicas e Orçamento'];
 
@@ -351,6 +368,19 @@ function nice(min,max,n){
   const a=Math.floor(min/passo)*passo, b=Math.ceil(max/passo)*passo, t=[];
   for(let v=a;v<=b+passo/2;v+=passo) t.push(+v.toFixed(10));
   return t;
+}
+/* Rótulos dos mandatos presidenciais no alto do gráfico: da esquerda para a direita, cada um vai para a primeira linha onde não cobre outro
+   (até `maxLinhas`). Sem linha livre, fica só o traço e o nome aparece na dica. */
+function colocarMandatos(lista,X,W,maxLinhas){
+  const larg=s=>s.length*6.4+8, fimLinha=[], itens=[]; let usadas=0;
+  lista.slice().sort((a,b)=>a.inicio<b.inicio?-1:1).forEach(m=>{
+    const x=X(m.inicio), w=larg(m.rotulo), lx=Math.min(Math.max(x,w/2+2),W-w/2-2);
+    let linha=null;
+    for(let r=0;r<maxLinhas;r++){ if(fimLinha[r]==null||lx-w/2>=fimLinha[r]+4){ linha=r; fimLinha[r]=lx+w/2; break; } }
+    if(linha!=null) usadas=Math.max(usadas,linha+1);
+    itens.push({m,x,lx,w,linha});
+  });
+  return {linhas:Math.max(usadas,1),itens};
 }
 function Grafico(raiz,cfg){
   const caixa=document.createElement('div'); caixa.className='gr-caixa'; raiz.appendChild(caixa);
@@ -366,11 +396,16 @@ function Grafico(raiz,cfg){
   }
   function desenhar(){
     caixa.querySelectorAll('svg').forEach(e=>e.remove());
-    const W=Math.max(300,caixa.clientWidth), H=cfg.altura||(W<560?250:320);
+    const W=Math.max(300,caixa.clientWidth), H0=cfg.altura||(W<560?250:320);
     const temMarcos=Array.isArray(cfg.marcos);
     const faixaMarcos=temMarcos?60:0;
     const M={t:14,r:W<560?84:132,b:26+faixaMarcos,l:W<560?44:54};
-    const [ini,fim]=janela(), t0=T(ini), t1=T(fim), iw=W-M.l-M.r, ih=H-M.t-M.b, pb=M.t+ih;   // pb: base do gráfico; abaixo dela, o eixo e os marcos
+    const [ini,fim]=janela(), t0=T(ini), t1=T(fim), iw=W-M.l-M.r;
+    // mandatos presidenciais na janela: a faixa de rótulos fica ACIMA do gráfico e a altura cresce na mesma medida (o gráfico em si não encolhe)
+    const rotMand=colocarMandatos(Array.isArray(cfg.mandatos)?cfg.mandatos.filter(m=>m.inicio>=ini&&m.inicio<=fim):[],d=>M.l+(T(d)-t0)/(t1-t0||1)*iw,W,W<560?3:2);
+    const faixaMand=rotMand.itens.length?rotMand.linhas*14+10:0;
+    const H=H0+faixaMand; M.t=14+faixaMand;
+    const ih=H-M.t-M.b, pb=M.t+ih;   // pb: base do gráfico; abaixo dela, o eixo e os marcos
     const mv=temMarcos?cfg.marcos.filter(m=>m.data>=ini&&m.data<=fim):[];                  // marcos dentro da janela
     const vis=s=>s.pontos.filter(p=>p[0]>=ini);
     const log=!!cfg.log, tr=v=>log?Math.log(1+v/100):v;
@@ -394,6 +429,16 @@ function Grafico(raiz,cfg){
     for(let a=Math.ceil(a0/passo)*passo;a<=a1;a+=passo){ const x=X(`${a}-01-01`); if(x<M.l-1||x>W-M.r+1) continue;
       el('line',{x1:x,x2:x,y1:pb,y2:pb+4,stroke:'var(--linha-forte)'},gx);
       const tx=el('text',{x,y:pb+17,'text-anchor':'middle'},gx); tx.textContent=a; }
+    // início de cada mandato presidencial: traço do rótulo até a base, por baixo das séries (anotação de calendário; sem faixa, sem cor)
+    if(rotMand.itens.length){
+      const gm=el('g',{class:'mand'});
+      rotMand.itens.forEach(({m,x,lx,linha})=>{
+        const yTxt=linha==null?null:11+linha*14, yTopo=yTxt==null?M.t-6:yTxt+5;
+        el('line',{class:'mand-lin',x1:x,x2:x,y1:yTopo,y2:pb},gm);
+        el('circle',{class:'mand-pt',cx:x,cy:yTopo,r:2.5},gm);
+        if(yTxt!=null){ const t=el('text',{x:lx,y:yTxt,'text-anchor':'middle',class:'mand-rot'},gm); t.textContent=m.rotulo; }
+      });
+    }
     // banda (meta e tolerância)
     if(cfg.banda){
       const bp=cfg.banda.pontos.filter(p=>p[0]>=ini&&p[0]<=fim);
@@ -455,6 +500,18 @@ function Grafico(raiz,cfg){
     foco.addEventListener('pointerleave',()=>{ mira.style.display='none'; dica.classList.remove('on'); });
     foco.addEventListener('click',e=>{ if(temMarcos){ const r=svg.getBoundingClientRect(), px=(e.clientX-r.left)*(W/r.width), py=(e.clientY-r.top)*(H/r.height);
       if(py>pb+22){ const m=marcoPerto(px); if(m) window.open(m.url,'_blank','noopener'); } } });
+    // faixa dos mandatos: dica com o nome, a data e a nota de cada um (no mouse e no toque)
+    if(rotMand.itens.length){
+      const faixa=el('rect',{class:'foco-mand',x:M.l-30,y:0,width:iw+60,height:Math.max(M.t-2,1)});
+      const perto=px=>{ let b=null,d=1e9; for(const it of rotMand.itens){ const k=Math.min(abs(it.lx-px),abs(it.x-px)); if(k<d){ d=k; b=it; } } return b&&d<=Math.max(14,b.w/2)?b:null; };
+      const dizer=e=>{ const r=svg.getBoundingClientRect(), it=perto((e.clientX-r.left)*(W/r.width));
+        if(!it){ dica.classList.remove('on'); return; }
+        const m=it.m; mira.style.display='none';
+        dica.innerHTML=`<b>${esc(m.rotulo)}</b> · assumiu em ${dataBR(m.inicio)}<span class="l">${esc(m.presidente)}</span>${m.nota?`<span class="l">${esc(m.nota)}</span>`:''}`;
+        dica.classList.add('on'); const w=caixa.clientWidth, dw=dica.offsetWidth, left=it.x+14+dw>w?it.x-14-dw:it.x+14; dica.style.left=Math.max(0,left)+'px'; dica.style.top=(M.t+4)+'px'; };
+      faixa.addEventListener('pointermove',dizer); faixa.addEventListener('pointerdown',dizer);
+      faixa.addEventListener('pointerleave',()=>dica.classList.remove('on'));
+    }
     svg.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'){ e.preventDefault(); mostrar((idx==null?base.length-1:idx)+(e.key==='ArrowLeft'?-1:1)); }
       if(e.key==='Escape'){ mira.style.display='none'; dica.classList.remove('on'); } });
     svg.addEventListener('blur',()=>{ mira.style.display='none'; dica.classList.remove('on'); });
@@ -485,7 +542,7 @@ function blocoHTML(id,b){
     <div class="ind-ctl" id="ind-${id}-c"></div>
     <div id="ind-${id}-g"></div>
     <div class="gr-leg" id="ind-${id}-l"></div>
-    <p class="fixa peq">Este gráfico não mostra que uma lei causou a variação de nenhum indicador.</p>
+    <p class="fixa peq">Este gráfico não mostra que uma lei causou a variação de nenhum indicador.${MAN?' Os traços de início de mandato presidencial são só referência de calendário: não mostram que o mandato causou a variação.':''}</p>
     <p class="ind-fonte">Fonte${(b.fontes||[]).length>1?'s':''}: ${fontes}. Dados até <b id="ind-${id}-ref"></b>; coletados em ${dataBR(IND.coletadoEm||IND.hoje)}. ${b.deflator?`Valores reais: IPCA, em reais de ${rotMes(b.deflator.mesBase+'-01')} (${esc(b.deflator.quem)}).`:''}</p>
     <details class="avanc" id="ind-${id}-a"><summary>Camada avançada: notas de método, valores e fontes</summary><div id="ind-${id}-av"></div></details>
   </article>`;
@@ -541,8 +598,10 @@ function montarIndicador(id){
     presets=[['Série completa',{ini:null}],['20 anos',{anos:20}],['10 anos',{anos:10}]];
     legenda=`<span><i></i>Resultado primário (acima da linha, Tesouro)</span><span><i class="t"></i>Resultado nominal (abaixo da linha, Banco Central)</span><span>Eixo em R$ bilhões</span>`;
   }
-  cfg.rotulo=b.titulo+'. '+b.definicao; cfg.marcos=marcosFiltrados();
-  l.innerHTML=legenda+(Array.isArray(cfg.marcos)?'<span><i class="mk"></i>Marco: emenda constitucional ou lei complementar do tema escolhido</span>':'');
+  cfg.rotulo=b.titulo+'. '+b.definicao+(MAN?' Traços verticais tracejados marcam o início de cada mandato presidencial.':''); cfg.marcos=marcosFiltrados();
+  cfg.mandatos=MAN?MAN.mandatos:null;
+  l.innerHTML=legenda+(Array.isArray(cfg.marcos)?'<span><i class="mk"></i>Marco: emenda constitucional ou lei complementar do tema escolhido</span>':'')
+    +(MAN?'<span><i class="mp"></i>Início de mandato presidencial (dia em que assumiu)</span>':'');
   const aplicar=p=>{ const [,o]=p; const fim=cfg.series[0].pontos.slice(-1)[0][0]; const novo={ini:null,log:false};
     if(o.anos){ const a=+fim.slice(0,4)-o.anos; novo.ini=`${a}-${fim.slice(5,7)}-01`; } else if(o.ini!==undefined) novo.ini=o.ini; novo.log=!!o.log; return novo; };
   const ini=aplicar(presets[padrao]); cfg.ini=ini.ini; cfg.log=ini.log;
@@ -568,10 +627,25 @@ function montarIndicadores(){
   const ordem=['ipca','pib','despesa','divida','resultado'], vistos=[];
   grade.innerHTML=ordem.map(id=>IND.blocos[id]?blocoHTML(id,IND.blocos[id]):`<article class="ind"><h3 style="font-family:var(--serif);font-size:24px;font-weight:500">${id}</h3><p class="indisp">Dados indisponíveis.</p></article>`).join('<hr style="border:0;border-top:1px solid var(--linha);margin:12px 0">');
   ordem.forEach(id=>{ if(IND.blocos[id]) montarIndicador(id); });
+  montarMandatos();
   const ifi=IND.blocos.ifi; if(ifi){ document.getElementById('ifiBloco').hidden=false; document.getElementById('ifiDef').textContent=ifi.definicao; document.getElementById('ifiLink').href=ifi.url; }
   document.querySelectorAll('[data-entenda]').forEach(bt=>bt.addEventListener('click',()=>document.getElementById('entenda').showModal()));
   document.getElementById('entFechar').addEventListener('click',()=>document.getElementById('entenda').close());
   document.getElementById('entenda').addEventListener('click',e=>{ if(e.target.id==='entenda') e.target.close(); });
+}
+/* lista dos mandatos presidenciais: o dia de cada traço, a pessoa e a fonte da data (as duas posses em exercício têm nota e fonte próprias) */
+function montarMandatos(){
+  const det=document.getElementById('mandatosDet'); if(!det) return;
+  if(!MAN){ det.hidden=true; return; }
+  const linhas=MAN.mandatos.slice().reverse().map(m=>`<tr><td>${dataBR(m.inicio)}</td>
+    <td><b>${esc(m.rotulo)}</b> · ${esc(m.presidente)}${m.nota?`<span class="peq">${esc(m.nota)} Fonte: <a href="${esc(m.fonteNota.url)}" target="_blank" rel="noopener">${esc(m.fonteNota.nome)}</a>.</span>`:''}</td>
+    <td><a href="${esc(m.url)}" target="_blank" rel="noopener">Wikidata ${esc(m.item)}</a></td></tr>`).join('');
+  document.getElementById('mandatosLista').innerHTML=`<p class="ind-fonte">Cada traço dos gráficos marca o dia em que a pessoa assumiu a Presidência da República, inclusive em exercício: Itamar Franco e Michel Temer
+    assumiram quando o Senado afastou o titular, antes de serem efetivados. É só referência de calendário: não mostra que o mandato causou a variação de nenhum indicador.
+    Datas do Wikidata (cargo “Presidente do Brasil”), consultadas por API em ${dataBR(MAN.consultadoEm.slice(0,10))}.</p>
+    <div class="tab-val tx"><table><thead><tr><th>Assumiu em</th><th>Mandato</th><th>Fonte da data</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+  det.hidden=false;
+  document.getElementById('subMand').hidden=false; document.getElementById('fonteMand').hidden=false;
 }
 function atualizarMarcos(){ Object.values(GRAFICOS).forEach(({graf,cfg})=>{ cfg.marcos=marcosFiltrados(); graf.atualizar({marcos:cfg.marcos}); }); }
 
@@ -674,8 +748,9 @@ function desenharTemas(){
 
 /* ===================================================================== início */
 (async function(){
-  const [ind,ag,mar]=await Promise.all([buscaJson('dados/contexto/indicadores.json'),buscaJson('dados/contexto/agenda.json'),buscaJson('dados/contexto/marcos.json')]);
+  const [ind,ag,mar,man]=await Promise.all([buscaJson('dados/contexto/indicadores.json'),buscaJson('dados/contexto/agenda.json'),buscaJson('dados/contexto/marcos.json'),buscaJson('dados/contexto/mandatos.json')]);
   IND=ind; AG=ag; MAR=mar;
+  MAN=man&&Array.isArray(man.mandatos)&&man.mandatos.length?man:null;     // sem o arquivo, sem traços (e nenhum aviso sobre eles)
   const at=document.getElementById('atualizado');
   const gerado=(ag||ind||{}).geradoEm;
   at.textContent=gerado?`Dados atualizados em ${dataBR(gerado.slice(0,10))}, às ${gerado.slice(11,16).replace(':','h')}. Cada fonte tem sua própria data de referência, indicada em cada bloco.`:'Dados indisponíveis no momento.';

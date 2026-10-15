@@ -4,8 +4,9 @@ Câmara Aberta — página "Contexto econômico" (site/dados/contexto/*.json).
 Uso:
     python scripts/contexto.py               # coleta (APIs, com cache), confere e grava os três JSON
     python scripts/contexto.py --so-montar   # não chama API nenhuma: remonta os JSON do cache (depois de resumos.py e objetivos.py)
+    python scripts/contexto.py --so-mandatos # só o bloco 4 (consulta o Wikidata e grava mandatos.json): rápido, para testar a página
 
-Três blocos, todos por API oficial (nada de planilha, nada de tabela curada à mão onde há API):
+Quatro blocos, todos por API (nada de planilha, nada de tabela curada à mão onde há API):
   1. INDICADORES — IPCA (IBGE/SIDRA), meta de inflação e banda (JSON do site do Banco Central, conferido contra o
      SGS 13521 e contra o IPCA), PIB (IBGE/SIDRA), dívida bruta e líquida do Governo Geral (BCB/SGS) e despesa,
      resultado primário e nominal do Governo Central (API de Séries Temporais do Tesouro, valores reais pelo IPCA).
@@ -14,6 +15,8 @@ Três blocos, todos por API oficial (nada de planilha, nada de tabela curada à 
      PL ordinário só entra nas sancionadas (filtro). Data e número da norma vêm do despacho do evento "Transformação
      em Norma Jurídica" nas tramitações da API, conferidos com a data do DOU escrita no mesmo despacho.
   3. MARCOS — as emendas constitucionais e leis complementares (mesmo filtro de tema) para a linha do tempo.
+  4. MANDATOS — o início de cada mandato presidencial (Wikidata, cargo "Presidente do Brasil"), só como referência de
+     calendário nos gráficos: anotação com fato datado e fonte, nunca faixa nem cor por presidente, governo ou partido.
 
 Regras que o script impõe (CLAUDE.md, "Contexto econômico"):
   * série longa: o máximo que cada fonte oferece, sem data inicial comum e SEM emendar metodologias diferentes;
@@ -40,6 +43,7 @@ from coleta import API, CACHE, DADOS, ENTRADAS, Limitador, ler_cache, gravar_cac
 
 import objetivos
 import resumos
+import wikipedia   # a mesma sessão com User-Agent identificado e espera entre pedidos (o Wikidata exige UA com contato)
 
 SAIDA = DADOS / "contexto"
 CACHE_C = CACHE / "contexto"
@@ -790,6 +794,133 @@ def contar_marcos(marcos):
     return {a: por_ano.get(a, 0) for a in range(ANO_INICIO, HOJE.year + 1)}
 
 
+# ---------------------------------------------------------------- MANDATOS PRESIDENCIAIS
+
+URL_WIKIDATA = "https://query.wikidata.org/sparql"
+CARGO_PRESIDENTE = "Q5176750"       # "Presidente do Brasil" no Wikidata: cada mandato é uma declaração P39 própria, com início e fim
+MANDATOS_DESDE = "1980-01-01"       # a série mais antiga das páginas (IPCA) começa em dez/1980
+ENTRADA_MANDATOS = ENTRADAS / "mandatos_presidenciais.json"
+VALIDADE_MANDATOS = timedelta(days=7)   # um mandato novo só aparece em dia de posse: uma consulta por semana basta
+MAX_ENTRE_MANDATOS = 100            # dias entre o fim de um mandato e o início do seguinte (Collor → Itamar: 88)
+MAX_EM_EXERCICIO = 130              # dias da posse em exercício até a efetivação (Temer: 111)
+MIN_MANDATOS_DESDE_1985 = 12        # Sarney, Collor, Itamar, FHC ×2, Lula ×2, Dilma ×2, Temer, Bolsonaro, Lula III
+ROMANOS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"]
+CONSULTA_MANDATOS = """SELECT ?pessoa ?nome ?inicio ?precisao ?fim WHERE {
+  ?pessoa wdt:P31 wd:Q5 ; p:P39 ?st .
+  ?st ps:P39 wd:%s ; pqv:P580 ?vi .
+  ?vi wikibase:timeValue ?inicio ; wikibase:timePrecision ?precisao .
+  OPTIONAL { ?st pq:P582 ?fim }
+  OPTIONAL { ?pessoa rdfs:label ?pt . FILTER(LANG(?pt) = "pt") }
+  OPTIONAL { ?pessoa rdfs:label ?en . FILTER(LANG(?en) = "en") }
+  BIND(COALESCE(?pt, ?en) AS ?nome)
+} ORDER BY ?inicio"""   # só pessoas (P31 = Q5): o Wikidata tem um item de eleição com P39 que não é presidente
+
+
+def coletar_mandatos(rede):
+    """Linhas do Wikidata ({item, nome, inicio, precisao, fim}); do cache se tem menos de 7 dias ou se não há rede."""
+    caminho = CACHE_C / "mandatos_wikidata.json"
+    cache = ler_cache(caminho)
+    if cache:
+        idade = datetime.now(BRASILIA) - datetime.fromisoformat(cache["consultadoEm"])
+        if not rede or idade < VALIDADE_MANDATOS:
+            return cache
+    if not rede:
+        raise Aborta("os mandatos presidenciais ainda não foram consultados (rode sem --so-montar)")
+    resposta = wikipedia.pedir(URL_WIKIDATA, {"query": CONSULTA_MANDATOS % CARGO_PRESIDENTE, "format": "json"}, 1.0)
+    if not resposta:
+        raise Aborta("o Wikidata não respondeu à consulta dos mandatos presidenciais")
+    vistos, linhas = set(), []
+    for b in resposta["results"]["bindings"]:
+        item, inicio = b["pessoa"]["value"].rsplit("/", 1)[1], b["inicio"]["value"][:10]
+        if (item, inicio) in vistos:       # a pessoa com dois rótulos no mesmo idioma sairia duas vezes
+            continue
+        vistos.add((item, inicio))
+        linhas.append({"item": item, "nome": b["nome"]["value"] if "nome" in b else item, "inicio": inicio,
+                       "precisao": int(b["precisao"]["value"]), "fim": b["fim"]["value"][:10] if "fim" in b else None})
+    bruto = {"consultadoEm": datetime.now(BRASILIA).isoformat(timespec="minutes"), "linhas": sorted(linhas, key=lambda l: l["inicio"])}
+    gravar_cache(caminho, bruto)
+    return bruto
+
+
+def montar_mandatos(bruto):
+    """Valida as linhas do Wikidata e devolve o que a página desenha. Qualquer divergência aborta: o arquivo anterior fica."""
+    entrada = ler_cache(ENTRADA_MANDATOS) or {}
+    curtos = {k: v["curto"] for k, v in entrada.get("nomes", {}).items()}
+    em_exercicio = {e["item"]: e for e in entrada.get("posses_em_exercicio", [])}
+    dia = date.fromisoformat
+    linhas = [dict(l) for l in bruto["linhas"]]
+
+    # o ordinal conta TODOS os mandatos da pessoa no cargo, antes de qualquer corte de data: "Lula I, II, III"
+    por_pessoa = {}
+    for l in linhas:
+        por_pessoa.setdefault(l["item"], []).append(l)
+    for rs in por_pessoa.values():
+        for i, l in enumerate(sorted(rs, key=lambda x: x["inicio"]), 1):
+            l["ordem"], l["de"] = i, len(rs)
+
+    seq = [l for l in linhas if l["inicio"] >= "1979-01-01"]      # inclui Figueiredo, só para a conferência de continuidade
+    if sum(l["inicio"] >= "1985-01-01" for l in seq) < MIN_MANDATOS_DESDE_1985:
+        raise Aborta(f"mandatos: o Wikidata trouxe menos de {MIN_MANDATOS_DESDE_1985} mandatos desde 1985; nada gravado")
+    for l in seq:
+        if l["precisao"] != 11:
+            raise Aborta(f"mandatos: a data de início de {l['nome']} ({l['inicio']}) não tem precisão de dia no Wikidata")
+        if l["inicio"] > HOJE.isoformat():
+            raise Aborta(f"mandatos: {l['nome']} começa no futuro ({l['inicio']})")
+    for a, b in zip(seq, seq[1:]):
+        if a["fim"] is None:
+            raise Aborta(f"mandatos: o mandato de {a['nome']} que começa em {a['inicio']} está sem fim, e há outro depois")
+        folga = (dia(b["inicio"]) - dia(a["fim"])).days
+        if not -1 <= folga <= MAX_ENTRE_MANDATOS:
+            raise Aborta(f"mandatos: {a['nome']} termina em {a['fim']} e {b['nome']} começa em {b['inicio']} ({folga} dias entre os dois)")
+
+    # posse em exercício: vale só se o Wikidata traz EXATAMENTE a data de efetivação declarada em entradas/mandatos_presidenciais.json
+    usadas = set()
+    for l in seq:
+        e = em_exercicio.get(l["item"])
+        if not e or l["inicio"] != e["efetivadoEm"]:
+            continue
+        if not 0 < (dia(e["efetivadoEm"]) - dia(e["inicio"])).days <= MAX_EM_EXERCICIO:
+            raise Aborta(f"mandatos: a posse em exercício de {l['nome']} ({e['inicio']}) está longe da efetivação ({e['efetivadoEm']})")
+        l["efetivadoEm"], l["inicio"], l["nota"], l["fonteNota"] = l["inicio"], e["inicio"], e["nota"], e["fonte"]
+        usadas.add(e["item"])
+    if set(em_exercicio) - usadas:
+        raise Aborta("mandatos: posse em exercício sem mandato igual no Wikidata (a data de efetivação mudou?): " + ", ".join(sorted(set(em_exercicio) - usadas)))
+    seq.sort(key=lambda l: l["inicio"])
+    if len({l["inicio"] for l in seq}) != len(seq):
+        raise Aborta("mandatos: duas posses no mesmo dia")
+
+    # a tabela de governos (que o governo.py usa) tem de bater com a lista: cada governo dela começa num mandato daqui
+    comecos = {l["inicio"] for l in seq}
+    for g in (ler_cache(ENTRADAS / "governos.json") or {}).get("governos", []):
+        if g["inicio"] not in comecos:
+            raise Aborta(f"mandatos: entradas/governos.json começa '{g['rotulo']}' em {g['inicio']}, e a lista do Wikidata não tem mandato nessa data")
+
+    saida = []
+    for l in seq:
+        if l["inicio"] < MANDATOS_DESDE:
+            continue
+        curto = curtos.get(l["item"])
+        if not curto:
+            aviso(f"sem nome curto para {l['nome']} ({l['item']}) em entradas/mandatos_presidenciais.json: o rótulo sai com o nome inteiro")
+            curto = l["nome"]
+        o = {"rotulo": curto if l["de"] == 1 else f"{curto} {ROMANOS[l['ordem'] - 1]}", "presidente": l["nome"], "inicio": l["inicio"],
+             "item": l["item"], "url": f"https://www.wikidata.org/wiki/{l['item']}"}
+        if "efetivadoEm" in l:
+            o.update(efetivadoEm=l["efetivadoEm"], nota=l["nota"], fonteNota=l["fonteNota"])
+        saida.append(o)
+    return {"consultadoEm": bruto["consultadoEm"],
+            "fonte": {"nome": "Wikidata", "cargo": "Presidente do Brasil", "url": f"https://www.wikidata.org/wiki/{CARGO_PRESIDENTE}"},
+            "regra": "Cada marca é o dia em que a pessoa assumiu a Presidência da República, inclusive em exercício. É só referência de calendário.",
+            "mandatos": saida}
+
+
+def gravar_mandatos(rede, gerado):
+    """Consulta (ou lê do cache), valida e grava mandatos.json. A exceção sobe: quem chama decide como falhar."""
+    m = montar_mandatos(coletar_mandatos(rede))
+    gravar_json(SAIDA / "mandatos.json", {"geradoEm": gerado, "hoje": HOJE.isoformat(), **m}, linhas=("mandatos",))
+    return m
+
+
 # ---------------------------------------------------------------- saída
 
 def gravar_json(caminho, obj, linhas=()):
@@ -810,6 +941,7 @@ def pontos_dos_indicadores(ind):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--so-montar", action="store_true", help="não chama API: remonta os JSON do cache")
+    ap.add_argument("--so-mandatos", action="store_true", help="só os mandatos presidenciais: consulta o Wikidata e grava mandatos.json")
     args = ap.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     rede = not args.so_montar
@@ -821,6 +953,18 @@ def main():
         txt = str(e) if isinstance(e, Aborta) else f"{type(e).__name__}: {e}"
         falhas.append(f"{bloco}: {txt}")
         print(f"::error title=contexto ({bloco})::{txt}" if os.environ.get("GITHUB_ACTIONS") else f"FALHOU ({bloco}): {txt}", flush=True)
+
+    def resumo_mandatos(m):
+        ms = m["mandatos"]
+        print(f"Mandatos presidenciais: {len(ms)}, de {ms[0]['rotulo']} ({ms[0]['inicio']}) a {ms[-1]['rotulo']} ({ms[-1]['inicio']}); consulta de {m['consultadoEm']}")
+
+    if args.so_mandatos:      # atalho para testar a página: só o bloco dos mandatos
+        try:
+            resumo_mandatos(gravar_mandatos(True, gerado))
+        except Exception as e:
+            falhar("mandatos", e)
+            sys.exit(1)
+        return
 
     # ---- indicadores
     B = indicadores = None
@@ -849,6 +993,12 @@ def main():
     except Exception as e:
         falhar("agenda", e)
         agenda = None
+
+    # ---- mandatos presidenciais (referência de calendário nos gráficos; falha sozinho)
+    try:
+        resumo_mandatos(gravar_mandatos(rede, gerado))
+    except Exception as e:
+        falhar("mandatos", e)
 
     if indicadores:
         gravar_json(SAIDA / "indicadores.json", indicadores)
