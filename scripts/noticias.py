@@ -34,6 +34,7 @@ from email.utils import parsedate_to_datetime
 import requests
 
 import coleta
+from temas import CATEGORIAS, CURTO, classificar
 
 SAIDA = coleta.DADOS / "noticias.json"
 CACHE_N = coleta.CACHE / "noticias"
@@ -81,8 +82,18 @@ def feeds():
                   key=lambda x: x[0] != "Últimas notícias")
 
 
+def ajusta(t):
+    """Espaço solto que sobra quando o texto de um link é separado do resto: "( PLP 108/21 )", "Lei 15.526/26 ,", "gov.br .".
+    Só mexe em espaço; nenhuma palavra muda. Idempotente: roda também sobre o que já está no histórico."""
+    t = re.sub(r"\s+", " ", t or "").strip()
+    t = re.sub(r"\(\s+", "(", t)
+    t = re.sub(r"\s+\)", ")", t)
+    t = re.sub(r"(?<=\S)\s+([,;:.!?])(?=\s|$)", r"\1", t)
+    return t
+
+
 def texto(h):
-    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", h or ""))).strip()
+    return ajusta(html.unescape(re.sub(r"<[^>]+>", " ", h or "")))
 
 
 def trecho(conteudo):
@@ -114,16 +125,20 @@ def pagina(link):
 
 
 def tipo(id_prop):
-    """(sigla, número/ano) da proposição — do cache da Etapa A ou da API, uma vez."""
+    """(sigla, número/ano, categorias) da proposição — do cache da Etapa A ou da API, uma vez.
+    Categorias = a classificação do site (temas.classificar, a mesma da página do deputado e de "Esta semana"),
+    sobre a ementa e a indexação: [[nome curto, termo que a definiu, "e" ementa | "k" indexação]]."""
     d = (coleta.ler_cache(coleta.CACHE / "proposicoes" / f"{id_prop}.json") or {}).get("detalhe")
     if not d:
         caminho = CACHE_N / "prop" / f"{id_prop}.json"
         d = coleta.ler_cache(caminho)
-        if d is None:
+        if d is None or "ementa" not in d:          # o cache antigo guardava só sigla, número e ano
             r = (coleta.get(f"{coleta.API}/proposicoes/{id_prop}") or {}).get("dados") or {}
-            d = {k: r.get(k) for k in ("siglaTipo", "numero", "ano")}
+            d = {k: r.get(k) for k in ("siglaTipo", "numero", "ano", "ementa", "keywords")}
             coleta.gravar_cache(caminho, d)
-    return d.get("siglaTipo"), f"{d.get('siglaTipo')} {d.get('numero')}/{d.get('ano')}"
+    cats = [[CURTO[CATEGORIAS[i]], termo, fonte]
+            for i, termo, fonte in classificar((d.get("ementa") or "").strip(), d.get("keywords") or "")]
+    return d.get("siglaTipo"), f"{d.get('siglaTipo')} {d.get('numero')}/{d.get('ano')}", cats
 
 
 def main():
@@ -179,12 +194,20 @@ def main():
     for link, e in hist.items():
         if not e.get("ids") or (e.get("d") or "") < limite:
             continue
-        props = [[i, rot] for i in e["ids"] for sig, rot in [tipo(i)] if sig in TIPOS]
+        props, cats = [], []
+        for i in e["ids"]:
+            sig, rot, cs = tipo(i)
+            if sig not in TIPOS:
+                continue
+            props.append([i, rot])
+            for c in cs:                                  # a categoria da lei: a união das proposições da notícia, sem repetir
+                if c[0] not in [x[0] for x in cats]:
+                    cats.append(c)
         if not props:
             continue
-        itens.append({"t": e["t"], "u": link, "d": e["d"], "temas": e["temas"], "p": props,
+        itens.append({"t": ajusta(e["t"]), "u": link, "d": e["d"], "temas": e["temas"], "p": props, "cats": cats,
                       # sem a regra de reprodução no rodapé, só título e link
-                      "trecho": e["trecho"] if e.get("assinatura") else None,
+                      "trecho": ajusta(e["trecho"]) if e.get("assinatura") and e["trecho"] else None,
                       "assinatura": e.get("assinatura")})
     itens.sort(key=lambda x: x["d"] or "", reverse=True)
 

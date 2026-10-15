@@ -47,6 +47,7 @@ ANOS = range(2023, 2027)  # legislatura atual
 BULK = coleta.CACHE / "bulk"
 URL = "https://dadosabertos.camara.leg.br/arquivos/{tipo}/csv/{tipo}-{ano}.csv"
 PROPOSICOES = coleta.DADOS / "proposicoes.json"
+VOTOS_DEPUTADOS = coleta.DADOS / "votos_deputados.json"   # como cada deputado votou em cada uma das votações de proposicoes.json (página "quais leis")
 FAIXAS = coleta.FAIXAS
 
 # Valores de `voto` no CSV. Obstrução e "Artigo 17" (quem preside a sessão não
@@ -519,11 +520,17 @@ def main():
     cats_de = {idv: sorted({i for i, _, _ in classificar(ementa_de.get(idv, ""), "")}) for idv in ids_sel}
     bloco_de = {CATEGORIAS.index(c): bi for bi, (_, cs) in enumerate(BLOCOS_TEMA) for c in cs}
     por_tema = defaultdict(lambda: {t: {"b": [0] * len(BLOCOS_TEMA), "c": [0] * len(CATEGORIAS), "s": 0} for t in (SIM, NAO, ABST)})
+    # E, para a página "quais leis": como cada deputado votou em CADA uma das votações, em uma cadeia de letras na ordem de `ids_sel`
+    # (S Sim, N Não, A abstenção, O outro registro como obstrução e presidência, - sem registro). Sai em votos_deputados.json.
+    posicao = {idv: k for k, idv in enumerate(ids_sel)}
+    letra = {SIM: "S", NAO: "N", ABST: "A"}
+    cadeia = defaultdict(lambda: ["-"] * len(ids_sel))
     for idv in ids_sel:
         cats = cats_de[idv]
         blocos_da_lei = sorted({bloco_de[i] for i in cats})
         for r in votos[idv]:
             t = r["voto"]
+            cadeia[int(r["deputado_id"])][posicao[idv]] = letra.get(t, "O")
             if t not in (SIM, NAO, ABST):
                 continue                                         # obstrução e presidência não são voto
             a = por_tema[int(r["deputado_id"])][t]
@@ -540,6 +547,23 @@ def main():
         if d["votos"]["chamadas"]:
             pt = por_tema[d["id"]]
             d["votos"]["temas"] = {"sim": pt[SIM], "nao": pt[NAO], "abstencao": pt[ABST]}
+    # votos_deputados.json: a lista de votações (id e categorias de cada uma), quem é cada deputado e a cadeia de votos. A página "quais leis"
+    # junta isto com proposicoes.json pelo id da votação. Conferência ANTES de gravar: a cadeia tem de dar os mesmos Sim, Não e abstenções de `votos`.
+    quem = {str(d["id"]): [d["nome"], d["partido"], d["uf"]] for d in deputados if d["votos"]["chamadas"]}
+    erros = []
+    for d in deputados:
+        if str(d["id"]) in quem:
+            s = "".join(cadeia[d["id"]])
+            if (s.count("S"), s.count("N"), s.count("A"), len(s) - s.count("-")) != (d["votos"]["sim"], d["votos"]["nao"], d["votos"]["abstencao"], d["votos"]["chamadas"]):
+                erros.append(d["nome"])
+    if erros:
+        print(f"CHECAGEM DE SANIDADE FALHOU — a cadeia de votos de {len(erros)} deputado(s) não bate com `votos`: {erros[:5]}. Nada foi gravado.")
+        sys.exit(2)
+    tmp = VOTOS_DEPUTADOS.with_suffix(".tmp")
+    tmp.write_text('{"votacoes":' + json.dumps([{"id": idv, "c": cats_de[idv]} for idv in ids_sel], ensure_ascii=False, separators=(",", ":")) +
+                   ',\n"quem":' + json.dumps(quem, ensure_ascii=False, separators=(",", ":")) +
+                   ',\n"votos":{\n' + ",\n".join(f'"{i}":"{"".join(cadeia[int(i)])}"' for i in quem) + "\n}}\n", encoding="utf-8")
+    os.replace(tmp, VOTOS_DEPUTADOS)
 
     # Orientação da bancada: todas as votações nominais do Plenário, não só as 164 de texto-base.
     plen = [i for i in votos if (votacoes.get(i) or {}).get("siglaOrgao") == "PLEN"]

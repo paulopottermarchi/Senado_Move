@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-escuro-ok data-ed>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Como votou, por tema | Câmara Aberta</title>
+<meta name="description" content="As leis votadas num tema por um deputado ou senador, com o voto de cada uma: Sim, Não ou abstenção.">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Câmara Aberta">
+<meta property="og:title" content="Como votou, por tema | Câmara Aberta">
+<meta property="og:description" content="As leis votadas num tema por um deputado ou senador, com o voto de cada uma: Sim, Não ou abstenção.">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Cpath d='M8 13.5h16a8 8 0 0 1-16 0z' fill='%232dd4bf'/%3E%3Crect x='7' y='23.5' width='18' height='2' rx='1' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
+<link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
+<script src="site.js" defer></script>
+<style>
+/* Só desta página. O cartão, os blocos de números e a barra vêm do estilo.css ("PAINÉIS DE PERFIL"); tema não tem ideologia, então nada de cor do espectro. */
+.volta{display:inline-block;margin-top:28px;font-size:13px;color:var(--tinta2);text-decoration:none}
+.volta:hover{color:var(--tinta);text-decoration:underline}
+.vcab{display:flex;gap:20px;align-items:center;padding:24px 0 8px;min-width:0}
+.vcab .kicker{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--destaque)}
+.vcab h1{font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:0;line-height:.95;max-width:none;font-size:clamp(34px,5vw,64px);text-wrap:balance;
+         display:flex;align-items:center;gap:16px}
+.vcab .quem{font-size:14px;color:var(--tinta3);margin-top:6px}
+.vcab .quem a{color:var(--link)}
+.av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;background:var(--linha2);overflow:hidden;vertical-align:middle}
+.av-cx .av-ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--tinta3);letter-spacing:-.02em;line-height:1}
+.av-cx img.av{position:absolute;inset:0;width:100%;height:100%;z-index:1;object-fit:cover;object-position:center 22%;display:block;border:none}
+.av-cx img.av.falhou{display:none}
+.lead{font-family:var(--serif);font-size:clamp(16px,2vw,19px);line-height:1.5;color:var(--tinta);max-width:64ch;margin:12px 0 0}
+.vcx{margin-top:24px}
+.controles{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin:24px 0 8px}
+.bloco{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.rotulo{font-size:13px;color:var(--tinta3);margin-right:4px}
+.filtro{font:inherit;font-size:14px;line-height:1.4;padding:8px 16px;border:1px solid var(--linha);border-radius:var(--raio-p);background:var(--papel);color:var(--tinta);width:260px;max-width:100%}
+.filtro:hover{border-color:var(--linha-forte)}
+.filtro:focus{outline:none;border-color:var(--destaque-vivo);box-shadow:var(--anel)}
+.pino b{font-weight:600;margin-left:6px;font-variant-numeric:tabular-nums}
+.subtemas{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 0}
+.subtemas .rotulo{margin-right:2px}
+.sec-voto{margin-top:32px}
+.sec-voto>h2{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.2}
+.sec-voto>h2 i{display:inline-block;width:12px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px var(--rampa4)}
+.sec-voto>h2 small{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--tinta3)}
+.vi{padding:16px 0 18px;border-bottom:1px solid var(--linha2)}
+.vi-cab{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.vi-num{font-weight:600;font-size:15px;color:var(--tinta);text-decoration:none}
+.vi-num:hover{text-decoration:underline}
+.vi-data{font-size:12px;color:var(--tinta3)}
+.selo{font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;white-space:nowrap;background:var(--inverso);color:var(--sobre-inverso)}
+.selo.fraco{background:var(--linha2);color:var(--tinta2)}
+.vi-placar{font-size:12px;color:var(--tinta2);font-variant-numeric:tabular-nums}
+.vi-desc{font-size:14px;font-weight:500;line-height:1.45;margin-top:6px;max-width:80ch;color:var(--tinta)}
+.vi-ementa{font-size:15px;line-height:1.5;margin-top:4px;max-width:80ch}
+.oficial{margin-top:4px;max-width:80ch}
+.oficial summary{cursor:pointer;font-size:12px;color:var(--tinta3);line-height:1.5}
+.oficial summary b{font-weight:500;color:var(--tinta2);text-decoration:underline;text-underline-offset:2px}
+.oficial p{font-size:14px;color:var(--tinta2);margin-top:4px;line-height:1.5}
+.vi-temas{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.vi-temas .tg{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:1.4;padding:3px 12px 3px 8px;border:1px solid var(--linha);border-radius:999px;color:var(--tinta2)}
+.vazio{font-size:14px;color:var(--tinta2);padding:24px 0;max-width:60ch}
+.rodape{font-size:12px;color:var(--tinta3);margin:32px 0 48px;line-height:1.6;max-width:84ch}
+.aviso{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio-c);padding:24px;margin-top:28px;max-width:640px}
+.aviso h1{font-family:var(--serif);font-size:24px;font-weight:600;margin-bottom:8px}
+.aviso p{font-size:14px;color:var(--tinta2);margin-top:8px}
+.aviso code{font-family:ui-monospace,monospace;font-size:13px;background:var(--linha2);padding:1px 4px;border-radius:6px}
+@media(max-width:700px){.filtro{width:100%}.vcab{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+    <nav class="nav" aria-label="Páginas do site">
+      <a href="deputados.html" id="navDep">Deputados</a>
+      <a href="senadores.html" id="navSen">Senadores</a>
+      <a href="leis.html">Leis votadas</a>
+      <a href="blocos.html">Quem vota com quem</a>
+      <a href="fluxo.html">Entre as casas</a>
+      <a href="obras.html">Obras</a>
+      <a href="contexto.html">Economia</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <a class="volta" id="volta" href="index.html">← Voltar</a>
+  <main id="raiz" aria-live="polite"></main>
+</div>
+
+<footer class="rodape-global">
+  <div class="wrap">
+    <div class="rg">
+      <div class="rg-sobre">
+        <a class="marca" href="index.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+        <p>O que o Congresso propõe, aprova e vota, a partir de dados públicos oficiais atualizados todos os dias.</p>
+      </div>
+      <nav class="rg-col" aria-label="Páginas">
+        <h2>Páginas</h2>
+        <a href="index.html">Início</a>
+        <a href="deputados.html">Deputados</a>
+        <a href="senadores.html">Senadores</a>
+        <a href="leis.html">Leis votadas</a>
+        <a href="blocos.html">Quem vota com quem</a>
+        <a href="fluxo.html">Entre as casas</a>
+        <a href="obras.html">Obras</a>
+      <a href="contexto.html">Contexto econômico</a>
+      <a href="origem.html">De onde vêm as leis</a>
+      </nav>
+      <div class="rg-col">
+        <h2>Fontes</h2>
+        <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Câmara dos Deputados</a>
+        <a href="https://legis.senado.leg.br/dadosabertos/" target="_blank" rel="noopener">Senado Federal</a>
+        <a href="https://www.tse.jus.br" target="_blank" rel="noopener">Tribunal Superior Eleitoral</a>
+        <a href="https://dataverse.harvard.edu/dataverse/bls" target="_blank" rel="noopener">Brazilian Legislative Survey</a>
+        <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a>
+      </div>
+      <div class="rg-col">
+        <h2>Projeto</h2>
+        <a href="index.html#sobre">Sobre os dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">Código e dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/issues" target="_blank" rel="noopener">Informar um erro</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/blob/main/LICENSE" target="_blank" rel="noopener">Licença MIT</a>
+      </div>
+    </div>
+    <div class="rg-pe"><p>Site independente, sem vínculo com a Câmara dos Deputados, o Senado Federal ou o TSE.
+      Os números vêm das fontes oficiais citadas; as escolhas de método estão escritas em cada página.</p></div>
+  </div>
+</footer>
+
+<script src="temas.js"></script>
+<script src="paineis.js"></script>
+<script>
+const NF=new Intl.NumberFormat('pt-BR');
+const MESES=['jan.','fev.','mar.','abr.','maio','jun.','jul.','ago.','set.','out.','nov.','dez.'];
+const PASSO=25;
+const VOTO={S:{rot:'Sim',k:0,titulo:'Votou Sim'},N:{rot:'Não',k:1,titulo:'Votou Não'},A:{rot:'Abstenção',k:2,titulo:'Absteve-se'}};
+const ORDEM=['S','N','A'];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const semAcento=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const json=u=>fetch(u,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
+const tCat=(n,px)=>window.TemaIcone?TemaIcone.rotulo(n,n,px||16):esc(n);
+function data(d){ if(!d) return ''; const [a,m,dia]=d.split('-'); return `${+dia} ${MESES[+m-1]} ${a}`; }
+function iniciais(nome){ const p=nome.trim().split(/\s+/).filter(w=>w.length>2); return ((p[0]||nome)[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase(); }
+function retrato(q,px){
+  const api=(q.urlFoto||'').replace('http://','https://');
+  return `<span class="av-cx" style="width:${px}px;height:${px}px" aria-hidden="true"><span class="av-ini" style="font-size:${Math.round(px*.36)}px">${esc(iniciais(q.nome))}</span><img class="av" src="${esc(q.foto)}" data-api="${esc(api)}" alt="" loading="lazy" onerror="fotoFalhou(this)"></span>`;
+}
+function fotoFalhou(img){ const api=img.dataset.api; if(api){ img.dataset.api=''; img.src=api; } else img.classList.add('falhou'); }
+function aviso(tit,html){ document.getElementById('raiz').innerHTML=`<div class="aviso"><h1>${tit}</h1>${html}</div>`; }
+
+let tax=null, Q=null, ITENS=[], casa='c', tema=null;
+const est={voto:'todos',sub:null,texto:'',limite:{S:PASSO,N:PASSO,A:PASSO}};
+
+// ---- o tema pedido: bl (bloco), c (categoria), s (sem categoria), o (outras votações) ----
+function temaDe(par){
+  const m=/^(b|c)(\d+)$/.exec(par||''); if(m){ const i=+m[2];
+    if(m[1]==='b'&&tax.blocos[i]) return {n:'b',i,nome:tax.blocos[i].nome};
+    if(m[1]==='c'&&tax.categorias[i]) return {n:'c',i,nome:tax.categorias[i]}; }
+  if(par==='s') return {n:'s',i:0,nome:'Sem categoria'};
+  if(par==='o') return {n:'o',i:0,nome:'Outras votações'};
+  return null;
+}
+// cats: lista de índices de categoria; [] = proposição sem categoria; null = matéria que não é proposição legislativa
+function casa_(x,t,sub){
+  const c=x.cats;
+  if(t.n==='o') return c===null;
+  if(t.n==='s') return c!==null&&c.length===0;
+  if(c===null) return false;
+  if(t.n==='c') return c.includes(t.i);
+  const dentro=tax.blocos[t.i].categorias;
+  return sub!=null?c.includes(sub):c.some(i=>dentro.includes(i));
+}
+
+async function iniciar(){
+  const q=new URLSearchParams(location.search);
+  casa=q.get('casa')==='s'?'s':'c';
+  const id=q.get('id');
+  document.getElementById(casa==='s'?'navSen':'navDep').setAttribute('aria-current','page');
+  if(!id||!/^\d+$/.test(id)){
+    aviso('Escolha um parlamentar','<p>Esta página lista as leis de um tema que um deputado ou senador votou. Abra o perfil de alguém e clique num tema em “Como votou, por tema”.</p>'+
+      '<p><a href="deputados.html">Deputados</a> · <a href="senadores.html">Senadores</a></p>');
+    return;
+  }
+  const url=casa==='s'?`dados/senadores/votos/${id}.json`:'dados/votos_deputados.json';
+  const [rt,dados,props]=await Promise.all([json('dados/temas/taxonomia.json'),json(url),casa==='c'?json('dados/proposicoes.json'):Promise.resolve(null)]);
+  if(!rt||!dados||(casa==='c'&&!props)){
+    aviso('Não foi possível ler os dados',`<p>Faltam arquivos em <code>dados/</code>. Rode <code>python scripts/${casa==='s'?'senador_paginas':'votos'}.py</code> para gerá-los, sirva o site com <code>python -m http.server 8000 --bind 127.0.0.1 --directory site</code> e abra de novo; o navegador não lê arquivos locais direto do disco.</p>`);
+    return;
+  }
+  tax=rt;
+  if(casa==='s'){
+    Q={nome:dados.nome,partido:dados.partido,uf:dados.uf,foto:`https://legis.senado.leg.br/senadores/fotos-oficiais/${encodeURIComponent(id)}`,urlFoto:''};
+    ITENS=dados.votos.map(([seq,mat,d,res,letra,desc])=>{ const m=dados.materias[mat]||[]; return {
+      voto:letra,num:m[0]||'',url:`https://www25.senado.leg.br/web/atividade/materias/-/materia/${mat}`,data:d,
+      res:res==='A'?'Votação aprovada':res==='R'?'Votação rejeitada':'',desc,ementa:m[1]||'',cats:m[2]}; });
+  }else{
+    const quem=dados.quem[id];
+    if(!quem){ aviso('Deputado sem votos nestas votações','<p>Não há voto registrado deste deputado nas votações finais de texto-base.</p>'); return; }
+    Q={nome:quem[0],partido:quem[1],uf:quem[2],foto:`https://www.camara.leg.br/internet/deputado/bandep/${encodeURIComponent(id)}.jpg`,urlFoto:''};
+    const cadeia=dados.votos[id]||'', porVot=Object.fromEntries(props.map(p=>[p.idVotacao,p]));
+    ITENS=dados.votacoes.map((v,k)=>{ const letra=cadeia[k], p=porVot[v.id]; if(!p||!VOTO[letra]) return null; return {
+      voto:letra,num:p.numero||'',url:p.urlCamara,data:p.data,res:p.aprovacao===1?'Aprovada':p.aprovacao===0?'Rejeitada':'',
+      placar:p.sim!=null&&p.nao!=null?`${NF.format(p.sim)} × ${NF.format(p.nao)}`:'',desc:'',ementa:p.ementa||'',resumo:p.resumo||'',cats:v.c}; }).filter(Boolean);
+  }
+  ITENS.sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+  tema=temaDe(q.get('tema'));
+  if(!tema){ aviso('Escolha um tema','<p>Volte ao perfil e clique num tema em “Como votou, por tema”.</p>'); return; }
+  const v=ORDEM.includes((q.get('voto')||'').toUpperCase().slice(0,1))?(q.get('voto')||'').toUpperCase().slice(0,1):null;
+  if(v) est.voto=v;
+  est.id=id;
+  montar();
+}
+
+function montar(){
+  const perfil=casa==='s'?`senador.html?id=${encodeURIComponent(est.id)}#cqv`:`deputado.html?id=${encodeURIComponent(est.id)}#cqv`;
+  document.title=`${tema.nome}: como ${Q.nome} votou | Câmara Aberta`;
+  const v=document.getElementById('volta'); v.href=perfil; v.textContent=`← Voltar ao perfil de ${Q.nome}`;
+  const ic=window.TemaIcone?(tema.n==='b'?TemaIcone.bloco(tema.nome,44):tema.n==='c'?TemaIcone.cat(tema.nome,36):''):'';
+  const noTema=ITENS.filter(x=>casa_(x,tema,null));
+  const un=casa==='s'?'votações':'leis';
+  document.getElementById('raiz').innerHTML=`
+    <header class="vcab">${retrato(Q,64)}
+      <div><p class="kicker">Como votou, por tema</p><h1>${ic}<span>${esc(tema.nome)}</span></h1>
+        <div class="quem">${esc(Q.nome)} · ${esc(Q.partido||'')} de ${esc(Q.uf||'')} · <a href="${perfil}">ver o perfil</a></div></div></header>
+    <p class="lead">${casa==='s'
+      ?'As votações nominais abertas do Plenário desde 2023, deste tema, com o voto de cada uma. Uma matéria com vários turnos ou destaques aparece em cada votação.'
+      :'As votações finais de texto-base deste tema, uma por lei, com o voto de cada uma. “Sim” é votar a favor da lei e “Não”, contra.'}</p>
+    <div id="resumo"></div>
+    <div class="controles" id="controles"></div>
+    <div id="subtemas"></div>
+    <div id="listas"></div>
+    <p class="rodape">O tema é da classificação deste site, pela ementa (não ${casa==='s'?'do Senado':'da Câmara'}); uma ${casa==='s'?'matéria':'lei'} com mais de um tema aparece em cada um.
+      ${casa==='s'?'Votações de requerimentos, mensagens e similares não têm tema e ficam em “Outras votações”. ':''}“Sem categoria” é ${casa==='s'?'a proposição':'a lei'} cuja ementa não casa com nenhuma regra de tema.
+      O número de cada ${casa==='s'?'votação':'lei'} leva à ficha oficial. Classificação na versão ${esc(tax.versao)}.</p>`;
+  desenhar();
+}
+
+function filtrados(){
+  const t=est.texto;
+  return ITENS.filter(x=>casa_(x,tema,est.sub)&&(!t||semAcento(x.num+' '+x.ementa+' '+(x.desc||'')).includes(t)));
+}
+function desenhar(){
+  const todos=ITENS.filter(x=>casa_(x,tema,null)), vis=filtrados();
+  const cont=c=>todos.filter(x=>x.voto===c).length;
+  const un=casa==='s'?'votações':'leis';
+  // os números do tema: Sim, Não e abstenção (a abstenção só se houve)
+  const itens=ORDEM.filter(c=>c!=='A'||cont('A')>0).map(c=>({n:NF.format(cont(c)),rot:VOTO[c].rot,sub:`${un} deste tema`}));
+  document.getElementById('resumo').innerHTML=`<div class="vcx cx" style="padding:20px 24px">${Paineis.tiles(itens)}
+    ${todos.length?Paineis.barra(ORDEM.map(c=>[VOTO[c].rot,cont(c),Paineis.TONS[VOTO[c].k]])):''}</div>`;
+  document.getElementById('controles').innerHTML=`
+    <div class="bloco"><span class="rotulo">Voto</span>
+      <button class="pino${est.voto==='todos'?' on':''}" data-voto="todos">Todos<b>${NF.format(todos.length)}</b></button>
+      ${ORDEM.filter(c=>c!=='A'||cont('A')>0).map(c=>`<button class="pino${est.voto===c?' on':''}" data-voto="${c}">${VOTO[c].rot}<b>${NF.format(cont(c))}</b></button>`).join('')}</div>
+    <div class="bloco"><input class="filtro" id="filtro" type="search" autocomplete="off" placeholder="Filtrar pelo número ou pela ementa" aria-label="Filtrar pelo número ou pela ementa" value="${esc(est.texto)}"></div>`;
+  // dentro de um bloco: as categorias dele, para fechar o foco
+  const sub=document.getElementById('subtemas');
+  if(tema.n==='b'){
+    const cats=tax.blocos[tema.i].categorias.map(i=>[i,todos.filter(x=>x.cats&&x.cats.includes(i)).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]||a[0]-b[0]);
+    sub.innerHTML=cats.length>1?`<div class="subtemas"><span class="rotulo">Neste bloco</span>
+      <button class="pino${est.sub==null?' on':''}" data-sub="">Todo o bloco<b>${NF.format(todos.length)}</b></button>
+      ${cats.map(([i,n])=>`<button class="pino${est.sub===i?' on':''}" data-sub="${i}">${esc(tax.categorias[i])}<b>${NF.format(n)}</b></button>`).join('')}</div>`:'';
+  }else if(tema.n==='c'){
+    const b=tax.blocos.findIndex(x=>x.categorias.includes(tema.i));
+    sub.innerHTML=b>=0?`<div class="subtemas"><span class="rotulo">Bloco</span><a class="pino" href="${location.pathname.split('/').pop()}?casa=${casa}&id=${est.id}&tema=b${b}">${esc(tax.blocos[b].nome)}</a></div>`:'';
+  }else sub.innerHTML='';
+  const mostrar=est.voto==='todos'?ORDEM:[est.voto];
+  const html=mostrar.map(c=>{
+    const l=vis.filter(x=>x.voto===c); if(!l.length&&est.voto==='todos') return '';
+    const lim=est.limite[c];
+    return `<section class="sec-voto" aria-labelledby="h-${c}"><h2 id="h-${c}"><i style="background:${Paineis.TONS[VOTO[c].k]}"></i>${VOTO[c].titulo} <small>${NF.format(l.length)} ${l.length===1?(casa==='s'?'votação':'lei'):un}</small></h2>
+      ${l.length?l.slice(0,lim).map(item).join(''):`<p class="vazio">Nenhuma ${casa==='s'?'votação':'lei'} com esses filtros.</p>`}
+      ${l.length>lim?`<button class="mais" data-mais="${c}">Mostrar mais ${Math.min(PASSO,l.length-lim)} de ${NF.format(l.length-lim)} restantes</button>`:''}</section>`;
+  }).join('');
+  document.getElementById('listas').innerHTML=html||`<p class="vazio">Nenhuma ${casa==='s'?'votação':'lei'} com esses filtros.</p>`;
+  document.querySelectorAll('[data-voto]').forEach(b=>b.onclick=()=>{ est.voto=b.dataset.voto; est.limite={S:PASSO,N:PASSO,A:PASSO}; desenhar(); });
+  document.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{ est.sub=b.dataset.sub===''?null:+b.dataset.sub; est.limite={S:PASSO,N:PASSO,A:PASSO}; desenhar(); });
+  document.querySelectorAll('[data-mais]').forEach(b=>b.onclick=()=>{ est.limite[b.dataset.mais]+=PASSO; desenhar(); });
+  const f=document.getElementById('filtro'); let t;
+  f.oninput=e=>{ clearTimeout(t); t=setTimeout(()=>{ est.texto=semAcento(e.target.value.trim()); est.limite={S:PASSO,N:PASSO,A:PASSO}; const pos=f.selectionStart; desenhar(); const g=document.getElementById('filtro'); g.focus(); g.setSelectionRange(pos,pos); },150); };
+}
+
+function item(x){
+  const nomes=x.cats===null?[]:(x.cats||[]).map(i=>tax.categorias[i]);
+  const ementa=x.resumo
+    ?`<p class="vi-ementa">${esc(x.resumo)}</p><details class="oficial"><summary>Resumo gerado por IA a partir do texto integral; pode conter erros. <b>Ver a ementa oficial</b></summary><p>${esc(x.ementa)||'<i>Sem ementa no registro.</i>'}</p></details>`
+    :`<p class="vi-ementa">${esc(x.ementa)||'<i>Sem ementa no registro.</i>'}</p>`;
+  return `<article class="vi"><div class="vi-cab"><a class="vi-num" href="${esc(x.url)}" target="_blank" rel="noopener" title="Abrir a ficha oficial">${esc(x.num)}</a>
+      <span class="vi-data">votada em ${data(x.data)}</span>${x.res?`<span class="selo fraco">${esc(x.res)}</span>`:''}${x.placar?`<span class="vi-placar">${esc(x.placar)}</span>`:''}</div>
+    ${x.desc?`<p class="vi-desc">${esc(x.desc)}</p>`:''}${ementa}
+    <div class="vi-temas">${x.cats===null?'<span class="tg">Outras votações: sem tema</span>':nomes.length?nomes.map(n=>`<span class="tg">${tCat(n,16)}</span>`).join(''):'<span class="tg">Sem categoria</span>'}</div></article>`;
+}
+
+iniciar();
+</script>
+</body>
+</html>

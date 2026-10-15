@@ -93,32 +93,48 @@ window.Paineis=(function(){
       '<div class="tl-anos" aria-hidden="true">'+anos.map(function(y){ return '<span style="left:'+pos(y).toFixed(2)+'%">'+y+'</span>'; }).join('')+'</div>'+
       '<div class="tl-chave"><span><i class="c-mand"></i>'+esc(o.rotMandato||'mandato')+'</span><span><i class="c-ex"></i>em exercício</span><span><i class="c-hoje"></i>hoje</span></div></div>';
   }
-  // Como votou, POR TEMA: em cada tipo de voto (Sim, Não, abstenção), os temas das leis votadas e quantos votos há em cada um, do maior para o menor.
-  // Primeiro por BLOCO (7, com o carimbo do bloco) e, num "Por categoria" recolhido, por categoria (27). Os números são contagens do registro oficial de
-  // voto; o tema é a classificação deste site (temas.py, pela ementa), nunca da Casa. Uma lei com mais de um tema conta em cada um (a soma passa do total).
-  // o = {tax (taxonomia.json), unidade ('votações'), linhas:[{rot, k (tom de TONS), n (total do tipo), d:{b:[7], c:[27], s (sem categoria), o (matéria sem tema)}}], nota (HTML)}
+  // Como votou, POR TEMA: uma linha por tema com o Sim e o Não (e a abstenção, se houve) JUNTOS — "Estado, justiça e segurança  37 / 27" —, para comparar
+  // os dois lados no mesmo tema. A barrinha tem o comprimento proporcional ao total de votos no tema (relativo ao maior) e é repartida entre Sim, Não e
+  // abstenção, com os tons da barra de votos do cartão. Primeiro por BLOCO (7, com o carimbo do bloco) e, num "Por categoria" recolhido, por categoria (27).
+  // Os números são contagens do registro oficial de voto; o tema é a classificação deste site (temas.py, pela ementa), nunca da Casa. Uma lei com mais de
+  // um tema conta em cada um (a soma passa do total); "Sem categoria" e "Outras votações" vêm no fim, tracejadas, nunca somem.
+  // o = {tax (taxonomia.json), unidade ('votações'), href (opcional: (nivel 'b'|'c'|'s'|'o', índice) → endereço da página "quais leis"), linhas:[{rot, k (tom de TONS), n (total do tipo), d:{b:[7], c:[27], s (sem categoria), o (matéria sem tema)}}], nota (HTML)}
   function votosTema(o){
     var tax=o.tax, T=window.TemaIcone, un=o.unidade||'votações';
-    var linhas=(o.linhas||[]).filter(function(l){ return l.n&&l.d; });
-    if(!tax||!linhas.length) return '';
-    function chip(nome,n,nivel,rot){
-      var ic=T?(nivel==='b'?T.bloco(nome,24):T.cat(nome,18)):'';
-      return '<span class="tv'+(nivel==='c'?' tv-c':'')+'" title="'+esc(rot+': '+NF.format(n)+' '+un+' em '+nome)+'">'+ic+'<span>'+esc(nome)+'</span><b>'+NF.format(n)+'</b></span>';
+    // as colunas: Sim e Não sempre; a abstenção só se este perfil teve alguma
+    var cols=(o.linhas||[]).filter(function(l){ return l.d&&(l.n>0||l.rot==='Sim'||l.rot==='Não'); });
+    if(!tax||!cols.length||!cols.some(function(l){ return l.n>0; })) return '';
+    function soma(v){ return v.reduce(function(a,x){ return a+x; },0); }
+    function num(vs){ return vs.map(function(v,i){ return (i?'<span>/</span>':'')+'<b>'+NF.format(v)+'</b>'; }).join(''); }
+    function rotulo(vs){ return cols.map(function(c,i){ return c.rot+' '+NF.format(vs[i]); }).join(', '); }
+    // vs = quanto de cada coluna neste tema; max = o maior total entre os temas (escala das barrinhas)
+    // `href` (opcional, de o.href(nivel, índice)): a linha vira um link para a página que lista as leis daquele tema com o voto de cada uma
+    function linha(nome,ic,vs,max,nulo,dica,href){
+      var tot=soma(vs), tag=href?'a':'div';
+      return '<'+tag+(href?' href="'+esc(href)+'"':'')+' class="vt-t'+(href?' vt-ir-link':'')+(nulo?' nulo':'')+'" title="'+esc((dica||(nome+': '+rotulo(vs)+' ('+un+')'))+(href?' · ver as leis':''))+'">'+
+        '<div class="vt-nome">'+ic+'<span>'+esc(nome)+'</span></div>'+
+        '<div class="vt-bar" role="img" aria-label="'+esc(rotulo(vs))+'"><span class="vt-fill" style="width:'+(max?(tot/max*100).toFixed(1):0)+'%">'+
+          vs.map(function(v,i){ return v?'<i style="width:'+(v/tot*100).toFixed(2)+'%;background:'+TONS[cols[i].k]+'"></i>':''; }).join('')+'</span></div>'+
+        '<div class="vt-num">'+num(vs)+(href?'<i class="vt-ir" aria-hidden="true">›</i>':'')+'</div></'+tag+'>';
     }
-    function nulo(txt,n,dica){ return '<span class="tv nulo" title="'+esc(dica)+'"><span>'+esc(txt)+'</span><b>'+NF.format(n)+'</b></span>'; }
-    function linha(l,nivel){
+    function lista(nivel){
       var nomes=nivel==='b'?tax.blocos.map(function(b){ return b.nome; }):tax.categorias, itens=[];
-      l.d[nivel].forEach(function(n,i){ if(n) itens.push([n,i]); });
-      itens.sort(function(a,b){ return b[0]-a[0]||a[1]-b[1]; });
-      var chips=itens.map(function(x){ return chip(nomes[x[1]],x[0],nivel,l.rot); }).join('')+
-        (l.d.s?nulo('Sem categoria',l.d.s,'Votações cuja ementa não casa com nenhuma regra de tema'):'')+
-        (l.d.o?nulo('Outras votações',l.d.o,'Votações cuja matéria não é proposição legislativa (requerimento, mensagem…): não têm tema'):'');
-      return '<div class="vt-linha"><div class="vt-voto"><i style="background:'+TONS[l.k]+'"></i><b>'+esc(l.rot)+'</b><span>'+NF.format(l.n)+' '+esc(un)+'</span></div>'+
-        '<div class="vt-chips">'+(chips||'<span class="vt-vazio">sem votação com tema</span>')+'</div></div>';
+      nomes.forEach(function(n,i){ var vs=cols.map(function(c){ return c.d[nivel][i]; }); if(soma(vs)) itens.push([vs,i]); });
+      itens.sort(function(a,b){ return soma(b[0])-soma(a[0])||a[1]-b[1]; });
+      var sem=cols.map(function(c){ return c.d.s||0; }), outras=cols.map(function(c){ return c.d.o||0; });
+      var max=Math.max.apply(null,itens.map(function(x){ return soma(x[0]); }).concat([soma(sem),soma(outras)]));
+      return itens.map(function(x){
+          var ic=T?(nivel==='b'?T.bloco(nomes[x[1]],36):'<span class="vt-ic">'+T.cat(nomes[x[1]],24)+'</span>'):'';
+          return linha(nomes[x[1]],ic,x[0],max,false,null,o.href?o.href(nivel,x[1]):null);
+        }).join('')+
+        (soma(sem)?linha('Sem categoria','',sem,max,true,'Votações cuja ementa não casa com nenhuma regra de tema',o.href?o.href('s',0):null):'')+
+        (soma(outras)?linha('Outras votações','',outras,max,true,'Votações cuja matéria não é proposição legislativa (requerimento, mensagem…): não têm tema',o.href?o.href('o',0):null):'');
     }
-    return '<div class="vt"><div class="vt-cab"><h3>Como votou, por tema</h3><span class="kick">o tema da lei votada, em cada tipo de voto</span></div>'+
-      linhas.map(function(l){ return linha(l,'b'); }).join('')+
-      '<details class="como"><summary>Por categoria</summary><div class="vt-cat">'+linhas.map(function(l){ return linha(l,'c'); }).join('')+'</div></details>'+
+    var legenda='<div class="vt-leg" aria-hidden="true">'+cols.map(function(c){ return '<span><i style="background:'+TONS[c.k]+'"></i>'+esc(c.rot)+'</span>'; }).join('')+
+      '<span class="tot">no total: '+num(cols.map(function(c){ return c.n; }))+' '+esc(un)+'</span></div>';
+    return '<div class="vt"><div class="vt-cab"><h3>Como votou, por tema</h3><span class="kick">'+cols.map(function(c){ return esc(c.rot); }).join(' / ')+', por tema da lei votada</span></div>'+
+      legenda+'<div class="vt-lista">'+lista('b')+'</div>'+
+      '<details class="como"><summary>Por categoria</summary>'+legenda+'<div class="vt-lista">'+lista('c')+'</div></details>'+
       (o.nota?'<p class="med-leg">'+o.nota+'</p>':'')+'</div>';
   }
   // Etiqueta pequena ("titular", "em curso"); `on` a deixa na cor invertida.

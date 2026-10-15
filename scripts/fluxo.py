@@ -54,6 +54,7 @@ import requests
 import coleta
 import tramitacoes
 from coleta import CACHE, DADOS, gravar_cache, ler_cache
+from temas import CATEGORIAS, CURTO, classificar
 
 SF = "https://legis.senado.leg.br/dadosabertos"
 PASTA = CACHE / "fluxo"
@@ -176,6 +177,14 @@ def universo_do_senado():
 
 def data10(t):
     return t[:10] if t else None
+
+
+def categorias_da(ementa):
+    """A categoria da proposição pela classificação do site (temas.classificar, a mesma da página do deputado e de "Esta semana"),
+    sobre a ementa que o registro guarda (até 220 caracteres; a indexação da Câmara não vem junto): [[índice da categoria, termo]], com o
+    índice na ordem de `categoriasNomes` do cabeçalho (nomes curtos, os mesmos de "Esta semana"); a origem é sempre a ementa.
+    Lista vazia = sem categoria, e a página diz isso. Interpretação do site, como as faixas do espectro: precisão não medida."""
+    return [[i, termo] for i, termo, _ in classificar(ementa or "", "")]
 
 
 def reduz_detalhe(d):
@@ -540,6 +549,7 @@ def monta(direcao, s, linha, fonte, eventos, cd_st, hoje):
         "desfecho": des, "desfechoDetalhe": det,
         "casaAtual": casa_atual if des == "tramitando" else None,
         "situacao": sit_txt, "orgao": org, "ementa": s["ementa"] if des == "tramitando" else None,
+        "categorias": categorias_da(s["ementa"]) if des == "tramitando" else None,
         "diasSemMov": dias if des == "tramitando" else None,
         "apensada": bool(apensada),
         "parada": bool(des == "tramitando" and not apensada and dias is not None and dias > PARADA_DIAS),
@@ -912,7 +922,7 @@ def verificar(regs, problemas, semvinc, rev, ori, ligados, hoje, anterior, pilot
 
 CAMPOS = ["dir", "tipo", "idCamara", "idSenado", "codSenado", "numeroCamara", "numeroSenado", "apresentacao", "aprovacaoOrigem",
           "remessa", "chegada", "saidaRevisora", "ultimoMovimento", "passagens", "aprovadaRevisora", "desfecho", "desfechoDetalhe",
-          "casaAtual", "situacao", "orgao", "diasSemMov", "parada", "apensada", "vinculoFonte", "ementa", "ressalva"]
+          "casaAtual", "situacao", "orgao", "diasSemMov", "parada", "apensada", "vinculoFonte", "ementa", "ressalva", "categorias"]
 CAMPOS_NC = ["dir", "tipo", "idSenado", "codSenado", "numeroSenado", "motivo"]
 
 
@@ -921,7 +931,8 @@ def linha_do_registro(r):
     return [r["dir"], r["tipo"], r["idCamara"], r["idSenado"], r["codSenado"], r["numeroCamara"], r["numeroSenado"],
             d["apresentacao"], d["aprovacaoOrigem"], d["remessa"], d["chegada"], d["saidaRevisora"], d["ultimoMovimento"],
             r["passagens"], int(r["aprovadaRevisora"]), r["desfecho"], r["desfechoDetalhe"], r["casaAtual"], r["situacao"],
-            r["orgao"], r["diasSemMov"], int(r["parada"]), int(r["apensada"]), r["vinculoFonte"], r.get("ementa"), r.get("ressalva")]
+            r["orgao"], r["diasSemMov"], int(r["parada"]), int(r["apensada"]), r["vinculoFonte"], r.get("ementa"), r.get("ressalva"),
+            r.get("categorias")]
 
 
 def gravar(regs, semvinc, problemas, ag, rev, ori, ligados, hoje, orgaos=None):
@@ -954,6 +965,7 @@ def gravar(regs, semvinc, problemas, ag, rev, ori, ligados, hoje, orgaos=None):
     # 18 MB; assim fica em poucos MB e o diff diário do git mostra só as linhas que mudaram. Casas de origem e revisora saem de
     # `dir`; os links das fichas, dos ids (modelos em `urls`).
     cab["campos"] = CAMPOS
+    cab["categoriasNomes"] = [CURTO[c] for c in CATEGORIAS]
     cab["urls"] = {"camara": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao={idCamara}",
                    "senado": "https://www25.senado.leg.br/web/atividade/materias/-/materia/{codSenado}"}
     cab["camposNaoConfirmadas"] = CAMPOS_NC
