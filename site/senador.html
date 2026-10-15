@@ -30,39 +30,44 @@
 .volta:hover{color:var(--tinta);text-decoration:underline}
 
 /* ---------- cabeçalho ---------- */
-.cab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:24px 40px;align-items:center;padding:24px 0 8px}
+.cab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:24px 40px;align-items:start;padding:24px 0 8px}
+.cab-esq{min-width:0}
+.cab-mapa{display:flex;flex-direction:column;gap:20px;min-width:0}
 .cab-txt{display:flex;gap:20px;align-items:center;min-width:0}
 .cab h1{font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:0;line-height:.92;max-width:none;
   font-size:clamp(44px,6.4vw,92px);text-wrap:balance}
 @media(max-width:900px){.cab{grid-template-columns:minmax(0,1fr)}}
 .cab .quem{font-size:14px;color:var(--tinta3);margin-top:4px}
+/* mapa de assentos do plenário (mapa-assentos.js): o desenho fica sempre no painel escuro do .modelo-ed, nos dois temas; só a legenda segue o tema */
+.mapa-fig{touch-action:pan-y}
+.mapa-svg{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+.mapa-svg polygon{stroke-width:.6;stroke-linejoin:round}
+.mapa-svg .mapa-tri{pointer-events:none}
+.mapa-chip{position:absolute;transform:translate(-50%,-100%);padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;line-height:16px;white-space:nowrap;pointer-events:none}
+.mapa-chip.abaixo{transform:translate(-50%,0)}
+.mapa-chip-sel{background:#2dd4bf;color:#042f2b}
+.mapa-chip-hov{background:#e2e8f0;color:#0f172a}
+.mapa-chip-ex{left:10px;bottom:10px;transform:none;background:#1e2a3f;color:#e8edf5}
+.mapa-mesa{position:absolute;transform:translate(-50%,-100%);font-size:11px;font-weight:600;letter-spacing:.1em;color:#8fa3b8;pointer-events:none}
+.mapa-vista{position:absolute;bottom:10px;right:10px;display:flex;padding:2px;border:1px solid #2a3b50;border-radius:999px;background:rgba(10,18,27,.78)}
+.mapa-vista button{appearance:none;border:0;cursor:pointer;min-height:36px;min-width:52px;padding:0 14px;border-radius:999px;font:600 13px/1 var(--sans);background:transparent;color:#c5d0de}
+.mapa-vista button[aria-pressed=true]{background:#2dd4bf;color:#042f2b}
+.mapa-vista button:focus-visible{outline:2px solid #5eead4;outline-offset:2px}
+.mapa-leg{display:flex;flex-direction:column;gap:8px}
+.mapa-leg-k{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--destaque)}
+.mapa-leg-t{font-size:18px;font-weight:600;line-height:1.3;color:var(--tinta)}
+.mapa-leg-p{font-size:14px;line-height:1.55;color:var(--tinta2)}
+.mapa-leg-n{font-size:13px;line-height:1.55;color:var(--tinta3)}
+.mapa-leg-l{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--tinta3)}
+.mapa-leg-l span{display:inline-flex;align-items:center;gap:6px}
+.mapa-sw{width:16px;height:16px;border-radius:4px;background:#0a121b;border:1px solid #1e2a3f;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}
+.mapa-sw b{width:8px;height:8px;border-radius:2px}
+.mapa-leg-a{display:inline-flex;align-items:center;gap:4px;min-height:44px;font-size:13px;font-weight:600;color:var(--destaque);text-decoration:underline}
+@media(pointer:coarse){.mapa-vista button{min-height:44px;min-width:56px}}
+@media print{.mapa-vista{display:none}}
 .frase{font-family:var(--serif);font-size:clamp(17px,2.1vw,20px);line-height:1.45;
        color:var(--tinta);max-width:58ch;margin:12px 0 0}
 .frase b{font-weight:600}
-/* com quem vota (blocos.json) */
-.cqv{margin-top:20px;background:var(--papel,#fff);border:1px solid var(--linha);border-radius:12px;padding:16px 20px;max-width:760px}
-.cqv[hidden]{display:none}
-.cqv h2{font-size:15px;font-weight:600}
-.cqv-av{font-size:13px;color:var(--tinta3);margin-top:4px}
-.cqv-txt{font-size:14px;line-height:1.6;margin-top:8px}
-.cqv-txt b{font-weight:600}
-.cqv-regua{position:relative;height:28px;margin-top:8px}
-.cqv-regua .base{position:absolute;left:0;right:0;top:13px;height:2px;background:var(--linha);border-radius:1px}
-.cqv-regua .faixa{position:absolute;top:9px;height:10px;background:var(--linha2,var(--linha2));border:1px solid var(--linha);border-radius:var(--raio-c)}
-.cqv-regua .md{position:absolute;top:5px;width:2px;height:18px;margin-left:-1px;background:var(--tinta)}
-.cqv-regua .eu{position:absolute;top:6px;width:16px;height:16px;margin-left:-8px;border-radius:50%;border:2px solid var(--papel);box-shadow:0 0 0 1px var(--tinta)}
-.noto-meses{display:flex;align-items:flex-end;gap:4px;height:46px;margin-top:12px}
-.noto-meses i{flex:1;background:var(--tinta2);opacity:.55;border-radius:2px 2px 0 0;min-height:2px}
-.noto-meses i:hover{opacity:1}
-.cqv-leg{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:var(--tinta3)}
-.ob-n{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px}
-.ob-n div{min-width:120px}
-.ob-n b{display:block;font-family:var(--serif,Georgia,serif);font-size:30px;font-weight:600;line-height:1.1}
-.ob-n span{font-size:13px;color:var(--tinta2)}
-.ob-l{list-style:none;margin-top:12px}
-.ob-l li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:8px 0;border-top:1px solid var(--linha2,var(--linha2));font-size:14px}
-.ob-l small{display:block;color:var(--tinta3);font-size:12px}
-.ob-l .v{text-align:right;font-weight:600;white-space:nowrap}
 .carreira{font-size:13px;color:var(--tinta3);margin-top:8px}
 
 .av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
@@ -131,10 +136,8 @@
 .item-data{font-size:12px;color:var(--tinta3)}
 .selo{font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;white-space:nowrap;
       background:var(--inverso);color:var(--sobre-inverso)}
-.item-not{font-size:13px;color:var(--tinta2);margin-top:4px}
 .item-tempo{font-size:13px;color:var(--tinta2);margin-top:4px;max-width:72ch}
 .item-tempo .caminho{display:block;color:var(--tinta3)}
-.item-not span{color:var(--tinta3)}
 .item-ementa{font-size:15px;line-height:1.5;margin-top:4px;max-width:72ch}
 /* passo 8: resumo por IA com a ementa oficial a um clique */
 .oficial{margin-top:4px;max-width:72ch}
@@ -261,6 +264,7 @@
 
 <script src="temas.js"></script>
 <script src="paineis.js"></script>
+<script src="mapa-assentos.js"></script>
 <script>
 const NF=new Intl.NumberFormat('pt-BR');
 // símbolo do tema (temas.js) ao lado do nome; sem o módulo, só o nome — o nome sempre aparece, o desenho é auxílio
@@ -407,7 +411,7 @@ function comoVota(s){
   }
   // Como votou, por tema: o tema da matéria votada em cada Sim, Não e abstenção (senador_paginas.py → votosTema), pela classificação deste site.
   const vtm=dep&&dep.votosTema&&v?dep.votosTema:null;
-  const vt=vtm?Paineis.votosTema({tax,unidade:'votações',
+  const vt=vtm?Paineis.votosTema({tax,unidade:'votações',href:(n,i)=>`votos.html?casa=s&id=${s.id}&tema=${n}${n==='b'||n==='c'?i:''}`,
     linhas:[{rot:'Sim',k:0,n:v.sim||0,d:vtm.sim},{rot:'Não',k:1,n:v.nao||0,d:vtm.nao},{rot:'Abstenção',k:2,n:v.abstencao||0,d:vtm.abstencao}],
     nota:'Cada voto conta no tema da matéria votada, pela ementa e pela classificação deste site (não do Senado). A unidade é a votação: uma matéria com vários turnos ou destaques conta em cada uma, '+
          'e uma com mais de um tema conta em cada tema, então a soma passa do total. Votações de requerimentos, mensagens e similares não têm tema e ficam em “Outras votações”; '+
@@ -455,6 +459,19 @@ function mandatos(s){
       ${s.saida&&AFASTA.test(s.saida.causa||'')?'Neste caso, a saída registrada é uma licença ou afastamento.':''}</p>`)}`;
 }
 
+/* Mapa de assentos do plenário no lugar da cúpula (mapa-assentos.js). Marca a bancada do ESTADO, como o mapa do Senado: a cadeira de cada
+   senador não é publicada. Quem já deixou o Senado não tem cadeira hoje: o mapa vai sem destaque, com o aviso. Sem o módulo, fica a cúpula. */
+let mapaCtl=null;
+function mapaDoPlenario(s,saiu){
+  const fig=document.getElementById('mapaFig'), leg=document.getElementById('mapaLeg');
+  if(!fig||!window.MapaAssentos) return;
+  if(mapaCtl){mapaCtl.destruir();mapaCtl=null}
+  const uf=saiu?'':s.uf;
+  if(!saiu&&!MapaAssentos.descrever(uf)) return;                 // sigla que não é de estado: fica a cúpula, sem inventar bancada
+  mapaCtl=MapaAssentos.montar(fig,{uf,aviso:saiu?'Já deixou o Senado':''});
+  leg.innerHTML=MapaAssentos.legenda({uf,url:s.url?s.url.replace('http://','https://'):''});
+}
+
 function montar(){
   const s=sen, d=dep, apres=d.pecs+d.leis, vl=d.viraramLei, saiu=!!d.saiu;
   document.title=`${s.nome}: proposições por tema | Câmara Aberta`;
@@ -475,13 +492,18 @@ function montar(){
   const naCasa=s.url?`<a class="btn-sec" href="${esc(s.url.replace('http://','https://'))}" target="_blank" rel="noopener">Página no Senado ${seta}</a>`:'';
   document.getElementById('raiz').innerHTML=`
     <header class="cab">
-      <div class="cab-txt">${retrato(s,72)}
-        <div><h1>${esc(s.nome)}</h1>
-          <div class="quem">${quem}</div></div></div>
-      <figure class="modelo-ed" aria-hidden="true"><img src="img/cupula-senado.svg" alt="" width="480" height="360" decoding="async"></figure>
+      <div class="cab-esq">
+        <div class="cab-txt">${retrato(s,72)}
+          <div><h1>${esc(s.nome)}</h1>
+            <div class="quem">${quem}</div></div></div>
+        <p class="frase">${esc(d.frase||'')}</p>
+        <div class="acoes-tema">${botaoTema}${naCasa}</div>
+      </div>
+      <div class="cab-mapa">
+        <figure class="modelo-ed" id="mapaFig" aria-hidden="true"><img src="img/cupula-senado.svg" alt="" width="480" height="360" decoding="async"></figure>
+        <div id="mapaLeg"></div>
+      </div>
     </header>
-    <p class="frase">${esc(d.frase||'')}</p>
-    <div class="acoes-tema">${botaoTema}${naCasa}</div>
     ${saiu?`<p class="saiu">${s.saida?`Deixou o Senado em ${dataBR(s.saida.data)}${s.saida.causa?`: ${esc(minus(s.saida.causa))}`:''}.`:'Já deixou o Senado.'} A frase e os números são da carreira inteira.</p>`:''}
     ${!saiu&&antes?`<p class="carreira">Somando mandatos anteriores: ${NF.format(apres)} ${plural(apres,'proposição','proposições')}
       (${NF.format(d.pecs)} ${plural(d.pecs,'PEC','PECs')} e ${NF.format(d.leis)} ${plural(d.leis,'projeto de lei','projetos de lei')}),
@@ -520,6 +542,7 @@ function montar(){
       da legislatura atual. Regras de tema na versão ${esc(tax.versao)}, página na versão ${esc(d.versao||'')}, dados de ${data(tax.geradoEm)}.</p>`;
 
   atividade(s); comoVota(s); mandatos(s);       // os cartões ficam no HTML de cima: só dá para preenchê-los depois de montá-lo
+  mapaDoPlenario(s,saiu);
   document.querySelectorAll('[data-leg]').forEach(b=>b.onclick=()=>{
     filtro.leg=b.dataset.leg==='1'; ligar('[data-leg]',b); limite=PASSO; desenhar();
   });
