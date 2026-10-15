@@ -95,6 +95,10 @@ table.fx td.esq a:hover{border-bottom-style:solid}
 .fx-barra{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:16px;font-size:13px;color:var(--tinta2)}
 .fx-urls{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:4px;font-size:12px}
 .fx-urls a{color:var(--tinta3)}
+/* categoria da proposição: a classificação do site (temas.py) sobre a ementa; tinta neutra, nunca as cores do espectro */
+.fx-cat{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.fx-cat span{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:1.4;color:var(--tinta2);border:1px solid var(--linha-forte);border-radius:999px;padding:3px 12px 3px 8px;cursor:help;text-align:left}
+.fx-cat span.nula{border-style:dashed;color:var(--tinta3);cursor:default}
 details.fx-cob{margin-top:28px}
 details.fx-cob summary{cursor:pointer;font-size:15px;font-weight:600}
 details.fx-cob table{margin-top:12px}
@@ -256,9 +260,21 @@ details.fx-cob p{font-size:13px;color:var(--tinta2);margin-top:8px;max-width:78c
   </div>
 </footer>
 
+<script src="temas.js"></script>
 <script>
 const nf=new Intl.NumberFormat('pt-BR');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Etiquetas de categoria de uma proposição: [[índice, termo]], com os nomes em F.categoriasNomes (fluxo.py). Sem o campo (fluxo.json antigo), nada;
+// lista vazia = "sem categoria", que aparece como tal. O termo que a definiu fica no title: rótulo errado é visível e corrigível.
+function etiquetas(cs){
+  if(!cs||!F.categoriasNomes) return '';
+  if(!cs.length) return '<div class="fx-cat"><span class="nula">sem categoria</span></div>';
+  const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+  return `<div class="fx-cat">${cs.map(([i,termo])=>{
+    const nome=F.categoriasNomes[i], porque=`Nesta categoria pelo termo “${termo}”, na ementa (até 220 caracteres)`;
+    return `<span title="${esc(porque)}" aria-label="${esc(cap(nome)+'. '+porque)}">${window.TemaIcone?TemaIcone.cat(nome,18):''}${esc(cap(nome))}</span>`;
+  }).join('')}</div>`;
+}
 const pc=x=>x==null?'—':(x*100).toFixed(1).replace('.',',')+'%';
 const dias=d=>d==null?'—':(d<400?`${nf.format(Math.round(d))} dias`:`${nf.format(Math.round(d))} dias (${(d/365).toFixed(1).replace('.',',')} anos)`);
 const dataBR=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)}`:'—';
@@ -401,7 +417,7 @@ function lista(){
     ?`Proposições em ${org||'órgão não registrado'} (${CASA[casa]}): ${nf.format(todas.length)}`
     :`Proposições em tramitação: ${nf.format(todas.length)}`;
   document.getElementById('listaNota').innerHTML=(S.orgao?'<a href="#" id="limpaOrgao">ver todos os órgãos</a> · ':'')+
-    'Ordem padrão: mais tempo sem andamento. Sem andamento há muito tempo descreve a situação do registro; não diz que a proposição esteja atrasada nem por quê.';
+    'Ordem padrão: mais tempo sem andamento. Sem andamento há muito tempo descreve a situação do registro; não diz que a proposição esteja atrasada nem por quê. A categoria é a da classificação deste site sobre a ementa (até 220 caracteres), não uma classificação oficial; o termo que a definiu aparece ao passar o mouse.';
   const col=(k,t,esq)=>`<th class="${esq?'esq ':''}${S.ordLis.k===k?'ord':''}" data-k="${k}">${t}${seta(S.ordLis,k)}</th>`;
   document.getElementById('tabLista').innerHTML=
     `<thead><tr>${col('numero','Proposição',true)}${col('tipo','Tipo')}${col('onde','Onde está')}${col('ult','Último andamento')}${col('dias','Dias sem andamento')}</tr></thead><tbody>`+
@@ -409,7 +425,8 @@ function lista(){
       const origem=r.dir==='CD>SF'?[r.numeroCamara,'Câmara',r.numeroSenado,'Senado']:[r.numeroSenado,'Senado',r.numeroCamara,'Câmara'];
       return `<tr><td class="esq"><a href="${esc(r.urls[r.dir==='CD>SF'?'camara':'senado']||r.urls.camara)}" target="_blank" rel="noopener">${esc(origem[0])}</a>
         <small>${origem[1]} → ${origem[3]}: ${esc(origem[2])}${r.ementa?'<br>'+esc(r.ementa):''}</small>
-        <span class="fx-urls">${r.urls.camara?`<a href="${esc(r.urls.camara)}" target="_blank" rel="noopener">ficha na Câmara</a>`:''}${r.urls.senado?`<a href="${esc(r.urls.senado)}" target="_blank" rel="noopener">ficha no Senado</a>`:''}</span></td>
+        <span class="fx-urls">${r.urls.camara?`<a href="${esc(r.urls.camara)}" target="_blank" rel="noopener">ficha na Câmara</a>`:''}${r.urls.senado?`<a href="${esc(r.urls.senado)}" target="_blank" rel="noopener">ficha no Senado</a>`:''}</span>
+        ${etiquetas(r.categorias)}</td>
         <td>${esc(r.tipo)}</td>
         <td>${esc(r.orgao||'—')}<span class="fx-casa">${CASA[r.casaAtual]}</span>${r.situacao?`<small>${esc(r.situacao)}</small>`:''}</td>
         <td>${dataBR(r.datas.ultimoMovimento)}</td><td><b>${nf.format(r.diasSemMov??0)}</b></td></tr>`;}).join('')+'</tbody>';
@@ -472,7 +489,7 @@ function desempacota(a){
     datas:{apresentacao:r.apresentacao, aprovacaoOrigem:r.aprovacaoOrigem, remessa:r.remessa, chegada:r.chegada,
            saidaRevisora:r.saidaRevisora, ultimoMovimento:r.ultimoMovimento},
     passagens:r.passagens, aprovadaRevisora:!!r.aprovadaRevisora, desfecho:r.desfecho, desfechoDetalhe:r.desfechoDetalhe,
-    casaAtual:r.casaAtual, situacao:r.situacao, orgao:r.orgao, diasSemMov:r.diasSemMov, parada:!!r.parada, apensada:!!r.apensada, ementa:r.ementa, ressalva:r.ressalva,
+    casaAtual:r.casaAtual, situacao:r.situacao, orgao:r.orgao, diasSemMov:r.diasSemMov, parada:!!r.parada, apensada:!!r.apensada, ementa:r.ementa, ressalva:r.ressalva, categorias:r.categorias,
     urls:{camara:F.urls.camara.replace('{idCamara}',r.idCamara), senado:r.codSenado?F.urls.senado.replace('{codSenado}',r.codSenado):null}};
 }
 

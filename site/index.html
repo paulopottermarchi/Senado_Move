@@ -174,7 +174,9 @@
 .not-bloco h3 span{font-weight:400;color:var(--tinta3);font-size:13px;margin-left:8px}
 .not-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px 24px;margin-top:12px}
 .not-it{padding:12px 0;border-top:1px solid var(--linha)}
-.not-prop{font-size:12px;border:1px solid var(--linha-forte);border-radius:999px;padding:0 8px;text-decoration:none;margin-left:8px;color:var(--tinta2)}
+/* as proposições da notícia: o rótulo nunca quebra ("PLP 186/2026" em duas linhas), e quando são várias o grupo quebra entre elas */
+.not-props{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px 6px;white-space:normal}
+.not-prop{font-size:12px;border:1px solid var(--linha-forte);border-radius:999px;padding:0 8px;text-decoration:none;color:var(--tinta2);white-space:nowrap}
 .not-tit{display:block;font-weight:500;font-size:14px;line-height:1.35;margin-top:4px;text-decoration:none;color:var(--tinta)}
 .not-tit:hover{text-decoration:underline}
 .not-tr{font-size:13px;color:var(--tinta2);line-height:1.45;margin-top:4px}
@@ -637,10 +639,11 @@ function semPauta(p){
 function blocoNoticias(n){
   if(!n||!n.itens||!n.itens.length) return '';
   const it=n.itens.map((x,i)=>`<div class="not-it"${i>=4?' data-extra hidden':''}>
-      <div class="sem-l1"><span>${dataCurta(x.d)}</span>${x.p.map(([id,rot])=>
-        `<a class="not-prop" href="https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${id}" target="_blank" rel="noopener">${esc(rot)}</a>`).join(' ')}</div>
+      <div class="sem-l1"><span>${dataCurta(x.d)}</span><span class="not-props">${x.p.map(([id,rot])=>
+        `<a class="not-prop" href="https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${id}" target="_blank" rel="noopener">${esc(rot)}</a>`).join('')}</span></div>
       <a class="not-tit" href="${x.u}" target="_blank" rel="noopener">${esc(x.t)}</a>
       ${x.trecho?`<p class="not-tr">${esc(x.trecho)} <span class="not-ass">${esc(x.assinatura)}</span></p>`:''}
+      ${semCategorias({temas:x.cats})}
     </div>`).join('');
   const ocultos=Math.max(0,n.itens.length-4);
   return `<div class="not-bloco"><h3>Notícias sobre PEC e PL <span>Agência Câmara</span></h3>
