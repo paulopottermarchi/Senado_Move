@@ -1,9 +1,9 @@
 {
- "_gerado": "2026-10-15",
+ "_gerado": "2026-10-16",
  "_fonte": "Lista de leis: registro do Senado (/processo, campo normaGerada). Autoria: arquivos proposicoesAutores da Câmara, pelo identificador do autor.",
  "_aviso": "A origem é a autoria da proposição que virou lei. Não indica quem a aprovou nem quem mais contribuiu para o texto final.",
  "_regras": ["Lei = lei ordinária ou complementar sancionada ou promulgada na legislatura, pela data da norma; emenda constitucional fica à parte.","A lista de leis vem do Senado; a Câmara só informa a autoria. Lei que só a Câmara registra leva a marca dataNaoConfirmadaSenado.","A ligação lei → proposição é só por identificador exato (nunca por ementa ou nome), em quatro vias: ligacao_direta, fluxo, numero_lei_camara (o número da lei que a própria Câmara registra, só se uma única proposição o reivindica) e excecao_curada. Sem proposição achada: Não classificado.","Número da norma diferente entre o Senado e a Câmara: fora da conta (divergentes), salvo exceção curada com os dois links oficiais. Data diferente: dentro da conta, com a marca dataCamaraDiverge.","A categoria do autor sai de scripts/mapa_origem.json pelo identificador do órgão; id fora da tabela é Não classificado."],
- "legislatura": {"id":57,"inicio":"2023-02-01","fim":"2027-01-31","ate":"2026-10-15","ultimaLei":"2026-09-29"},
+ "legislatura": {"id":57,"inicio":"2023-02-01","fim":"2027-01-31","ate":"2026-10-16","ultimaLei":"2026-09-29"},
  "categorias": ["Deputados","Senado","Executivo","Judiciário","Ministério Público, Defensoria e controle","Órgãos colegiados da Câmara (Mesa e comissões)","Outros","Misto","Não classificado"],
  "vias": ["projeto de lei (ordinária ou complementar)","medida provisória convertida","PLN (créditos e orçamento)"],
  "viasLigacao": ["ligacao_direta","fluxo","numero_lei_camara","excecao_curada","so_camara"],
