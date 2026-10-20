@@ -677,20 +677,20 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 .mais-ind .mi-mais .ind-def+p{margin-top:12px}
 .mais-ind .mi-mais a{color:var(--destaque);font-weight:600;font-size:14px}
 /* traços das séries (gráfico e legenda usam o mesmo desenho) */
-.mais-ind .gr .s0,.mais-ind .sw.s0 line{stroke:var(--tinta);stroke-width:2.5;fill:none;stroke-linejoin:round;stroke-linecap:round}
-.mais-ind .gr .s1,.mais-ind .sw.s1 line{stroke:var(--rampa3);stroke-width:2;stroke-dasharray:7 4;fill:none;stroke-linejoin:round}
-.mais-ind .gr .s2,.mais-ind .sw.s2 line{stroke:var(--tinta2);stroke-width:2;stroke-dasharray:1 4;stroke-linecap:round;fill:none;stroke-linejoin:round}
-.mais-ind .gr .s3,.mais-ind .sw.s3 line{stroke:var(--rampa3);stroke-width:2;stroke-dasharray:10 3 2 3;fill:none;stroke-linejoin:round}
-.mais-ind .gr .s4,.mais-ind .sw.s4 line{stroke:var(--tinta3);stroke-width:2;stroke-dasharray:15 4;fill:none;stroke-linejoin:round}
-.mais-ind .sw{flex:none;overflow:visible}
-.mais-ind .gr .rot-s2{fill:var(--tinta2);font-weight:600}
-.mais-ind .gr .rot-s3,.mais-ind .gr .rot-s4{fill:var(--tinta3);font-weight:600}
-.mais-ind .gr .mira .c2{stroke:var(--tinta2)}
-.mais-ind .gr .mira .c3{stroke:var(--rampa3)}
-.mais-ind .gr .mira .c4{stroke:var(--tinta3)}
-.mais-ind .gr .pt{fill:var(--papel);stroke-width:1.5}
-.mais-ind .gr .p0{stroke:var(--tinta)}
-.mais-ind .gr .p1{stroke:var(--rampa3)}
+.mais-ind .gr .s0,.mais-ind .sw.s0 line,.exp-bal .gr .s0,.exp-bal .sw.s0 line{stroke:var(--tinta);stroke-width:2.5;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.mais-ind .gr .s1,.mais-ind .sw.s1 line,.exp-bal .gr .s1,.exp-bal .sw.s1 line{stroke:var(--rampa3);stroke-width:2;stroke-dasharray:7 4;fill:none;stroke-linejoin:round}
+.mais-ind .gr .s2,.mais-ind .sw.s2 line,.exp-bal .gr .s2,.exp-bal .sw.s2 line{stroke:var(--tinta2);stroke-width:2;stroke-dasharray:1 4;stroke-linecap:round;fill:none;stroke-linejoin:round}
+.mais-ind .gr .s3,.mais-ind .sw.s3 line,.exp-bal .gr .s3,.exp-bal .sw.s3 line{stroke:var(--rampa3);stroke-width:2;stroke-dasharray:10 3 2 3;fill:none;stroke-linejoin:round}
+.mais-ind .gr .s4,.mais-ind .sw.s4 line,.exp-bal .gr .s4,.exp-bal .sw.s4 line{stroke:var(--tinta3);stroke-width:2;stroke-dasharray:15 4;fill:none;stroke-linejoin:round}
+.mais-ind .sw,.exp-bal .sw{flex:none;overflow:visible}
+.mais-ind .gr .rot-s2,.exp-bal .gr .rot-s2{fill:var(--tinta2);font-weight:600}
+.mais-ind .gr .rot-s3,.mais-ind .gr .rot-s4,.exp-bal .gr .rot-s3,.exp-bal .gr .rot-s4{fill:var(--tinta3);font-weight:600}
+.mais-ind .gr .mira .c2,.exp-bal .gr .mira .c2{stroke:var(--tinta2)}
+.mais-ind .gr .mira .c3,.exp-bal .gr .mira .c3{stroke:var(--rampa3)}
+.mais-ind .gr .mira .c4,.exp-bal .gr .mira .c4{stroke:var(--tinta3)}
+.mais-ind .gr .pt,.exp-bal .gr .pt{fill:var(--papel);stroke-width:1.5}
+.mais-ind .gr .p0,.exp-bal .gr .p0{stroke:var(--tinta)}
+.mais-ind .gr .p1,.exp-bal .gr .p1{stroke:var(--rampa3)}
 
 /* paginador do painel "Números oficiais da economia" (contexto.html): página 1 de 2 / 2 de 2. Só tinta neutra; escopado em .pg-topo, .pg-nav, .btn-pg e .mais-ind */
 .pg-topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px}
@@ -735,3 +735,20 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 .exp-tab .tab-val td.num,.exp-demais .tab-val td.num,.exp-tab .tab-val th.num,.exp-demais .tab-val th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .exp-tab caption{caption-side:top;text-align:left;font-size:12px;color:var(--tinta3);padding:0 0 8px}
 @media(prefers-reduced-motion:reduce){.exp-cel rect{transition:none}}
+
+/* BALANÇA COMERCIAL (dentro de #exportacoes) e DECRETOS DO IOF (dentro de .mais-ind): só tinta neutra, tudo escopado em .exp-bal e .mais-ind */
+.exp-bal{margin-top:36px;padding-top:24px;border-top:1px solid var(--linha2)}
+.exp-bal .exp-bal-tit{font-family:var(--serif);font-size:clamp(20px,2.1vw,24px);font-weight:500;line-height:1.25;color:var(--tinta)}
+.exp-bal .gr-leg span{display:inline-flex;align-items:center;gap:8px}
+.exp-bal .gr-leg small{color:var(--tinta3);font-size:12px}
+.exp-bal .gr .destaque-lin{stroke:var(--tinta3);stroke-width:1;stroke-dasharray:2 3}
+.exp-bal .gr .pt.dest{stroke-width:2.5}
+.exp-bal .tab-val td.num,.exp-bal .tab-val th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mais-ind .gr .dec{fill:var(--papel);stroke:var(--tinta);stroke-width:1.5}
+.mais-ind .gr .dec-hit{fill:transparent;stroke:none}
+.mais-ind .gr a:hover .dec,.mais-ind .gr a:focus-visible .dec{fill:var(--tinta)}
+.mais-ind .gr a:focus-visible .dec-hit{stroke:var(--destaque-vivo);stroke-width:2}
+.mais-ind .gr .dec-leg{fill:var(--tinta3);font-size:11px}
+.mais-ind .tr-dec{margin-top:12px}
+.mais-ind .tr-dec-in{padding:4px 0 12px}
+.mais-ind .tr-dec .tab-val td,.mais-ind .tr-dec .tab-val th{font-size:13px;text-align:left}

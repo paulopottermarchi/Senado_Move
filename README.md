@@ -147,7 +147,10 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 | IBGE (API SIDRA), Banco Central (SGS e página de metas) e Tesouro Nacional (API de Séries Temporais) | IPCA, PIB, meta de inflação e banda, dívida, despesa, resultado primário e nominal do Governo Central |
 | Planalto (legislação) | endereço do texto de cada lei, só como link; a contagem de leis por ano e tipo foi conferida à mão nas listas do Planalto e está em `entradas/origem_leis_referencia.json` |
 | IBGE (API SIDRA: PNAD Contínua e Contas Nacionais Trimestrais) e Banco Central (SGS, balanço de pagamentos) | "Mais indicadores" da página de economia: rendimento, ocupação, massa de renda do trabalho, desocupação, informalidade, subutilização, renda domiciliar per capita e Gini, transações correntes e renda nacional disponível bruta (nominal). Produtividade: só link para o [Observatório da Produtividade Regis Bonelli (FGV IBRE)](https://ibre.fgv.br/observatorio-produtividade), sem cálculo nosso |
-| [Comex Stat](https://comexstat.mdic.gov.br/), do MDIC (API pública `api-comexstat.mdic.gov.br`) | "Para onde o Brasil exporta e o que exporta", na página de economia: valor exportado em US$ FOB (dólares correntes) por país de destino e por produto (posição SH4 do Sistema Harmonizado), desde 1997, com os nomes das tabelas oficiais do MDIC |
+| [Comex Stat](https://comexstat.mdic.gov.br/), do MDIC (API pública `api-comexstat.mdic.gov.br`) | "Para onde o Brasil exporta e o que exporta", na página de economia: valor exportado em US$ FOB (dólares correntes) por país de destino e por produto (posição SH4 do Sistema Harmonizado), desde 1997, com os nomes das tabelas oficiais do MDIC; e, na mesma seção, a balança comercial (exportação, importação e saldo, os dois lados em FOB) |
+| IBGE (API SIDRA, Contas Nacionais Trimestrais, tabela 1846) | "Abertura comercial": (exportações + importações de bens e serviços) ÷ PIB, a preços correntes e em reais |
+| [Receita Federal do Brasil](https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/receitadata/arrecadacao/serie-historica) (planilhas .xlsx dos dados abertos e do relatório mensal; não há API) | "Tributos cuja alíquota pode mudar por decreto": arrecadação do IOF, do Imposto sobre Importação e do IPI, em valores correntes e corrigidos pelo IPCA pela própria Receita |
+| [Planalto](https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm) (lido à mão, no navegador) | texto compilado do regulamento do IOF (Decreto nº 6.306/2007) e a página de cada decreto que o alterou, para a data e o número dos marcadores |
 | ObrasGov.br, Contratos.gov.br e CGU | obras, contratos, termos aditivos, emendas parlamentares, sanções (CEIS/CNEP) |
 | Contratos.gov.br (PDFs e responsáveis) e Compras.gov.br (dados abertos) | pessoas documentadas de cada obra: quem assinou pelo órgão, responsável no aviso de licitação e gestor do contrato |
 | Enquetes e Agência Câmara (RSS) | enquete de cada lei votada; notícias ligadas às proposições, cada uma com a categoria da lei pela mesma classificação do site |
@@ -221,7 +224,12 @@ Scripts que não entram na rodada diária:
 - `scripts/eleicao.py` — gera `entradas/eleicao2022.json` uma vez. O portal de dados abertos do TSE
   recusa acesso automatizado, e o projeto não contorna esse bloqueio; por isso a tabela é fixa.
 - `scripts/comex.py` — exportações por destino e por produto (Comex Stat), grava `site/dados/comex/`. Roda na rodada diária mas só trabalha a cada 7 dias; `--forcar` ignora o intervalo,
-  `--so-montar` remonta do cache, `--simular` confere sem gravar, `--imprimir` mostra totais, os 10 maiores e as frases, `--teste` roda os testes sem rede.
+  `--so-montar` remonta do cache, `--simular` confere sem gravar, `--imprimir` mostra totais, os 10 maiores e as frases, `--teste` roda os testes sem rede,
+  `--reaproveitar` (desenvolvimento) aceita o cache bruto de qualquer dia. Também grava `balanca.json` (exportação, importação e saldo por ano e mês, FOB nos dois lados).
+- `scripts/contexto_abertura.py` — roda dentro de `contexto.py` (módulo irmão, diário): abertura comercial a partir das Contas Nacionais do IBGE, grava `site/dados/contexto/abertura.json`.
+- `scripts/receita.py` — arrecadação do IOF, do Imposto sobre Importação e do IPI (Receita Federal), grava `site/dados/contexto/tributos.json`. Roda na rodada diária mas só trabalha a cada 7 dias
+  (`--forcar`, `--so-montar`, `--simular`, `--imprimir`, `--teste`). `scripts/xlsx_lite.py` lê as planilhas só com a biblioteca padrão (sem `openpyxl`).
+- `scripts/gerar_decretos_iof.py` — gera `entradas/decretos_iof.json` (os decretos que alteraram as alíquotas do regulamento do IOF) da tabela lida à mão no Planalto.
 - `scripts/contexto_trabalho.py` — roda dentro de `contexto.py` (módulo irmão, no workflow diário) e também sozinho (`--teste` roda os testes, sem rede;
   `--imprimir` mostra o último valor de cada série e as frases geradas). Grava `site/dados/contexto/trabalho.json`.
 - `scripts/signatarios.py` — piloto que lê os PDFs dos contratos de obra para achar quem assinou.
@@ -300,6 +308,16 @@ com os dados do dia anterior. Para publicar pela primeira vez: *Settings → Pag
   do total entram em "Demais". O ano corrente mostra só os meses fechados, e a comparação com outro ano usa os mesmos meses. Os dados gerais começam em 1997; os de 1989 a 1996 usam outra
   metodologia (NBM) e não entram. A soma por posição SH4 fica poucos milhares de dólares abaixo do total (a fonte não explica a diferença), e a página diz quanto. A API do MDIC limita os
   pedidos, então a coleta é semanal e leva cerca de 20 minutos.
+- **Balança comercial (economia)**: exportação e importação em valor FOB (a importação também existe em CIF, com frete e seguro, que não entra); saldo = exportação menos importação.
+  Só de bens, em dólares correntes. O gráfico usa o mesmo seletor de ano do treemap; com o ano corrente escolhido, todos os anos entram só com os mesmos meses.
+  **Não é a abertura comercial** (que inclui serviços e é em reais, das Contas Nacionais): os números das duas não se comparam.
+- **Abertura comercial (economia)**: (exportações + importações de bens e serviços) ÷ PIB, tudo a preços correntes e em reais; cada ponto soma os quatro trimestres terminados no trimestre
+  indicado. A frase de definição é neutra: o site não diz se mais ou menos é melhor.
+- **Tributos que o Executivo pode ajustar (economia)**: a Receita Federal só publica estes dados em planilha (sem API) e não publica a série mensal por tributo corrigida pelo IPCA desde 1995:
+  há a tabela anual por linha (1995 até o mês corrente, com a versão a preços do último mês) e a mensal agrupada só desde 2021. A tabela corrigida é refeita todo mês, então a série
+  inteira é baixada de novo a cada rodada e o mês-base aparece. Este site não deflaciona, não soma e não separa o que a Receita agrupa. "Alíquota média efetiva" não consta dos arquivos e não é calculada.
+  Os marcadores de decreto do IOF vêm do texto compilado do Decreto nº 6.306/2007 no Planalto, lido à mão; o critério é um só para todos (decreto citado como autor de redação dada, inclusão ou
+  revogação num artigo de alíquota do regulamento), e só entram decretos que alteraram o regulamento vigente. Cada marcador mostra número, data e link, sem descrever efeito nem ligar o decreto a variação alguma.
 - **Categorias de tema** são classificação deste site por palavras-chave da ementa, com o termo que
   definiu cada uma sempre visível. A precisão ainda não foi medida. No perfil do senador as mesmas regras valem só sobre a ementa do Senado (sem a
   indexação oficial, que o Senado não entrega junto da lista de autoria); a ementa que não casa com nenhuma regra fica "sem categoria", e a página

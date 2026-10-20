@@ -245,6 +245,20 @@ dialog.entenda .fechar{margin-top:20px}
     <p class="ind-fonte" id="expFonte"></p>
     <p class="ind-fonte">Países ou produtos abaixo de 0,5% do total entram em “Demais”, com a lista abaixo do gráfico. Este gráfico mostra a composição do valor exportado; não liga lei, governo ou partido a nenhum valor.
       Os dados do Comex Stat de 1989 a 1996 usam outra metodologia (nomenclatura NBM) e não entram.</p>
+
+    <div class="exp-bal" id="expBalanca" hidden>
+      <h3 class="exp-bal-tit" id="balTit">Balança comercial: exportação, importação e saldo</h3>
+      <p class="exp-frase" id="balFrase" aria-live="polite"></p>
+      <p class="ind-def" id="balDef"></p>
+      <figure class="exp-fig">
+        <figcaption id="balLegenda"></figcaption>
+        <div id="balGrafico"></div>
+        <div class="gr-leg" id="balLeg"></div>
+      </figure>
+      <p class="fixa peq">Este gráfico não mostra que uma lei causou a variação de nenhum valor. O ano escolhido acima aparece destacado.</p>
+      <details class="avanc" id="balAv"><summary>Valores, nota de método e fonte</summary><div id="balAvConteudo"></div></details>
+      <p class="ind-fonte" id="balFonte"></p>
+    </div>
   </section>
 
   <section class="painel" id="indicadores" aria-labelledby="indTit">
@@ -253,7 +267,7 @@ dialog.entenda .fechar{margin-top:20px}
         <h2 id="indTit">Números oficiais da economia</h2>
         <nav class="pg-nav" aria-label="Páginas dos números oficiais">
           <span class="pg-n" id="pgN" aria-live="polite">Página 1 de 2</span>
-          <button class="btn-pg" type="button" id="pgBtn" aria-controls="pg1 mais-indicadores">Trabalho, renda e setor externo <span aria-hidden="true">→</span></button>
+          <button class="btn-pg" type="button" id="pgBtn" aria-controls="pg1 mais-indicadores">Trabalho, renda, setor externo e tributos <span aria-hidden="true">→</span></button>
         </nav>
       </div>
       <p class="sub">Cada série vai até onde a fonte oferece e começa onde a fonte começa: não há data inicial comum. Metodologias diferentes
@@ -271,8 +285,8 @@ dialog.entenda .fechar{margin-top:20px}
       </details>
     </div>
     <div class="mais-ind" id="mais-indicadores" role="region" aria-labelledby="miTit" hidden>
-      <h3 class="mi-pg-tit" id="miTit">Trabalho, renda e setor externo</h3>
-      <p class="mi-sub">Nove perguntas em linguagem comum, cada uma com a série oficial do IBGE ou do Banco Central.</p>
+      <h3 class="mi-pg-tit" id="miTit">Trabalho, renda, setor externo e tributos</h3>
+      <p class="mi-sub">Perguntas em linguagem comum, cada uma com a série oficial do IBGE, do Banco Central ou da Receita Federal.</p>
       <div class="mi-corpo" id="miCorpo"><p class="indisp">Carregando…</p></div>
       <p class="mi-volta"><button class="btn-pg ant" type="button" data-pg="1"><span aria-hidden="true">←</span> Voltar à página 1: preços, contas públicas e PIB</button></p>
     </div>
@@ -450,6 +464,7 @@ function Grafico(raiz,cfg){
 
   function janela(){
     const todas=cfg.series.flatMap(s=>s.pontos.map(p=>p[0]));
+    if(Array.isArray(cfg.decretos)) cfg.decretos.forEach(d=>todas.push(d.data));      // o eixo alcança o último decreto (série anual: o ponto é 1º de janeiro)
     const ini=cfg.ini||todas.reduce((a,b)=>a<b?a:b), fim=todas.reduce((a,b)=>a>b?a:b);
     return [ini,fim];
   }
@@ -468,7 +483,13 @@ function Grafico(raiz,cfg){
     // mandatos presidenciais na janela: a faixa de rótulos fica ACIMA do gráfico e a altura cresce na mesma medida (o gráfico em si não encolhe)
     const rotMand=colocarMandatos(Array.isArray(cfg.mandatos)?cfg.mandatos.filter(m=>m.inicio>=ini&&m.inicio<=fim):[],d=>M.l+(T(d)-t0)/(t1-t0||1)*iw,W,estreito?3:2);
     const faixaMand=rotMand.itens.length?rotMand.linhas*14+10:0;
-    const H=H0+faixaMand; M.t=14+faixaMand;
+    // decretos (só o IOF): losangos numa faixa sob o eixo, em até 4 linhas para não se cobrirem; a altura do SVG cresce na mesma medida
+    const decX=d=>M.l+(T(d)-t0)/(t1-t0||1)*iw, fimLin=[];
+    const decs=(Array.isArray(cfg.decretos)?cfg.decretos.filter(d=>d.data>=ini&&d.data<=fim).sort((a,b)=>a.data<b.data?-1:1):[]).map(d=>{ const x=decX(d.data); let r=0;
+      while(r<3&&fimLin[r]!=null&&x-fimLin[r]<11) r++; fimLin[r]=x; return {d,x,linha:r}; });
+    const linhasDec=decs.length?Math.max(...decs.map(o=>o.linha))+1:0, faixaDec=decs.length?linhasDec*13+34+(estreito?13:0):0;      // no celular a legenda ocupa duas linhas
+    M.b+=faixaDec;
+    const H=H0+faixaMand+faixaDec; M.t=14+faixaMand;
     const ih=H-M.t-M.b, pb=M.t+ih;   // pb: base do gráfico; abaixo dela, o eixo e os marcos
     const mv=temMarcos?cfg.marcos.filter(m=>m.data>=ini&&m.data<=fim):[];                  // marcos dentro da janela
     const vis=s=>s.pontos.filter(p=>p[0]>=ini);
@@ -494,6 +515,8 @@ function Grafico(raiz,cfg){
     for(let a=Math.ceil(a0/passo)*passo;a<=a1;a+=passo){ const x=X(`${a}-01-01`); if(x<M.l-1||x>W-M.r+1) continue;
       el('line',{x1:x,x2:x,y1:pb,y2:pb+4,stroke:'var(--linha-forte)'},gx);
       const tx=el('text',{x,y:pb+17,'text-anchor':'middle'},gx); tx.textContent=a; }
+    // ano escolhido (balança comercial): um traço fino e neutro por trás das séries, e o ponto do ano maior
+    if(cfg.destaque&&cfg.destaque>=ini&&cfg.destaque<=fim) el('line',{class:'destaque-lin',x1:X(cfg.destaque),x2:X(cfg.destaque),y1:M.t,y2:pb});
     // início de cada mandato presidencial: traço do rótulo até a base, por baixo das séries (anotação de calendário; sem faixa, sem cor)
     if(rotMand.itens.length){
       const gm=el('g',{class:'mand'});
@@ -519,7 +542,7 @@ function Grafico(raiz,cfg){
       const pts=vis(s); let seg=[], segs=[seg];
       pts.forEach((p,k)=>{ if(k&&mi(p[0])-mi(pts[k-1][0])>passoM(s.freq)*1.5){ seg=[]; segs.push(seg); } seg.push(p); });
       segs.forEach(sg=>{ if(sg.length>1) el('polyline',{class:'s'+i,points:sg.map(p=>`${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join(' ')}); });
-      if(cfg.marcarPontos) pts.forEach(p=>el('circle',{class:'pt p'+i,cx:X(p[0]).toFixed(1),cy:Y(p[1]).toFixed(1),r:2.5}));   // séries anuais: cada ano é um ponto
+      if(cfg.marcarPontos) pts.forEach(p=>el('circle',{class:'pt p'+i+(p[0]===cfg.destaque?' dest':''),cx:X(p[0]).toFixed(1),cy:Y(p[1]).toFixed(1),r:p[0]===cfg.destaque?4.5:2.5}));   // séries anuais: cada ano é um ponto
     });
     // rótulos diretos no fim das linhas (afastados se colidirem)
     const rot=cfg.series.map((s,i)=>{ const p=vis(s).slice(-1)[0]; return p&&{i,y:Y(p[1]),txt:cfg.rotulos?cfg.rotulos[i]:s.nome,x:X(p[0])}; }).filter(Boolean).sort((a,b)=>a.y-b.y);
@@ -541,6 +564,18 @@ function Grafico(raiz,cfg){
     const foco=el('rect',{class:'foco',x:M.l,y:M.t,width:iw,height:ih+(temMarcos?faixaMarcos-14:0)});
     const mira=el('g',{class:'mira',style:'display:none'}); el('line',{y1:M.t,y2:pb},mira);
     const bolas=cfg.series.map((s,i)=>el('circle',{r:4,class:'c'+i},mira));
+    // decretos: cada losango é um link para o texto no Planalto (teclado: Tab); a dica diz só o número e a data de publicação, nenhum efeito
+    if(decs.length){
+      const gd=el('g',{class:'dec-fx'}), y0=pb+34;
+      decs.forEach(({d,x,linha})=>{ const y=y0+linha*13, a=document.createElementNS(NS,'a'); gd.appendChild(a);
+        a.setAttribute('href',d.url); a.setAttribute('target','_blank'); a.setAttribute('rel','noopener'); a.setAttribute('aria-label',`${d.rotulo}, publicado em ${dataBR(d.data)}: texto no Planalto (abre em nova aba)`);
+        el('circle',{cx:x,cy:y,r:8,class:'dec-hit'},a); el('path',{d:`M${x},${y-5.5} L${x+5.5},${y} L${x},${y+5.5} L${x-5.5},${y} Z`,class:'dec'},a);
+        const dizer=()=>{ mira.style.display='none'; dica.innerHTML=`<b>${esc(d.rotulo)}</b> · publicado em ${dataBR(d.data)}<span class="l">Texto no Planalto (abre em nova aba)</span>`; dica.classList.add('on');
+          const w=caixa.clientWidth, dw=dica.offsetWidth, left=x+14+dw>w?x-14-dw:x+14; dica.style.left=Math.max(0,left)+'px'; dica.style.top=(M.t+4)+'px'; };
+        a.addEventListener('pointerenter',dizer); a.addEventListener('focus',dizer); a.addEventListener('pointerleave',()=>dica.classList.remove('on')); a.addEventListener('blur',()=>dica.classList.remove('on')); });
+      const leg=estreito?[`${decs.length} decretos publicados`,'(losango: decreto que alterou alíquotas do IOF)']:[`${decs.length} decretos no período (losango: publicação de decreto que alterou alíquotas do regulamento do IOF; sem descrição de efeito)`];
+      leg.forEach((txt,k)=>{ const t=el('text',{x:M.l,y:y0+linhasDec*13+6+k*13,class:'dec-leg'},gd); t.textContent=txt; });
+    }
     const base=cfg.series[0].pontos.filter(p=>p[0]>=ini);
     const mostrar=(k,clientX)=>{
       k=Math.max(0,Math.min(base.length-1,k)); idx=k; const d=base[k][0], x=X(d);
@@ -921,13 +956,40 @@ async function exCarregar(){
     EXC[chave]=a; }
   exAtualizar();
 }
+/* Balança comercial (exportação, importação e saldo), na mesma seção do treemap e com o MESMO seletor de ano. Cada ponto do gráfico é um ano; quando o ano escolhido é o
+   corrente (só os meses fechados), todos os anos entram só com os mesmos meses (jan–set de cada ano), e nunca o ano inteiro de uns contra o parcial de outro. Tudo em valor FOB,
+   dólares correntes. A frase de cada ano vem pronta do arquivo (gerada em scripts/comex.py). */
+let BAL=null, BALG=null;
+const MESEXT=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function balAtualizar(){
+  const bloco=document.getElementById('expBalanca'); if(!bloco) return;
+  if(!BAL||!Array.isArray(BAL.anos)||!BAL.anos.length){ bloco.hidden=false; document.getElementById('balFrase').innerHTML='<span class="indisp">Dados indisponíveis. O arquivo da balança comercial ainda não foi gerado ou não pôde ser carregado.</span>'; return; }
+  const it=BAL.anos.find(a=>a.ano===EXS.ano); if(!it) return;
+  bloco.hidden=false;
+  const m=it.meses, anos=BAL.anos.filter(a=>a.meses>=m&&(m<12||a.fechado)), soma=(a,k)=>a[k].slice(0,m).reduce((x,y)=>x+y,0);
+  const serie=k=>anos.map(a=>[`${a.ano}-01-01`,soma(a,k)/1e9]);
+  const series=[{nome:'Exportação (valor FOB)',pontos:serie('exportacao'),freq:'A'},{nome:'Importação (valor FOB)',pontos:serie('importacao'),freq:'A'},{nome:'Saldo (exportação menos importação)',pontos:serie('saldo'),freq:'A'}];
+  const per=m===12?'ano inteiro, anos fechados':`${it.rotulo.replace(/\/\d{4}$/,'')} de cada ano (os mesmos meses de todos os anos)`;
+  const titulo=`Exportação, importação e saldo, ${per}`, desde=anos[0].ano;
+  document.getElementById('balFrase').textContent=it.frase; document.getElementById('balDef').textContent=BAL.definicao;
+  document.getElementById('balLegenda').textContent=`${titulo} — em US$ bilhões, valor FOB, dólares correntes`;
+  document.getElementById('balLeg').innerHTML=series.map((s,i)=>`<span><svg class="sw s${i}" width="28" height="8" viewBox="0 0 28 8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4"/></svg>${esc(s.nome)} <small>(desde ${desde})</small></span>`).join('');
+  const cfg={series,rotulos:series.map(s=>s.nome),fmtY:v=>fmt(v,0),fmtV:FMT.usbi.v,rotData:d=>d.slice(0,4),zero:true,estrito:true,rotulosDiretos:false,marcarPontos:true,destaque:`${EXS.ano}-01-01`,
+    rotulo:`${titulo}. ${it.frase} Série de ${desde} a ${anos[anos.length-1].ano}, um ponto por ano.`};
+  if(!BALG) BALG=Grafico(document.getElementById('balGrafico'),cfg); else BALG.atualizar(cfg);
+  const linhas=anos.slice().reverse().map(a=>`<tr><th scope="row">${esc(m===12?String(a.ano):`${a.rotulo.replace(/\/\d{4}$/,'')}/${a.ano}`)}</th><td class="num">${fmt(soma(a,'exportacao')/1e9,3)}</td><td class="num">${fmt(soma(a,'importacao')/1e9,3)}</td><td class="num">${sinal(soma(a,'saldo'))}${fmt(abs(soma(a,'saldo'))/1e9,3)}</td></tr>`).join('');
+  document.getElementById('balAvConteudo').innerHTML=`<p class="ind-fonte">${esc(BAL.nota)}</p><div class="tab-val tx exp-scroll"><table><caption>${esc(titulo)}, US$ bilhões (valor FOB, dólares correntes)</caption>
+    <thead><tr><th scope="col">Período</th><th scope="col" class="num">Exportação</th><th scope="col" class="num">Importação</th><th scope="col" class="num">Saldo</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+  const dias=EXI&&EXI.verificadoEm?Math.floor((Date.now()-Date.parse(EXI.verificadoEm+'T12:00:00Z'))/864e5):null;
+  document.getElementById('balFonte').innerHTML=`Fonte: <a href="${esc(BAL.fonte.url)}" target="_blank" rel="noopener">${esc(BAL.fonte.nome)}</a>, API pública (<a href="${esc(BAL.fonte.documentacao)}" target="_blank" rel="noopener">documentação</a>). Valor US$ FOB, ${esc(BAL.unidade.replace(/^US\$ FOB \(|\)$/g,''))}; números coletados em ${dataBR(BAL.coletadoEm)}${EXI&&EXI.atualizadoEmFonte?` (a fonte atualizou os dados em ${dataBR(EXI.atualizadoEmFonte)})`:''}.${dias!=null&&dias>14?` <b>Atenção: a coleta não é conferida há ${dias} dias; os números são os da última coleta.</b>`:''}`;
+}
 async function montarExportacoes(){
-  const sel=document.getElementById('expAno'), box=document.getElementById('expTm');
+  const sel=document.getElementById('expAno'), box=document.getElementById('expTm'), pBal=buscaJson('dados/comex/balanca.json');
   EXI=await buscaJson('dados/comex/indice.json');
   if(!EXI||!Array.isArray(EXI.anos)||!EXI.anos.length){ box.innerHTML='<p class="indisp">Dados indisponíveis. O arquivo das exportações ainda não foi gerado ou não pôde ser carregado.</p>'; return; }
-  EXS.ano=EXI.anoPadrao;
+  EXS.ano=EXI.anoPadrao; pBal.then(b=>{ BAL=b; balAtualizar(); });
   sel.innerHTML=EXI.anos.slice().reverse().map(a=>`<option value="${a.ano}"${a.ano===EXS.ano?' selected':''}>${a.fechado?a.ano:`${a.ano} (${a.rotulo.replace(/\/\d+$/,'')})`}</option>`).join(''); sel.disabled=false;
-  sel.addEventListener('change',()=>{ EXS.ano=+sel.value; exCarregar(); });
+  sel.addEventListener('change',()=>{ EXS.ano=+sel.value; exCarregar(); balAtualizar(); });
   document.querySelectorAll('#expModo button').forEach(b=>b.addEventListener('click',()=>{ EXS.modo=b.dataset.modo; document.querySelectorAll('#expModo button').forEach(x=>{ const on=x===b; x.classList.toggle('on',on); x.setAttribute('aria-pressed',String(on)); }); EXS.ordem={col:'valor',dir:'desc'}; exCarregar(); }));
   document.getElementById('expTabBt').addEventListener('click',()=>{ EXS.tabela=!EXS.tabela; exAtualizar(); });
   document.addEventListener('pointerdown',e=>{ if(e.target.closest&&!e.target.closest('.exp-cel,.dica')){ box.querySelectorAll('.exp-cel.on').forEach(x=>x.classList.remove('on')); const d=box.querySelector('.dica'); if(d) d.classList.remove('on'); } });   // toque fora de um retângulo fecha o valor mostrado
@@ -953,15 +1015,17 @@ const FMT={
 };
 const linkF=f=>`<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`;
 function miTexto(s){
-  const f=s.fato.data?s.fato:(s.fato.renda||s.fato);
-  const extra=[s.notaFixa,s.inicioNota,s.lacunaNota,s.notaNominal].filter(Boolean).map(t=>`<p class="ind-fonte mi-nota">${esc(t)}</p>`).join('');
+  const f=s.fato?(s.fato.data?s.fato:(s.fato.renda||s.fato)):null, ate=s.dadosAte||(f&&f.rotulo);
+  const extra=[s.notaFixa,s.inicioNota,s.lacunaNota,s.notaNominal,s.notaMetodo].filter(Boolean).map(t=>`<p class="ind-fonte mi-nota">${esc(t)}</p>`).join('');
+  const legal=s.baseLegal?`<p class="ind-fonte mi-nota"><b>Base legal.</b> ${esc(s.baseLegal.texto)} <a href="${esc(s.baseLegal.url)}" target="_blank" rel="noopener">Texto no Planalto ↗</a></p>`:'';
+  const fontes=s.fontes||[];
   return `<div class="mi-q" id="mi-${s.id}"><h3>${esc(s.titulo)}</h3><p class="mi-frase">${esc(s.frase)}</p><p class="ind-def">${esc(s.definicao)}</p>
-    ${s.real?`<p class="ind-def mi-real">${esc(s.real)}</p>`:''}${extra}
-    <p class="ind-fonte">Fonte${s.fontes.length>1?'s':''}: ${s.fontes.map(linkF).join('; ')}. Dados até <b>${esc(f.rotulo)}</b>; coletados em ${dataBR(TR.coletadoEm)}.</p></div>`;
+    ${s.real?`<p class="ind-def mi-real">${esc(s.real)}</p>`:''}${legal}${extra}
+    ${fontes.length?`<p class="ind-fonte">Fonte${fontes.length>1?'s':''}: ${fontes.map(linkF).join('; ')}.${ate?` Dados até <b>${esc(ate)}</b>;`:''} coletados em ${dataBR(s._coletado)}.</p>`:''}</div>`;
 }
 function miGraficoHTML(id){
   const g=TR.graficos[id];
-  const leg=g.series.map((s,i)=>`<span><svg class="sw s${i}" width="28" height="8" viewBox="0 0 28 8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4"/></svg>${esc(s.nome)} <small>(desde ${ROTD[g.rotData](s.pontos[0][0])})</small></span>`).join('');
+  const leg=g.series.filter(s=>!s.somenteTabela).map((s,i)=>`<span><svg class="sw s${i}" width="28" height="8" viewBox="0 0 28 8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4"/></svg>${esc(s.nome)} <small>(desde ${ROTD[g.rotData](s.pontos[0][0])})</small></span>`).join('');
   const curtas=g.notas.map(n=>TR.notas[n].curta).filter(Boolean).map(t=>`<p class="ind-fonte mi-nota">${esc(t)}</p>`).join('');
   return `<figure class="mi-graf" id="mi-graf-${id}"><figcaption>${esc(g.titulo)}</figcaption>
     <div id="mi-g-${id}"></div><div class="gr-leg mi-leg">${leg}</div>${curtas}
@@ -982,6 +1046,10 @@ function miAvancada(id){
   if(id==='g_rndb'&&sec.decomposicao){ const d=sec.decomposicao, ln=(n,v)=>`<tr><td>${n}</td><td>R$ ${fmt(v/1e6,3)} tri</td></tr>`;
     conf=`<h4>Do PIB à renda nacional disponível bruta, ${rotTri(d.data)} (valores correntes)</h4><div class="tab-val tx"><table><tbody>${ln('PIB',d.pib)}<tr><td>(+) Salários líquidos recebidos do exterior</td><td>R$ ${fmt(d.salarios/1e6,3)} tri</td></tr><tr><td>(+) Rendas de propriedade líquidas recebidas do exterior</td><td>−R$ ${fmt(abs(d.rendasPropriedade)/1e6,3)} tri</td></tr>${ln('(=) Renda nacional bruta',d.rnb)}<tr><td>(+) Outras transferências correntes líquidas do exterior</td><td>R$ ${fmt(d.transferencias/1e6,3)} tri</td></tr>${ln('(=) Renda nacional disponível bruta',d.rndb)}</tbody></table></div>
       <p class="ind-fonte">Conta conferida a cada rodada: a diferença máxima nos ${nf0.format(g.series[0].pontos.length)} trimestres é de R$ ${fmt(C.rndbIdentidade.maximo,1)} milhões (arredondamento).</p>`; }
+  if(id==='g_abertura'&&C.identidadeDasContas){ const d=sec.decomposicao, m=C.identidadeDasContas, e=C.pibEntreTabelas;
+    conf=`<h4>Conferência</h4><p class="ind-fonte">${esc(m.texto)}: ${fmt(m.maximo,1)} em ${nf0.format(m.trimestres)} trimestres.${e&&e.maximo!=null?` ${esc(e.texto)}: ${fmt(e.maximo,1)}.`:''}</p>
+      <h4>Quatro trimestres até ${rotTri(d.data)} (${esc(d.unidade)})</h4><div class="tab-val tx"><table><tbody><tr><td>Exportações de bens e serviços</td><td>${nf0.format(d.exportacoes4)}</td></tr><tr><td>Importações de bens e serviços</td><td>${nf0.format(d.importacoes4)}</td></tr><tr><td>PIB</td><td>${nf0.format(d.pib4)}</td></tr></tbody></table></div>`; }
+  if(id==='g_iof'&&C.anualContraMensal) conf=`<h4>Conferências (a rodada aborta se alguma não fechar)</h4><ul class="ind-fonte">${['anualContraMensal','ipiTotal','tabelasIVeV'].filter(k=>C[k]).map(k=>`<li>${esc(C[k].texto)}: ${fmt(C[k].maximo,3)}</li>`).join('')}</ul>`;
   av.innerHTML=`<h4>Fontes</h4><ul>${fontes}</ul><h4>Notas de método</h4><ol>${notas}</ol>${conf}
     <h4>Valores</h4><p class="ind-fonte">Frequência da fonte, sem interpolação; “Dados indisponíveis” onde a fonte não publica. <button class="limpar" type="button" data-tab>Mostrar a tabela</button></p><div class="tab-val valores" hidden></div>`;
   av.querySelector('[data-tab]').addEventListener('click',e=>{ const box=av.querySelector('.tab-val.valores'); box.hidden=false; e.target.hidden=true;
@@ -989,16 +1057,25 @@ function miAvancada(id){
     box.innerHTML=`<table><thead><tr><th>Período</th>${ss.map(s=>`<th>${esc(s.nome)}</th>`).join('')}</tr></thead><tbody>${datas.map(d=>`<tr><td>${rot(d)}</td>${ss.map((s,i)=>{ const v=mapas[i].get(d); const dentro=d>=s.pontos[0][0]&&d<=s.pontos[s.pontos.length-1][0]; return `<td>${v!==undefined?fm.v(v):(dentro?'Dados indisponíveis':'—')}</td>`; }).join('')}</tr>`).join('')}</tbody></table>`; });
 }
 function miDesenhar(id,frase){
-  const g=TR.graficos[id], fm=FMT[g.fmt], ini=ROTD[g.rotData](g.series[0].pontos[0][0]), fim=ROTD[g.rotData](g.series[0].pontos.slice(-1)[0][0]);
-  Grafico(document.getElementById(`mi-g-${id}`),{series:g.series,rotulos:g.series.map(s=>s.nome),fmtY:fm.y,fmtV:fm.v,rotData:ROTD[g.rotData],zero:g.zero,estrito:true,
-    rotulosDiretos:g.rotulosDiretos,marcarPontos:g.marcarPontos,rotulo:`${g.titulo}. ${frase} Série de ${ini} a ${fim}, em frequência original.`});
+  const g=TR.graficos[id], fm=FMT[g.fmt], vis=g.series.filter(s=>!s.somenteTabela), ini=ROTD[g.rotData](g.series[0].pontos[0][0]), fim=ROTD[g.rotData](g.series[0].pontos.slice(-1)[0][0]);
+  Grafico(document.getElementById(`mi-g-${id}`),{series:vis,rotulos:vis.map(s=>s.nome),fmtY:fm.y,fmtV:fm.v,rotData:ROTD[g.rotData],zero:g.zero,estrito:true,
+    rotulosDiretos:g.rotulosDiretos,marcarPontos:g.marcarPontos,decretos:g.decretos,rotulo:`${g.titulo}. ${frase} Série de ${ini} a ${fim}, em frequência original.${g.decretos?` Marcados na linha do tempo: ${g.decretos.length} decretos publicados que alteraram alíquotas do regulamento do IOF.`:''}`});
   miAvancada(id);
+}
+function miDecretos(){
+  const D=TR.decretos; if(!D||!Array.isArray(D.lista)||!D.lista.length) return '';
+  const anos=Object.entries(D.porAno).map(([a,n])=>`${a}: ${n}`).join(' · ');
+  const linhas=D.lista.slice().sort((a,b)=>a.data<b.data?1:a.data>b.data?-1:0).map(d=>`<tr><td><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.rotulo)}</a></td><td>${dataBR(d.decreto)}</td><td>${dataBR(d.data)}</td><td>${esc(d.artigos.join(', '))}</td></tr>`).join('');
+  return `<details class="avanc tr-dec" id="tr-decretos"><summary>Decretos que alteraram as alíquotas do regulamento do IOF (${nf0.format(D.total)}), com a data de cada um</summary>
+    <div class="tr-dec-in"><p class="ind-fonte"><b>Critério, igual para todos:</b> ${esc(D.criterio)}</p><p class="ind-fonte">${esc(D.limite)}</p><p class="ind-fonte">${esc(D.aviso)}</p>
+    <p class="ind-fonte">Por ano de publicação — ${anos}. Lido à mão no Planalto em ${dataBR(D.lidoEm)}. <a href="${esc(D.regulamento.url)}" target="_blank" rel="noopener">${esc(D.regulamento.nome)} ↗</a></p>
+    <div class="tab-val tx exp-scroll"><table><caption>Decretos publicados, do mais recente ao mais antigo</caption><thead><tr><th scope="col">Decreto</th><th scope="col">Data do decreto</th><th scope="col">Publicado no DOU</th>
+    <th scope="col">Artigos de alíquota citados no texto compilado</th></tr></thead><tbody>${linhas}</tbody></table></div></div></details>`;
 }
 function montarMais(){
   const box=document.getElementById('miCorpo');
   if(!TR||!Array.isArray(TR.secoes)||!TR.secoes.length){ box.innerHTML='<p class="indisp">Dados indisponíveis. O arquivo deste bloco ainda não foi gerado ou não pôde ser carregado.</p>'; return; }
-  const dias=TR.coletadoEm?Math.floor((Date.now()-Date.parse(TR.coletadoEm+'T12:00:00Z'))/864e5):null;
-  const aviso=dias!=null&&dias>3?`<p class="fixa peq">Esta parte não foi atualizada desde ${dataBR(TR.coletadoEm)} (a última coleta bem-sucedida): os números abaixo são dessa data.</p>`:'';
+  const aviso=(TR._avisos||[]).map(a=>`<p class="fixa peq">${esc(a)}</p>`).join('');
   let html=`<p class="ind-def">Cada seção abre com uma frase montada dos números da própria série. “Maior” e “menor” valem para toda a série, que começa onde a fonte começa. Os valores reais estão em reais do trimestre mais recente. ${esc((TR.notas.pnad||{}).curta||'')}</p>${aviso}`;
   const feitos=new Set(), graficos=[];
   TR.secoes.forEach(s=>{
@@ -1006,24 +1083,43 @@ function montarMais(){
     if(s.grupo){ const gr=TR.secoes.filter(x=>x.grupo===s.grupo); gr.forEach(x=>{ feitos.add(x.id); html+=miTexto(x); });
       html+=miGraficoHTML(s.grafico); graficos.push([s.grafico,gr.map(x=>x.frase).join(' ')]); return; }
     feitos.add(s.id); html+=`<div class="mi-sec">${miTexto(s)}`;
-    [s.grafico,s.grafico2].filter(Boolean).forEach(id=>{ html+=miGraficoHTML(id); graficos.push([id,s.frase]); }); html+='</div>';
+    [s.grafico,s.grafico2].filter(Boolean).forEach(id=>{ html+=miGraficoHTML(id); graficos.push([id,s.frase]); if(s.decretos&&id===s.grafico) html+=miDecretos(); }); html+='</div>';
   });
   const p=TR.paraSaberMais;
   if(p) html+=`<div class="mi-sec mi-mais"><h3>Para saber mais: ${esc(p.titulo.toLowerCase())}</h3><p class="ind-def">${esc(p.texto)}</p><p><a href="${esc(p.link.url)}" target="_blank" rel="noopener">${esc(p.link.nome)} ↗</a></p></div>`;
   box.innerHTML=html;
   graficos.forEach(([id,frase])=>miDesenhar(id,frase));
 }
-function abrirMais(){       // um pedido só, mesmo com cliques seguidos; se falhar, a próxima vez que a página abrir tenta de novo
-  if(!TR_P) TR_P=buscaJson('dados/contexto/trabalho.json').then(d=>{ TR=d; montarMais(); if(!d) TR_P=null; });
+/* A página 2 junta três arquivos, cada um com a sua rodada: trabalho, renda e setor externo (diário); abertura comercial (diário); tributos (semanal). Os pedidos saem juntos;
+   um que falte só tira a parte dele ("Dados indisponíveis"), e cada parte diz quando foi coletada e avisa se passou do prazo dela. */
+const PARTES_MAIS=[['dados/contexto/trabalho.json','Trabalho, renda e setor externo',3],['dados/contexto/abertura.json','Abertura comercial',3],['dados/contexto/tributos.json','Tributos',14]];
+function juntarMais(lista){
+  const ok=lista.map((d,i)=>d&&Array.isArray(d.secoes)&&d.secoes.length?{d,i}:null).filter(Boolean);
+  if(!ok.length) return null;
+  const J={secoes:[],graficos:{},notas:{},conferencias:{},_avisos:[],decretos:null,paraSaberMais:null};
+  ok.forEach(({d,i})=>{
+    d.secoes.forEach(s=>{ s._coletado=d.coletadoEm; J.secoes.push(s); });
+    Object.assign(J.graficos,d.graficos); Object.assign(J.notas,d.notas); Object.assign(J.conferencias,d.conferencias||{});
+    if(d.paraSaberMais) J.paraSaberMais=d.paraSaberMais;
+    if(d.decretos) J.decretos=d.decretos;
+    const dias=d.coletadoEm?Math.floor((Date.now()-Date.parse(d.coletadoEm+'T12:00:00Z'))/864e5):null;
+    if(dias!=null&&dias>PARTES_MAIS[i][2]) J._avisos.push(`A parte “${PARTES_MAIS[i][1]}” não foi atualizada desde ${dataBR(d.coletadoEm)} (a última coleta bem-sucedida): os números dela são dessa data.`);
+  });
+  lista.forEach((d,i)=>{ if(!(d&&Array.isArray(d.secoes)&&d.secoes.length)) J._avisos.push(`“${PARTES_MAIS[i][1]}”: Dados indisponíveis. O arquivo ainda não foi gerado ou não pôde ser carregado.`); });
+  J.secoes.sort((a,b)=>a.n-b.n);
+  return J;
+}
+function abrirMais(){       // um pedido por arquivo, mesmo com cliques seguidos; se nenhum vier, a próxima vez que a página abrir tenta de novo
+  if(!TR_P) TR_P=Promise.all(PARTES_MAIS.map(p=>buscaJson(p[0]))).then(l=>{ TR=juntarMais(l); montarMais(); if(!TR) TR_P=null; });
   return TR_P;
 }
-/* Duas páginas dentro do painel "Números oficiais da economia": 1 = preços, contas públicas e PIB; 2 = trabalho, renda e setor externo.
+/* Duas páginas dentro do painel "Números oficiais da economia": 1 = preços, contas públicas e PIB; 2 = trabalho, renda, setor externo e tributos.
    O botão ao lado do título alterna; #mais-indicadores na URL abre a página 2. A página 2 só carrega o JSON na primeira vez que aparece. */
 function irParaPagina(p,rolar){
   const dois=p===2, pg1=document.getElementById('pg1'), pg2=document.getElementById('mais-indicadores'); if(!pg1||!pg2) return;
   pg1.hidden=dois; pg2.hidden=!dois;
   document.getElementById('pgN').textContent=`Página ${p} de 2`;
-  document.getElementById('pgBtn').innerHTML=dois?'<span aria-hidden="true">←</span> Preços, contas públicas e PIB':'Trabalho, renda e setor externo <span aria-hidden="true">→</span>';
+  document.getElementById('pgBtn').innerHTML=dois?'<span aria-hidden="true">←</span> Preços, contas públicas e PIB':'Trabalho, renda, setor externo e tributos <span aria-hidden="true">→</span>';
   if(dois) abrirMais();       // com a página visível: o gráfico mede a largura real da caixa
   try{ history.replaceState(null,'',dois?'#mais-indicadores':location.pathname+location.search); }catch(e){}
   if(rolar) document.getElementById('indicadores').scrollIntoView({behavior:'smooth',block:'start'});
