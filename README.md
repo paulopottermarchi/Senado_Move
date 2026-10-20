@@ -83,6 +83,19 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
   conta trataria licença e suplência como falta.
 - **Obras**: crescimento = valor global atual − valor inicial, os dois campos do registro do contrato;
   a natureza de cada termo aditivo (acréscimo, reajuste, prorrogação…) sai do texto do termo.
+- **Pessoas documentadas (obras)**: três fontes, e nada além delas, ligadas ao contrato por identificador exato
+  (número do contrato, processo, ou licitação e UASG) — nunca por nome. (1) *Quem assinou pelo órgão*: do PDF do contrato
+  ou do termo anexado no Contratos.gov.br; entra só o representante do órgão contratante cujo nome está no bloco de assinatura
+  eletrônica **e** no trecho do preâmbulo que identifica o contratante, e só se o número do contrato (ou o processo) consta no
+  texto. Testemunhas, quem assina pela empresa e os demais signatários não são listados (e os nomes não são guardados). PDF só
+  imagem não é lido: não há OCR. Nome corrompido pela extração (a ligadura "ti" some em alguns PDFs) só é publicado depois de
+  reconciliado com a grafia do preâmbulo do mesmo documento ou, em segundo lugar, de outro documento do mesmo órgão; se sobrar
+  "�", fica de fora. (2) *Responsável registrado no aviso de licitação*: do Compras.gov.br (módulo legado), por licitação e UASG,
+  com nome e cargo como a fonte escreve; **não** diz quem conduziu a sessão, nem quem homologou. (3) *Responsável registrado no
+  contrato*: o gestor do `/contrato/{id}/responsaveis`; fiscais aparecem só em número. Onde falta dado, a página mostra "—" e o
+  motivo. Cada vínculo é uma aresta com url do documento, página, hash, identificador que casou, data do vínculo (separada da de
+  publicação), trecho literal e método (`cache/pessoas_arestas.jsonl`, também as retidas, com o motivo). Sem CPF, RG ou SIAPE;
+  sem parlamentares, sem ranking de pessoas. A publicação no site fica desligada até o `scripts/pessoas.py` rodar com `--publicar`.
 - **Alinhamento ao Governo**: para cada deputado, a frequência com que votou como o líder do Governo orientou
   (registro de orientação da Câmara, só Sim ou Não) nas votações nominais do Plenário; o número do partido é a mediana
   entre os deputados dele, com 3 ou mais. O recorte é o **governo** (Lula I, Lula II, Dilma I, Dilma II, Temer,
@@ -133,7 +146,10 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 | Brazilian Legislative Survey (Power e Zucco) | posição dos partidos no espectro |
 | IBGE (API SIDRA), Banco Central (SGS e página de metas) e Tesouro Nacional (API de Séries Temporais) | IPCA, PIB, meta de inflação e banda, dívida, despesa, resultado primário e nominal do Governo Central |
 | Planalto (legislação) | endereço do texto de cada lei, só como link; a contagem de leis por ano e tipo foi conferida à mão nas listas do Planalto e está em `entradas/origem_leis_referencia.json` |
+| IBGE (API SIDRA: PNAD Contínua e Contas Nacionais Trimestrais) e Banco Central (SGS, balanço de pagamentos) | "Mais indicadores" da página de economia: rendimento, ocupação, massa de renda do trabalho, desocupação, informalidade, subutilização, renda domiciliar per capita e Gini, transações correntes e renda nacional disponível bruta (nominal). Produtividade: só link para o [Observatório da Produtividade Regis Bonelli (FGV IBRE)](https://ibre.fgv.br/observatorio-produtividade), sem cálculo nosso |
+| [Comex Stat](https://comexstat.mdic.gov.br/), do MDIC (API pública `api-comexstat.mdic.gov.br`) | "Para onde o Brasil exporta e o que exporta", na página de economia: valor exportado em US$ FOB (dólares correntes) por país de destino e por produto (posição SH4 do Sistema Harmonizado), desde 1997, com os nomes das tabelas oficiais do MDIC |
 | ObrasGov.br, Contratos.gov.br e CGU | obras, contratos, termos aditivos, emendas parlamentares, sanções (CEIS/CNEP) |
+| Contratos.gov.br (PDFs e responsáveis) e Compras.gov.br (dados abertos) | pessoas documentadas de cada obra: quem assinou pelo órgão, responsável no aviso de licitação e gestor do contrato |
 | Enquetes e Agência Câmara (RSS) | enquete de cada lei votada; notícias ligadas às proposições, cada uma com a categoria da lei pela mesma classificação do site |
 | Wikipédia (API de leituras) | leituras do artigo de cada deputado, ligado por identificador |
 | Logo oficial da Câmara e Wikimedia Commons | logos dos partidos, só referenciados (nenhuma imagem é copiada), com crédito e licença na aba Partidos |
@@ -190,7 +206,7 @@ completa da rodada diária está no workflow:
 
 ```
 atualiza → coleta → votos → blocos → notoriedade → wikipedia → noticias → youtube → enquetes
-→ ecidadania → resumos → obras → senado → tramitacoes → temas → senador_paginas → partidos → governo → logos → fluxo → origem_leis → semana
+→ ecidadania → resumos → obras → pessoas → senado → tramitacoes → temas → senador_paginas → partidos → governo → logos → fluxo → origem_leis → semana
 ```
 
 Para ver o site, sirva a pasta `site/` (o navegador não carrega os JSON de arquivos abertos direto
@@ -204,8 +220,20 @@ Scripts que não entram na rodada diária:
 
 - `scripts/eleicao.py` — gera `entradas/eleicao2022.json` uma vez. O portal de dados abertos do TSE
   recusa acesso automatizado, e o projeto não contorna esse bloqueio; por isso a tabela é fixa.
+- `scripts/comex.py` — exportações por destino e por produto (Comex Stat), grava `site/dados/comex/`. Roda na rodada diária mas só trabalha a cada 7 dias; `--forcar` ignora o intervalo,
+  `--so-montar` remonta do cache, `--simular` confere sem gravar, `--imprimir` mostra totais, os 10 maiores e as frases, `--teste` roda os testes sem rede.
+- `scripts/contexto_trabalho.py` — roda dentro de `contexto.py` (módulo irmão, no workflow diário) e também sozinho (`--teste` roda os testes, sem rede;
+  `--imprimir` mostra o último valor de cada série e as frases geradas). Grava `site/dados/contexto/trabalho.json`.
 - `scripts/signatarios.py` — piloto que lê os PDFs dos contratos de obra para achar quem assinou.
-  Não publica nada; precisa de `pymupdf` (fora do `requirements.txt`).
+  Não publica nada; precisa de `pymupdf` (fora do `requirements.txt`; licença AGPL ou comercial, por isso fora do projeto, que é MIT).
+- `scripts/diag_vinculo_*.py` — o diagnóstico de viabilidade que deu origem às pessoas documentadas (relatório em `cache/`).
+  Medição e registro; `diag_vinculo_e2.py` e `signatarios.py` usam `pymupdf` em comparações locais.
+
+`scripts/pessoas.py` roda depois de `obras.py` (usa o cache dele) e **só escreve em `site/` com `--publicar`**. Sem a
+flag, grava em `cache/` as arestas (`pessoas_arestas.jsonl`), o candidato (`pessoas_candidato.json`) e a amostra de
+validação (`amostra_fase1.csv`). `--dry-run` mostra o relatório e o diff sem atualizar a rodada anterior. Os testes de
+regressão (`python scripts/pessoas_regressao.py`) usam os casos conferidos à mão: quem não é representante nunca sai como tal.
+Só usa `pypdf` (BSD-3), nada de `pymupdf`.
 
 ### Chaves de API (opcionais)
 
@@ -246,6 +274,13 @@ com os dados do dia anterior. Para publicar pela primeira vez: *Settings → Pag
 - **Relatorias na Câmara** não têm fonte por deputado na API, e aparecem como "—". No Senado existem.
 - **Obras**: por ora só São Paulo e só contrato federal, cerca de 1,3% das obras de SP cadastradas no
   ObrasGov. Obras contratadas por estado ou prefeitura não aparecem.
+- **Pessoas documentadas (obras)**: a cobertura é parcial por construção, e a página diz onde. Cerca de 40% dos contratos não têm
+  arquivo algum anexado no Contratos.gov.br; PDF digitalizado não é lido (sem OCR); alguns PDFs perdem letras na extração e o nome
+  fica de fora quando não dá para reconciliar. O aviso de licitação traz o nome do responsável em quase todas as licitações até 2024: nas de 2025 em
+  diante o Compras.gov.br quase não traz o nome (a licitação consta do PNCP, que publica o edital e não foi consultado para nomes). "Responsável no aviso" é o cargo que a fonte grava — nem sempre
+  pregoeiro —, e a precisão dessa leitura só foi conferida em dois casos. Não há homologação, ratificação, dirigente do órgão na data,
+  nem o quadro de autoridades: o Diário Oficial não permite coleta automatizada (`robots.txt`). Amostra de validação manual pequena
+  (16 casos de PDF): a precisão não está provada em 95%.
 - **Contexto econômico**: só a Câmara e só dois temas oficiais (Economia e Finanças Públicas e Orçamento). PL ordinário entra apenas nas sancionadas dos
   últimos 12 meses; apensadas e proposições sem situação na API ficam fora das abas e são contadas. Antes de 2003 a Câmara não atribuiu tema a todas as
   proposições, então há anos sem marcos. O "objetivo declarado" é citação literal da justificação, nunca paráfrase de IA.
@@ -254,6 +289,17 @@ com os dados do dia anterior. Para publicar pela primeira vez: *Settings → Pag
   classificada", e uma divergência de número entre as Casas a deixa fora da conta. O universo é o do registro do Senado, e uma lei
   que só a Câmara registra entra com a marca "data não confirmada pelo Senado". As leis da ficha de um deputado, as de "Leis
   votadas" e as desta página são conjuntos diferentes.
+- **Mais indicadores (economia)**: séries da PNAD Contínua em trimestre móvel (cada ponto é a média de três meses, nomeado pelo último mês), reponderadas
+  pelo IBGE em nov/2021 e em 31/7/2025; os valores reais mudam de base todo mês (reais do último trimestre móvel), por isso a série inteira é baixada de novo a cada
+  rodada. A informalidade só existe desde out–dez/2015, e a subutilização tem dois meses sem dado na fonte (out e nov/2015), mostrados como "Dados indisponíveis".
+  Renda per capita e Gini são anuais e, segundo o IBGE, parte dos temas anuais só é reponderada no ciclo de 2026. A "mediana" é o limite superior da classe P50 que o
+  IBGE publica; não é calculada de microdados. A renda nacional disponível bruta é nominal (o IBGE não publica série real no SIDRA) e o site não a deflaciona. As
+  transações correntes seguem o manual BPM6 (desde abril de 2015); a proporção do PIB usa o PIB em dólares. Produtividade não é calculada aqui.
+- **Exportações (economia)**: valor exportado em US$ FOB, em dólares correntes: sem corrigir pela inflação e sem converter para reais. O destino é o país registrado
+  na exportação e pode ser um intermediário, não o consumidor final. Os produtos são as posições SH4 do MDIC; o site não cria categorias ("agro", "indústria"…). Países e produtos abaixo de 0,5%
+  do total entram em "Demais". O ano corrente mostra só os meses fechados, e a comparação com outro ano usa os mesmos meses. Os dados gerais começam em 1997; os de 1989 a 1996 usam outra
+  metodologia (NBM) e não entram. A soma por posição SH4 fica poucos milhares de dólares abaixo do total (a fonte não explica a diferença), e a página diz quanto. A API do MDIC limita os
+  pedidos, então a coleta é semanal e leva cerca de 20 minutos.
 - **Categorias de tema** são classificação deste site por palavras-chave da ementa, com o termo que
   definiu cada uma sempre visível. A precisão ainda não foi medida. No perfil do senador as mesmas regras valem só sobre a ementa do Senado (sem a
   indexação oficial, que o Senado não entrega junto da lista de autoria); a ementa que não casa com nenhuma regra fica "sem categoria", e a página

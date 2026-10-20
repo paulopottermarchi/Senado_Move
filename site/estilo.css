@@ -655,3 +655,83 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 .cx .vt-t.nulo .vt-nome{color:var(--tinta3);padding-left:50px}
 .cx .vt-t.nulo .vt-num b{font-weight:500;color:var(--tinta2)}
 @media(max-width:700px){.cx .vt-t{grid-template-columns:minmax(0,1fr) auto}.cx .vt-bar{grid-column:1/-1;order:3}.cx .vt-t.nulo .vt-nome{padding-left:0}}
+/* ============ MAIS INDICADORES (contexto.html): bloco recolhido sob a agenda ============
+   Só tinta neutra e os tokens do tema (claro e escuro): nenhuma cor julga e nenhuma cor é do espectro.
+   Cada série é distinguida pelo desenho do traço (sólido, tracejado, pontilhado…), nunca pela cor.
+   Todos os seletores nascem escopados em .mais-ind (regra do arquivo: classe genérica vaza para outras páginas). */
+.mais-ind{scroll-margin-top:84px}
+.mais-ind .mi-pg-tit{font-family:var(--serif);font-size:clamp(22px,2.4vw,28px);font-weight:500;line-height:1.2;color:var(--tinta);margin-top:28px;padding-top:24px;border-top:1px solid var(--linha)}
+.mais-ind .mi-sub{font-size:14px;line-height:1.55;color:var(--tinta3);max-width:78ch;margin-top:6px}
+.mais-ind .mi-corpo{padding:0}
+.mais-ind .mi-corpo>.ind-def:first-child{margin-top:20px}
+.mais-ind .mi-sec{margin-top:32px;padding-top:4px;border-top:1px solid var(--linha2)}
+.mais-ind .mi-q{margin-top:24px}
+.mais-ind .mi-q h3{font-family:var(--serif);font-size:clamp(20px,2.1vw,24px);font-weight:500;line-height:1.25;color:var(--tinta)}
+.mais-ind .mi-frase{font-family:var(--serif);font-size:clamp(17px,1.7vw,19px);line-height:1.55;color:var(--tinta);margin-top:10px;max-width:70ch}
+.mais-ind .mi-real{color:var(--tinta)}
+.mais-ind .mi-nota{margin-top:6px}
+.mais-ind .mi-graf{margin:20px 0 0}
+.mais-ind .mi-graf figcaption{font-size:13px;font-weight:600;color:var(--tinta2)}
+.mais-ind .mi-leg span{display:inline-flex;align-items:center;gap:8px}
+.mais-ind .mi-leg small{color:var(--tinta3);font-size:12px}
+.mais-ind .mi-mais .ind-def+p{margin-top:12px}
+.mais-ind .mi-mais a{color:var(--destaque);font-weight:600;font-size:14px}
+/* traços das séries (gráfico e legenda usam o mesmo desenho) */
+.mais-ind .gr .s0,.mais-ind .sw.s0 line{stroke:var(--tinta);stroke-width:2.5;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.mais-ind .gr .s1,.mais-ind .sw.s1 line{stroke:var(--rampa3);stroke-width:2;stroke-dasharray:7 4;fill:none;stroke-linejoin:round}
+.mais-ind .gr .s2,.mais-ind .sw.s2 line{stroke:var(--tinta2);stroke-width:2;stroke-dasharray:1 4;stroke-linecap:round;fill:none;stroke-linejoin:round}
+.mais-ind .gr .s3,.mais-ind .sw.s3 line{stroke:var(--rampa3);stroke-width:2;stroke-dasharray:10 3 2 3;fill:none;stroke-linejoin:round}
+.mais-ind .gr .s4,.mais-ind .sw.s4 line{stroke:var(--tinta3);stroke-width:2;stroke-dasharray:15 4;fill:none;stroke-linejoin:round}
+.mais-ind .sw{flex:none;overflow:visible}
+.mais-ind .gr .rot-s2{fill:var(--tinta2);font-weight:600}
+.mais-ind .gr .rot-s3,.mais-ind .gr .rot-s4{fill:var(--tinta3);font-weight:600}
+.mais-ind .gr .mira .c2{stroke:var(--tinta2)}
+.mais-ind .gr .mira .c3{stroke:var(--rampa3)}
+.mais-ind .gr .mira .c4{stroke:var(--tinta3)}
+.mais-ind .gr .pt{fill:var(--papel);stroke-width:1.5}
+.mais-ind .gr .p0{stroke:var(--tinta)}
+.mais-ind .gr .p1{stroke:var(--rampa3)}
+
+/* paginador do painel "Números oficiais da economia" (contexto.html): página 1 de 2 / 2 de 2. Só tinta neutra; escopado em .pg-topo, .pg-nav, .btn-pg e .mais-ind */
+.pg-topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px}
+.pg-nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.pg-nav .pg-n{font-size:13px;color:var(--tinta3);font-variant-numeric:tabular-nums}
+.btn-pg{font:inherit;font-size:14px;font-weight:600;color:var(--sobre-inverso);background:var(--inverso);border:0;border-radius:999px;padding:10px 20px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:10px;transition:box-shadow .3s cubic-bezier(.4,0,.2,1),transform .3s cubic-bezier(.4,0,.2,1)}
+.btn-pg:hover{box-shadow:var(--sombra-md)}
+.btn-pg:active{transform:scale(.98)}
+.btn-pg:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:3px}
+.btn-pg.ant{background:none;color:var(--tinta);border:1px solid var(--linha-forte)}
+.btn-pg.ant:hover{border-color:var(--tinta3)}
+.mais-ind .mi-volta{margin-top:32px;padding-top:20px;border-top:1px solid var(--linha2)}
+@media(prefers-reduced-motion:reduce){.btn-pg{transition:none}}
+@media print{.pg-nav,.mais-ind .mi-volta{display:none}}
+
+/* ============ EXPORTAÇÕES (contexto.html, "Para onde o Brasil exporta e o que exporta"): treemap em SVG ============
+   Só tinta neutra e os tokens do tema (claro e escuro); nenhuma cor do espectro e nenhuma cor que julgue. Área = valor exportado.
+   Todos os seletores levam o prefixo exp- (classe genérica vaza para outras páginas). */
+.exp-ctl{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin-top:20px}
+.exp-frase{font-family:var(--serif);font-size:clamp(17px,1.7vw,20px);line-height:1.55;color:var(--tinta);margin-top:20px;max-width:72ch;min-height:3.2em}
+.exp-fig{margin:16px 0 0}
+.exp-fig figcaption{font-size:13px;font-weight:600;color:var(--tinta2)}
+.exp-tm{position:relative;margin-top:12px}
+.exp-tm svg{display:block;width:100%;height:auto;overflow:visible;touch-action:manipulation}
+.exp-cel{cursor:pointer;outline:none}
+.exp-cel rect{fill:var(--rampa6);stroke:var(--papel);stroke-width:1;transition:fill .3s cubic-bezier(.4,0,.2,1)}
+.exp-cel:hover rect,.exp-cel.on rect{fill:var(--rampa5)}
+.exp-cel:focus-visible rect{stroke:var(--destaque-vivo);stroke-width:3}
+.exp-cel rect.exp-hach{fill:url(#exp-hach);stroke:none;pointer-events:none}
+.exp-cel.demais rect:not(.exp-hach){fill:var(--rampa7)}
+.exp-hl{stroke:var(--rampa4);stroke-width:1.5}
+.exp-t{font-family:var(--sans);font-size:12px;font-weight:600;fill:var(--tinta);pointer-events:none}
+.exp-t2{font-family:var(--sans);font-size:12px;fill:var(--tinta2);pointer-events:none}
+.exp-tab{margin-top:12px}
+.exp-scroll{max-height:480px;overflow:auto}
+.exp-demais{margin-top:16px}
+.exp-ord{font:inherit;font-weight:600;color:var(--tinta2);background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+.exp-ord:hover{text-decoration:underline;text-underline-offset:3px}
+.exp-ord:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:2px}
+.exp-cod{color:var(--tinta3);font-variant-numeric:tabular-nums}
+.exp-tab .tab-val td.num,.exp-demais .tab-val td.num,.exp-tab .tab-val th.num,.exp-demais .tab-val th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.exp-tab caption{caption-side:top;text-align:left;font-size:12px;color:var(--tinta3);padding:0 0 8px}
+@media(prefers-reduced-motion:reduce){.exp-cel rect{transition:none}}
