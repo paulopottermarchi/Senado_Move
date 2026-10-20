@@ -427,7 +427,7 @@ def construir(C, br_, gerado):
              + (f"Um ano antes ({f['antes']['rotulo']}), foi de {fb(f['antes']['valor'])} ({pct(ant_d)} do PIB). " if ant_d in fpib else "")
              + f"Desse saldo, os bens somaram {fb(ultimo_c['bens'])}, os serviços {fb(ultimo_c['servicos'])}, a renda primária {fb(ultimo_c['renda_prim'])} e a renda secundária {fb(ultimo_c['renda_sec'])}. "
              + trecho_extremos(f, fb))
-    sec.append({"id": "externo", "n": 8, "titulo": "O país pagou ao exterior mais ou menos do que recebeu?", "grafico": "g_tc", "grafico2": "g_tcpib", "avancada": True,
+    sec.append({"id": "externo", "n": 10, "titulo": "O país pagou ao exterior mais ou menos do que recebeu?", "grafico": "g_tc", "grafico2": "g_tcpib", "avancada": True,
                 "fato": f, "frase": frase,
                 "definicao": "Déficit significa que o país pagou ao exterior mais do que recebeu no período; é coberto por entrada de capital.",
                 "notaFixa": "A proporção do PIB usa o PIB em dólares; variações cambiais alteram a proporção.",
@@ -441,7 +441,7 @@ def construir(C, br_, gerado):
     frase = (f"No {f['rotulo']}, a renda nacional disponível bruta foi de {trilh(f['valor'])}, em valores correntes (nominais, sem desconto da inflação). "
              + (f"No {f['antes']['rotulo']}, foi de {trilh(f['antes']['valor'])}. " if "antes" in f else "")
              + f"O PIB corrente do {f['rotulo']} foi de {trilh(pib_u)}.")
-    sec.append({"id": "rndb", "n": 9, "titulo": "Qual a renda disponível dos moradores do país?", "grafico": "g_rndb", "avancada": True, "nominal": True,
+    sec.append({"id": "rndb", "n": 11, "titulo": "Qual a renda disponível dos moradores do país?", "grafico": "g_rndb", "avancada": True, "nominal": True,
                 "fato": f, "frase": frase,
                 "definicao": "A renda nacional disponível bruta é a renda disponível dos residentes do país; difere do PIB pelas rendas recebidas e enviadas ao exterior e pelas transferências.",
                 "notaNominal": "Esta série é nominal: o IBGE não publica a renda nacional disponível bruta em termos reais no SIDRA, e este site não a deflaciona por conta própria. "

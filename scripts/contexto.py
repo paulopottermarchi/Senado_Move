@@ -1012,6 +1012,14 @@ def main():
     except Exception as e:
         falhar("trabalho", e)
 
+    # ---- abertura comercial (Contas Nacionais; módulo irmão, também falha sozinho e mantém o arquivo anterior)
+    try:
+        import contexto_abertura
+        ab = contexto_abertura.gerar(sys.modules[__name__], rede, gerado)
+        print(f"Abertura comercial: {len(ab['secoes'])} seção, {contexto_abertura.pontos_do_bloco(ab)} pontos")
+    except Exception as e:
+        falhar("abertura", e)
+
     if indicadores:
         gravar_json(SAIDA / "indicadores.json", indicadores)
     if agenda:
