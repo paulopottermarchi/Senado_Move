@@ -218,20 +218,64 @@ dialog.entenda .fechar{margin-top:20px}
     </div>
   </div>
 
+  <section class="painel" id="exportacoes" aria-labelledby="exTit">
+    <header>
+      <h2 id="exTit">Para onde o Brasil exporta e o que exporta</h2>
+      <p class="sub">Valor exportado (US$ FOB): o valor da mercadoria no local de embarque, em dólares correntes, sem corrigir pela inflação e sem converter para reais.
+        A área de cada retângulo é proporcional ao valor. Dados do Comex Stat, do Ministério do Desenvolvimento, Indústria, Comércio
+        e Serviços (MDIC), desde 1997.</p>
+    </header>
+    <div class="exp-ctl">
+      <div class="seg" role="group" aria-label="Como agrupar o valor exportado" id="expModo">
+        <button class="pino on" type="button" data-modo="destino" aria-pressed="true">Por destino</button>
+        <button class="pino" type="button" data-modo="produto" aria-pressed="false">Por produto</button>
+      </div>
+      <label class="campo">Ano <select class="sel" id="expAno" disabled><option>Carregando…</option></select></label>
+      <button class="mais" type="button" id="expTabBt" aria-pressed="false" aria-controls="expTabela" disabled>Ver como tabela</button>
+    </div>
+    <p class="exp-frase" id="expFrase" aria-live="polite"></p>
+    <figure class="exp-fig">
+      <figcaption id="expLegenda"></figcaption>
+      <div class="exp-tm" id="expTm" aria-live="off"><p class="indisp">Carregando…</p></div>
+      <div class="exp-tab" id="expTabela" hidden></div>
+    </figure>
+    <details class="avanc exp-demais" id="expDemais" hidden><summary id="expDemaisTit"></summary><div id="expDemaisLista"></div></details>
+    <p class="fixa peq" id="expNotaDestino" hidden>O destino é o país registrado na exportação e pode ser um intermediário, não necessariamente o consumidor final.</p>
+    <p class="fixa peq" id="expNotaProduto" hidden>Cada retângulo é uma posição do Sistema Harmonizado (SH4), com o nome da tabela do MDIC: o site não agrupa produtos.</p>
+    <p class="ind-fonte" id="expFonte"></p>
+    <p class="ind-fonte">Países ou produtos abaixo de 0,5% do total entram em “Demais”, com a lista abaixo do gráfico. Este gráfico mostra a composição do valor exportado; não liga lei, governo ou partido a nenhum valor.
+      Os dados do Comex Stat de 1989 a 1996 usam outra metodologia (nomenclatura NBM) e não entram.</p>
+  </section>
+
   <section class="painel" id="indicadores" aria-labelledby="indTit">
     <header>
-      <h2 id="indTit">Números oficiais da economia</h2>
+      <div class="pg-topo">
+        <h2 id="indTit">Números oficiais da economia</h2>
+        <nav class="pg-nav" aria-label="Páginas dos números oficiais">
+          <span class="pg-n" id="pgN" aria-live="polite">Página 1 de 2</span>
+          <button class="btn-pg" type="button" id="pgBtn" aria-controls="pg1 mais-indicadores">Trabalho, renda e setor externo <span aria-hidden="true">→</span></button>
+        </nav>
+      </div>
       <p class="sub">Cada série vai até onde a fonte oferece e começa onde a fonte começa: não há data inicial comum. Metodologias diferentes
         nunca são emendadas, e nada é interpolado. Os traços verticais sob cada gráfico marcam a data de emendas constitucionais e leis
         complementares do tema escolhido na agenda legislativa, mais abaixo.<span id="subMand" hidden> No alto de cada gráfico, os traços tracejados com um nome marcam o início
-        de cada mandato presidencial, só como referência de calendário.</span></p>
+        de cada mandato presidencial, só como referência de calendário.</span> Os indicadores de trabalho, renda e setor externo estão na
+        segunda página, pelo botão ao lado do título.</p>
       <p class="fixa">Este gráfico não mostra que uma lei causou a variação de nenhum indicador.</p>
     </header>
-    <div class="ind-grade" id="indGrade"><p class="indisp">Carregando…</p><noscript><p class="indisp">Esta página desenha os gráficos com JavaScript. Sem ele, os dados estão em <a href="dados/contexto/indicadores.json">indicadores.json</a>, <a href="dados/contexto/agenda.json">agenda.json</a>, <a href="dados/contexto/marcos.json">marcos.json</a> e <a href="dados/contexto/mandatos.json">mandatos.json</a>.</p></noscript></div>
-    <details class="avanc" id="mandatosDet" hidden>
-      <summary>Início de cada mandato presidencial, com a fonte de cada data</summary>
-      <div id="mandatosLista"></div>
-    </details>
+    <div id="pg1">
+      <div class="ind-grade" id="indGrade"><p class="indisp">Carregando…</p><noscript><p class="indisp">Esta página desenha os gráficos com JavaScript. Sem ele, os dados estão em <a href="dados/contexto/indicadores.json">indicadores.json</a>, <a href="dados/contexto/agenda.json">agenda.json</a>, <a href="dados/contexto/marcos.json">marcos.json</a>, <a href="dados/contexto/mandatos.json">mandatos.json</a> e <a href="dados/contexto/trabalho.json">trabalho.json</a>.</p></noscript></div>
+      <details class="avanc" id="mandatosDet" hidden>
+        <summary>Início de cada mandato presidencial, com a fonte de cada data</summary>
+        <div id="mandatosLista"></div>
+      </details>
+    </div>
+    <div class="mais-ind" id="mais-indicadores" role="region" aria-labelledby="miTit" hidden>
+      <h3 class="mi-pg-tit" id="miTit">Trabalho, renda e setor externo</h3>
+      <p class="mi-sub">Nove perguntas em linguagem comum, cada uma com a série oficial do IBGE ou do Banco Central.</p>
+      <div class="mi-corpo" id="miCorpo"><p class="indisp">Carregando…</p></div>
+      <p class="mi-volta"><button class="btn-pg ant" type="button" data-pg="1"><span aria-hidden="true">←</span> Voltar à página 1: preços, contas públicas e PIB</button></p>
+    </div>
   </section>
 
   <section class="painel ind" id="ifiBloco" aria-labelledby="ifiTit" hidden>
@@ -305,6 +349,8 @@ dialog.entenda .fechar{margin-top:20px}
        série 13521 do SGS e contra o IPCA; dívida, séries 13762 e 4536 do SGS (Banco Central); despesa, resultado primário e nominal, API de
        Séries Temporais do Tesouro Nacional (Resultado do Tesouro Nacional), em reais corrigidos pelo IPCA. A cada rodada a série inteira é
        baixada de novo, porque as fontes revisam o passado.</p>
+    <p><b>Exportações:</b> Comex Stat, do Ministério do Desenvolvimento, Indústria, Comércio e Serviços (API pública do MDIC): valor exportado em US$ FOB, em dólares correntes, por país de destino
+       e por posição SH4, com os nomes das tabelas oficiais. Os dados gerais vão de 1997 até o último mês completo e a coleta é semanal, porque a fonte atualiza por mês e revisa o passado.</p>
     <p id="fonteMand" hidden><b>Mandatos presidenciais:</b> Wikidata (cargo “Presidente do Brasil”), consultado por API. As posses em exercício de Itamar Franco e de Michel Temer têm
        fonte própria, na lista “Início de cada mandato presidencial”, abaixo dos gráficos.</p>
     <p>Os critérios de escolha (temas, janelas, séries) estão no <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">repositório</a>.</p>
@@ -414,7 +460,10 @@ function Grafico(raiz,cfg){
     const W=Math.max(240,caixa.clientWidth), estreito=W<560, H0=cfg.altura||(estreito?300:320);
     const temMarcos=Array.isArray(cfg.marcos);
     const faixaMarcos=temMarcos?60:0;
-    const M={t:14,r:estreito?16:132,b:26+faixaMarcos,l:estreito?44:54};
+    // `rotulosDiretos` só existe nos gráficos de "Mais indicadores": sem ele, tudo como antes. Em tela estreita nenhum gráfico tem rótulo no fim da
+    // linha (a legenda embaixo já nomeia cada série) e a margem direita some.
+    const direto=!estreito&&cfg.rotulosDiretos!==false;
+    const M={t:14,r:direto?132:16,b:26+faixaMarcos,l:estreito?44:54};
     const [ini,fim]=janela(), t0=T(ini), t1=T(fim), iw=W-M.l-M.r;
     // mandatos presidenciais na janela: a faixa de rótulos fica ACIMA do gráfico e a altura cresce na mesma medida (o gráfico em si não encolhe)
     const rotMand=colocarMandatos(Array.isArray(cfg.mandatos)?cfg.mandatos.filter(m=>m.inicio>=ini&&m.inicio<=fim):[],d=>M.l+(T(d)-t0)/(t1-t0||1)*iw,W,estreito?3:2);
@@ -465,16 +514,17 @@ function Grafico(raiz,cfg){
       }
     }
     // séries (quebra de linha onde falta período)
-    const passoM=f=>f==='T'?3:1, mi=d=>(+d.slice(0,4))*12+(+d.slice(5,7));
+    const passoM=f=>f==='T'?3:f==='A'?12:1, mi=d=>(+d.slice(0,4))*12+(+d.slice(5,7));
     cfg.series.forEach((s,i)=>{
       const pts=vis(s); let seg=[], segs=[seg];
       pts.forEach((p,k)=>{ if(k&&mi(p[0])-mi(pts[k-1][0])>passoM(s.freq)*1.5){ seg=[]; segs.push(seg); } seg.push(p); });
       segs.forEach(sg=>{ if(sg.length>1) el('polyline',{class:'s'+i,points:sg.map(p=>`${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join(' ')}); });
+      if(cfg.marcarPontos) pts.forEach(p=>el('circle',{class:'pt p'+i,cx:X(p[0]).toFixed(1),cy:Y(p[1]).toFixed(1),r:2.5}));   // séries anuais: cada ano é um ponto
     });
     // rótulos diretos no fim das linhas (afastados se colidirem)
     const rot=cfg.series.map((s,i)=>{ const p=vis(s).slice(-1)[0]; return p&&{i,y:Y(p[1]),txt:cfg.rotulos?cfg.rotulos[i]:s.nome,x:X(p[0])}; }).filter(Boolean).sort((a,b)=>a.y-b.y);
     for(let k=1;k<rot.length;k++) if(rot[k].y-rot[k-1].y<14) rot[k].y=rot[k-1].y+14;
-    if(!estreito) rot.forEach(r=>{ const tx=el('text',{x:r.x+6,y:r.y+4,class:'rot-s'+r.i}); tx.textContent=r.txt; });
+    if(direto) rot.forEach(r=>{ const tx=el('text',{x:r.x+6,y:r.y+4,class:'rot-s'+r.i}); tx.textContent=r.txt; });
     // anotações (fato datado e fonte, listadas sob o gráfico)
     (cfg.anotacoes||[]).forEach((n,k)=>{
       if(n.data<ini||n.data>fim) return; const x=X(n.data);
@@ -496,9 +546,13 @@ function Grafico(raiz,cfg){
       k=Math.max(0,Math.min(base.length-1,k)); idx=k; const d=base[k][0], x=X(d);
       mira.style.display=''; mira.querySelector('line').setAttribute('x1',x); mira.querySelector('line').setAttribute('x2',x);
       let html=`<b>${cfg.rotData(d,cfg.series[0].freq)}</b>`;
-      cfg.series.forEach((s,i)=>{ const p=s.pontos.find(q=>q[0]===d)||s.pontos.filter(q=>q[0]<=d).slice(-1)[0];
+      cfg.series.forEach((s,i)=>{ const rotS=esc(cfg.rotulos?cfg.rotulos[i]:s.nome);
+        // `estrito` (só em "Mais indicadores"): vale o valor do próprio período; no meio da série, a falta vira "Dados indisponíveis", nunca o valor do mês anterior
+        const p=s.pontos.find(q=>q[0]===d)||(cfg.estrito?null:s.pontos.filter(q=>q[0]<=d).slice(-1)[0]);
         if(p&&(T(d)-T(p[0]))<100*86400000){ bolas[i].setAttribute('cx',x); bolas[i].setAttribute('cy',Y(p[1])); bolas[i].style.display='';
-          html+=`<span class="l">${esc(cfg.rotulos?cfg.rotulos[i]:s.nome)}: <b>${fv(p[1])}</b></span>`; } else bolas[i].style.display='none'; });
+          html+=`<span class="l">${rotS}: <b>${fv(p[1])}</b></span>`; }
+        else { bolas[i].style.display='none';
+          if(cfg.estrito&&s.pontos.length&&d>s.pontos[0][0]&&d<s.pontos[s.pontos.length-1][0]) html+=`<span class="l">${rotS}: Dados indisponíveis</span>`; } });
       if(cfg.banda){ const b=cfg.banda.pontos.find(q=>q[0]===d); if(b) html+=`<span class="l">Meta: ${fy(b[1])} (intervalo de ${fy(b[2])} a ${fy(b[3])})</span>`; }
       dica.innerHTML=html; dica.classList.add('on');
       const w=caixa.clientWidth, dw=dica.offsetWidth, left=x+14+dw>w?x-14-dw:x+14; dica.style.left=Math.max(0,left)+'px'; dica.style.top=(M.t+4)+'px';
@@ -762,8 +816,230 @@ function desenharTemas(){
   document.getElementById('temasNota').textContent=MAR?`${nf0.format(marcosFiltrados().length)} marcos (EC e LC) com esse tema desde 1988`:'';
 }
 
+/* ===================================================================== exportações (Comex Stat) */
+/* Treemap em SVG, algoritmo próprio (squarified), sem biblioteca e sem CDN. Área = valor exportado (US$ FOB, dólares correntes). Tinta neutra: nenhuma cor do espectro,
+   e nenhuma cor julga. A frase de abertura vem PRONTA do arquivo (gerada dos números em scripts/comex.py). Os arquivos por ano e modo só são baixados quando escolhidos. */
+let EXI=null; const EXC={}, EXCOL=new Intl.Collator('pt-BR');
+const EXS={modo:'destino',ano:null,tabela:false,ordem:{col:'valor',dir:'desc'},fixo:null};
+const usd=v=>abs(v)>=1e9?`US$ ${fmt(v/1e9,1)} bilhões`:abs(v)>=1e6?`US$ ${fmt(v/1e6,0)} milhões`:abs(v)>=1e3?`US$ ${fmt(v/1e3,0)} mil`:`US$ ${nf0.format(Math.round(v))}`;
+const pcx=(v,t)=>`${fmt(v/t*100,v/t<0.001?2:1)}%`;
+function squarify(itens,W,H){
+  const soma=itens.reduce((a,i)=>a+i.valor,0), pxPorUsd=W*H/soma, nos=itens.map(i=>({i,a:i.valor*pxPorUsd})), out=[];
+  let X=0,Y=0,w=W,h=H;
+  const pior=(fila,lado)=>{ const s=fila.reduce((a,n)=>a+n.a,0), mx=Math.max(...fila.map(n=>n.a)), mn=Math.min(...fila.map(n=>n.a)); return Math.max(lado*lado*mx/(s*s),s*s/(lado*lado*mn)); };
+  while(nos.length){
+    const lado=Math.min(w,h); const fila=[nos.shift()];
+    while(nos.length&&pior(fila.concat([nos[0]]),lado)<=pior(fila,lado)) fila.push(nos.shift());
+    const s=fila.reduce((a,n)=>a+n.a,0);
+    if(w>=h){ const cw=s/h; let yy=Y; fila.forEach(n=>{ const ch=n.a/cw; out.push({item:n.i,x:X,y:yy,w:cw,h:ch}); yy+=ch; }); X+=cw; w-=cw; }
+    else { const rh=s/w; let xx=X; fila.forEach(n=>{ const rw=n.a/rh; out.push({item:n.i,x:xx,y:Y,w:rw,h:rh}); xx+=rw; }); Y+=rh; h-=rh; }
+  }
+  return out;
+}
+function exAgrupar(arq){      // abaixo de 0,5% do total: "Demais (N)"; a lista completa fica no painel recolhido e na tabela
+  if(arq.cels) return arq.cels;     // o mesmo arquivo é agrupado a cada redesenho (largura que muda, troca de tabela): uma vez só
+  const lim=(EXI.limiarDemais||0.005)*arq.total, grandes=arq.itens.filter(i=>i.valor>=lim), pequenos=arq.itens.filter(i=>i.valor<lim);
+  const cel=grandes.map((i,k)=>({...i,pos:k+1}));
+  if(pequenos.length) cel.push({nome:`Demais (${nf0.format(pequenos.length)})`,valor:pequenos.reduce((a,i)=>a+i.valor,0),demais:true,lista:pequenos});
+  return (arq.cels=cel.sort((a,b)=>b.valor-a.valor));
+}
+function exRotuloCel(c,arq){ return `${c.nome}: ${usd(c.valor)}, ${pcx(c.valor,arq.total)} do valor exportado`; }
+function exLinhas(texto,maxCh,maxLin){
+  const pal=texto.split(' '), lin=[]; let atual='';
+  for(const p of pal){ if(!atual) atual=p; else if((atual+' '+p).length<=maxCh) atual+=' '+p; else { lin.push(atual); atual=p; } }
+  if(atual) lin.push(atual);
+  if(lin.length>maxLin){ const cor=lin.slice(0,maxLin); cor[maxLin-1]=cor[maxLin-1].slice(0,Math.max(1,maxCh-1)).replace(/\s+$/,'')+'…'; return cor; }
+  return lin.map(l=>l.length>maxCh?l.slice(0,Math.max(1,maxCh-1))+'…':l);
+}
+function exDesenhar(){
+  const arq=EXC[`${EXS.modo}-${EXS.ano}`], box=document.getElementById('expTm'); if(!arq) return;
+  const W=Math.max(280,box.clientWidth||600), H=W<560?Math.round(W*1.2):Math.round(Math.min(W*.5,520));
+  const cels=exAgrupar(arq), pos=squarify(cels,W,H), NS='http://www.w3.org/2000/svg';
+  const top5=arq.itens.slice(0,5).map(i=>`${i.nome} (${pcx(i.valor,arq.total)})`).join('; ');
+  box.innerHTML=''; const svg=document.createElementNS(NS,'svg'); svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.setAttribute('width',W); svg.setAttribute('height',H);
+  svg.setAttribute('role','group'); svg.setAttribute('aria-roledescription','treemap'); svg.setAttribute('aria-label',`${document.getElementById('expLegenda').textContent}. ${cels.length} retângulos; os cinco maiores: ${top5}. Use as setas para percorrer os retângulos, ou “Ver como tabela”.`);
+  const el=(n,a,p=svg)=>{ const e=document.createElementNS(NS,n); for(const k in a) e.setAttribute(k,a[k]); p.appendChild(e); return e; };
+  const defs=el('defs',{}), pat=el('pattern',{id:'exp-hach',width:6,height:6,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs); el('line',{x1:0,y1:0,x2:0,y2:6,class:'exp-hl'},pat);
+  const dica=document.createElement('div'); dica.className='dica'; dica.setAttribute('aria-hidden','true');
+  const mostrar=(g,p)=>{ box.querySelectorAll('.exp-cel.on').forEach(x=>x.classList.remove('on')); g.classList.add('on');
+    const c=p.item; dica.innerHTML=`<b>${esc(c.nome)}</b><span class="l">${usd(c.valor)} (valor exportado, US$ FOB)</span><span class="l">${pcx(c.valor,arq.total)} do valor exportado em ${esc(arq.periodo.rotulo)}</span>${c.demais?`<span class="l">${nf0.format(c.lista.length)} itens abaixo de 0,5% cada: veja a lista abaixo do gráfico</span>`:c.codigo?`<span class="l">SH4 ${esc(c.codigo)}</span>`:''}`;
+    dica.classList.add('on'); const dw=dica.offsetWidth, dh=dica.offsetHeight; let x=p.x+p.w/2-dw/2, y=p.y+10; x=Math.max(0,Math.min(W-dw,x)); y=y+dh>H?Math.max(0,p.y+p.h-dh-10):y; dica.style.left=x+'px'; dica.style.top=y+'px'; };
+  const esconder=()=>{ box.querySelectorAll('.exp-cel.on').forEach(x=>x.classList.remove('on')); dica.classList.remove('on'); };
+  const gs=pos.map((p,k)=>{
+    const g=el('g',{class:'exp-cel'+(p.item.demais?' demais':''),role:'img','aria-label':exRotuloCel(p.item,arq),tabindex:k===0?0:-1,'data-k':k});
+    const ix=p.x+1,iy=p.y+1,iw=Math.max(0,p.w-2),ih=Math.max(0,p.h-2);
+    el('rect',{x:ix,y:iy,width:iw,height:ih,rx:3},g);
+    if(p.item.demais) el('rect',{x:ix,y:iy,width:iw,height:ih,rx:3,class:'exp-hach',fill:'url(#exp-hach)'},g);
+    if(iw>=62&&ih>=34){
+      const maxCh=Math.floor((iw-14)/6.4), nome=exLinhas(p.item.nome,maxCh,Math.max(1,Math.min(3,Math.floor((ih-30)/15))));
+      nome.forEach((l,j)=>{ const t=el('text',{x:ix+8,y:iy+16+j*15,class:'exp-t'},g); t.textContent=l; });
+      const t2=el('text',{x:ix+8,y:iy+16+nome.length*15,class:'exp-t2'},g); t2.textContent=pcx(p.item.valor,arq.total);
+      if(ih>=16+nome.length*15+16&&iw>=96){ const t3=el('text',{x:ix+8,y:iy+16+(nome.length+1)*15,class:'exp-t2'},g); t3.textContent=usd(p.item.valor); }
+    }
+    g.addEventListener('pointerenter',e=>{ if(e.pointerType!=='touch') mostrar(g,p); });
+    g.addEventListener('pointerleave',e=>{ if(e.pointerType!=='touch'&&document.activeElement!==g) esconder(); });
+    g.addEventListener('click',e=>{ mostrar(g,p); });        // toque: o retângulo tocado mostra o valor (e continua até tocar noutro lugar)
+    g.addEventListener('focus',()=>mostrar(g,p)); g.addEventListener('blur',esconder);
+    g.addEventListener('keydown',e=>{ const n=gs.length; let j=null;
+      if(e.key==='ArrowRight'||e.key==='ArrowDown') j=(k+1)%n; else if(e.key==='ArrowLeft'||e.key==='ArrowUp') j=(k-1+n)%n; else if(e.key==='Home') j=0; else if(e.key==='End') j=n-1;
+      if(j!=null){ e.preventDefault(); gs[k].setAttribute('tabindex',-1); gs[j].setAttribute('tabindex',0); gs[j].focus(); } });
+    return g; });
+  box.appendChild(svg); box.appendChild(dica);
+}
+function exTabela(arq){
+  const o=EXS.ordem, lista=arq.itens.slice().sort((a,b)=>{ const k=o.col==='nome'?EXCOL.compare(a.nome,b.nome):a.valor-b.valor; return (o.dir==='asc'?1:-1)*(k||EXCOL.compare(a.nome,b.nome)); });
+  const seta=c=>o.col===c?(o.dir==='asc'?' ▲':' ▼'):'', aria=c=>o.col===c?(o.dir==='asc'?'ascending':'descending'):'none';
+  const prod=arq.modo==='produto';
+  return `<div class="tab-val tx exp-scroll"><table><caption>${esc(document.getElementById('expLegenda').textContent)}. Valor exportado em US$ FOB, dólares correntes. ${nf0.format(lista.length)} linhas.</caption>
+    <thead><tr><th scope="col" aria-sort="${aria('nome')}"><button type="button" class="exp-ord" data-col="nome">${prod?'Produto (SH4)':'País de destino'}${seta('nome')}</button></th>
+    <th scope="col" class="num" aria-sort="${aria('valor')}"><button type="button" class="exp-ord" data-col="valor">Valor (US$ FOB)${seta('valor')}</button></th><th scope="col" class="num">Participação</th></tr></thead>
+    <tbody>${lista.map(i=>`<tr><td>${prod?`<span class="exp-cod">${esc(i.codigo)}</span> `:''}${esc(i.nome)}</td><td class="num">${nf0.format(i.valor)}</td><td class="num">${pcx(i.valor,arq.total)}</td></tr>`).join('')}</tbody></table></div>
+    ${prod&&arq.residuo?`<p class="ind-fonte">A soma das posições SH4 fica US$ ${nf0.format(arq.residuo)} abaixo do total do período (a consulta por NCM soma o total exato); a fonte não explica a diferença.</p>`:''}`;
+}
+function exAtualizar(){
+  const arq=EXC[`${EXS.modo}-${EXS.ano}`]; if(!arq) return;
+  const rot=arq.modo==='destino'?'Valor exportado por país de destino':'Valor exportado por produto (posição SH4)';
+  document.getElementById('expLegenda').textContent=`${rot}, ${arq.periodo.rotulo}`;
+  document.getElementById('expFrase').textContent=arq.frase;
+  document.getElementById('expNotaDestino').hidden=EXS.modo!=='destino'; document.getElementById('expNotaProduto').hidden=EXS.modo!=='produto';
+  const cels=exAgrupar(arq), dem=cels.find(c=>c.demais), dd=document.getElementById('expDemais');
+  dd.hidden=!dem;
+  if(dem){ document.getElementById('expDemaisTit').textContent=`${dem.nome}: ${usd(dem.valor)}, ${pcx(dem.valor,arq.total)} do valor exportado (lista)`;
+    document.getElementById('expDemaisLista').innerHTML=`<div class="tab-val tx exp-scroll"><table><thead><tr><th scope="col">${arq.modo==='produto'?'Produto (SH4)':'País de destino'}</th><th scope="col" class="num">Valor (US$ FOB)</th><th scope="col" class="num">Participação</th></tr></thead><tbody>${dem.lista.map(i=>`<tr><td>${esc(i.nome)}</td><td class="num">${nf0.format(i.valor)}</td><td class="num">${pcx(i.valor,arq.total)}</td></tr>`).join('')}</tbody></table></div>`; }
+  const tb=document.getElementById('expTabela'), bt=document.getElementById('expTabBt');
+  bt.disabled=false; bt.setAttribute('aria-pressed',String(EXS.tabela)); bt.textContent=EXS.tabela?'Ver como gráfico':'Ver como tabela';
+  document.getElementById('expTm').hidden=EXS.tabela; tb.hidden=!EXS.tabela;
+  if(EXS.tabela){ tb.innerHTML=exTabela(arq); tb.querySelectorAll('.exp-ord').forEach(b=>b.addEventListener('click',()=>{ const c=b.dataset.col; EXS.ordem=EXS.ordem.col===c?{col:c,dir:EXS.ordem.dir==='asc'?'desc':'asc'}:{col:c,dir:c==='nome'?'asc':'desc'}; exAtualizar(); document.querySelector(`#expTabela [data-col="${c}"]`).focus(); })); }
+  else exDesenhar();
+  const dias=EXI.verificadoEm?Math.floor((Date.now()-Date.parse(EXI.verificadoEm+'T12:00:00Z'))/864e5):null;
+  document.getElementById('expFonte').innerHTML=`Fonte: <a href="${esc(arq.fonte.url)}" target="_blank" rel="noopener">${esc(arq.fonte.nome)}</a>, API pública (<a href="${esc(arq.fonte.documentacao)}" target="_blank" rel="noopener">documentação</a>). Valor US$ FOB, ${esc(arq.unidade.replace(/^US\$ FOB \(|\)$/g,''))}, ${esc(arq.periodo.rotulo)}; números coletados em ${dataBR(arq.coletadoEm)} e conferidos com a fonte em ${dataBR(EXI.verificadoEm)} (a fonte atualizou os dados em ${dataBR(EXI.atualizadoEmFonte)}).${dias!=null&&dias>14?` <b>Atenção: a coleta não é conferida há ${dias} dias; os números abaixo são os da última coleta.</b>`:''}`;
+}
+async function exCarregar(){
+  const chave=`${EXS.modo}-${EXS.ano}`, box=document.getElementById('expTm');
+  if(!EXC[chave]){ const a=await buscaJson(`dados/comex/${chave}.json`);
+    if(!a){ if(!EXS.tabela) box.innerHTML=`<p class="indisp">Dados indisponíveis. O arquivo de ${EXS.modo==='destino'?'destinos':'produtos'} de ${EXS.ano} não pôde ser carregado.</p>`; document.getElementById('expFrase').textContent=''; return; }
+    EXC[chave]=a; }
+  exAtualizar();
+}
+async function montarExportacoes(){
+  const sel=document.getElementById('expAno'), box=document.getElementById('expTm');
+  EXI=await buscaJson('dados/comex/indice.json');
+  if(!EXI||!Array.isArray(EXI.anos)||!EXI.anos.length){ box.innerHTML='<p class="indisp">Dados indisponíveis. O arquivo das exportações ainda não foi gerado ou não pôde ser carregado.</p>'; return; }
+  EXS.ano=EXI.anoPadrao;
+  sel.innerHTML=EXI.anos.slice().reverse().map(a=>`<option value="${a.ano}"${a.ano===EXS.ano?' selected':''}>${a.fechado?a.ano:`${a.ano} (${a.rotulo.replace(/\/\d+$/,'')})`}</option>`).join(''); sel.disabled=false;
+  sel.addEventListener('change',()=>{ EXS.ano=+sel.value; exCarregar(); });
+  document.querySelectorAll('#expModo button').forEach(b=>b.addEventListener('click',()=>{ EXS.modo=b.dataset.modo; document.querySelectorAll('#expModo button').forEach(x=>{ const on=x===b; x.classList.toggle('on',on); x.setAttribute('aria-pressed',String(on)); }); EXS.ordem={col:'valor',dir:'desc'}; exCarregar(); }));
+  document.getElementById('expTabBt').addEventListener('click',()=>{ EXS.tabela=!EXS.tabela; exAtualizar(); });
+  document.addEventListener('pointerdown',e=>{ if(e.target.closest&&!e.target.closest('.exp-cel,.dica')){ box.querySelectorAll('.exp-cel.on').forEach(x=>x.classList.remove('on')); const d=box.querySelector('.dica'); if(d) d.classList.remove('on'); } });   // toque fora de um retângulo fecha o valor mostrado
+  let w0=box.clientWidth; new ResizeObserver(()=>{ const w=box.clientWidth; if(!EXS.tabela&&w&&Math.abs(w-w0)>2){ w0=w; exDesenhar(); } }).observe(box);
+  exCarregar();
+}
+
+/* ===================================================================== mais indicadores (trabalho, renda e setor externo) */
+/* Bloco recolhido, abaixo da agenda. Lê dados/contexto/trabalho.json (só quando alguém o abre). Os textos de abertura de cada seção vêm PRONTOS do arquivo:
+   são gerados dos números no script, nunca escritos aqui. Nenhuma cor julga: linhas em tinta, distintas por traço (sólido, tracejado, pontilhado…). */
+let TR=null, TR_P=null;
+const rotTM=d=>{ const a=+d.slice(0,4), m=+d.slice(5,7), t=a*12+m-3, a0=Math.floor(t/12), m0=t%12; return a0===a?`${MES[m0]}–${MES[m-1]}/${a}`:`${MES[m0]}/${a0}–${MES[m-1]}/${a}`; };
+const ROTD={tm:rotTM,tri:rotTri,mes:rotMes,ano:d=>d.slice(0,4)};
+const FMT={
+  reais:{y:v=>fmt(v,0),v:v=>`R$ ${fmt(v,0)}`},
+  milhoes:{y:v=>fmt(v,0),v:v=>`${fmt(v,1)} milhões`},
+  bilhoes:{y:v=>fmt(v,0),v:v=>`R$ ${fmt(v,1)} bilhões`},
+  pct:{y:v=>fmt(v,0)+'%',v:v=>fmt(v,1)+'%'},
+  pct2:{y:v=>fmt(v,1)+'%',v:v=>`${sinal(v)}${fmt(abs(v),2)}%`},
+  gini:{y:v=>fmt(v,2),v:v=>fmt(v,3)},
+  usbi:{y:v=>fmt(v,0),v:v=>`${sinal(v)}US$ ${fmt(abs(v),1)} bi`},
+  trilhoes:{y:v=>fmt(v,1),v:v=>`R$ ${fmt(v,2)} tri`}
+};
+const linkF=f=>`<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`;
+function miTexto(s){
+  const f=s.fato.data?s.fato:(s.fato.renda||s.fato);
+  const extra=[s.notaFixa,s.inicioNota,s.lacunaNota,s.notaNominal].filter(Boolean).map(t=>`<p class="ind-fonte mi-nota">${esc(t)}</p>`).join('');
+  return `<div class="mi-q" id="mi-${s.id}"><h3>${esc(s.titulo)}</h3><p class="mi-frase">${esc(s.frase)}</p><p class="ind-def">${esc(s.definicao)}</p>
+    ${s.real?`<p class="ind-def mi-real">${esc(s.real)}</p>`:''}${extra}
+    <p class="ind-fonte">Fonte${s.fontes.length>1?'s':''}: ${s.fontes.map(linkF).join('; ')}. Dados até <b>${esc(f.rotulo)}</b>; coletados em ${dataBR(TR.coletadoEm)}.</p></div>`;
+}
+function miGraficoHTML(id){
+  const g=TR.graficos[id];
+  const leg=g.series.map((s,i)=>`<span><svg class="sw s${i}" width="28" height="8" viewBox="0 0 28 8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4"/></svg>${esc(s.nome)} <small>(desde ${ROTD[g.rotData](s.pontos[0][0])})</small></span>`).join('');
+  const curtas=g.notas.map(n=>TR.notas[n].curta).filter(Boolean).map(t=>`<p class="ind-fonte mi-nota">${esc(t)}</p>`).join('');
+  return `<figure class="mi-graf" id="mi-graf-${id}"><figcaption>${esc(g.titulo)}</figcaption>
+    <div id="mi-g-${id}"></div><div class="gr-leg mi-leg">${leg}</div>${curtas}
+    <p class="fixa peq">Este gráfico não mostra que uma lei causou a variação de nenhum indicador.</p>
+    <details class="avanc" id="mi-a-${id}"><summary>Camada avançada: notas de método, conferências, valores e fontes</summary><div id="mi-av-${id}"></div></details></figure>`;
+}
+function miAvancada(id){
+  const g=TR.graficos[id], av=document.getElementById(`mi-av-${id}`), rot=ROTD[g.rotData], fm=FMT[g.fmt];
+  const sec=TR.secoes.find(x=>x.grafico===id||x.grafico2===id)||{fontes:[]};
+  const fontes=(sec.fontes||[]).map(f=>`<li>${linkF(f)}${f.api?` · <a href="${esc(f.api)}" target="_blank" rel="noopener">dados em JSON</a>`:''}</li>`).join('');
+  const notas=g.notas.map(n=>{ const t=TR.notas[n]; return `<li>${esc(t.texto)}${(t.fontes||[]).length?` Fonte: ${t.fontes.map(linkF).join('; ')}.`:''}</li>`; }).join('');
+  let conf='';
+  const C=TR.conferencias||{};
+  if(id==='g_massa'&&C.massaIdentidade){ const m=C.massaIdentidade; conf=`<h4>Conferência (só reportada)</h4><p class="ind-fonte">Pessoas ocupadas × rendimento médio, em relação à massa publicada: entre ${sinal(m.minimo)}${fmt(abs(m.minimo),1)}% e ${sinal(m.maximo)}${fmt(abs(m.maximo),1)}% nos ${nf0.format(m.pontos)} trimestres móveis (${sinal(m.ultimo)}${fmt(abs(m.ultimo),1)}% no último). ${esc(m.nota)}</p>`; }
+  if(id==='g_tc'&&sec.decomposicao){ const d=sec.decomposicao, ln=(n,v)=>`<tr><td>${n}</td><td>${sinal(v)}US$ ${fmt(abs(v)/1000,1)} bi</td></tr>`;
+    conf=`<h4>Decomposição aritmética, 12 meses até ${rotMes(d.data)}</h4><div class="tab-val tx"><table><tbody>${ln('Bens',d.bens)}${ln('Serviços',d.servicos)}${ln('Renda primária',d.renda_prim)}${ln('Renda secundária',d.renda_sec)}${ln('Saldo das transações correntes',d.saldo)}</tbody></table></div>
+      <p class="ind-fonte">Os quatro componentes somam o saldo (diferença máxima de arredondamento: US$ ${fmt(C.transacoesIdentidade.componentesMenosSaldoMensal,1)} milhões por mês). A decomposição é só aritmética: não diz qual componente causou a variação do saldo.</p>`; }
+  if(id==='g_rndb'&&sec.decomposicao){ const d=sec.decomposicao, ln=(n,v)=>`<tr><td>${n}</td><td>R$ ${fmt(v/1e6,3)} tri</td></tr>`;
+    conf=`<h4>Do PIB à renda nacional disponível bruta, ${rotTri(d.data)} (valores correntes)</h4><div class="tab-val tx"><table><tbody>${ln('PIB',d.pib)}<tr><td>(+) Salários líquidos recebidos do exterior</td><td>R$ ${fmt(d.salarios/1e6,3)} tri</td></tr><tr><td>(+) Rendas de propriedade líquidas recebidas do exterior</td><td>−R$ ${fmt(abs(d.rendasPropriedade)/1e6,3)} tri</td></tr>${ln('(=) Renda nacional bruta',d.rnb)}<tr><td>(+) Outras transferências correntes líquidas do exterior</td><td>R$ ${fmt(d.transferencias/1e6,3)} tri</td></tr>${ln('(=) Renda nacional disponível bruta',d.rndb)}</tbody></table></div>
+      <p class="ind-fonte">Conta conferida a cada rodada: a diferença máxima nos ${nf0.format(g.series[0].pontos.length)} trimestres é de R$ ${fmt(C.rndbIdentidade.maximo,1)} milhões (arredondamento).</p>`; }
+  av.innerHTML=`<h4>Fontes</h4><ul>${fontes}</ul><h4>Notas de método</h4><ol>${notas}</ol>${conf}
+    <h4>Valores</h4><p class="ind-fonte">Frequência da fonte, sem interpolação; “Dados indisponíveis” onde a fonte não publica. <button class="limpar" type="button" data-tab>Mostrar a tabela</button></p><div class="tab-val valores" hidden></div>`;
+  av.querySelector('[data-tab]').addEventListener('click',e=>{ const box=av.querySelector('.tab-val.valores'); box.hidden=false; e.target.hidden=true;
+    const ss=g.series, mapas=ss.map(s=>new Map(s.pontos)), datas=[...new Set(ss.flatMap(s=>s.pontos.map(p=>p[0])))].sort().reverse();
+    box.innerHTML=`<table><thead><tr><th>Período</th>${ss.map(s=>`<th>${esc(s.nome)}</th>`).join('')}</tr></thead><tbody>${datas.map(d=>`<tr><td>${rot(d)}</td>${ss.map((s,i)=>{ const v=mapas[i].get(d); const dentro=d>=s.pontos[0][0]&&d<=s.pontos[s.pontos.length-1][0]; return `<td>${v!==undefined?fm.v(v):(dentro?'Dados indisponíveis':'—')}</td>`; }).join('')}</tr>`).join('')}</tbody></table>`; });
+}
+function miDesenhar(id,frase){
+  const g=TR.graficos[id], fm=FMT[g.fmt], ini=ROTD[g.rotData](g.series[0].pontos[0][0]), fim=ROTD[g.rotData](g.series[0].pontos.slice(-1)[0][0]);
+  Grafico(document.getElementById(`mi-g-${id}`),{series:g.series,rotulos:g.series.map(s=>s.nome),fmtY:fm.y,fmtV:fm.v,rotData:ROTD[g.rotData],zero:g.zero,estrito:true,
+    rotulosDiretos:g.rotulosDiretos,marcarPontos:g.marcarPontos,rotulo:`${g.titulo}. ${frase} Série de ${ini} a ${fim}, em frequência original.`});
+  miAvancada(id);
+}
+function montarMais(){
+  const box=document.getElementById('miCorpo');
+  if(!TR||!Array.isArray(TR.secoes)||!TR.secoes.length){ box.innerHTML='<p class="indisp">Dados indisponíveis. O arquivo deste bloco ainda não foi gerado ou não pôde ser carregado.</p>'; return; }
+  const dias=TR.coletadoEm?Math.floor((Date.now()-Date.parse(TR.coletadoEm+'T12:00:00Z'))/864e5):null;
+  const aviso=dias!=null&&dias>3?`<p class="fixa peq">Esta parte não foi atualizada desde ${dataBR(TR.coletadoEm)} (a última coleta bem-sucedida): os números abaixo são dessa data.</p>`:'';
+  let html=`<p class="ind-def">Cada seção abre com uma frase montada dos números da própria série. “Maior” e “menor” valem para toda a série, que começa onde a fonte começa. Os valores reais estão em reais do trimestre mais recente. ${esc((TR.notas.pnad||{}).curta||'')}</p>${aviso}`;
+  const feitos=new Set(), graficos=[];
+  TR.secoes.forEach(s=>{
+    if(feitos.has(s.id)) return;
+    if(s.grupo){ const gr=TR.secoes.filter(x=>x.grupo===s.grupo); gr.forEach(x=>{ feitos.add(x.id); html+=miTexto(x); });
+      html+=miGraficoHTML(s.grafico); graficos.push([s.grafico,gr.map(x=>x.frase).join(' ')]); return; }
+    feitos.add(s.id); html+=`<div class="mi-sec">${miTexto(s)}`;
+    [s.grafico,s.grafico2].filter(Boolean).forEach(id=>{ html+=miGraficoHTML(id); graficos.push([id,s.frase]); }); html+='</div>';
+  });
+  const p=TR.paraSaberMais;
+  if(p) html+=`<div class="mi-sec mi-mais"><h3>Para saber mais: ${esc(p.titulo.toLowerCase())}</h3><p class="ind-def">${esc(p.texto)}</p><p><a href="${esc(p.link.url)}" target="_blank" rel="noopener">${esc(p.link.nome)} ↗</a></p></div>`;
+  box.innerHTML=html;
+  graficos.forEach(([id,frase])=>miDesenhar(id,frase));
+}
+function abrirMais(){       // um pedido só, mesmo com cliques seguidos; se falhar, a próxima vez que a página abrir tenta de novo
+  if(!TR_P) TR_P=buscaJson('dados/contexto/trabalho.json').then(d=>{ TR=d; montarMais(); if(!d) TR_P=null; });
+  return TR_P;
+}
+/* Duas páginas dentro do painel "Números oficiais da economia": 1 = preços, contas públicas e PIB; 2 = trabalho, renda e setor externo.
+   O botão ao lado do título alterna; #mais-indicadores na URL abre a página 2. A página 2 só carrega o JSON na primeira vez que aparece. */
+function irParaPagina(p,rolar){
+  const dois=p===2, pg1=document.getElementById('pg1'), pg2=document.getElementById('mais-indicadores'); if(!pg1||!pg2) return;
+  pg1.hidden=dois; pg2.hidden=!dois;
+  document.getElementById('pgN').textContent=`Página ${p} de 2`;
+  document.getElementById('pgBtn').innerHTML=dois?'<span aria-hidden="true">←</span> Preços, contas públicas e PIB':'Trabalho, renda e setor externo <span aria-hidden="true">→</span>';
+  if(dois) abrirMais();       // com a página visível: o gráfico mede a largura real da caixa
+  try{ history.replaceState(null,'',dois?'#mais-indicadores':location.pathname+location.search); }catch(e){}
+  if(rolar) document.getElementById('indicadores').scrollIntoView({behavior:'smooth',block:'start'});
+}
+(function(){
+  const bt=document.getElementById('pgBtn'); if(!bt) return;
+  const atual=()=>document.getElementById('mais-indicadores').hidden?1:2;
+  bt.addEventListener('click',()=>irParaPagina(atual()===1?2:1,true));
+  document.querySelectorAll('[data-pg]').forEach(b=>b.addEventListener('click',()=>irParaPagina(+b.dataset.pg,true)));
+  window.addEventListener('hashchange',()=>{ if(location.hash==='#mais-indicadores') irParaPagina(2,true); });
+  if(location.hash==='#mais-indicadores') irParaPagina(2,false);
+})();
+
 /* ===================================================================== início */
 (async function(){
+  montarExportacoes();     // não depende dos arquivos abaixo: o pedido sai junto com eles, em vez de esperar o mais lento (a agenda)
   const [ind,ag,mar,man]=await Promise.all([buscaJson('dados/contexto/indicadores.json'),buscaJson('dados/contexto/agenda.json'),buscaJson('dados/contexto/marcos.json'),buscaJson('dados/contexto/mandatos.json')]);
   IND=ind; AG=ag; MAR=mar;
   MAN=man&&Array.isArray(man.mandatos)&&man.mandatos.length?man:null;     // sem o arquivo, sem traços (e nenhum aviso sobre eles)

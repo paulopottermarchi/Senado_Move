@@ -95,7 +95,11 @@ def buscar(url, params=None, limitador=LIM_OUTROS, tentativas=5):
             time.sleep(2 ** n)
             continue
         r.raise_for_status()
-        return r.json()
+        try:
+            return r.json()
+        except ValueError:      # corpo vazio ou página de bloqueio no lugar do JSON (o SGS faz isso de vez em quando): repete
+            time.sleep(2 ** n)
+            continue
     raise RuntimeError(f"falhou após {tentativas} tentativas: {url} {params or ''}")
 
 
@@ -999,6 +1003,14 @@ def main():
         resumo_mandatos(gravar_mandatos(rede, gerado))
     except Exception as e:
         falhar("mandatos", e)
+
+    # ---- mais indicadores: trabalho, renda e setor externo (módulo irmão; falha sozinho e mantém o arquivo anterior)
+    try:
+        import contexto_trabalho
+        t = contexto_trabalho.gerar(sys.modules[__name__], rede, gerado)
+        print(f"Trabalho, renda e setor externo: {len(t['secoes'])} seções, {len(t['graficos'])} gráficos, {contexto_trabalho.pontos_do_bloco(t)} pontos")
+    except Exception as e:
+        falhar("trabalho", e)
 
     if indicadores:
         gravar_json(SAIDA / "indicadores.json", indicadores)

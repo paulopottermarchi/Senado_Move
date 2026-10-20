@@ -108,6 +108,29 @@
 .fontes{margin-top:8px;padding-left:20px;font-size:13px;line-height:1.7}
 .sist{font-weight:400;color:var(--tinta3);font-size:12px}
 
+/* Pessoas documentadas: seção recolhida, só aparece se dados/obras_pessoas.json existir */
+.pd{margin-top:12px;border:1px solid var(--linha);border-radius:var(--raio-p);background:var(--papel)}
+.pd>summary{cursor:pointer;padding:12px 16px;min-height:44px;font-size:14px;font-weight:600;list-style:none;display:flex;flex-wrap:wrap;
+            justify-content:space-between;align-items:center;gap:4px 12px}
+.pd>summary::-webkit-details-marker{display:none}
+.pd>summary::before{content:"▸";margin-right:8px;color:var(--tinta3)}
+.pd[open]>summary::before{content:"▾"}
+.pd>summary small{flex:1 1 auto;text-align:right;font-weight:400;font-size:12.5px;color:var(--tinta3)}
+.pd[open]>summary{border-bottom:1px solid var(--linha2)}
+.pd-in{padding:4px 16px 16px}
+.pd h4{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta3);margin-top:20px}
+.pd h4:first-child{margin-top:12px}
+.pd .pq{margin-top:4px}
+.pd .pe .v{font-weight:400;font-size:13px;color:var(--tinta2)}
+.pd .pe a{font-size:13px}
+.pd .trav{color:var(--tinta3);font-weight:400}
+.pd .cob-linha{font-size:13px;color:var(--tinta2);margin-top:8px}
+.pd .rep{margin-top:16px;font-size:13px}
+.pd-cob table{border-collapse:collapse;font-size:13px;margin-top:8px;width:100%;max-width:560px}
+.pd-cob th,.pd-cob td{padding:6px 10px;text-align:right;border-bottom:1px solid var(--linha2)}
+.pd-cob th:first-child,.pd-cob td:first-child{text-align:left}
+.pd-cob th{font-weight:600;color:var(--tinta2)}
+.pd-cob summary{cursor:pointer;font-size:13px;font-weight:600;padding:10px 0;min-height:44px;display:flex;align-items:center}
 .vazio{padding:28px 0;color:var(--tinta2);font-size:14px}
 .erro{padding:20px;border:1px solid var(--linha);border-radius:var(--raio-p);margin-top:20px;font-size:14px}
 
@@ -167,6 +190,10 @@
          do governo federal.</span> Obra estadual ou municipal contratada pelo próprio estado ou prefeitura
          (Metrô, CPTM, DER, prefeituras) não aparece: o contrato dela não está nessa base. Valores em reais
          correntes, sem correção pela inflação.</p>
+      <div id="cobPessoas" class="pd-cob" hidden>
+        <p><b>Pessoas documentadas.</b> <span id="cobPessoasTxt"></span></p>
+        <details><summary>Cobertura por ano da licitação</summary><div id="cobAno"></div></details>
+      </div>
     </div>
   </div>
 
@@ -213,6 +240,15 @@
        Código incompleto não é completado por aproximação. <b>Nenhuma pessoa é ligada a uma obra pelo nome</b>:
        menção em proposição, discurso ou notícia não entra, porque nomes de obra se repetem ("Linha 17",
        "Hospital Regional") e o mesmo vale para nomes de gente.</p>
+    <p id="metPessoas" hidden><b>Pessoas documentadas</b>: três fontes, e nada além delas. <i>Quem assinou pelo órgão</i> vem do PDF do
+       contrato ou do termo anexado no Contratos.gov.br: entra o representante do órgão contratante cujo nome está no bloco de assinatura
+       eletrônica e no trecho do preâmbulo que identifica o contratante, e só se o número do contrato (ou o processo) consta no texto
+       do PDF. Testemunhas, quem assina pela empresa e os demais signatários não são listados. PDF só imagem não é lido (não há OCR).
+       Nome que a extração do texto corrompeu só é publicado se a grafia for reconciliada com o preâmbulo do mesmo documento ou com outro
+       documento do mesmo órgão; se não, fica de fora. <i>Responsável no aviso de licitação</i> vem do Compras.gov.br, por licitação e
+       UASG, com nome e cargo como a fonte escreve; não diz quem conduziu a sessão nem quem homologou. <i>Responsável no contrato</i> é o
+       gestor registrado no sistema de contratos; fiscais aparecem só em número. Onde falta dado a página mostra «—» e o motivo, nunca
+       uma estimativa. Nada disso indica responsabilidade por aumento de valor, irregularidade ou mérito de quem quer que seja.</p>
     <p id="rodapeData"></p>
   </div>
 </footer>
@@ -277,7 +313,7 @@ const pctDe=o=>o.inicial>0?(o.atual/o.inicial-1)*100:null;
 const listaCurta=(l,n=3)=>l.length<=n+1?l.join(', '):`${l.slice(0,n).join(', ')} e mais ${nf.format(l.length-n)}`;
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 
-let OBRAS=[], META={}, lista=[], mostrando=30, aberta=null;
+let OBRAS=[], META={}, lista=[], mostrando=30, aberta=null, PES=null;
 
 function textoBusca(o){
   return norm([o.nome,o.descricao,o.orgao,...o.executores,...o.municipios,
@@ -410,6 +446,89 @@ function eventos(o){
   return ev.filter(e=>e.d).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
 }
 
+// ---- Pessoas documentadas (dados/obras_pessoas.json, opcional: sem o arquivo a página é a de antes) ----
+const REPORTAR='https://github.com/paulopottermarchi/Senado_Move/issues/new';
+function linkErro(o){
+  const corpo=`Obra: ${o.id} (${o.nome})\nContratos: ${o.contratos.map(c=>c.numero).join(', ')}\nPágina: ${location.origin}${location.pathname}?obra=${encodeURIComponent(o.id)}\n\n`+
+    `O que está errado (diga o bloco: "Quem assinou pelo órgão", "aviso de licitação" ou "registro do contrato"):\n`;
+  return `${REPORTAR}?title=${encodeURIComponent('Pessoas documentadas: erro na obra '+o.id)}&body=${encodeURIComponent(corpo)}`;
+}
+const plural=(n,u,p)=>`${nf.format(n)} ${n===1?u:p}`;
+const docLink=d=>`<a href="${esc(d.url)}#page=${esc(d.pagina)}" target="_blank" rel="noopener" title="arquivo ${esc(d.arquivoId)} · sha256 ${esc((d.hash||'').slice(0,12))}…">${esc(d.tipo||'documento')}${d.data?' de '+data(d.data):''}, p. ${esc(d.pagina)}</a>`;
+const semDado=(rot,texto)=>`<div class="pe"><span><b class="trav">—</b><small>${rot}${esc(texto)}</small></span><span class="v"></span></div>`;
+
+function blocoAssinou(o,multi){
+  return o.contratos.map(c=>{
+    const b=PES.contratos[c.id]; if(!b) return '';
+    const a=b.assinou, rot=multi?`Contrato ${esc(c.numero)}: `:'';
+    let r=a.pessoas.length?a.pessoas.map(p=>`<div class="pe"><span><b>${esc(p.nomeExibicao||p.nome)}</b>
+        <small>${rot}${esc(p.cargos.length?p.cargos.join('; '):'sem cargo publicável no bloco de assinatura')}${p.funcoes.length?` · função no preâmbulo: ${esc(p.funcoes[0])}`:''}</small></span>
+        <span class="v">${p.docs.slice(0,3).map(docLink).join('<br>')}${p.docs.length>3?`<br>e mais ${plural(p.docs.length-3,'documento','documentos')}`:''}</span></div>`).join('')
+      :semDado(rot,a.lacuna?a.lacuna.texto:'sem dado');
+    const d=a.documentos||{};
+    if(d.total&&d.lidos<d.total) r+=`<p class="cob-linha">${rot}lidos ${d.lidos} de ${d.total} documentos${d.escaneados?` · ${plural(d.escaneados,'escaneado','escaneados')}, sem texto (não há OCR)`:''}${d.indisponiveis?` · ${plural(d.indisponiveis,'indisponível','indisponíveis')}`:''}.</p>`;
+    return r;
+  }).join('');
+}
+function blocoAviso(o,multi){
+  return o.contratos.map(c=>{
+    const b=PES.contratos[c.id]; if(!b) return '';
+    const a=b.aviso, rot=multi?`Contrato ${esc(c.numero)}: `:'';
+    return a.pessoas.length?a.pessoas.map(p=>`<div class="pe"><span><b>${esc(p.nomeExibicao||p.nome)}</b>
+        <small>${rot}${esc(p.cargo||'cargo não informado')} · aviso publicado em ${data(p.dataPublicacao)} · licitação ${esc(c.licitacao||'')} (UASG da compra, identificador ${esc(p.idCompra)})</small></span>
+        <span class="v"><a href="${esc(p.url)}" target="_blank" rel="noopener" title="sha256 ${esc((p.hash||'').slice(0,12))}…">registro no Compras.gov.br</a></span></div>`).join('')
+      :semDado(rot,a.lacuna?a.lacuna.texto:'sem dado');
+  }).join('');
+}
+function blocoRegistro(o,multi){
+  return o.contratos.map(c=>{
+    const b=PES.contratos[c.id]; if(!b) return '';
+    const r=b.registro, rot=multi?`Contrato ${esc(c.numero)}: `:'';
+    let h=r.gestores.length?r.gestores.map(g=>`<div class="pe"><span><b>${esc(g.nomeExibicao||g.nome)}</b>
+        <small>${rot}${esc(g.funcao)} · ${esc(g.situacao||'situação não informada')} · ${g.portaria?`portaria ${esc(g.portaria.numero)}, de ${data(g.portaria.data)}`:`portaria: ${esc(g.portariaMotivo||'—')}`}</small></span>
+        <span class="v">${data(g.de)}${g.ate?` a ${data(g.ate)}`:' em diante'}<br><a href="${esc(r.url)}" target="_blank" rel="noopener">registro do contrato</a></span></div>`).join('')
+      :semDado(rot,r.lacuna?r.lacuna.texto:'sem dado');
+    const outros=Object.entries(r.outros||{});
+    if(outros.length) h+=`<p class="cob-linha">${rot}${outros.map(([f,n])=>`${nf.format(n)} × ${esc(f)}`).join(', ')} — nomes não exibidos.</p>`;
+    return h;
+  }).join('');
+}
+function pessoasDocumentadas(o){
+  const multi=o.contratos.length>1;
+  const cont=(via)=>o.contratos.reduce((s,c)=>{const b=PES.contratos[c.id]; return s+(b?(via==='E2'?b.assinou.pessoas.length:via==='E3'?b.aviso.pessoas.length:b.registro.gestores.length):0)},0);
+  const resumo=`assinou ${cont('E2')||'—'} · aviso ${cont('E3')||'—'} · registro ${cont('E8')||'—'}`;
+  return `<details class="pd"><summary>Pessoas documentadas <small>${resumo}</small></summary><div class="pd-in">
+    <p class="nota">Cada nome vem de um documento ou registro oficial ligado ao contrato por identificador exato (o número do contrato, o processo, ou a licitação e a UASG). São três
+      fontes diferentes, que não dizem a mesma coisa; nenhuma delas diz quem decidiu, quem aprovou aditivo ou quem é responsável por aumento de valor.</p>
+    <h4>Quem assinou pelo órgão</h4>
+    <p class="nota pq"><b>O que é:</b> o representante do órgão contratante que assina o contrato ou o termo aditivo, como o PDF anexado ao contrato mostra: o nome está no bloco de assinatura eletrônica e no trecho do preâmbulo que identifica o contratante, e o número do contrato consta no texto. <b>O que não é:</b> quem fiscalizou, executou ou decidiu a obra; testemunhas, quem assina pela empresa e demais signatários não são listados. PDF só imagem não é lido.</p>
+    <div class="pessoas">${blocoAssinou(o,multi)}</div>
+    <h4>Responsável registrado no aviso de licitação</h4>
+    <p class="nota pq"><b>O que é:</b> o nome e o cargo que o órgão registrou como responsável pelo aviso da licitação no Compras.gov.br, escritos como a fonte escreve. <b>O que não é:</b> quem conduziu a sessão, quem homologou ou quem decidiu o resultado; o cargo registrado pode ser de pregoeiro, de presidente de comissão ou de outra função.</p>
+    <div class="pessoas">${blocoAviso(o,multi)}</div>
+    <h4>Responsável registrado no contrato</h4>
+    <p class="nota pq"><b>O que é:</b> o gestor designado no sistema de contratos, com a função, a situação e o período que o órgão cadastrou. É registro do sistema, não documento assinado. <b>O que não é:</b> quem assinou ou aprovou termo aditivo. Fiscais aparecem só em número, sem nome.</p>
+    <div class="pessoas">${blocoRegistro(o,multi)}</div>
+    <p class="rep">Algo errado? <a href="${esc(linkErro(o))}" target="_blank" rel="noopener">Reportar erro</a> (abre uma Issue no GitHub, sem dados pessoais).</p>
+  </div></details>`;
+}
+function coberturaPessoas(){
+  if(!PES) return;
+  const c=PES._cobertura, f=v=>`${nf.format(v.com_pessoa||0)} de ${nf.format((v.com_pessoa||0)+(v.sem||0))} contratos`;
+  const por=c.porAno||{}, anos=Object.keys(por).sort();
+  const taxa=(a,v)=>(por[a]&&por[a].contratos)?(por[a][v]||0)/por[a].contratos:null;
+  let queda='';
+  const t25=taxa('2025','E3'), ant=anos.filter(a=>a<'2025'&&a!=='sem ano');
+  const antC=ant.reduce((s,a)=>s+por[a].contratos,0), antE3=ant.reduce((s,a)=>s+(por[a].E3||0),0);
+  if(t25!==null&&antC&&t25<0.5*(antE3/antC)) queda=` A cobertura do aviso cai nas licitações de 2025 (${nf.format(por['2025'].E3||0)} de ${nf.format(por['2025'].contratos)} contratos, contra ${nf.format(Math.round(100*antE3/antC))}% das anteriores): nesses avisos a fonte consultada (Compras.gov.br) quase não traz o nome do responsável. O PNCP, onde essas licitações constam, publica o edital e não foi consultado para nomes.`;
+  $('#cobPessoasTxt').innerHTML=`Pessoa identificada, com o documento-fonte, em ${f(c.E2)} pelo PDF do contrato ou do termo (quem assinou pelo órgão), em ${f(c.E3)} pelo aviso de licitação e em ${f(c.E8)} pelo registro do contrato. Onde falta, cada obra mostra «—» e o motivo.${queda}`;
+  const cel=(a,v)=>{const n=por[a][v]||0,t=por[a].contratos; return `${nf.format(n)} <small>(${Math.round(100*n/t)}%)</small>`};
+  $('#cobAno').innerHTML=`<table><thead><tr><th>Ano da licitação</th><th>Contratos</th><th>Assinou pelo órgão</th><th>Aviso de licitação</th><th>Registro do contrato</th></tr></thead><tbody>`+
+    anos.map(a=>`<tr><td>${esc(a)}</td><td>${nf.format(por[a].contratos)}</td><td>${cel(a,'E2')}</td><td>${cel(a,'E3')}</td><td>${cel(a,'E8')}</td></tr>`).join('')+`</tbody></table>`;
+  $('#cobPessoas').hidden=false;
+  const m=$('#metPessoas'); if(m) m.hidden=false;
+}
+
 function detalhe(o){
   const p=pctDe(o), h=[];
   h.push(`<h3>A obra</h3>
@@ -451,7 +570,10 @@ function detalhe(o){
   const resp=o.contratos.flatMap(c=>(c.responsaveis||[]).map(r=>({...r,contrato:c.numero})));
   const gestores=resp.filter(r=>(r.funcao||'').startsWith('Gestor')&&r.nome);
   const outros=resp.filter(r=>!(r.funcao||'').startsWith('Gestor'));
-  if(resp.length){
+  if(PES){
+    h.push(pessoasDocumentadas(o));
+    h.push(`<p><b>Gestão do contrato:</b> está em "Pessoas documentadas", acima, no bloco "Responsável registrado no contrato".</p>`);
+  } else if(resp.length){
     h.push(`<p><b>Gestão do contrato</b> <span class="nota">— servidores designados por portaria para acompanhar a execução;
       aditivo é decidido e assinado pela autoridade do órgão, não por eles.</span></p><div class="pessoas">`+
       gestores.map(r=>`<div class="pe"><span><b>${esc(r.nome)}</b><small>${esc(r.funcao)} do contrato ${esc(r.contrato)} · portaria ${esc(r.portaria||'—')}</small></span>
@@ -513,13 +635,17 @@ function resumo(){
 }
 
 async function carregar(){
+  // camada opcional (sem o arquivo, ainda não publicado, a página fica como era); sai junto com o pedido principal, não depois dele
+  const pPessoas=fetch('dados/obras_pessoas.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
   try{
     const r=await fetch('dados/obras.json',{cache:'no-cache'}); if(!r.ok) throw new Error('HTTP '+r.status);
     const d=await r.json(); META=d; OBRAS=d.obras; OBRAS.forEach(o=>o._busca=textoBusca(o));
   }catch(e){ $('#lista').innerHTML=`<p class="erro">Não foi possível carregar obras.json (${esc(e.message)}).</p>`; return }
+  PES=await pPessoas;
   const sits=[...new Set(OBRAS.map(o=>o.situacao).filter(Boolean))].sort();
   $('#fSit').insertAdjacentHTML('beforeend',sits.map(s=>`<option>${esc(s)}</option>`).join(''));
   resumo();
+  coberturaPessoas();
   const q=new URLSearchParams(location.search);
   if(q.get('ordem')&&$(`#fOrdem option[value="${CSS.escape(q.get('ordem'))}"]`)) $('#fOrdem').value=q.get('ordem');
   filtrar();

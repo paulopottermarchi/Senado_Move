@@ -137,11 +137,25 @@ jobs:
       - name: Contexto econômico (montar com resumos e objetivos)
         run: python scripts/passo.py --opcional contexto.py --so-montar
 
+      # Exportações (Comex Stat, MDIC): valor exportado US$ FOB por destino e por produto (SH4), um arquivo por ano e modo. Os dados
+      # mudam por mês, então o próprio script só roda a cada 7 dias (nas outras rodadas sai na hora). Baixa todos os anos de 1997 em
+      # diante de novo (a fonte revisa) e confere antes de gravar: total por país = total do período, mês faltando, valor negativo,
+      # unidade. Se algo falhar, os arquivos anteriores ficam. A API limita os pedidos (~15 a 20 min por rodada completa).
+      - name: Exportações (Comex Stat)
+        run: python scripts/passo.py --opcional comex.py
+
       # Obras com contrato federal (ObrasGov + Contratos.gov.br + emendas da CGU), só SP por ora.
       # APIs públicas sem chave, uma requisição por segundo; contratos relidos a cada 7 dias.
       # Falha não para a rodada: obras.json fica como estava.
       - name: Obras e contratos
         run: python scripts/passo.py --opcional obras.py
+
+      # Pessoas documentadas das obras: quem assinou pelo órgão (PDF do contrato e dos termos), responsável no aviso de licitação
+      # (Compras.gov.br) e responsáveis do contrato. Só contrato ou termo novo é baixado (cache/pessoas, por arquivo_id e hash).
+      # PUBLICAÇÃO DESLIGADA: sem --publicar o script só escreve em cache/ (arestas, candidato, amostra de validação) e nada vai
+      # para site/. Para ligar, depois de validar cache/amostra_fase1.csv, acrescente --publicar na linha abaixo.
+      - name: Pessoas documentadas das obras
+        run: python scripts/passo.py --opcional pessoas.py
 
       # Senadores (Dados Abertos do Senado, sem chave): autoria, leis, relatorias e votos.
       # Inclui os 309 que já saíram (senadores_antigos.json): a frio leva ~16 min; --minutos (25) limita o tempo, o cache guarda o
