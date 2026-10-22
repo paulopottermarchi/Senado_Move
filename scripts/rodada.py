@@ -7,8 +7,8 @@ Uso:
     python scripts/rodada.py --grupo critico --step atualiza
     python scripts/rodada.py --grupo critico --dry-run
 
-O objetivo é concentrar a ordem da rotina, o tratamento de falhas e as métricas
-por etapa em um único arquivo.
+O objetivo é concentrar a ordem da rotina, o tratamento de falhas, as métricas
+por etapa e os alertas de desempenho em um único arquivo.
 """
 
 from __future__ import annotations
@@ -24,13 +24,15 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent.parent
 PASSO = BASE / "scripts" / "passo.py"
 
-TIME_LIMITS = {
-    "atualiza": 600,
+CRITICAL_LIMITS = {
+    "atualiza": 420,
     "coleta": 1800,
     "votos": 900,
     "blocos": 900,
     "temas": 600,
     "semana": 300,
+}
+OPTIONAL_LIMITS = {
     "notoriedade": 600,
     "wikipedia": 600,
     "noticias": 600,
@@ -115,18 +117,26 @@ def step_command(step: Step) -> list[str]:
     return cmd
 
 
+def get_limit(step: Step) -> float:
+    if step.critical:
+        return CRITICAL_LIMITS.get(step.name, 600)
+    return OPTIONAL_LIMITS.get(step.name, 900)
+
+
 def emit_github_summary(grupo: str, metrics: list[tuple[str, float, str]]) -> None:
     summary_path = os.getenv("GITHUB_STEP_SUMMARY")
     if not summary_path or os.getenv("GITHUB_ACTIONS") != "true":
         return
 
+    total = sum(tempo for _, tempo, _ in metrics)
     with open(summary_path, "a", encoding="utf-8") as f:
-        f.write(f"## Resumo do grupo `{grupo}`\n\n")
+        f.write(f"## Resumo da rodada `{grupo}`\n\n")
+        f.write(f"- Tempo total: {total:.1f}s\n")
+        f.write(f"- Etapas: {len(metrics)}\n\n")
         f.write("| Etapa | Tempo | Status |\n")
         f.write("|---|---:|---|\n")
         for nome, tempo, status in metrics:
-            tempo_fmt = f"{tempo:.1f}s"
-            f.write(f"| {nome} | {tempo_fmt} | {status} |\n")
+            f.write(f"| {nome} | {tempo:.1f}s | {status} |\n")
         f.write("\n")
 
 
@@ -134,10 +144,31 @@ def emit_github_annotation(step: Step, tempo: float, ok: bool) -> None:
     if os.getenv("GITHUB_ACTIONS") != "true":
         return
 
-    limite = TIME_LIMITS.get(step.name, 600 if step.critical else 900)
+    limite = get_limit(step)
     if tempo > limite:
         severidade = "warning" if not step.critical else "error"
         print(f"::{severidade} title={step.name}::Tempo de execução excedeu o limite: {tempo:.1f}s > {limite:.0f}s")
+
+
+def print_final_summary(grupo: str, metrics: list[tuple[str, float, str]], failed: list[str], warnings: list[str]) -> None:
+    total = sum(tempo for _, tempo, _ in metrics)
+    print(f"\n{'=' * 80}")
+    print(f"Resumo da rodada: {grupo}")
+    print(f"Tempo total: {total:.1f}s")
+    print(f"Etapas: {len(metrics)} | Falhas: {len(failed)} | Avisos: {len(warnings)}")
+    print("\nDetalhes:")
+    for nome, tempo, status in metrics:
+        print(f"  - {nome:<20} {tempo:>7.1f}s  {status}")
+    print("=" * 80)
+
+    if failed:
+        print("FALHAS CRÍTICAS:")
+        for nome in failed:
+            print(f"  - {nome}")
+    if warnings:
+        print("AVISOS DE DESEMPENHO:")
+        for nome in warnings:
+            print(f"  - {nome}")
 
 
 def run_step(step: Step, *, dry_run: bool) -> tuple[bool, float]:
@@ -186,6 +217,7 @@ def run_group(grupo: str, *, dry_run: bool, step_name: str | None) -> int:
         status = "ok" if ok else "falhou"
         metrics.append((step.name, tempo, status))
         emit_github_annotation(step, tempo, ok)
+
         if not ok:
             if step.critical:
                 failed.append(step.name)
@@ -195,10 +227,7 @@ def run_group(grupo: str, *, dry_run: bool, step_name: str | None) -> int:
             print(f"\nAVISO: passo opcional '{step.name}' falhou, mas a rodada continua.")
 
     emit_github_summary(grupo, metrics)
-
-    print("\nResumo de tempo por etapa:")
-    for nome, tempo, status in metrics:
-        print(f"- {nome}: {tempo:.1f}s ({status})")
+    print_final_summary(grupo, metrics, failed, warnings)
 
     if failed:
         print("\nResumo: falha crítica em:", ", ".join(failed))
