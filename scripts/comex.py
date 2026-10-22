@@ -68,6 +68,7 @@ _ultimo = [0.0]
 def pedir(metodo, caminho, params=None, corpo=None):
     """Um pedido à API com espera entre pedidos, repetição em 429, 5xx, falha de rede e corpo que não é JSON.
     Devolve o campo `data` (a API embrulha tudo em {data, success, message})."""
+    problema = "nenhuma resposta"      # o último problema vai na mensagem de aborto: no GitHub Actions o log só aparece para quem está logado, e a anotação é o que sobra
     for n in range(TENTATIVAS):
         espera = _ultimo[0] + INTERVALO - time.monotonic()
         if espera > 0:
@@ -75,13 +76,16 @@ def pedir(metodo, caminho, params=None, corpo=None):
         _ultimo[0] = time.monotonic()
         try:
             r = coleta.sessao.request(metodo, API + caminho, params=params, json=corpo, timeout=180)
-        except (coleta.requests.ConnectionError, coleta.requests.Timeout):
+        except (coleta.requests.ConnectionError, coleta.requests.Timeout) as e:
+            problema = f"falha de rede ({type(e).__name__}: {str(e)[:120]})"
             time.sleep(2 ** n)
             continue
         if r.status_code == 429:
+            problema = _resumo(r)
             time.sleep(ESPERA_429 + 5 * n)
             continue
         if r.status_code >= 500:
+            problema = _resumo(r)
             time.sleep(2 ** n)
             continue
         if r.status_code >= 400:
@@ -89,12 +93,20 @@ def pedir(metodo, caminho, params=None, corpo=None):
         try:
             j = r.json()
         except ValueError:
+            problema = "resposta que não é JSON: " + _resumo(r)
             time.sleep(2 ** n)
             continue
         if not j.get("success", True):
             raise Aborta(f"a API respondeu success=false: {caminho} {j.get('message')}")
         return j["data"]
-    raise Aborta(f"a API não respondeu depois de {TENTATIVAS} tentativas: {caminho}")
+    raise Aborta(f"a API não respondeu depois de {TENTATIVAS} tentativas: {caminho}. Último problema: {problema}")
+
+
+def _resumo(r):
+    """Uma linha com o que a resposta diz (código, tipo, servidor e o começo do corpo), sem cabeçalho de autenticação nem cookie."""
+    h = r.headers
+    return (f"HTTP {r.status_code}, tipo {h.get('content-type')}, servidor {h.get('server')}, cf-ray {h.get('cf-ray')}, "
+            f"retry-after {h.get('retry-after')}, corpo {' '.join(r.text.split())[:160]!r}")
 
 
 def consultar(ano, mes_fim, detalhes, mensal=False, fluxo="export"):
