@@ -187,7 +187,7 @@ jobs:
           echo "::error title=Versionar os dados::não consegui enviar os dados para $R depois de 3 tentativas"
           exit 1
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
