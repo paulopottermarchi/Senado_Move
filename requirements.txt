@@ -2,4 +2,6 @@ requests>=2.31
 truststore>=0.9
 # passo 8 (resumos.py): texto do PDF e o lote de resumos
 pypdf>=6.0
+# pessoas.py: segunda leitura dos PDFs (licença MIT). Só o nome que os dois leitores (pypdf e este) leem igual é publicado.
+pdfminer.six>=20260107
 anthropic>=1.0

@@ -1,0 +1,4 @@
+{
+  "_aviso": "Arestas (aresta_id, de cache/pessoas_arestas.jsonl) que a revisão decidiu NÃO publicar. É aplicado por scripts/pessoas.py antes de montar o que seria publicado: a pessoa não entra no bloco da obra e a aresta fica retida com o motivo suprimida_manualmente. Cada item é só o id ou {\"aresta_id\": \"…\", \"motivo\": \"…\"}; id que não existe na rodada é só avisado no relatório. Id mal formado derruba a rodada.",
+  "suprimir": []
+}
