@@ -172,6 +172,7 @@ site/                 o que vai ao ar — o GitHub Pages publica a pasta inteira
   deputado.html  senador.html  votos.html  leis.html  blocos.html  fluxo.html  obras.html  senadores.html  contexto.html
   origem.html         "De onde vêm as leis": fora da barra do topo (inicial, deputados, ficha e rodapé levam a ela)
   origem.js           a barra de composição e o texto de "De onde vêm as leis", iguais nas quatro telas que os mostram
+  deputado/ senador/  uma página estática por parlamentar atual (<id>-<slug>/index.html e og.png), gerada por scripts/paginas.py, com sitemap.xml e robots.txt
   estilo.css  site.js  temas.js  paineis.js  motion-init.js  favicon.ico     (temas.js: símbolos dos temas e o botão por tema; paineis.js: as peças dos perfis de parlamentar)
   cena3d.js  modelos3d.js  cupula3d.js  plenario3d.js   3D sob demanda: base comum, modelos do topo, plenário dos senadores
   mapa-assentos.js    mapa 3D do plenário em senador.html: projeção própria pintada em SVG (sem Three.js nem WebGL)
@@ -239,6 +240,11 @@ Scripts que não entram na rodada diária:
 - `scripts/gerar_decretos_iof.py` — gera `entradas/decretos_iof.json` (os decretos que alteraram as alíquotas do regulamento do IOF) da tabela lida à mão no Planalto.
 - `scripts/contexto_trabalho.py` — roda dentro de `contexto.py` (módulo irmão, no workflow diário) e também sozinho (`--teste` roda os testes, sem rede;
   `--imprimir` mostra o último valor de cada série e as frases geradas). Grava `site/dados/contexto/trabalho.json`.
+- `scripts/paginas.py` — as páginas indexáveis: uma por deputado e por senador atual (`site/deputado/<id>-<slug>/`, `site/senador/…`), legíveis sem JavaScript, com título, descrição,
+  canonical, Open Graph, Twitter e JSON-LD (`Person`), um cartão `og.png` de 1200×630 só de texto (Pillow, fonte Barlow Condensed já versionada), `sitemap.xml`, `robots.txt` e o
+  manifesto `site/dados/paginas.json` (slug fixo, hash e `lastmod` de cada página). `BASE_URL` e `SITE_NOME` são constantes no topo do script. Só reescreve a página cujo conteúdo mudou e
+  o cartão cujos números mudaram. Também põe as tags (canonical, `og:image`, `twitter:card`) em todas as páginas atuais, entre `<!-- seo:inicio -->` e `<!-- seo:fim -->`.
+  `--dry-run` gera tudo em `cache/paginas_dryrun/` sem tocar em `site/` e mede peso e tempo; `--so-estaticas` só as tags; `--teste` roda os testes sem rede.
 - `scripts/signatarios.py` — piloto que lê os PDFs dos contratos de obra para achar quem assinou.
   Não publica nada; precisa de `pymupdf` (fora do `requirements.txt`; licença AGPL ou comercial, por isso fora do projeto, que é MIT).
 - `scripts/diag_vinculo_*.py` — o diagnóstico de viabilidade que deu origem às pessoas documentadas (relatório em `cache/`).
@@ -275,7 +281,7 @@ em Windows. **Nunca desligar a verificação** (`verify=False`).
 
 1. restaura o `cache/` da rodada anterior (cache do Actions);
 2. pergunta às APIs só o que mudou desde a última rodada e regera os JSON;
-3. faz commit de `site/dados/` e `entradas/` ("Dados de AAAA-MM-DD") — o histórico do git é o
+3. gera as páginas de perfil e o sitemap (`paginas.py`) e faz commit de `site/dados/`, `entradas/` e das páginas ("Dados de AAAA-MM-DD") — o histórico do git é o
    registro auditável de cada mudança;
 4. publica `site/` no GitHub Pages.
 

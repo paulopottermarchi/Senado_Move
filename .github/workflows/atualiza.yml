@@ -231,6 +231,12 @@ jobs:
       - name: Esta semana na Câmara
         run: python scripts/passo.py semana.py
 
+      # Uma página estática por deputado e por senador (/deputado/<id>-<slug>/, /senador/…), o cartão og:image de cada uma, o sitemap.xml e o
+      # robots.txt. Depois de TODA a coleta (lê deputados.json, senadores.json e as frases). Só reescreve o que mudou; o commit sai no passo
+      # "Versionar os dados", logo abaixo. Opcional: se falhar, ficam as páginas da rodada anterior.
+      - name: Páginas indexáveis e sitemap
+        run: python scripts/passo.py --opcional paginas.py
+
       # Salva mesmo se algo falhou: o que foi baixado não precisa ser baixado de novo.
       - name: Guardar o cache para a próxima rodada
         if: always()
@@ -246,7 +252,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git add site/dados entradas
+          git add site/dados entradas site/deputado site/senador site/sitemap.xml site/robots.txt site/img site/*.html
           if git diff --cached --quiet; then echo "Sem mudança nos dados."; exit 0; fi
           git commit -q -m "Dados de $(date +%F)"
           # A rodada leva de minutos a horas: se a main andou nesse meio-tempo (um PR aceito), o

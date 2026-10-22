@@ -752,3 +752,25 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 .mais-ind .tr-dec{margin-top:12px}
 .mais-ind .tr-dec-in{padding:4px 0 12px}
 .mais-ind .tr-dec .tab-val td,.mais-ind .tr-dec .tab-val th{font-size:13px;text-align:left}
+
+/* link “↗” para a página própria de cada parlamentar, nas listas de deputados e senadores */
+.pg-link{margin-left:6px;font-size:13px;font-weight:500;color:var(--tinta3);text-decoration:none;border-radius:4px;padding:0 2px}
+.pg-link:hover,.pg-link:focus-visible{color:var(--destaque);text-decoration:underline}
+
+/* ---------- PÁGINAS ESTÁTICAS DE PERFIL (scripts/paginas.py): /deputado/<id>-<slug>/ e /senador/<id>-<slug>/ — tudo escopado em .pg ---------- */
+.pg{padding-top:32px;padding-bottom:48px}
+.pg h1{font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:0;line-height:.95;max-width:none;font-size:clamp(40px,6vw,84px);margin-top:8px;text-wrap:balance}
+.pg .pg-sub{margin-top:8px;font-size:18px;color:var(--tinta2)}
+.pg .pg-frase{margin-top:20px;font-family:var(--serif);font-size:20px;line-height:1.5;max-width:60ch}
+.pg .pg-num{margin-top:28px;padding:24px}
+.pg .pg-num h2,.pg .pg-h2{font-size:20px}
+.pg .pg-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px}
+.pg .pg-n{background:var(--papel2);border:1px solid var(--linha);border-radius:var(--raio-p);padding:16px}
+.pg .pg-n dt{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta3)}
+.pg .pg-n dd{margin:0}
+.pg .pg-n dd:nth-of-type(1){font-family:var(--cond);font-weight:600;font-size:48px;line-height:1.05}
+.pg .pg-nota{font-size:13px;color:var(--tinta2);line-height:1.5}
+.pg .pg-num p{margin-top:12px;font-size:14px;color:var(--tinta2);line-height:1.7}
+.pg .pg-acao{margin-top:24px}
+.pg .pg-fonte{margin-top:24px;font-size:13px;color:var(--tinta3);line-height:1.7}
+.pg .pg-fonte a{overflow-wrap:anywhere}
