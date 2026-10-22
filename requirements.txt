@@ -4,6 +4,6 @@ truststore>=0.9
 pypdf>=6.0
 # pessoas.py: segunda leitura dos PDFs (licença MIT). Só o nome que os dois leitores (pypdf e este) leem igual é publicado.
 pdfminer.six>=20260107
-anthropic>=1.0
+anthropic>=1.15.0
 # paginas.py: cartão og:image de cada página de perfil (só texto)
 Pillow>=10.0
