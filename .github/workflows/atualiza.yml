@@ -161,10 +161,13 @@ jobs:
 
       # Pessoas documentadas das obras: quem assinou pelo órgão (PDF do contrato e dos termos), responsável no aviso de licitação
       # (Compras.gov.br) e responsáveis do contrato. Só contrato ou termo novo é baixado (cache/pessoas, por arquivo_id e hash).
-      # PUBLICAÇÃO DESLIGADA: sem --publicar o script só escreve em cache/ (arestas, candidato, amostra de validação) e nada vai
-      # para site/. Para ligar, depois de validar cache/amostra_fase1.csv, acrescente --publicar na linha abaixo.
+      # PUBLICA site/dados/obras_pessoas.json (--publicar) só com as vias e2 (quem assinou pelo órgão, filtro conservador: nome igual ao
+      # literal do PDF, segundo leitor de PDF concordando, cargo preenchido) e e8 (responsável no contrato). O E3 (aviso de licitação)
+      # está desligado. Continua --opcional: se o passo falhar, ou se qualquer checagem do script abortar (CPF, RG ou SIAPE na saída,
+      # "�" em nome, queda grande de pessoas, aresta sem documento...), o script sai sem gravar nada, a rodada segue e o
+      # obras_pessoas.json que já estava publicado fica como estava. Retirar uma pessoa: entradas/pessoas_supressoes.json.
       - name: Pessoas documentadas das obras
-        run: python scripts/passo.py --opcional pessoas.py
+        run: python scripts/passo.py --opcional pessoas.py --publicar --vias e2,e8
 
       # Senadores (Dados Abertos do Senado, sem chave): autoria, leis, relatorias e votos.
       # Inclui os 309 que já saíram (senadores_antigos.json): a frio leva ~16 min; --minutos (25) limita o tempo, o cache guarda o

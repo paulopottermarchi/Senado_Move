@@ -9,6 +9,9 @@ O que sai de um PDF (`analisar`): só o REPRESENTANTE do órgão contratante —
 assinatura E no trecho do contratante do preâmbulo — e CONTAGENS do resto. Nome de testemunha, de
 quem assina pela empresa e de qualquer outro signatário do órgão NÃO é guardado em lugar nenhum.
 
+Segunda leitura (`segunda_leitura`): outro leitor de PDF, o pdfminer.six (licença MIT), lê só as páginas em que há representante e confere se
+o NOME aparece igual no texto dele. É um critério de publicação (pessoas.py): se os dois leitores não concordam, o nome fica retido.
+
 Texto ilegível: a fonte de alguns PDFs perde a ligadura "ti"/"tt" ("Batista" → "Ba�sta"). pypdf deixa o
 rastro (U+FFFD); o nome com esse rastro não é publicado como está (ver `casa` e pessoas.py, `reconciliar`).
 """
@@ -27,6 +30,7 @@ FFFD = "�"
 MAX_PDF = 40 * 1024 * 1024
 MAX_PAGINAS = 80          # PDF maior: só o começo (preâmbulo) e o fim (assinaturas)
 VERSAO_LEITOR = 3         # sobe quando o parser muda: os PDFs são lidos de novo
+LEITOR2 = "pdfminer.six"  # o segundo leitor; a versão instalada entra no registro (ver `leitor2_id`)
 
 TIPOS_ARQUIVO = ("Contrato", "Termo Aditivo", "Termo Apostilamento", "Termo de Apostilamento",
                  "Termo Rescisão", "Termo de Rescisão", "Termo de Reconhecimento de Dívida")
@@ -212,6 +216,139 @@ def processo_no_texto(processo, plano):
 def _iso(d):
     m = re.fullmatch(r"(\d{2})/(\d{2})/(\d{4})", d or "")
     return f"{m[3]}-{m[2]}-{m[1]}" if m else None
+
+
+# --- segunda leitura (outro leitor de PDF) -----------------------------------------------------------
+
+def leitor2_id():
+    """"pdfminer.six 20260107", ou None se a biblioteca não está instalada (sem ela nenhum nome é publicado: pessoas.py retém)."""
+    try:
+        import pdfminer
+        return f"{LEITOR2} {pdfminer.__version__}, comparação 3"
+    except ImportError:
+        return None
+
+
+def texto_pdfminer(pdf, paginas):
+    """{nº da página (1-based): texto} lido com o pdfminer.six, só das páginas pedidas. Página que falha fica fora do resultado."""
+    from pdfminer.high_level import extract_text
+    out = {}
+    for n in sorted(set(paginas)):
+        try:
+            out[n] = unicodedata.normalize("NFKC", extract_text(io.BytesIO(pdf), page_numbers=[n - 1]) or "")
+        except Exception:
+            continue
+    return out
+
+
+def concorda_nome(nome, texto):
+    """O nome, palavra por palavra (sem acento, caixa e pontuação), aparece no texto do segundo leitor? O texto dele não pode ter o nome
+    com letra perdida: "(cid:123)" ou U+FFFD no lugar de uma letra faz a comparação falhar, e é isso que se quer."""
+    if not nome or not texto:
+        return False
+    alvo = chave(nome)
+    return bool(alvo) and (" " + alvo + " ") in (" " + chave(texto) + " ")
+
+
+_ANCORA_ASSINATURA = re.compile(r"Documento\s*assinado\s*eletronicamente\s*por", re.I)
+JANELA_ANCORA = 2600          # quanto texto depois da âncora conta como "perto": o mesmo corte que `assinaturas` usa nos itens do SUAP
+MIN_PALAVRAS_SEM_ESPACOS = 3  # o nome do leitor principal precisa ter 3 palavras ou mais…
+MIN_LETRAS_SEM_ESPACOS = 12   # …e 12 letras ou mais (nome curto demais se confunde com outro)
+
+
+def _letras(s):
+    """Só as letras A-Z, sem espaço, acento nem caixa."""
+    return re.sub(r"[^A-Z]", "", chave(s).replace(" ", ""))
+
+
+def _caixa_confere(nome, segmento, copias):
+    """Quando o texto do segundo leitor tem maiúsculas e minúsculas ("FernandaAmorimRocha"), as maiúsculas marcam onde cada palavra
+    começa: cada palavra do nome que começa com maiúscula tem de começar com maiúscula no segmento (em cada cópia). Isso separa
+    "Mari Ana Costa" de "MarianaCosta", que têm as mesmas letras. Segmento todo em maiúsculas (ou todo em minúsculas) não tem essa informação."""
+    letras = []
+    for ch in segmento:
+        if not ch.isalpha():
+            continue
+        base = unicodedata.normalize("NFKD", ch).encode("ascii", "ignore").decode().upper()
+        if len(base) != 1:
+            return False
+        letras.append((base, ch.isupper()))
+    if not (any(maius for _, maius in letras) and any(not maius for _, maius in letras)):
+        return True
+    total = len(letras) // copias
+    pos = 0
+    for w in nome.split():
+        n = len(_letras(w))
+        if not n:
+            continue
+        if w[:1].isupper():
+            for c in range(copias):
+                if not letras[pos + c * total][1]:
+                    return False
+        pos += n
+    return True
+
+
+def concorda_sem_espacos(nome, texto):
+    """Comparação do segundo leitor para PDFs em que ele junta as palavras ("FernandaAmorimRocha", SUAP do IFSP), com TODAS estas âncoras:
+      (a) igualdade da sequência inteira de letras (sem espaço, acento e caixa) com um trecho do texto — não substring. O trecho é o que
+          fica entre dois sinais de pontuação ou números; o SUAP repete o nome na lista de assinaturas ("NomeNome"), então vale também
+          o nome duas vezes seguidas, e nada além disso;
+      (b) o nome do leitor principal tem 3 palavras ou mais e 12 letras ou mais;
+      (c) o trecho está logo depois de "Documento assinado eletronicamente por", na mesma página (`JANELA_ANCORA` caracteres);
+      e o trecho tem de ser de fato "colado" (sem espaço dentro) e sem U+FFFD. Mais a conferência de maiúsculas de `_caixa_confere`."""
+    alvo = _letras(nome)
+    if not alvo or len([w for w in nome.split() if _letras(w)]) < MIN_PALAVRAS_SEM_ESPACOS or len(alvo) < MIN_LETRAS_SEM_ESPACOS or not texto:
+        return False
+    for m in _ANCORA_ASSINATURA.finditer(texto):
+        janela = texto[m.end(): m.end() + JANELA_ANCORA]
+        for seg in re.split(r"[^A-Za-zÀ-ÿ\s\ufffd]+", janela):
+            bruto = seg.strip()
+            if not bruto or FFFD in bruto or re.search(r"\s", bruto):
+                continue
+            letras = _letras(bruto)
+            if letras == alvo and _caixa_confere(nome, bruto, 1):
+                return True
+            if letras == alvo + alvo and _caixa_confere(nome, bruto, 2):
+                return True
+    return False
+
+
+def contem_sem_espacos(nome, texto):
+    """Só informativo (não libera nada): as letras do nome aparecem em algum lugar do texto, ignorando os espaços? Marca o caso "o outro leitor
+    junta as palavras mas as âncoras de `concorda_sem_espacos` não fecham", para o relatório."""
+    alvo = _letras(nome)
+    return len(alvo) >= MIN_LETRAS_SEM_ESPACOS and alvo in _letras(texto)
+
+
+def segunda_leitura(pdf, rec, ler=None):
+    """Acrescenta ao registro `rec` (saída de `analisar`) o resultado da segunda leitura: `leitor2` (qual leitor) e, em cada representante,
+    `leitor2_nome` = True (o nome confere), False (o outro leitor não traz o nome igual) ou None (a segunda leitura não pôde ser feita).
+    `leitor2_obs` anota o caso do texto sem espaços: "igualdade_sem_espacos" (aceito) ou "so_substring_sem_espacos" (não aceito)."""
+    reps = rec.get("representantes") or []
+    if not reps:
+        return rec
+    idl = leitor2_id()
+    rec["leitor2"] = idl
+    if idl is None:
+        for r in reps:
+            r["leitor2_nome"] = None
+        return rec
+    try:
+        textos = (ler or texto_pdfminer)(pdf, [r["pagina"] for r in reps])
+    except Exception:
+        textos = {}
+    for r in reps:
+        t = textos.get(r["pagina"])
+        ok = None if t is None else concorda_nome(r["nome"], t)
+        if ok is False:
+            if concorda_sem_espacos(r["nome"], t):
+                ok = True
+                r["leitor2_obs"] = "igualdade_sem_espacos"       # o outro leitor junta as palavras; vale pela igualdade ancorada (ver concorda_sem_espacos)
+            elif contem_sem_espacos(r["nome"], t):
+                r["leitor2_obs"] = "so_substring_sem_espacos"    # as letras aparecem, mas as âncoras não fecham: o nome continua retido
+        r["leitor2_nome"] = ok
+    return rec
 
 
 # --- assinaturas ------------------------------------------------------------------------------------

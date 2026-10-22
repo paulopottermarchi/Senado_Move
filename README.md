@@ -88,11 +88,18 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
   ou do termo anexado no Contratos.gov.br; entra só o representante do órgão contratante cujo nome está no bloco de assinatura
   eletrônica **e** no trecho do preâmbulo que identifica o contratante, e só se o número do contrato (ou o processo) consta no
   texto. Testemunhas, quem assina pela empresa e os demais signatários não são listados (e os nomes não são guardados). PDF só
-  imagem não é lido: não há OCR. Nome corrompido pela extração (a ligadura "ti" some em alguns PDFs) só é publicado depois de
-  reconciliado com a grafia do preâmbulo do mesmo documento ou, em segundo lugar, de outro documento do mesmo órgão; se sobrar
-  "�", fica de fora. (2) *Responsável registrado no aviso de licitação*: do Compras.gov.br (módulo legado), por licitação e UASG,
-  com nome e cargo como a fonte escreve; **não** diz quem conduziu a sessão, nem quem homologou. (3) *Responsável registrado no
-  contrato*: o gestor do `/contrato/{id}/responsaveis`; fiscais aparecem só em número. Onde falta dado, a página mostra "—" e o
+  imagem não é lido: não há OCR. **Filtro conservador (20/10/2026)**: o nome só é publicado se (a) for igual ao literal do documento, sem
+  reconstrução (a ligadura "ti" some em alguns PDFs e o nome reconstruído a partir de outro trecho fica retido), (b) uma segunda leitura
+  com outro leitor de PDF (pdfminer.six, MIT) concordar com o nome e (c) o cargo estiver preenchido; o resto fica retido, com o motivo
+  (`nome_reconstruido`, `leitores_divergem`, `sem_cargo`). Em alguns PDFs (SUAP) o segundo leitor junta as palavras ("FernandaAmorimRocha");
+  isso só vale como concordância com âncoras: igualdade da sequência inteira de letras (sem espaço, acento e caixa; não substring), nome
+  de 3 palavras ou mais e 12 letras ou mais, e o trecho logo depois de "Documento assinado eletronicamente por", na mesma página;
+  é registrado em `leitor2_obs` (`igualdade_sem_espacos`). O cargo "Substituto(a)", que a mesma ligadura estraga, é refeito por um
+  vocabulário fechado. `entradas/pessoas_supressoes.json` lista arestas que a revisão decidiu não publicar. A página diz que é
+  "extraído automaticamente dos documentos; confira no link". (2) *Responsável registrado no aviso de licitação*: do Compras.gov.br
+  (módulo legado), por licitação e UASG, com nome e cargo como a fonte escreve; **não** diz quem conduziu a sessão, nem quem
+  homologou. **Desligado** (`--vias e2,e8` é o padrão): só 5 das 20 linhas da amostra puderam ser conferidas, e 15 ficaram sem fonte
+  aberta para conferir. (3) *Responsável registrado no contrato*: o gestor do `/contrato/{id}/responsaveis`; fiscais aparecem só em número. Onde falta dado, a página mostra "—" e o
   motivo. Cada vínculo é uma aresta com url do documento, página, hash, identificador que casou, data do vínculo (separada da de
   publicação), trecho literal e método (`cache/pessoas_arestas.jsonl`, também as retidas, com o motivo). Sem CPF, RG ou SIAPE;
   sem parlamentares, sem ranking de pessoas. A publicação no site fica desligada até o `scripts/pessoas.py` rodar com `--publicar`.
@@ -238,10 +245,12 @@ Scripts que não entram na rodada diária:
   Medição e registro; `diag_vinculo_e2.py` e `signatarios.py` usam `pymupdf` em comparações locais.
 
 `scripts/pessoas.py` roda depois de `obras.py` (usa o cache dele) e **só escreve em `site/` com `--publicar`**. Sem a
-flag, grava em `cache/` as arestas (`pessoas_arestas.jsonl`), o candidato (`pessoas_candidato.json`) e a amostra de
-validação (`amostra_fase1.csv`). `--dry-run` mostra o relatório e o diff sem atualizar a rodada anterior. Os testes de
-regressão (`python scripts/pessoas_regressao.py`) usam os casos conferidos à mão: quem não é representante nunca sai como tal.
-Só usa `pypdf` (BSD-3), nada de `pymupdf`.
+flag, grava em `cache/` as arestas (`pessoas_arestas.jsonl`) e o candidato (`pessoas_candidato.json`); a amostra de validação
+(`amostra_fase1.csv`) só é regravada com `--amostra`. `--vias e2,e8` (padrão) escolhe as vias do candidato e da publicação; o E3 só
+entra se pedido (`--vias e2,e3,e8`). `--dry-run` mostra o relatório e o diff sem atualizar a rodada anterior. Os testes de
+regressão (`python scripts/pessoas_regressao.py`) usam os casos conferidos à mão: quem não é representante nunca sai como tal, e o
+filtro conservador, o cargo "Substituto(a)" e as supressões têm teste. Usa `pypdf` (BSD-3) e, para a segunda leitura, `pdfminer.six`
+(MIT); nada de `pymupdf` (AGPL).
 
 ### Chaves de API (opcionais)
 

@@ -240,15 +240,16 @@
        Código incompleto não é completado por aproximação. <b>Nenhuma pessoa é ligada a uma obra pelo nome</b>:
        menção em proposição, discurso ou notícia não entra, porque nomes de obra se repetem ("Linha 17",
        "Hospital Regional") e o mesmo vale para nomes de gente.</p>
-    <p id="metPessoas" hidden><b>Pessoas documentadas</b>: três fontes, e nada além delas. <i>Quem assinou pelo órgão</i> vem do PDF do
-       contrato ou do termo anexado no Contratos.gov.br: entra o representante do órgão contratante cujo nome está no bloco de assinatura
-       eletrônica e no trecho do preâmbulo que identifica o contratante, e só se o número do contrato (ou o processo) consta no texto
-       do PDF. Testemunhas, quem assina pela empresa e os demais signatários não são listados. PDF só imagem não é lido (não há OCR).
-       Nome que a extração do texto corrompeu só é publicado se a grafia for reconciliada com o preâmbulo do mesmo documento ou com outro
-       documento do mesmo órgão; se não, fica de fora. <i>Responsável no aviso de licitação</i> vem do Compras.gov.br, por licitação e
-       UASG, com nome e cargo como a fonte escreve; não diz quem conduziu a sessão nem quem homologou. <i>Responsável no contrato</i> é o
-       gestor registrado no sistema de contratos; fiscais aparecem só em número. Onde falta dado a página mostra «—» e o motivo, nunca
-       uma estimativa. Nada disso indica responsabilidade por aumento de valor, irregularidade ou mérito de quem quer que seja.</p>
+    <p id="metPessoas" hidden><b>Pessoas documentadas</b>: duas fontes, e nada além delas, <b>extraídas automaticamente dos documentos</b>
+       (confira sempre no link de cada nome). <i>Quem assinou pelo órgão</i> vem do PDF do contrato ou do termo anexado no Contratos.gov.br:
+       entra o representante do órgão contratante cujo nome está no bloco de assinatura eletrônica e no trecho do preâmbulo que identifica
+       o contratante, e só se o número do contrato (ou o processo) consta no texto do PDF. Testemunhas, quem assina pela empresa e os
+       demais signatários não são listados. PDF só imagem não é lido (não há OCR). O filtro é conservador: o nome só é publicado se for
+       igual ao que está no documento (nunca reconstruído quando a extração perdeu letras), se um segundo leitor de PDF, independente do
+       primeiro, concordar com ele e se o cargo estiver preenchido; senão, a página mostra «—» e o motivo. <i>Responsável no contrato</i> é o
+       gestor registrado no sistema de contratos; fiscais aparecem só em número. O responsável registrado no aviso de licitação
+       (Compras.gov.br) está desligado nesta fase, porque a conferência não o sustentou. Onde falta dado a página mostra «—» e o motivo,
+       nunca uma estimativa. Nada disso indica responsabilidade por aumento de valor, irregularidade ou mérito de quem quer que seja.</p>
     <p id="rodapeData"></p>
   </div>
 </footer>
@@ -448,6 +449,7 @@ function eventos(o){
 
 // ---- Pessoas documentadas (dados/obras_pessoas.json, opcional: sem o arquivo a página é a de antes) ----
 const REPORTAR='https://github.com/paulopottermarchi/Senado_Move/issues/new';
+const viaLigada=v=>!PES||!PES._vias||PES._vias.includes(v);      // _vias: as vias que o script ligou (o E3, aviso de licitação, está desligado)
 function linkErro(o){
   const corpo=`Obra: ${o.id} (${o.nome})\nContratos: ${o.contratos.map(c=>c.numero).join(', ')}\nPágina: ${location.origin}${location.pathname}?obra=${encodeURIComponent(o.id)}\n\n`+
     `O que está errado (diga o bloco: "Quem assinou pelo órgão", "aviso de licitação" ou "registro do contrato"):\n`;
@@ -496,16 +498,18 @@ function blocoRegistro(o,multi){
 function pessoasDocumentadas(o){
   const multi=o.contratos.length>1;
   const cont=(via)=>o.contratos.reduce((s,c)=>{const b=PES.contratos[c.id]; return s+(b?(via==='E2'?b.assinou.pessoas.length:via==='E3'?b.aviso.pessoas.length:b.registro.gestores.length):0)},0);
-  const resumo=`assinou ${cont('E2')||'—'} · aviso ${cont('E3')||'—'} · registro ${cont('E8')||'—'}`;
+  const e3=viaLigada('E3');
+  const resumo=`assinou ${cont('E2')||'—'}${e3?` · aviso ${cont('E3')||'—'}`:''} · registro ${cont('E8')||'—'}`;
   return `<details class="pd"><summary>Pessoas documentadas <small>${resumo}</small></summary><div class="pd-in">
-    <p class="nota">Cada nome vem de um documento ou registro oficial ligado ao contrato por identificador exato (o número do contrato, o processo, ou a licitação e a UASG). São três
+    <p class="nota"><b>Extraído automaticamente dos documentos; confira no link.</b></p>
+    <p class="nota">Cada nome vem de um documento ou registro oficial ligado ao contrato por identificador exato (${e3?'o número do contrato, o processo, ou a licitação e a UASG':'o número do contrato ou o processo'}). São ${e3?'três':'duas'}
       fontes diferentes, que não dizem a mesma coisa; nenhuma delas diz quem decidiu, quem aprovou aditivo ou quem é responsável por aumento de valor.</p>
     <h4>Quem assinou pelo órgão</h4>
     <p class="nota pq"><b>O que é:</b> o representante do órgão contratante que assina o contrato ou o termo aditivo, como o PDF anexado ao contrato mostra: o nome está no bloco de assinatura eletrônica e no trecho do preâmbulo que identifica o contratante, e o número do contrato consta no texto. <b>O que não é:</b> quem fiscalizou, executou ou decidiu a obra; testemunhas, quem assina pela empresa e demais signatários não são listados. PDF só imagem não é lido.</p>
     <div class="pessoas">${blocoAssinou(o,multi)}</div>
-    <h4>Responsável registrado no aviso de licitação</h4>
+    ${e3?`<h4>Responsável registrado no aviso de licitação</h4>
     <p class="nota pq"><b>O que é:</b> o nome e o cargo que o órgão registrou como responsável pelo aviso da licitação no Compras.gov.br, escritos como a fonte escreve. <b>O que não é:</b> quem conduziu a sessão, quem homologou ou quem decidiu o resultado; o cargo registrado pode ser de pregoeiro, de presidente de comissão ou de outra função.</p>
-    <div class="pessoas">${blocoAviso(o,multi)}</div>
+    <div class="pessoas">${blocoAviso(o,multi)}</div>`:''}
     <h4>Responsável registrado no contrato</h4>
     <p class="nota pq"><b>O que é:</b> o gestor designado no sistema de contratos, com a função, a situação e o período que o órgão cadastrou. É registro do sistema, não documento assinado. <b>O que não é:</b> quem assinou ou aprovou termo aditivo. Fiscais aparecem só em número, sem nome.</p>
     <div class="pessoas">${blocoRegistro(o,multi)}</div>
@@ -521,10 +525,12 @@ function coberturaPessoas(){
   const t25=taxa('2025','E3'), ant=anos.filter(a=>a<'2025'&&a!=='sem ano');
   const antC=ant.reduce((s,a)=>s+por[a].contratos,0), antE3=ant.reduce((s,a)=>s+(por[a].E3||0),0);
   if(t25!==null&&antC&&t25<0.5*(antE3/antC)) queda=` A cobertura do aviso cai nas licitações de 2025 (${nf.format(por['2025'].E3||0)} de ${nf.format(por['2025'].contratos)} contratos, contra ${nf.format(Math.round(100*antE3/antC))}% das anteriores): nesses avisos a fonte consultada (Compras.gov.br) quase não traz o nome do responsável. O PNCP, onde essas licitações constam, publica o edital e não foi consultado para nomes.`;
-  $('#cobPessoasTxt').innerHTML=`Pessoa identificada, com o documento-fonte, em ${f(c.E2)} pelo PDF do contrato ou do termo (quem assinou pelo órgão), em ${f(c.E3)} pelo aviso de licitação e em ${f(c.E8)} pelo registro do contrato. Onde falta, cada obra mostra «—» e o motivo.${queda}`;
+  const e3=viaLigada('E3');
+  if(!e3) queda='';
+  $('#cobPessoasTxt').innerHTML=`Pessoa identificada, com o documento-fonte, em ${f(c.E2)} pelo PDF do contrato ou do termo (quem assinou pelo órgão)${e3?`, em ${f(c.E3)} pelo aviso de licitação`:''} e em ${f(c.E8)} pelo registro do contrato. Extraído automaticamente dos documentos; confira no link. Onde falta, cada obra mostra «—» e o motivo.${queda}`;
   const cel=(a,v)=>{const n=por[a][v]||0,t=por[a].contratos; return `${nf.format(n)} <small>(${Math.round(100*n/t)}%)</small>`};
-  $('#cobAno').innerHTML=`<table><thead><tr><th>Ano da licitação</th><th>Contratos</th><th>Assinou pelo órgão</th><th>Aviso de licitação</th><th>Registro do contrato</th></tr></thead><tbody>`+
-    anos.map(a=>`<tr><td>${esc(a)}</td><td>${nf.format(por[a].contratos)}</td><td>${cel(a,'E2')}</td><td>${cel(a,'E3')}</td><td>${cel(a,'E8')}</td></tr>`).join('')+`</tbody></table>`;
+  $('#cobAno').innerHTML=`<table><thead><tr><th>Ano da licitação</th><th>Contratos</th><th>Assinou pelo órgão</th>${e3?'<th>Aviso de licitação</th>':''}<th>Registro do contrato</th></tr></thead><tbody>`+
+    anos.map(a=>`<tr><td>${esc(a)}</td><td>${nf.format(por[a].contratos)}</td><td>${cel(a,'E2')}</td>${e3?`<td>${cel(a,'E3')}</td>`:''}<td>${cel(a,'E8')}</td></tr>`).join('')+`</tbody></table>`;
   $('#cobPessoas').hidden=false;
   const m=$('#metPessoas'); if(m) m.hidden=false;
 }
