@@ -181,9 +181,9 @@
 .not-tit:hover{text-decoration:underline}
 .not-tr{font-size:13px;color:var(--tinta2);line-height:1.45;margin-top:4px}
 .not-ass{font-size:11px;color:var(--tinta3);white-space:nowrap}
-/* a imagem da notícia (noticias.py): a menor possível (64×40), sempre em preto e branco, ao pé do item, com o crédito que a Câmara escreve nela ao lado */
-.not-fig{display:flex;align-items:center;gap:8px;margin-top:8px}
-.not-fig img{flex:none;width:64px;height:40px;object-fit:cover;border-radius:4px;filter:grayscale(1);background:var(--linha)}
+/* a imagem da notícia (noticias.py): 128×80 (a versão de 300 px da Câmara serve com folga até em tela de alta densidade), sempre em preto e branco, ao pé do item, com o crédito que a Câmara escreve nela ao lado */
+.not-fig{display:flex;align-items:center;gap:12px;margin-top:10px}
+.not-fig img{flex:none;width:128px;height:80px;object-fit:cover;border-radius:6px;filter:grayscale(1);background:var(--linha)}
 .not-fig figcaption{min-width:0;font-size:11px;line-height:1.3;color:var(--tinta3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sem-ia{font-size:11px;color:var(--tinta3);border:1px solid var(--linha-forte);border-radius:999px;padding:0 8px;white-space:nowrap;cursor:help}
 .sem-and{font-size:12px;color:var(--tinta3);margin-top:2px}
@@ -656,7 +656,7 @@ function figNoticia(x){
   if(!x.img||!x.cred) return '';
   const base='https://www.camara.leg.br/midias/image/';
   const peq=x.img.replace(/-(\d+)x(\d+)(\.\w+)$/,(m,w,h,e)=>`-300x${Math.round(300*h/w)}${e}`);
-  return `<figure class="not-fig"><img src="${base+peq}" width="64" height="40" alt="${esc(x.leg||'')}" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+  return `<figure class="not-fig"><img src="${base+peq}" width="128" height="80" alt="${esc(x.leg||'')}" loading="lazy" decoding="async" referrerpolicy="no-referrer"
     onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${base+x.img}'}else{this.closest('figure').remove()}"><figcaption>Foto: ${esc(x.cred)}</figcaption></figure>`;
 }
 // Notícias da Agência Câmara sobre PEC e PL (noticias.py). A assinatura exigida no rodapé
