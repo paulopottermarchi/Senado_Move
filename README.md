@@ -213,11 +213,11 @@ python scripts/votos.py
 ```
 
 `coleta.py` regrava `deputados.json` sem os votos: sempre rode `votos.py` depois dele. A ordem
-completa da rodada diária está no workflow:
+completa da rodada diária, incluindo as coletas pesadas opcionais, está no workflow:
 
 ```
-atualiza → coleta → votos → blocos → notoriedade → wikipedia → noticias → youtube → enquetes
-→ ecidadania → resumos → obras → pessoas → senado → tramitacoes → temas → senador_paginas → partidos → governo → logos → fluxo → origem_leis → semana
+atualiza → coleta → votos → blocos → temas → semana → coletas pesadas opcionais → paginas
+→ validação → commit → publicação
 ```
 
 Para ver o site, sirva a pasta `site/` (o navegador não carrega os JSON de arquivos abertos direto
@@ -271,8 +271,8 @@ Localmente, como variáveis de ambiente; no workflow, como segredos do repositó
 ### Certificado da Câmara
 
 O servidor da Câmara não envia o certificado intermediário, e `requests` falha na verificação. Os
-scripts usam `truststore`, que completa a cadeia pelo sistema operacional — por isso o workflow roda
-em Windows. **Nunca desligar a verificação** (`verify=False`).
+scripts usam `truststore`, que completa a cadeia pelo sistema operacional; os testes de CI também rodam
+em Windows para conferir essa verificação nesse ambiente. **Nunca desligar a verificação** (`verify=False`).
 
 ## Atualização diária
 
@@ -281,12 +281,13 @@ em Windows. **Nunca desligar a verificação** (`verify=False`).
 
 1. restaura o `cache/` da rodada anterior (cache do Actions);
 2. pergunta às APIs só o que mudou desde a última rodada e regera os JSON;
-3. gera as páginas de perfil e o sitemap (`paginas.py`) e faz commit de `site/dados/`, `entradas/` e das páginas ("Dados de AAAA-MM-DD") — o histórico do git é o
-   registro auditável de cada mudança;
-4. publica `site/` no GitHub Pages.
+3. executa as coletas pesadas opcionais e gera as páginas indexáveis e o sitemap (`paginas.py`) no mesmo job;
+4. valida os dados públicos, faz commit de `site/` e `entradas/` ("Dados de AAAA-MM-DD") — o histórico do git é o registro auditável de cada mudança;
+5. publica no GitHub Pages a pasta `site/` resultante desse mesmo job.
 
-Checagem de sanidade falhou → o passo sai com erro, nada é commitado nem publicado, e o site continua
-com os dados do dia anterior. Para publicar pela primeira vez: *Settings → Pages → Source: GitHub Actions*.
+Uma validação falhou → o job sai com erro, nada é commitado nem publicado, e o site continua
+com os dados do dia anterior. Coletas opcionais continuam produzindo avisos e não interrompem a rodada.
+Para publicar pela primeira vez: *Settings → Pages → Source: GitHub Actions*.
 
 ## Limitações conhecidas
 

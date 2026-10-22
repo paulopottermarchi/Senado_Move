@@ -7,7 +7,10 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-from scripts.arquivos_criticos import CRITICOS
+if __package__:
+    from .arquivos_criticos import CRITICOS
+else:
+    from arquivos_criticos import CRITICOS
 
 BASE = Path(__file__).resolve().parent.parent
 SCHEMA_DIR = BASE / "schemas"
@@ -33,6 +36,7 @@ def validar_arquivo(relpath: str, schema_name: str):
     dados = carregar_json(arquivo)
     schema = carregar_json(schema_path)
 
+    Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema)
     erros = sorted(validator.iter_errors(dados), key=lambda erro: str(erro.json_path))
 

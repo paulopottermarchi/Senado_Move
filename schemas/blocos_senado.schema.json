@@ -1,169 +1,61 @@
-#!/usr/bin/env python3
-"""Valida os principais arquivos JSON gerados antes da publicação.
-
-O validador usa os schemas em `schemas/` para confirmar que os artefatos públicos
-gerados pela rotina diária têm o contrato esperado pelo frontend.
-"""
-
-from __future__ import annotations
-
-import argparse
-import json
-import sys
-from pathlib import Path
-
-from jsonschema import Draft202012Validator
-
-from scripts.arquivos_criticos import CRITICOS
-
-BASE = Path(__file__).resolve().parent.parent
-SCHEMA_DIR = BASE / "schemas"
-
-REQUIRED_FIELDS = {
-    "site/dados/deputados.json": {"kind": "array_items", "fields": ["id", "nome", "partido", "uf", "urlFoto"]},
-    "site/dados/senadores.json": {"kind": "array_items", "fields": ["id", "nome", "partido", "uf", "urlFoto"]},
-    "site/dados/blocos.json": {"kind": "object", "fields": ["_gerado", "_fonte"]},
-    "site/dados/blocos_senado.json": {"kind": "object", "fields": ["_gerado", "_fonte"]},
-    "site/dados/fluxo.json": {"kind": "object", "fields": ["_gerado", "_fonte", "dados"]},
-    "site/dados/inicio.json": {"kind": "object", "fields": ["geradoEm", "deputados", "partidos", "ufs", "comPosicao", "semPosicao", "senadores", "leis", "blocos"]},
-    "site/dados/semana.json": {"kind": "object", "fields": ["de", "ate", "geradoEm", "universo"]},
-    "site/dados/origem_leis.json": {"kind": "object", "fields": ["_gerado", "_fonte", "legislatura", "categorias", "vias", "viasLigacao", "composicao", "totais", "referencia", "urls", "excecoes", "orgaos", "campos", "normas"]},
-    "site/dados/legislaturas.json": {"kind": "array_items", "fields": ["id", "inicio", "fim"]},
-    "site/dados/ecidadania.json": {"kind": "object_values", "fields": ["sim", "nao", "situacao", "consultadaEm", "codigoMateria", "identificacao", "confirmacao"]},
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Blocos de voto do Senado",
+  "type": "object",
+  "required": [
+    "_gerado",
+    "_fonte",
+    "casa",
+    "votacoes",
+    "votacoesComOrientacao",
+    "regras",
+    "corte",
+    "blocos",
+    "medianaGovernoPorPartido",
+    "nomes",
+    "deputados",
+    "improvaveis",
+    "improvaveisTotal",
+    "temas",
+    "temasLeis",
+    "temasSemCategoria"
+  ],
+  "properties": {
+    "_gerado": { "type": "string", "format": "date" },
+    "_fonte": { "type": "string", "minLength": 1 },
+    "casa": { "const": "senado" },
+    "votacoes": { "type": "integer", "minimum": 0 },
+    "votacoesComOrientacao": { "type": "integer", "minimum": 0 },
+    "regras": { "type": "object" },
+    "corte": { "type": "object" },
+    "blocos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["n", "partidos", "medianaGoverno"],
+        "properties": {
+          "n": { "type": "integer", "minimum": 0 },
+          "partidos": {
+            "type": "object",
+            "additionalProperties": { "type": "integer", "minimum": 0 }
+          },
+          "medianaGoverno": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "medianaGovernoPorPartido": {
+      "type": "object",
+      "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+    },
+    "nomes": { "type": "object" },
+    "deputados": { "type": "object" },
+    "improvaveis": { "type": "array" },
+    "improvaveisTotal": { "type": "integer", "minimum": 0 },
+    "trocaramDePartido": { "type": "integer", "minimum": 0 },
+    "temas": { "type": "array" },
+    "temasLeis": { "type": "integer", "minimum": 0 },
+    "temasSemCategoria": { "type": "integer", "minimum": 0 }
+  },
+  "additionalProperties": true
 }
-
-
-def carregar_json(path: Path):
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except FileNotFoundError as exc:
-        raise FileNotFoundError(f"arquivo ausente: {path.relative_to(BASE)}") from exc
-    except UnicodeDecodeError as exc:
-        raise ValueError(f"arquivo não é UTF-8: {path.relative_to(BASE)}") from exc
-    except json.JSONDecodeError as exc:
-        raise ValueError(
-            f"JSON inválido em {path.relative_to(BASE)}: {exc.msg} "
-            f"(linha {exc.lineno}, coluna {exc.colno})"
-        ) from exc
-
-
-def _missing_fields(item, fields):
-    if not isinstance(item, dict):
-        return ["<item> não é objeto"]
-    return [field for field in fields if field not in item]
-
-
-def validar_campos_obrigatorios(relpath: str, dados):
-    spec = REQUIRED_FIELDS.get(relpath)
-    if spec is None:
-        return []
-
-    errors = []
-    kind = spec["kind"]
-    fields = spec["fields"]
-
-    if kind == "object":
-        if not isinstance(dados, dict):
-            return [f"{relpath}: raiz não é objeto"]
-        missing = _missing_fields(dados, fields)
-        if missing:
-            errors.append(f"{relpath}: campos ausentes na raiz: {', '.join(missing)}")
-        return errors
-
-    if kind == "array_items":
-        if not isinstance(dados, list):
-            return [f"{relpath}: raiz não é array"]
-        for index, item in enumerate(dados):
-            if not isinstance(item, dict):
-                errors.append(f"{relpath}[{index}]: item não é objeto")
-                continue
-            missing = _missing_fields(item, fields)
-            if missing:
-                errors.append(f"{relpath}[{index}]: campos ausentes: {', '.join(missing)}")
-        return errors
-
-    if kind == "object_values":
-        if not isinstance(dados, dict):
-            return [f"{relpath}: raiz não é objeto"]
-        if not dados:
-            return [f"{relpath}: objeto vazio sem itens para validar"]
-        for key, value in dados.items():
-            if not isinstance(value, dict):
-                errors.append(f"{relpath}: valor para '{key}' não é objeto")
-                continue
-            missing = _missing_fields(value, fields)
-            if missing:
-                errors.append(f"{relpath}: item '{key}' sem campos: {', '.join(missing)}")
-        return errors
-
-    return []
-
-
-def validar_arquivo(relpath: str, schema_name: str) -> list[str]:
-    arquivo = BASE / relpath
-    schema_path = SCHEMA_DIR / schema_name
-
-    if not schema_path.exists():
-        raise FileNotFoundError(f"schema ausente: {schema_path.relative_to(BASE)}")
-
-    dados = carregar_json(arquivo)
-    schema = carregar_json(schema_path)
-
-    validator = Draft202012Validator(schema)
-    erros = sorted(validator.iter_errors(dados), key=lambda erro: str(erro.json_path))
-    linhas = []
-    if erros:
-        for erro in erros:
-            caminho = ".".join(str(p) for p in erro.absolute_path) or "<raiz>"
-            linhas.append(f"- {relpath}: {caminho}: {erro.message}")
-
-    erros_campos = validar_campos_obrigatorios(relpath, dados)
-    if erros_campos:
-        linhas.extend(f"- {mensagem}" for mensagem in erros_campos)
-
-    return linhas
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Valida JSONs públicos com schemas e check de campos obrigatórios.")
-    parser.add_argument("--report", action="store_true", help="Mostra o relatório detalhado por arquivo.")
-    args = parser.parse_args()
-
-    print("Validando JSONs públicos com schemas...")
-    ok = 0
-    total = 0
-    failed = []
-
-    try:
-        for relpath, schema_name in CRITICOS:
-            total += 1
-            erros = validar_arquivo(relpath, schema_name)
-            if not erros:
-                ok += 1
-                if args.report:
-                    print(f"OK  {relpath}")
-                continue
-
-            failed.append((relpath, erros))
-            if args.report:
-                print(f"FAIL {relpath}")
-                for linha in erros:
-                    print(f"    {linha}")
-    except Exception as exc:  # noqa: BLE001
-        print(f"VALIDAÇÃO FALHOU: {exc}", file=sys.stderr)
-        return 1
-
-    if failed:
-        print("\nVALIDAÇÃO FALHOU para os arquivos abaixo:", file=sys.stderr)
-        for relpath, erros in failed:
-            print(f"- {relpath}", file=sys.stderr)
-            for linha in erros:
-                print(f"  {linha}", file=sys.stderr)
-        return 1
-
-    print(f"Validação OK: {ok}/{total} arquivos JSON conferidos.")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
