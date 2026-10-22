@@ -13,19 +13,10 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
+from scripts.arquivos_criticos import CRITICOS
+
 BASE = Path(__file__).resolve().parent.parent
 SCHEMA_DIR = BASE / "schemas"
-
-ARQUIVOS = {
-    "site/dados/deputados.json": "deputados.schema.json",
-    "site/dados/senadores.json": "senadores.schema.json",
-    "site/dados/blocos.json": "blocos.schema.json",
-    "site/dados/fluxo.json": "fluxo.schema.json",
-    "site/dados/inicio.json": "inicio.schema.json",
-    "site/dados/semana.json": "semana.schema.json",
-    "site/dados/legislaturas.json": "legislaturas.schema.json",
-    "site/dados/origem_leis.json": "origem_leis.schema.json",
-}
 
 
 def carregar_json(path: Path):
@@ -68,13 +59,13 @@ def validar_arquivo(relpath: str, schema_name: str) -> None:
 def main() -> int:
     print("Validando JSONs públicos com schemas...")
     try:
-        for relpath, schema_name in ARQUIVOS.items():
+        for relpath, schema_name in CRITICOS:
             validar_arquivo(relpath, schema_name)
     except Exception as exc:  # noqa: BLE001
         print(f"VALIDAÇÃO FALHOU: {exc}", file=sys.stderr)
         return 1
 
-    print(f"Validação OK: {len(ARQUIVOS)} arquivos JSON conferidos.")
+    print(f"Validação OK: {len(CRITICOS)} arquivos JSON conferidos.")
     return 0
 
 
