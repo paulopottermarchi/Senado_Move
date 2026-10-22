@@ -650,6 +650,17 @@ table.part tbody tr:hover td.esq{background:var(--papel2)}
 table.part tr.divisor td{position:static;box-shadow:none}
 }
 </style>
+<!-- seo:inicio -->
+<link rel="canonical" href="https://congressoclaro.com.br/deputados.html">
+<meta property="og:url" content="https://congressoclaro.com.br/deputados.html">
+<meta property="og:image" content="https://congressoclaro.com.br/img/og-padrao.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Câmara Aberta: O que o Congresso propõe, aprova e vota">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://congressoclaro.com.br/img/og-padrao.png">
+<!-- seo:fim -->
 </head>
 <body>
 
@@ -978,6 +989,8 @@ table.part tr.divisor td{position:static;box-shadow:none}
     <!-- o botão compartilhado (estilo.css .btn-tema); temas.js põe os símbolos das 3 categorias com mais proposições e o total -->
     <a class="btn-tema" id="fTemas" href="#" hidden><span class="bt-ics" aria-hidden="true"></span><span class="bt-txt"><b>Ver as proposições por tema</b><small>todas as PEC e PL de autoria</small></span><span class="bt-seta" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
 
+    <a class="ver-temas" id="fPagina" href="#" hidden>Página própria, com resumo e endereço fixo para compartilhar</a>
+
     <div class="partic" id="fPartic"></div>
 
     <div class="secao">Proposições votadas</div>
@@ -1246,6 +1259,10 @@ function posicionar(){
 // Arquivo à parte (~90 kB) para não depender da página por tema. Sem ele, nada some:
 // a busca e a ficha só não mostram a frase.
 let FRASES={}, INICIO_LEG=null;
+/* Página própria e indexável de cada parlamentar (scripts/paginas.py; o endereço sai do manifesto dados/paginas.json, que só existe depois de uma rodada) */
+let PAG=null;
+const urlPerfil=(grupo,tipo,id)=>PAG&&PAG[grupo]&&PAG[grupo][id]?`${tipo}/${id}-${PAG[grupo][id].slug}/`:null;
+function linkPerfil(d){ const u=urlPerfil('deputados','deputado',d.id); return u?`<a class="pg-link" href="${u}" title="Página própria de ${esc(d.nome)}, com resumo e endereço fixo" aria-label="Página própria de ${esc(d.nome)}">↗</a>`:''; }
 async function carregarFrases(){
   try{
     const r=await fetch('dados/temas/resumo.json',{cache:'no-cache'});
@@ -1262,10 +1279,11 @@ async function carregar(pFrases){
   const pLogos=Bandeiras.carregar();     // logos dos partidos (logos.py); sem o arquivo, a página só não mostra logo
   const pDep=buscaJson('dados/deputados.json'), pLeg=buscaJson('dados/legislaturas.json'),
         pWiki=buscaJson('dados/wikipedia.json'), pYt=buscaJson('dados/youtube.json'), pBlocos=buscaJson('dados/blocos.json'),
-        pProp=buscaJson('dados/proposicoes.json'), pEnq=buscaJson('dados/enquetes.json'),
+        pProp=buscaJson('dados/proposicoes.json'), pEnq=buscaJson('dados/enquetes.json'), pPag=buscaJson('dados/paginas.json'),
         pOrig=OrigemLeis.carregar();           // origem_leis.json (origem_leis.py); sem o arquivo, só não há faixa nem linha na ficha
   try{
     const reais=await pDep;
+    PAG=await pPag;
     if(!Array.isArray(reais)||!reais.length) throw 0;
     deputados=reais.map(d=>({
       id:d.id, nome:d.nome, partido:d.partido, uf:d.uf, federacao:d.federacao||null,
@@ -2169,7 +2187,7 @@ function rankDesenhar(){
     return `<tr data-id="${d.id}">
       <td class="pos">${i+1}</td>
       <td class="dep" title="${esc(d.nome)} (${esc(d.partido)}-${esc(d.uf)})"><div class="dep-cel">${retrato(d,32)}<div class="dep-txt">
-        <b><i style="background:${corDoScore(d.score)}"></i>${esc(d.nome)}</b>
+        <b><i style="background:${corDoScore(d.score)}"></i>${esc(d.nome)}${linkPerfil(d)}</b>
         <em style="display:block;font-style:normal;font-size:12px;color:var(--tinta3)">${Bandeiras.img(d.partido,+LEG_ATUAL(),14,{vazio:false})}${esc(d.partido)} de ${esc(d.uf)}</em>
       </div></div></td>
       <td class="num forte cel2">${celaVoto(d,nf)}</td>
@@ -2198,6 +2216,7 @@ function rankDesenhar(){
       rankDesenhar();
     });
     document.getElementById('rankCorpo').addEventListener('click',e=>{
+      if(e.target.closest('a.pg-link')) return;          // o link da página própria navega; não abre a ficha
       const tr=e.target.closest('tr[data-id]'); if(!tr) return;
       const d=deputados.find(x=>String(x.id)===tr.dataset.id);
       if(d)abrir(d);
@@ -2351,6 +2370,9 @@ function abrir(d){
   lkTemas.hidden=demo;
   lkTemas.href=`deputado.html?id=${encodeURIComponent(d.id)}`;
   if(!demo&&window.TemaIcone) TemaIcone.preencherBotao(lkTemas,`dados/temas/${encodeURIComponent(d.id)}.json`);
+
+  const lkPag=document.getElementById('fPagina'), upag=demo?null:urlPerfil('deputados','deputado',d.id);
+  lkPag.hidden=!upag; if(upag) lkPag.href=upag;
 
   const box=document.getElementById('fPartic');
   if(!d.votos||!d.votos.chamadas){

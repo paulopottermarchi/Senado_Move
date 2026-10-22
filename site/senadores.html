@@ -290,6 +290,17 @@ table.part tr.divisor:hover td{background:none}
   table.part tr.divisor td{position:static;box-shadow:none}
 }
 </style>
+<!-- seo:inicio -->
+<link rel="canonical" href="https://congressoclaro.com.br/senadores.html">
+<meta property="og:url" content="https://congressoclaro.com.br/senadores.html">
+<meta property="og:image" content="https://congressoclaro.com.br/img/og-padrao.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Câmara Aberta: O que o Congresso propõe, aprova e vota">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://congressoclaro.com.br/img/og-padrao.png">
+<!-- seo:fim -->
 </head>
 <body>
 
@@ -735,7 +746,7 @@ function abrir(id){
     </div>
     <div class="acoes-tema">${window.TemaIcone
       ?TemaIcone.botao({id:'btnTemaFicha',href:`senador.html?id=${s.id}`,titulo:'Ver as proposições por tema',sub:`${nf.format(s.apresentadas||0)} PEC e PL como primeiro autor`})
-      :`<a class="btn-tema" href="senador.html?id=${s.id}"><span class="bt-txt"><b>Ver as proposições por tema</b></span></a>`}</div>
+      :`<a class="btn-tema" href="senador.html?id=${s.id}"><span class="bt-txt"><b>Ver as proposições por tema</b></span></a>`}${(()=>{ const u=saiu?null:urlPerfil('senadores','senador',s.id); return u?`<a class="btn-sec" href="${u}">Página própria, com resumo e endereço fixo</a>`:''; })()}</div>
     <p class="f-txt">${exTxt}${saiu&&!leg?'Já deixou o Senado: os números acima são da carreira inteira; escolha uma legislatura no filtro para ver o que fez em cada uma.':
       `${leg?`Na legislatura ${rotuloLeg(lg)}`:'Nesta legislatura'}, apresentou <b>${nf.format(n.apresentadas||0)}</b> PEC e PL; ${n.viraramLei?`<b>${nf.format(n.viraramLei)}</b> já ${n.viraramLei>1?'viraram':'virou'} lei`:'nenhum virou lei ainda'}.`}
       ${(()=>{ const q=pos(s); return q.score!=null
@@ -786,7 +797,7 @@ function tabela(){
      :` Mostra os ${R.length} senadores de hoje que estavam em exercício na legislatura ${rotuloLeg(leg)}; os números são só dessa legislatura.`);
   const L=[...R].sort((a,b)=>{const x=valorCol(a,ordCol),y=valorCol(b,ordCol); if(x==null&&y==null)return 0; if(x==null)return 1; if(y==null)return -1;
     return (x<y?-1:x>y?1:0)*(ordDesc?-1:1)});
-  $('#corpo').innerHTML=L.map(s=>{ const n=num(s); return `<tr data-id="${s.id}"><td class="esq"><div class="sen">${foto(s)}<div><b>${esc(s.nome)}</b><small>${esc(s.uf)}</small></div></div></td><td class="esq">${pos(s).partido?Bandeiras.img(pos(s).partido,leg?+leg:57,18,{vazio:false}):''}${esc(pos(s).partido||'sem partido')}</td>
+  $('#corpo').innerHTML=L.map(s=>{ const n=num(s); return `<tr data-id="${s.id}"><td class="esq"><div class="sen">${foto(s)}<div><b>${esc(s.nome)}${linkPerfil(s)}</b><small>${esc(s.uf)}</small></div></div></td><td class="esq">${pos(s).partido?Bandeiras.img(pos(s).partido,leg?+leg:57,18,{vazio:false}):''}${esc(pos(s).partido||'sem partido')}</td>
     <td>${nf.format(n.apresentadas)}</td><td>${nf.format(n.viraramLei)}</td><td>${n.apresentadas?(n.viraramLei/n.apresentadas*100).toFixed(1).replace('.',',')+'%':'—'}</td>
     <td>${nf.format((n.relatorias||{}).processos||0)}</td>
     ${!votosValem()?'':`<td>${taxaOri(s)==null?`<span title="${esc((s.difOrientacao||{}).nota||'')}">—</span>`:pct1(taxaOri(s))}</td>`}
@@ -894,10 +905,17 @@ $('#zoomMenos').addEventListener('click',()=>P3D&&P3D.zoom(1/0.85));
 $('#dlg3d').addEventListener('close',()=>{ if(P3D){ P3D.destruir(); P3D=null; } });      // libera geometrias, texturas e o contexto WebGL
 $('#dlg3d').addEventListener('click',e=>{ if(e.target===$('#dlg3d')) fechar3D(); });    // clique no fundo escuro
 
+/* Página própria e indexável de cada parlamentar (scripts/paginas.py; o endereço sai do manifesto dados/paginas.json, que só existe depois de uma rodada) */
+let PAG=null;
+const urlPerfil=(grupo,tipo,id)=>PAG&&PAG[grupo]&&PAG[grupo][id]?`${tipo}/${id}-${PAG[grupo][id].slug}/`:null;
+function linkPerfil(s){ const u=urlPerfil('senadores','senador',s.id); return u?`<a class="pg-link" href="${u}" title="Página própria de ${esc(s.nome)}, com resumo e endereço fixo" aria-label="Página própria de ${esc(s.nome)}">↗</a>`:''; }
+
 async function carregar(){
   const json=u=>fetch(u,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
   const pLegs=json('dados/legislaturas.json');             // sai junto do resto, não depois
+  const pPag=json('dados/paginas.json');
   await Bandeiras.carregar();
+  PAG=await pPag;
   try{ const r=await fetch('dados/senadores.json',{cache:'no-cache'}); if(!r.ok) throw new Error('HTTP '+r.status); S=await r.json(); }
   catch(e){ $('#grafico').innerHTML=`<p class="erro">Não foi possível carregar senadores.json (${esc(e.message)}).</p>`; return }
   // Legislaturas oferecidas: da 52ª (2003) em diante e só as em que algum senador de hoje esteve em exercício. Sem `mandatos`
@@ -931,7 +949,7 @@ $('#cab').addEventListener('click',e=>{
   const th=e.target.closest('th[data-k]'); if(!th) return;
   const k=th.dataset.k; ordDesc=ordCol===k?!ordDesc:!['nome','partido','sup'].includes(k); ordCol=k; tabela();
 });
-$('#corpo').addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]'); if(tr) abrir(+tr.dataset.id);});
+$('#corpo').addEventListener('click',e=>{if(e.target.closest('a.pg-link')) return; const tr=e.target.closest('tr[data-id]'); if(tr) abrir(+tr.dataset.id);});
 $('#plenario').addEventListener('click',e=>{const c=e.target.closest('.assento'); if(c) abrir(+c.dataset.id);});
 $('#plenario').addEventListener('keydown',e=>{const c=e.target.closest('.assento'); if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault(); abrir(+c.dataset.id);}});
 const g=$('#grafico');
