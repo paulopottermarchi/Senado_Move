@@ -55,13 +55,35 @@ jobs:
             ${{ env.CACHE_PREFIX }}-
             cache-api-ubuntu-
 
-      - name: Executar rotina crítica
-        run: python scripts/rodada.py --grupo critico
+      - name: Atualizar pela API (só o que mudou)
+        run: python scripts/passo.py atualiza.py
+
+      - name: Regerar deputados.json
+        run: python scripts/passo.py coleta.py --limite 513
+
+      - name: Guardar o cache (depois da coleta crítica)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: cache
+          key: ${{ env.CACHE_PREFIX }}
+
+      - name: Votos (arquivos em lote do ano corrente)
+        run: python scripts/passo.py votos.py --atualizar
+
+      - name: Blocos de voto
+        run: python scripts/passo.py blocos.py --atualizar
+
+      - name: Temas e frase-resumo
+        run: python scripts/passo.py temas.py
+
+      - name: Esta semana na Câmara
+        run: python scripts/passo.py semana.py
 
       - name: Validar JSONs públicos
         run: python scripts/validar_jsons.py
 
-      - name: Guardar o cache (depois da coleta crítica)
+      - name: Guardar o cache para a próxima rodada
         if: always()
         uses: actions/cache/save@v4
         with:
@@ -129,11 +151,84 @@ jobs:
             ${{ env.CACHE_PREFIX }}-
             cache-api-ubuntu-
 
-      - name: Executar coleta pesada
+      # Blocos pesados e não críticos para a publicação do site do dia, mas úteis para enriquecer os dados.
+      - name: Notoriedade das leis
+        run: python scripts/passo.py --opcional notoriedade.py
+
+      - name: Notoriedade dos deputados (Wikipédia)
+        run: python scripts/passo.py --opcional wikipedia.py
+
+      - name: Notícias da Agência Câmara
+        run: python scripts/passo.py --opcional noticias.py
+
+      - name: Canais oficiais no YouTube
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python scripts/passo.py --opcional youtube.py
+
+      - name: Enquetes da Câmara
+        run: python scripts/passo.py --opcional enquetes.py
+
+      - name: Consulta pública do Senado
+        run: python scripts/passo.py --opcional ecidadania.py
+
+      - name: Contexto econômico (coleta)
+        run: python scripts/passo.py --opcional contexto.py
+
+      - name: Resumos (IA, a partir do inteiro teor)
+        env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python scripts/rodada.py --grupo pesado
+        run: python scripts/passo.py --opcional resumos.py --escopo leis,recentes,contexto --limite 200 --esperar 60
+
+      - name: Objetivos declarados (IA, citação literal)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/passo.py --opcional objetivos.py --limite 250 --esperar 60
+
+      - name: Contexto econômico (montar com resumos e objetivos)
+        run: python scripts/passo.py --opcional contexto.py --so-montar
+
+      - name: Exportações e balança comercial (Comex Stat)
+        run: python scripts/passo.py --opcional comex.py
+
+      - name: Tributos (Receita Federal)
+        run: python scripts/passo.py --opcional receita.py
+
+      - name: Obras e contratos
+        run: python scripts/passo.py --opcional obras.py
+
+      - name: Pessoas documentadas das obras
+        run: python scripts/passo.py --opcional pessoas.py --publicar --vias e2,e8
+
+      - name: Senadores
+        run: python scripts/passo.py --opcional senado.py
+
+      - name: Tramitações
+        run: python scripts/passo.py --opcional tramitacoes.py --limite 12000
+
+      - name: Página de cada senador
+        run: python scripts/passo.py --opcional senador_paginas.py
+
+      - name: Blocos de voto do Senado
+        run: python scripts/passo.py --opcional blocos_senado.py
+
+      - name: Partidos
+        run: python scripts/passo.py --opcional partidos.py
+
+      - name: Alinhamento ao Governo por governo
+        run: python scripts/passo.py --opcional governo.py
+
+      - name: Logos dos partidos
+        run: python scripts/passo.py --opcional logos.py
+
+      - name: Fluxo entre as casas
+        run: python scripts/passo.py --opcional fluxo.py --limite 9000
+
+      - name: De onde vêm as leis
+        run: python scripts/passo.py --opcional origem_leis.py
+
+      - name: Páginas indexáveis e sitemap
+        run: python scripts/passo.py --opcional paginas.py
 
       - name: Guardar o cache para a próxima rodada
         if: always()
