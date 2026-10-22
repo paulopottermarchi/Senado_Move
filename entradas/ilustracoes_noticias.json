@@ -1,0 +1,128 @@
+{
+  "_aviso": "Ilustração do tema de lei para a notícia que não tem foto de licença livre (ver noticias.py). Escolhida à mão no Wikimedia Commons: uma por categoria do bloco 'Políticas sociais' (que mistura saúde, educação, trabalho e previdência), uma por bloco de tema nos demais, e uma geral. 'categorias' (nomes curtos de temas.CURTO) vale antes de 'bloco'. Os campos autor, licenca, licencaUrl, pagina e verificadoEm são gravados por scripts/ilustracoes_noticias.py, que confere a licença de novo a cada execução.",
+  "_regra": "Só licença que permite uso comercial e redistribuição sem condição além do crédito: CC0, domínio público ou CC BY. Nada com SA, NC ou ND. Sem rosto identificável: a imagem ilustra o tema, nunca a notícia, e não pode sugerir que uma pessoa real tem relação com a lei.",
+  "ilustracoes": {
+    "saude": {
+      "tema": "Saúde",
+      "categorias": [
+        "saúde"
+      ],
+      "arquivo": "File:Stethoscope No.120.JPG",
+      "autor": "Tama998",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Stethoscope_No.120.JPG",
+      "verificadoEm": "2026-10-22"
+    },
+    "educacao": {
+      "tema": "Educação",
+      "categorias": [
+        "educação"
+      ],
+      "arquivo": "File:School Supplies.jpg",
+      "autor": "TheUltimateGrass",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:School_Supplies.jpg",
+      "verificadoEm": "2026-10-22"
+    },
+    "trabalho-e-emprego": {
+      "tema": "Trabalho e emprego",
+      "categorias": [
+        "trabalho e emprego"
+      ],
+      "arquivo": "File:Jeweler's Workbench.jpg",
+      "foco": [
+        0.5,
+        0.45
+      ],
+      "autor": "Thomas Farley",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Jeweler%27s_Workbench.jpg",
+      "verificadoEm": "2026-10-22"
+    },
+    "previdencia": {
+      "tema": "Previdência e assistência social",
+      "categorias": [
+        "previdência e assistência social"
+      ],
+      "arquivo": "File:COINK Piggy Bank, Designed by Scott Henderson, 2004.jpg",
+      "autor": "Shenderson1",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:COINK_Piggy_Bank,_Designed_by_Scott_Henderson,_2004.jpg",
+      "verificadoEm": "2026-10-22"
+    },
+    "grupos-e-direitos": {
+      "tema": "Grupos e direitos",
+      "bloco": "Grupos e direitos",
+      "arquivo": "File:Holding hands by wall (Unsplash).jpg",
+      "autor": "freestocks.org freestocks",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Holding_hands_by_wall_(Unsplash).jpg",
+      "verificadoEm": "2026-10-22"
+    },
+    "estado-justica-seguranca": {
+      "tema": "Estado, justiça e segurança",
+      "bloco": "Estado, justiça e segurança",
+      "arquivo": "File:Supremo Tribunal Federal building in Brasilia - DSC00286.JPG",
+      "autor": "Daderot",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Supremo_Tribunal_Federal_building_in_Brasilia_-_DSC00286.JPG",
+      "verificadoEm": "2026-10-22"
+    },
+    "economia-e-mercado": {
+      "tema": "Economia e mercado",
+      "bloco": "Economia e mercado",
+      "arquivo": "File:Stack of coins 0214(cropped).jpg",
+      "autor": "Dori",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Stack_of_coins_0214(cropped).jpg",
+      "verificadoEm": "2026-10-22"
+    },
+    "infraestrutura-e-territorio": {
+      "tema": "Infraestrutura e território",
+      "bloco": "Infraestrutura e território",
+      "arquivo": "File:Cable-stayed bridge pylon in Rio de Janeiro, Brazil.jpg",
+      "autor": "Wilfredor",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Cable-stayed_bridge_pylon_in_Rio_de_Janeiro,_Brazil.jpg",
+      "verificadoEm": "2026-10-22"
+    },
+    "tecnologia": {
+      "tema": "Tecnologia",
+      "bloco": "Tecnologia",
+      "arquivo": "File:Caviar 2340 Hard Drive Circuit Board Side 2.jpg",
+      "autor": "ComputerUserUser",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Caviar_2340_Hard_Drive_Circuit_Board_Side_2.jpg",
+      "verificadoEm": "2026-10-22"
+    },
+    "cultura-e-homenagens": {
+      "tema": "Cultura e homenagens",
+      "bloco": "Cultura e homenagens",
+      "arquivo": "File:Élie Haguenthal Imagerie Nouvelle Planche 0681 Rideau pour le devant de théâtre.jpg",
+      "autor": "Élie Haguenthal",
+      "licenca": "Public domain",
+      "licencaUrl": null,
+      "pagina": "https://commons.wikimedia.org/wiki/File:%C3%89lie_Haguenthal_Imagerie_Nouvelle_Planche_0681_Rideau_pour_le_devant_de_th%C3%A9%C3%A2tre.jpg",
+      "verificadoEm": "2026-10-22"
+    },
+    "geral": {
+      "tema": "Geral (sem categoria)",
+      "bloco": null,
+      "arquivo": "File:Esplanada dos Ministérios - Brasilia - DSC00327.JPG",
+      "autor": "Daderot",
+      "licenca": "CC0",
+      "licencaUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "pagina": "https://commons.wikimedia.org/wiki/File:Esplanada_dos_Minist%C3%A9rios_-_Brasilia_-_DSC00327.JPG",
+      "verificadoEm": "2026-10-22"
+    }
+  }
+}
