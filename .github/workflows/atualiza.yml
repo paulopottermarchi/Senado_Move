@@ -25,32 +25,40 @@ jobs:
     # certificado intermediário" — era o antivírus daquela máquina; o teste de conexão de 30/9/2026
     # alcançou todas as APIs também no Linux.) Nunca verify=False.
     # Cada passo roda por scripts/passo.py: se falhar, o motivo vira anotação no resumo da rodada.
-    runs-on: windows-latest
-    timeout-minutes: 350    # a primeira rodada, sem cache, refaz a coleta inteira (~3 h)
+    runs-on: ubuntu-latest
+    timeout-minutes: 240    # mantém a rotina diária no Linux, com menos overhead e melhor previsibilidade
     environment:
       name: github-pages
       url: ${{ steps.publicar.outputs.page_url }}
+    env:
+      CACHE_PREFIX: cache-api-${{ runner.os }}-${{ github.ref_name }}-v1
     defaults:
       run:
         shell: bash
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
 
       - run: pip install -r requirements.txt
 
-      # O cache/ (~670 MB) não vai para o git. Sobrevive entre rodadas no cache do
-      # Actions: cada rodada restaura a última e salva uma nova.
+      # O cache/ (~670 MB) não vai para o git. Usar uma chave estável pelo branch/OS reduz a
+      # re-coleta e evita perder o benefício do cache entre execuções do mesmo ambiente.
       - name: Restaurar o cache da API
         uses: actions/cache/restore@v4
         with:
           path: cache
-          key: cache-api-${{ github.run_id }}
-          restore-keys: cache-api-
+          key: ${{ env.CACHE_PREFIX }}
+          restore-keys: |
+            ${{ env.CACHE_PREFIX }}-
+            cache-api-${{ runner.os }}-
 
       - name: Atualizar pela API (só o que mudou)
         run: python scripts/passo.py atualiza.py
@@ -66,7 +74,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: cache
-          key: cache-api-${{ github.run_id }}-coleta
+          key: ${{ env.CACHE_PREFIX }}
 
       - name: Votos (arquivos em lote do ano corrente)
         run: python scripts/passo.py votos.py --atualizar
@@ -243,7 +251,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: cache
-          key: cache-api-${{ github.run_id }}
+          key: ${{ env.CACHE_PREFIX }}
 
       # O histórico dos dados fica no git: é o registro auditável do que mudou e quando.
       # temas.py só reescreve o arquivo de deputado que mudou, então o commit é pequeno.
