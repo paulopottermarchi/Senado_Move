@@ -24,7 +24,6 @@ import re
 import time
 import unicodedata
 from collections import Counter, defaultdict
-from pathlib import Path
 
 import coleta                      # injeta o truststore (TLS) e traz os caminhos
 import obras                       # sessão com User-Agent identificado; CT, OG; fresco()

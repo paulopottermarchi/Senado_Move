@@ -31,7 +31,6 @@ from collections import Counter, defaultdict
 
 import pypdf
 
-import coleta
 import diag_vinculo_comum as D
 import diag_vinculo_e2 as E
 import diag_vinculo_e3_sonda as SO
@@ -276,7 +275,6 @@ def ler_documento(a, nc):
         if sum(len(t) for t in pgs.values()) < 200:
             continue
         out["texto"] = True
-        plano = " ".join(f"[[p{p}]] {t}" for p, t in pgs.items())
         ass, plano2, _ = E.blocos_assinatura([pgs[p] for p in sorted(pgs)])
         mapa = sorted(pgs)
         for s in ass:
