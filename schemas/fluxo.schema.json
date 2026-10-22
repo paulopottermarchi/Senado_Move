@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fluxo",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "_gerado": { "type": "string", "format": "date" },
+        "_fonte": { "type": "string" },
+        "_regras": { "type": "object", "additionalProperties": true },
+        "dados": { "type": "array", "items": { "type": "array" } }
+      }
+    },
+    {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "object", "additionalProperties": true },
+          { "type": "array", "items": {} }
+        ]
+      }
+    }
+  ]
+}
