@@ -203,6 +203,15 @@
 .por-tema{scroll-margin-top:84px}
 
 </style>
+<!-- seo:inicio -->
+<meta property="og:image" content="https://congressoclaro.com.br/img/og-padrao.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Câmara Aberta: O que o Congresso propõe, aprova e vota">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://congressoclaro.com.br/img/og-padrao.png">
+<!-- seo:fim -->
 </head>
 <body>
 <header class="topo">
@@ -315,6 +324,21 @@ function aviso(tit,html){
 }
 const json=u=>fetch(u,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
 
+/* Página estática indexável desta pessoa (gerada por scripts/paginas.py, endereço no manifesto dados/paginas.json): o canonical e o og:url desta
+   página interativa apontam para ela. Sem o manifesto ou sem a pessoa nele, nada muda. */
+function canonicoDaPagina(grupo,tipo,id){
+  fetch('dados/paginas.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(m=>{
+    const e=m&&m[grupo]&&m[grupo][id]; if(!e) return;
+    const url=`${m.baseUrl}/${tipo}/${id}-${e.slug}/`;
+    let l=document.querySelector('link[rel="canonical"]');
+    if(!l){ l=document.createElement('link'); l.rel='canonical'; document.head.appendChild(l); }
+    l.href=url;
+    let o=document.querySelector('meta[property="og:url"]');
+    if(!o){ o=document.createElement('meta'); o.setAttribute('property','og:url'); document.head.appendChild(o); }
+    o.content=url;
+  }).catch(()=>{});
+}
+
 async function iniciar(){
   const q=new URLSearchParams(location.search);
   const id=q.get('id');
@@ -324,6 +348,7 @@ async function iniciar(){
       '“Ver as proposições por tema”.</p>');
     return;
   }
+  canonicoDaPagina('senadores','senador',id);
   const [rt,lista,rd]=await Promise.all([json('dados/temas/taxonomia.json'),json('dados/senadores.json'),json(`dados/senadores/${id}.json`)]);
   if(!rt||!lista){
     aviso('Não foi possível ler os dados','<p>Faltam <code>dados/temas/taxonomia.json</code> ou <code>dados/senadores.json</code>. '+
