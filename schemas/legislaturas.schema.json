@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Legislaturas",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "_gerado": { "type": ["string", "null"], "format": "date" },
+    "_fonte": { "type": ["string", "null"] },
+    "legislaturas": { "type": ["array", "null"] },
+    "dados": { "type": ["array", "null"] }
+  }
+}
