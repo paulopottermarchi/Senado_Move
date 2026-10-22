@@ -1,0 +1,38 @@
+# Atualizações automáticas de dependências: abre um pull request por semana, e o testes.yml roda nele.
+# Nada é mesclado sozinho. As mudanças de versão MAIOR vêm uma por PR, para você ler as notas de versão antes de aceitar.
+#
+# Cuidado com as actions (checkout, setup-python, cache, deploy-pages): quem as exercita de verdade é a rodada diária (atualiza.yml), não o
+# testes.yml. Mesclou um PR de action? Rode o "Run workflow" da Atualização diária e confira o resultado antes de esperar a rodada agendada.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "Actions"
+    groups:
+      actions-menores:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 5
+    # requirements.txt só tem versões mínimas (">="), que qualquer versão nova já satisfaz. Com "increase" o Dependabot sobe o mínimo para a versão
+    # nova (fonte: documentação do Dependabot, "Always increase the minimum version requirement to match the new version"), e é o PR com o
+    # testes.yml verde que prova que o projeto funciona com ela. Se nenhum PR de pip aparecer na primeira segunda-feira, tire esta linha.
+    versioning-strategy: "increase"
+    commit-message:
+      prefix: "Dependências"
+    groups:
+      pip-menores:
+        update-types: ["minor", "patch"]
