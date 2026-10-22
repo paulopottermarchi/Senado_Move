@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://congressoclaro.com.br/sitemap.xml

@@ -1,5 +1,5 @@
 {
- "_gerado": "2026-10-21",
+ "_gerado": "2026-10-22",
  "versao": "2026-10-02.4",
  "legislaturaAtual": 57,
  "minAutores": 10,
@@ -190,10 +190,10 @@
    "inicio": "2023-02-01",
    "fim": "2027-01-31",
    "atual": true,
-   "proposicoes": 21100,
+   "proposicoes": 21143,
    "deMaisDeUmPartido": 778,
    "semPartido": 2,
-   "semTema": 264,
+   "semTema": 265,
    "partidos": 24,
    "recursosDaLegislaturaAtual": true
   },
@@ -305,12 +305,12 @@
    "id": "todas",
    "rotulo": "Todas · 1991 a 2026",
    "inicio": "1991-02-01",
-   "fim": "2026-10-21",
+   "fim": "2026-10-22",
    "atual": false,
-   "proposicoes": 87925,
+   "proposicoes": 87968,
    "deMaisDeUmPartido": 2295,
    "semPartido": 104,
-   "semTema": 1782,
+   "semTema": 1783,
    "partidos": 58,
    "recursosDaLegislaturaAtual": false
   }
