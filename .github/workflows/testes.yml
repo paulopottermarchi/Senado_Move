@@ -1,0 +1,70 @@
+name: Testes
+
+# Roda a cada pull request e toda segunda-feira. Não usa rede nem o cache da rodada diária: só o que está no repositório.
+#
+# Por que também toda segunda: requirements.txt só tem versões mínimas ("requests>=2.31"), então a rodada diária instala sempre a versão MAIS NOVA de cada
+# pacote. Uma versão nova que quebre alguma coisa pararia a rodada sem aviso; aqui ela aparece como falha de segunda-feira, antes de virar falha na rodada.
+#
+# Roda em Windows, o mesmo sistema da rodada diária (atualiza.yml), para um teste que passa aqui passar lá.
+on:
+  pull_request:
+  schedule:
+    - cron: "0 11 * * 1"    # segunda, 8h em Brasília (o cron do GitHub é em UTC e pode atrasar)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: testes-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+
+jobs:
+  testes:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - run: pip install -r requirements.txt pyflakes
+
+      # Cada passo roda mesmo se o anterior falhou, para o PR mostrar tudo o que está quebrado de uma vez.
+      - name: Lint (pyflakes)
+        run: python -m pyflakes scripts
+
+      - name: Compila todos os scripts
+        if: ${{ !cancelled() }}
+        run: python -m compileall -q scripts
+
+      - name: Comex (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/comex.py --teste
+
+      - name: Abertura comercial (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/contexto_abertura.py --teste
+
+      - name: Trabalho e renda (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/contexto_trabalho.py --teste
+
+      - name: Tributos (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/receita.py --teste
+
+      - name: Páginas de perfil e SEO (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/paginas.py --teste
+
+      - name: Pessoas documentadas (regressão sintética)
+        if: ${{ !cancelled() }}
+        run: python scripts/pessoas_regressao.py --so-sinteticos

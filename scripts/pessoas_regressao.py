@@ -3,6 +3,7 @@ Câmara Aberta — testes de regressão da camada "Pessoas documentadas".
 
 Uso (depois de rodar `python scripts/pessoas.py --dry-run`):
     python scripts/pessoas_regressao.py
+    python scripts/pessoas_regressao.py --so-sinteticos    # só a parte A (sem cache nem rede): é o que o CI dos PRs roda
 
 Três partes:
   A) casos sintéticos (nomes inventados, sem PDF): testemunha, empresa, nome ilegível, reconciliação, cargo com vírgula, o filtro
@@ -462,8 +463,11 @@ def parte_c():
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     parte_a()
-    parte_b()
-    parte_c()
+    if "--so-sinteticos" in sys.argv[1:]:
+        print("B) e C) puladas (--so-sinteticos): dependem do cache de um dry-run local de pessoas.py")
+    else:
+        parte_b()
+        parte_c()
     print(f"\n{ok} verificações passaram, {len(falhas)} falharam")
     sys.exit(1 if falhas else 0)
 
