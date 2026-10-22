@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+"""Relatório simples de campos por JSON crítico.
+
+Útil para revisão manual e diagnóstico de contratos ainda desalinhados.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from scripts.arquivos_criticos import CRITICOS
+
+BASE = Path(__file__).resolve().parent.parent
+
+REQUIRED_FIELDS = {
+    "site/dados/deputados.json": ["id", "nome", "partido", "uf", "urlFoto"],
+    "site/dados/senadores.json": ["id", "nome", "partido", "uf", "urlFoto"],
+    "site/dados/blocos.json": ["_gerado", "_fonte"],
+    "site/dados/blocos_senado.json": ["_gerado", "_fonte"],
+    "site/dados/fluxo.json": ["_gerado", "_fonte", "dados"],
+    "site/dados/inicio.json": ["geradoEm", "deputados", "partidos", "ufs", "comPosicao", "semPosicao", "senadores", "leis", "blocos"],
+    "site/dados/semana.json": ["de", "ate", "geradoEm", "universo"],
+    "site/dados/origem_leis.json": ["_gerado", "_fonte", "legislatura", "categorias", "vias", "viasLigacao", "composicao", "totais", "referencia", "urls", "excecoes", "orgaos", "campos", "normas"],
+    "site/dados/legislaturas.json": ["id", "inicio", "fim"],
+    "site/dados/ecidadania.json": ["_fonte", "_url", "_ligacao"],
+}
+
+
+def carregar_json(path: Path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def status_arquivo(relpath: str):
+    path = BASE / relpath
+    dados = carregar_json(path)
+    required = REQUIRED_FIELDS.get(relpath, [])
+
+    if isinstance(dados, list):
+        if not dados:
+            return {"ok": True, "missing": []}
+        first = dados[0]
+        if not isinstance(first, dict):
+            return {"ok": False, "missing": ["item não é objeto"]}
+        missing = [field for field in required if field not in first]
+        return {"ok": not missing, "missing": missing}
+
+    if isinstance(dados, dict):
+        missing = [field for field in required if field not in dados]
+        return {"ok": not missing, "missing": missing}
+
+    return {"ok": False, "missing": ["tipo raiz inesperado"]}
+
+
+if __name__ == "__main__":
+    for relpath, _ in CRITICOS:
+        status = status_arquivo(relpath)
+        print(f"{relpath}: {'OK' if status['ok'] else 'FAIL'}")
+        if not status["ok"]:
+            print(f"  missing: {status['missing']}")
