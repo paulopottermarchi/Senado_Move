@@ -65,6 +65,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: python scripts/paginas.py --teste
 
+      - name: Notícias, leitor da imagem (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/noticias.py --teste
+
       - name: Pessoas documentadas (regressão sintética)
         if: ${{ !cancelled() }}
         run: python scripts/pessoas_regressao.py --so-sinteticos
