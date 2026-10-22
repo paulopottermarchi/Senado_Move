@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resumo de início",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "geradoEm",
+    "deputados",
+    "partidos",
+    "ufs",
+    "comPosicao",
+    "semPosicao",
+    "senadores",
+    "leis",
+    "blocos"
+  ],
+  "properties": {
+    "geradoEm": { "type": "string", "format": "date-time" },
+    "deputados": { "type": "integer" },
+    "partidos": { "type": "integer" },
+    "ufs": { "type": "integer" },
+    "comPosicao": { "type": "integer" },
+    "semPosicao": { "type": "integer" },
+    "senadores": { "type": "integer" },
+    "leis": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "votacoes": { "type": "integer" },
+        "de": { "type": ["string", "null"] },
+        "ate": { "type": ["string", "null"] }
+      }
+    },
+    "blocos": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "n": { "type": ["integer", "null"] },
+        "tamanho": { "type": ["integer", "null"] }
+      }
+    }
+  }
+}

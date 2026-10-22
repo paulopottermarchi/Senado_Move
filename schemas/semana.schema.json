@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Semana na Câmara",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["de", "ate", "geradoEm", "universo"],
+  "properties": {
+    "de": { "type": "string", "format": "date" },
+    "ate": { "type": "string", "format": "date" },
+    "geradoEm": { "type": "string", "format": "date-time" },
+    "universo": { "type": "string" }
+  }
+}

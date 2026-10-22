@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Blocos de voto",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["_gerado", "_fonte"],
+  "properties": {
+    "_gerado": { "type": "string", "format": "date" },
+    "_fonte": { "type": "string" },
+    "votacoes": { "type": ["integer", "null"] },
+    "votacoesComOrientacao": { "type": ["integer", "null"] },
+    "votacoesSemOrientacao": { "type": ["integer", "null"] },
+    "blocos": {
+      "type": ["array", "object", "null"],
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Origem das leis",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "_gerado",
+    "_fonte",
+    "legislatura",
+    "categorias",
+    "vias",
+    "viasLigacao",
+    "composicao",
+    "totais",
+    "referencia",
+    "urls",
+    "excecoes",
+    "orgaos",
+    "campos",
+    "normas"
+  ],
+  "properties": {
+    "_gerado": { "type": "string", "format": "date" },
+    "_fonte": { "type": "string" },
+    "_aviso": { "type": ["string", "null"] },
+    "_regras": { "type": ["array", "null"] },
+    "legislatura": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "integer" },
+        "inicio": { "type": "string", "format": "date" },
+        "fim": { "type": "string", "format": "date" },
+        "ate": { "type": ["string", "null", "date"] },
+        "ultimaLei": { "type": ["string", "null", "date"] }
+      }
+    },
+    "categorias": { "type": "array", "items": { "type": "string" } },
+    "vias": { "type": "array", "items": { "type": "string" } },
+    "viasLigacao": { "type": "array", "items": { "type": "string" } },
+    "composicao": { "type": "object", "additionalProperties": true },
+    "totais": { "type": "object", "additionalProperties": true },
+    "referencia": { "type": "object", "additionalProperties": true },
+    "urls": { "type": "object", "additionalProperties": true },
+    "excecoes": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+    "orgaos": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+    "campos": { "type": "array", "items": { "type": "string" } },
+    "normas": { "type": "array", "items": { "type": "array" } }
+  }
+}
