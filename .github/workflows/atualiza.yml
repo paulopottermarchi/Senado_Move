@@ -58,6 +58,9 @@ jobs:
       - name: Executar rotina crítica
         run: python scripts/rodada.py --grupo critico
 
+      - name: Validar JSONs públicos
+        run: python scripts/validar_jsons.py
+
       - name: Guardar o cache (depois da coleta crítica)
         if: always()
         uses: actions/cache/save@v4
