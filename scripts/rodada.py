@@ -24,6 +24,39 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent.parent
 PASSO = BASE / "scripts" / "passo.py"
 
+TIME_LIMITS = {
+    "atualiza": 600,
+    "coleta": 1800,
+    "votos": 900,
+    "blocos": 900,
+    "temas": 600,
+    "semana": 300,
+    "notoriedade": 600,
+    "wikipedia": 600,
+    "noticias": 600,
+    "youtube": 900,
+    "enquetes": 600,
+    "ecidadania": 600,
+    "contexto": 900,
+    "resumos": 1800,
+    "objetivos": 1800,
+    "contexto_montar": 900,
+    "comex": 1200,
+    "receita": 900,
+    "obras": 1800,
+    "pessoas": 1800,
+    "senado": 1200,
+    "tramitacoes": 1800,
+    "senador_paginas": 600,
+    "blocos_senado": 900,
+    "partidos": 600,
+    "governo": 600,
+    "logos": 600,
+    "fluxo": 1800,
+    "origem_leis": 1200,
+    "paginas": 900,
+}
+
 
 @dataclass(frozen=True)
 class Step:
@@ -82,6 +115,31 @@ def step_command(step: Step) -> list[str]:
     return cmd
 
 
+def emit_github_summary(grupo: str, metrics: list[tuple[str, float, str]]) -> None:
+    summary_path = os.getenv("GITHUB_STEP_SUMMARY")
+    if not summary_path or os.getenv("GITHUB_ACTIONS") != "true":
+        return
+
+    with open(summary_path, "a", encoding="utf-8") as f:
+        f.write(f"## Resumo do grupo `{grupo}`\n\n")
+        f.write("| Etapa | Tempo | Status |\n")
+        f.write("|---|---:|---|\n")
+        for nome, tempo, status in metrics:
+            tempo_fmt = f"{tempo:.1f}s"
+            f.write(f"| {nome} | {tempo_fmt} | {status} |\n")
+        f.write("\n")
+
+
+def emit_github_annotation(step: Step, tempo: float, ok: bool) -> None:
+    if os.getenv("GITHUB_ACTIONS") != "true":
+        return
+
+    limite = TIME_LIMITS.get(step.name, 600 if step.critical else 900)
+    if tempo > limite:
+        severidade = "warning" if not step.critical else "error"
+        print(f"::{severidade} title={step.name}::Tempo de execução excedeu o limite: {tempo:.1f}s > {limite:.0f}s")
+
+
 def run_step(step: Step, *, dry_run: bool) -> tuple[bool, float]:
     print(f"\n=== {step.name} :: {'DRY-RUN' if dry_run else 'EXEC'} ===")
     if dry_run:
@@ -120,12 +178,14 @@ def run_group(grupo: str, *, dry_run: bool, step_name: str | None) -> int:
 
     failed = []
     warnings = []
-    metrics = []
+    metrics: list[tuple[str, float, str]] = []
 
     for index, step in enumerate(steps, 1):
         print(f"\n[{index}/{len(steps)}] Grupo: {grupo} | Passo: {step.name}")
         ok, tempo = run_step(step, dry_run=dry_run)
-        metrics.append((step.name, tempo, "ok" if ok else "falhou"))
+        status = "ok" if ok else "falhou"
+        metrics.append((step.name, tempo, status))
+        emit_github_annotation(step, tempo, ok)
         if not ok:
             if step.critical:
                 failed.append(step.name)
@@ -133,6 +193,8 @@ def run_group(grupo: str, *, dry_run: bool, step_name: str | None) -> int:
                 break
             warnings.append(step.name)
             print(f"\nAVISO: passo opcional '{step.name}' falhou, mas a rodada continua.")
+
+    emit_github_summary(grupo, metrics)
 
     print("\nResumo de tempo por etapa:")
     for nome, tempo, status in metrics:
