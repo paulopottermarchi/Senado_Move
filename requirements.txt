@@ -6,4 +6,4 @@ pypdf>=6.0
 pdfminer.six>=20260107
 anthropic>=1.0
 # paginas.py: cartão og:image de cada página de perfil (só texto)
-Pillow>=10.0
+Pillow>=13.0.0
