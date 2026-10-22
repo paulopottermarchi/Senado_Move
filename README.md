@@ -223,8 +223,8 @@ Scripts que não entram na rodada diária:
 
 - `scripts/eleicao.py` — gera `entradas/eleicao2022.json` uma vez. O portal de dados abertos do TSE
   recusa acesso automatizado, e o projeto não contorna esse bloqueio; por isso a tabela é fixa.
-- `scripts/comex.py` — exportações por destino e por produto (Comex Stat), grava `site/dados/comex/`. Roda na rodada diária mas só trabalha a cada 7 dias; `--forcar` ignora o intervalo,
-  `--so-montar` remonta do cache, `--simular` confere sem gravar, `--imprimir` mostra totais, os 10 maiores e as frases, `--teste` roda os testes sem rede,
+- `scripts/comex.py` — exportações por destino e por produto (Comex Stat), grava `site/dados/comex/`. Roda na rodada diária mas só trabalha a cada 7 dias e só baixa o que falta: ano fechado já gravado não é pedido de novo, e o ano
+  corrente só quando a fonte atualizou; `--forcar` ignora o intervalo, `--completo` baixa todos os anos de novo, `--so-montar` remonta do cache, `--simular` confere sem gravar, `--imprimir` mostra totais, os 10 maiores e as frases, `--teste` roda os testes sem rede,
   `--reaproveitar` (desenvolvimento) aceita o cache bruto de qualquer dia. Também grava `balanca.json` (exportação, importação e saldo por ano e mês, FOB nos dois lados).
 - `scripts/contexto_abertura.py` — roda dentro de `contexto.py` (módulo irmão, diário): abertura comercial a partir das Contas Nacionais do IBGE, grava `site/dados/contexto/abertura.json`.
 - `scripts/receita.py` — arrecadação do IOF, do Imposto sobre Importação e do IPI (Receita Federal), grava `site/dados/contexto/tributos.json`. Roda na rodada diária mas só trabalha a cada 7 dias
