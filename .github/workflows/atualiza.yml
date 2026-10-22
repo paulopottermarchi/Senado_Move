@@ -20,13 +20,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  atualizar:
-    # Windows, como a máquina de desenvolvimento. (O motivo antigo — "a Câmara não envia o
-    # certificado intermediário" — era o antivírus daquela máquina; o teste de conexão de 30/9/2026
-    # alcançou todas as APIs também no Linux.) Nunca verify=False.
-    # Cada passo roda por scripts/passo.py: se falhar, o motivo vira anotação no resumo da rodada.
+  rotina_critica:
+    name: Rotina crítica
     runs-on: ubuntu-latest
-    timeout-minutes: 240    # mantém a rotina diária no Linux, com menos overhead e melhor previsibilidade
+    timeout-minutes: 240
     environment:
       name: github-pages
       url: ${{ steps.publicar.outputs.page_url }}
@@ -44,13 +41,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-          cache: 'pip'
+          cache: pip
           cache-dependency-path: requirements.txt
 
       - run: pip install -r requirements.txt
 
-      # O cache/ (~670 MB) não vai para o git. Usar uma chave estável pelo branch/OS reduz a
-      # re-coleta e evita perder o benefício do cache entre execuções do mesmo ambiente.
       - name: Restaurar o cache da API
         uses: actions/cache/restore@v4
         with:
@@ -66,10 +61,7 @@ jobs:
       - name: Regerar deputados.json
         run: python scripts/passo.py coleta.py --limite 513
 
-      # Com o cache vazio (1ª rodada, ou cache despejado) a coleta leva ~3 h e a rodada inteira
-      # chega perto do limite de 350 min. Guardar aqui garante que essas horas não se percam se a
-      # rodada estourar o tempo ou falhar adiante; a próxima restaura o cache mais recente.
-      - name: Guardar o cache (depois da coleta)
+      - name: Guardar o cache (depois da coleta crítica)
         if: always()
         uses: actions/cache/save@v4
         with:
@@ -79,173 +71,15 @@ jobs:
       - name: Votos (arquivos em lote do ano corrente)
         run: python scripts/passo.py votos.py --atualizar
 
-      # Quem vota com quem: blocos por semelhança de voto e orientação do Governo, dos mesmos
-      # arquivos em lote (só rebaixa as orientações do ano corrente). Sem API.
       - name: Blocos de voto
         run: python scripts/passo.py blocos.py --atualizar
-
-      # Notoriedade na Câmara de cada lei votada: apensados, votações nominais, placar,
-      # urgência e assinaturas de PEC (índice com componentes sempre visíveis). API, com cache.
-      - name: Notoriedade das leis
-        run: python scripts/passo.py --opcional notoriedade.py
-
-      # Notoriedade dos deputados: leituras do artigo na Wikipédia (90 dias). Liga deputado →
-      # artigo só por identificador; religa quando entra deputado novo.
-      - name: Notoriedade dos deputados (Wikipédia)
-        run: python scripts/passo.py --opcional wikipedia.py
-
-      # Notícias da Agência Câmara sobre PEC e PL (RSS), ligadas pelo link da notícia para a
-      # ficha. Confere a regra de reprodução no rodapé de cada notícia.
-      - name: Notícias da Agência Câmara
-        run: python scripts/passo.py --opcional noticias.py
-
-      # Canal oficial de cada deputado no YouTube: inscritos como o YouTube informa (sem
-      # ranking nem soma). Com o segredo YOUTUBE_API_KEY; sem ele, só os links.
-      - name: Canais oficiais no YouTube
-        env:
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-        run: python scripts/passo.py --opcional youtube.py
-
-      # Enquete de cada lei votada, na página de resultado do site da Câmara (não há API).
-      # Só as abertas e as novas são consultadas de novo. Falha de rede não para a rodada;
-      # página em formato inesperado sai com erro e o enquetes.json do dia anterior fica.
-      - name: Enquetes da Câmara
-        run: python scripts/passo.py --opcional enquetes.py
-
-      # Consulta pública do Senado (e-Cidadania), ligada pelo número único Câmara–Senado e
-      # confirmada nos Dados Abertos do Senado. Mesma regra: falha não para a rodada.
-      - name: Consulta pública do Senado
-        run: python scripts/passo.py --opcional ecidadania.py
-
-      # Contexto econômico: agenda (PEC e PLP com tema oficial Economia ou Finanças Públicas e Orçamento), indicadores
-      # (IBGE, Banco Central, Tesouro) e marcos, tudo por API. Vem ANTES dos resumos porque escreve o escopo deles
-      # (cache/contexto/escopo.json). Se uma checagem falhar (buraco na série, unidade que mudou, valor implausível, norma sem
-      # número), o script sai sem gravar e os arquivos do dia anterior ficam; a 1ª rodada baixa ~7 mil proposições (~20 min).
-      - name: Contexto econômico (coleta)
-        run: python scripts/passo.py --opcional contexto.py
-
-      # Passo 8: resumo de cada PL e PEC a partir do texto integral, por IA, em lote.
-      # Só gera com o segredo ANTHROPIC_API_KEY cadastrado no repositório; sem ele, apenas
-      # aplica os resumos já existentes. Espera até 60 min; o que não terminar é coletado
-      # na rodada seguinte (nunca reenviado). Falha não para a rodada.
-      - name: Resumos (IA, a partir do inteiro teor)
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python scripts/passo.py --opcional resumos.py --escopo leis,recentes,contexto --limite 200 --esperar 60
-
-      # Objetivo declarado pelo autor, das proposições da página Contexto econômico: o modelo só COPIA a frase da justificação
-      # (ou da exposição de motivos) e a guarda descarta o que não constar palavra por palavra do documento. Mesma chave, mesmo
-      # lote barato, nunca paga duas vezes. Sem a chave, nada novo.
-      - name: Objetivos declarados (IA, citação literal)
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python scripts/passo.py --opcional objetivos.py --limite 250 --esperar 60
-
-      # Remonta os três JSON do contexto com os resumos e objetivos que acabaram de chegar (não chama API nenhuma).
-      - name: Contexto econômico (montar com resumos e objetivos)
-        run: python scripts/passo.py --opcional contexto.py --so-montar
-
-      # Exportações e balança comercial (Comex Stat, MDIC): valor exportado US$ FOB por destino e por produto (SH4), um arquivo por ano e modo,
-      # mais a balança (exportação, importação e saldo, FOB nos dois lados). Os dados mudam por mês, então o próprio script só roda a cada 7 dias
-      # (nas outras rodadas sai na hora). Só baixa o que falta: os anos fechados que já estão em site/dados/comex/ não são pedidos de novo, e o ano
-      # corrente só é pedido quando a fonte atualizou desde a última gravação (senão a rodada faz 3 consultas leves e termina). Confere antes de gravar:
-      # total por país = total do período, exportação da balança = total do treemap, saldo = exportação menos importação, mês faltando, valor negativo,
-      # unidade. Se algo falhar, os arquivos anteriores ficam. A API limita os pedidos (cerca de 4 por ano que falta, 6 s entre eles).
-      - name: Exportações e balança comercial (Comex Stat)
-        run: python scripts/passo.py --opcional comex.py
-
-      # Tributos cuja alíquota pode mudar por decreto (Receita Federal): arrecadação do IOF, do Imposto sobre Importação e do IPI, em planilhas do
-      # relatório mensal e dos dados abertos (a Receita não tem API). A tabela corrigida pelo IPCA é refeita todo mês com os preços do último mês,
-      # então a série inteira é baixada de novo; o próprio script só roda a cada 7 dias. Confere antes de gravar (unidade, mês-base, tabela anual
-      # contra a soma dos meses, mês faltando, valor negativo); se algo falhar, o arquivo anterior fica. Os decretos vêm de entradas/decretos_iof.json.
-      - name: Tributos (Receita Federal)
-        run: python scripts/passo.py --opcional receita.py
-
-      # Obras com contrato federal (ObrasGov + Contratos.gov.br + emendas da CGU), só SP por ora.
-      # APIs públicas sem chave, uma requisição por segundo; contratos relidos a cada 7 dias.
-      # Falha não para a rodada: obras.json fica como estava.
-      - name: Obras e contratos
-        run: python scripts/passo.py --opcional obras.py
-
-      # Pessoas documentadas das obras: quem assinou pelo órgão (PDF do contrato e dos termos), responsável no aviso de licitação
-      # (Compras.gov.br) e responsáveis do contrato. Só contrato ou termo novo é baixado (cache/pessoas, por arquivo_id e hash).
-      # PUBLICA site/dados/obras_pessoas.json (--publicar) só com as vias e2 (quem assinou pelo órgão, filtro conservador: nome igual ao
-      # literal do PDF, segundo leitor de PDF concordando, cargo preenchido) e e8 (responsável no contrato). O E3 (aviso de licitação)
-      # está desligado. Continua --opcional: se o passo falhar, ou se qualquer checagem do script abortar (CPF, RG ou SIAPE na saída,
-      # "�" em nome, queda grande de pessoas, aresta sem documento...), o script sai sem gravar nada, a rodada segue e o
-      # obras_pessoas.json que já estava publicado fica como estava. Retirar uma pessoa: entradas/pessoas_supressoes.json.
-      - name: Pessoas documentadas das obras
-        run: python scripts/passo.py --opcional pessoas.py --publicar --vias e2,e8
-
-      # Senadores (Dados Abertos do Senado, sem chave): autoria, leis, relatorias e votos.
-      # Inclui os 309 que já saíram (senadores_antigos.json): a frio leva ~16 min; --minutos (25) limita o tempo, o cache guarda o
-      # que foi e o arquivo só é regravado com todos prontos.
-      - name: Senadores
-        run: python scripts/passo.py --opcional senado.py
-
-      # Histórico de tramitação (quanto tempo e por onde passou), uma chamada por proposição.
-      # Rebaixa só as que andaram; com o cache vazio, no máximo 12 mil por rodada (~1 h).
-      - name: Tramitações
-        run: python scripts/passo.py --opcional tramitacoes.py --limite 12000
 
       - name: Temas e frase-resumo
         run: python scripts/passo.py temas.py
 
-      # Página de cada senador (senador.html): as PEC e PL de que é o primeiro autor, por tema. Lê só o cache do passo "Senadores" e
-      # confere as contagens contra senadores.json; opcional porque, se falhar, a rodada segue e o arquivo anterior fica.
-      - name: Página de cada senador
-        run: python scripts/passo.py --opcional senador_paginas.py
-
-      # Quem vota com quem, versão do Senado (blocos.html, botão "Senado"): o mesmo cálculo de blocos.py sobre as votações nominais
-      # abertas do Plenário que o passo "Senadores" deixou em cache. Confere os Sim e Não contra o senadores.json antes de gravar;
-      # opcional porque, se falhar, a rodada segue e o arquivo anterior fica (sem ele, o botão avisa que ainda não há dados).
-      - name: Blocos de voto do Senado
-        run: python scripts/passo.py --opcional blocos_senado.py
-
-      # Aba "Partidos": proposições por partido, por legislatura desde 1991 e por tema, dos arquivos anuais
-      # em lote da Câmara (a 1ª rodada baixa ~700 MB; as seguintes só relêem o que mudou). Usa o
-      # deputados.json já com os votos, o blocos.json e a coesão que o votos.py deixou no cache.
-      # Falha não para a rodada (a aba só some).
-      - name: Partidos
-        run: python scripts/passo.py --opcional partidos.py
-
-      # Alinhamento dos partidos ao Governo, governo a governo (2003 em diante). Usa os arquivos de votação em lote
-      # (os de 2003–2022 só na 1ª rodada: ~480 MB, apagados depois de derivados) e confere o resultado com o
-      # blocos.json. Falha não para a rodada (o quadro e a coluna só somem).
-      - name: Alinhamento ao Governo por governo
-        run: python scripts/passo.py --opcional governo.py
-
-      # Logos dos partidos (Câmara, ou Wikimedia Commons pela tabela curada entradas/logos_partidos.json).
-      # Só referencia endereços; não guarda imagem. Depois de "Partidos", que dá as siglas. Falha não para a rodada.
-      - name: Logos dos partidos
-        run: python scripts/passo.py --opcional logos.py
-
-      # Onde a proposta morre entre as casas: proposições aprovadas numa casa e remetidas à outra (Senado /processo +
-      # tramitações da Câmara), por vínculo de identificador exato. A coleta a frio (~24 mil processos do Senado e ~23 mil
-      # tramitações da Câmara) leva horas: com --limite ela se completa em alguns dias, e o fluxo.json só é regravado
-      # quando o conjunto está completo e as checagens passam. Depois, só o que o Senado diz ter mudado (numdias).
-      # Falha não para a rodada (a página só fica sem dados novos).
-      - name: Fluxo entre as casas
-        run: python scripts/passo.py --opcional fluxo.py --limite 9000
-
-      # De onde vêm as leis: a origem (autoria) das leis sancionadas na legislatura. A lista de leis vem do Senado
-      # (/processo, normaGerada), a autoria dos arquivos em lote da Câmara; a ligação é só por identificador exato.
-      # Depois do fluxo, de que reaproveita o fluxo.json e o cache de detalhes do Senado. O JSON só é regravado se as
-      # checagens passam, inclusive a contagem por ano e tipo conferida à mão no Planalto (entradas/origem_leis_referencia.json);
-      # senão fica o anterior. Falha não para a rodada (a página só fica sem dados novos).
-      - name: De onde vêm as leis
-        run: python scripts/passo.py --opcional origem_leis.py
-
       - name: Esta semana na Câmara
         run: python scripts/passo.py semana.py
 
-      # Uma página estática por deputado e por senador (/deputado/<id>-<slug>/, /senador/…), o cartão og:image de cada uma, o sitemap.xml e o
-      # robots.txt. Depois de TODA a coleta (lê deputados.json, senadores.json e as frases). Só reescreve o que mudou; o commit sai no passo
-      # "Versionar os dados", logo abaixo. Opcional: se falhar, ficam as páginas da rodada anterior.
-      - name: Páginas indexáveis e sitemap
-        run: python scripts/passo.py --opcional paginas.py
-
-      # Salva mesmo se algo falhou: o que foi baixado não precisa ser baixado de novo.
       - name: Guardar o cache para a próxima rodada
         if: always()
         uses: actions/cache/save@v4
@@ -253,9 +87,6 @@ jobs:
           path: cache
           key: ${{ env.CACHE_PREFIX }}
 
-      # O histórico dos dados fica no git: é o registro auditável do que mudou e quando.
-      # temas.py só reescreve o arquivo de deputado que mudou, então o commit é pequeno.
-      # site/dados/ = o que as páginas leem; entradas/ = resumos por IA e tabelas fixas.
       - name: Versionar os dados
         run: |
           git config user.name "github-actions[bot]"
@@ -263,10 +94,6 @@ jobs:
           git add site/dados entradas site/deputado site/senador site/sitemap.xml site/robots.txt site/img site/*.html
           if git diff --cached --quiet; then echo "Sem mudança nos dados."; exit 0; fi
           git commit -q -m "Dados de $(date +%F)"
-          # A rodada leva de minutos a horas: se a main andou nesse meio-tempo (um PR aceito), o
-          # push direto é recusado — foi o que derrubou a rodada de 30/9/2026, depois de 4h40 de
-          # coleta. Reaplica o commit de dados sobre a main nova; num conflito em site/dados/ ou
-          # entradas/, vale o dado desta rodada (o mais recente). PR de código não traz dados.
           R="${GITHUB_REF_NAME}"
           for i in 1 2 3; do
             if git pull -q --rebase -X theirs origin "$R"; then
@@ -280,11 +107,129 @@ jobs:
           echo "::error title=Versionar os dados::não consegui enviar os dados para $R depois de 3 tentativas"
           exit 1
 
-      # site/ é exatamente o que vai ao ar: páginas, estilo, ícone e site/dados/. Nada de
-      # cache/, scripts/ ou entradas/ é publicado.
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
 
       - id: publicar
         uses: actions/deploy-pages@v4
+
+  dados_pesados:
+    name: Coleta pesada (opcional)
+    needs: rotina_critica
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      CACHE_PREFIX: cache-api-${{ runner.os }}-${{ github.ref_name }}-v1
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - run: pip install -r requirements.txt
+
+      - name: Restaurar o cache da API
+        uses: actions/cache/restore@v4
+        with:
+          path: cache
+          key: ${{ env.CACHE_PREFIX }}
+          restore-keys: |
+            ${{ env.CACHE_PREFIX }}-
+            cache-api-${{ runner.os }}-
+
+      # Blocos pesados e não críticos para a publicação do site do dia, mas úteis para enriquecer os dados.
+      - name: Notoriedade das leis
+        run: python scripts/passo.py --opcional notoriedade.py
+
+      - name: Notoriedade dos deputados (Wikipédia)
+        run: python scripts/passo.py --opcional wikipedia.py
+
+      - name: Notícias da Agência Câmara
+        run: python scripts/passo.py --opcional noticias.py
+
+      - name: Canais oficiais no YouTube
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python scripts/passo.py --opcional youtube.py
+
+      - name: Enquetes da Câmara
+        run: python scripts/passo.py --opcional enquetes.py
+
+      - name: Consulta pública do Senado
+        run: python scripts/passo.py --opcional ecidadania.py
+
+      - name: Contexto econômico (coleta)
+        run: python scripts/passo.py --opcional contexto.py
+
+      - name: Resumos (IA, a partir do inteiro teor)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/passo.py --opcional resumos.py --escopo leis,recentes,contexto --limite 200 --esperar 60
+
+      - name: Objetivos declarados (IA, citação literal)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/passo.py --opcional objetivos.py --limite 250 --esperar 60
+
+      - name: Contexto econômico (montar com resumos e objetivos)
+        run: python scripts/passo.py --opcional contexto.py --so-montar
+
+      - name: Exportações e balança comercial (Comex Stat)
+        run: python scripts/passo.py --opcional comex.py
+
+      - name: Tributos (Receita Federal)
+        run: python scripts/passo.py --opcional receita.py
+
+      - name: Obras e contratos
+        run: python scripts/passo.py --opcional obras.py
+
+      - name: Pessoas documentadas das obras
+        run: python scripts/passo.py --opcional pessoas.py --publicar --vias e2,e8
+
+      - name: Senadores
+        run: python scripts/passo.py --opcional senado.py
+
+      - name: Tramitações
+        run: python scripts/passo.py --opcional tramitacoes.py --limite 12000
+
+      - name: Página de cada senador
+        run: python scripts/passo.py --opcional senador_paginas.py
+
+      - name: Blocos de voto do Senado
+        run: python scripts/passo.py --opcional blocos_senado.py
+
+      - name: Partidos
+        run: python scripts/passo.py --opcional partidos.py
+
+      - name: Alinhamento ao Governo por governo
+        run: python scripts/passo.py --opcional governo.py
+
+      - name: Logos dos partidos
+        run: python scripts/passo.py --opcional logos.py
+
+      - name: Fluxo entre as casas
+        run: python scripts/passo.py --opcional fluxo.py --limite 9000
+
+      - name: De onde vêm as leis
+        run: python scripts/passo.py --opcional origem_leis.py
+
+      - name: Páginas indexáveis e sitemap
+        run: python scripts/passo.py --opcional paginas.py
+
+      - name: Guardar o cache para a próxima rodada
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: cache
+          key: ${{ env.CACHE_PREFIX }}
