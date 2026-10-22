@@ -1,5 +1,5 @@
 requests>=2.31
-truststore>=0.9
+truststore>=0.10.5
 jsonschema>=4.23.0
 # passo 8 (resumos.py): texto do PDF e o lote de resumos
 pypdf>=6.0
