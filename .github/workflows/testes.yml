@@ -73,9 +73,13 @@ jobs:
         if: ${{ !cancelled() }}
         run: python scripts/paginas.py --teste
 
-      - name: Notícias, leitor da imagem (testes)
+      - name: Notícias, licença e ilustrações (testes)
         if: ${{ !cancelled() }}
         run: python scripts/noticias.py --teste
+
+      - name: Ilustrações do tema (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/ilustracoes_noticias.py --teste
 
       - name: Pessoas documentadas (regressão sintética)
         if: ${{ !cancelled() }}

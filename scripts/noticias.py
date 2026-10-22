@@ -14,9 +14,15 @@ Regra de reprodução — CONFERIDA A CADA NOTÍCIA, não presumida: o rodapé d
 "Agência Câmara".) O script guarda a assinatura exigida por notícia. Se o rodapé sumir ou
 mudar numa notícia, ela entra só com título e link, sem o trecho, e o relatório avisa.
 Imagem de cada notícia (desde 22/10/2026, a pedido): a primeira figura do corpo da notícia. O site só REFERENCIA o endereço da imagem no servidor da Câmara
-(como faz com a foto dos deputados), nunca a copia, e mostra sempre o crédito que a Câmara escreve nela. As fotos são de donos diferentes (a maioria é
-"Câmara dos Deputados"; há também Agência Brasil, Divulgação e banco de imagens como GettyImages): o crédito aparece junto de todas. Com SO_FOTO_DA_CAMARA = True,
-só entram as fotos cujo crédito diz "Câmara dos Deputados". Notícia sem rodapé de reprodução confirmado continua só com título e link, sem a imagem.
+(como faz com a foto dos deputados), nunca a copia, e mostra sempre o crédito que a Câmara escreve nela.
+
+LICENÇA — o site vai ser monetizado, então só entra foto que permita uso comercial: as creditadas à "Câmara dos Deputados" (licença Creative Commons BY, conforme
+a página do acervo fotográfico da Câmara; crédito no formato "Fotógrafo/Câmara dos Deputados"). FICAM DE FORA, por escolha: bancos de imagens pagos (Depositphotos,
+GettyImages: licenciados para a Câmara, não para o site), Agência Brasil (a EBC só libera para uso não comercial), Agência Senado (a política de uso libera a
+reprodução com crédito mas não diz nada sobre uso comercial), Divulgação, governos, prefeituras e demais órgãos (regra própria de cada um, não verificada) e
+Wikimedia (licença por arquivo). Essas notícias ganham uma ILUSTRAÇÃO DO TEMA da lei, de banco gratuito (Wikimedia Commons, só CC0, domínio público ou CC BY,
+escolhida à mão em entradas/ilustracoes_noticias.json e gerada por scripts/ilustracoes_noticias.py): uma por bloco de tema e uma geral, nunca uma foto "da notícia".
+Notícia sem rodapé de reprodução confirmado continua só com título e link, sem trecho.
 
 Ligação notícia → proposição, por id, nunca pelo título: a página da notícia linka a ficha
 ("fichadetramitacao?idProposicao=…") e a enquete ("/enquetes/…") da proposta. Ficam as
@@ -38,7 +44,9 @@ from email.utils import parsedate_to_datetime
 import requests
 
 import coleta
-from temas import CATEGORIAS, CURTO, classificar
+import unicodedata
+
+from temas import BLOCOS, CATEGORIAS, CURTO, classificar
 
 SAIDA = coleta.DADOS / "noticias.json"
 CACHE_N = coleta.CACHE / "noticias"
@@ -48,7 +56,9 @@ TIPOS = ("PEC", "PL", "PLP")
 DIAS = 120          # quanto do histórico vai para o site
 MAX_TRECHO = 300
 PREFIXO_IMG = "https://www.camara.leg.br/midias/image/"
-SO_FOTO_DA_CAMARA = False   # True: só a foto cujo crédito diz "Câmara dos Deputados" (as de Agência Brasil, Divulgação e banco de imagens ficam de fora)
+ILUSTRACOES = coleta.ENTRADAS / "ilustracoes_noticias.json"
+IMG_ILUSTRACOES = coleta.BASE / "site" / "img" / "noticias"
+FOTOS_LIVRES = ("camara dos deputados",)     # o crédito (sem acento nem caixa) tem de conter um destes; ver "LICENÇA" no cabeçalho
 NS = {"content": "http://purl.org/rss/1.0/modules/content/"}
 BRASILIA = timezone(timedelta(hours=-3))
 
@@ -109,6 +119,30 @@ def trecho(conteudo):
         if len(t) >= 60:
             return t if len(t) <= MAX_TRECHO else t[:MAX_TRECHO].rsplit(" ", 1)[0] + "…"
     return None
+
+
+def foto_livre(cred):
+    """A foto pode ir para um site monetizado? Só a de crédito "Câmara dos Deputados" (Creative Commons BY); o resto vira ilustração do tema."""
+    n = unicodedata.normalize("NFKD", cred or "").encode("ascii", "ignore").decode().lower()
+    return any(f in n for f in FOTOS_LIVRES)
+
+
+def ilustracoes():
+    """O manifesto curado das ilustrações (entradas/ilustracoes_noticias.json), ou None se faltar."""
+    return coleta.ler_cache(ILUSTRACOES)
+
+
+def tema_da_noticia(cats, man):
+    """O slug da ilustração da notícia, pela primeira categoria da lei: a ilustração da própria categoria (`categorias` no manifesto), senão a do bloco dela (`bloco`),
+    senão "geral" (lei sem categoria, ou categoria sem ilustração)."""
+    bloco_de = {CURTO.get(c, c): b for b, cs in BLOCOS for c in cs}
+    por_cat = {c: s for s, e in man["ilustracoes"].items() for c in e.get("categorias") or []}
+    por_bloco = {e["bloco"]: s for s, e in man["ilustracoes"].items() if e.get("bloco")}
+    for c in cats:
+        s = por_cat.get(c[0]) or por_bloco.get(bloco_de.get(c[0]))
+        if s:
+            return s
+    return "geral"
 
 
 _FIGURA = re.compile(r'<figure class="materia__midia"[^>]*>(.*?)</figure>', re.S)
@@ -191,6 +225,26 @@ def testar():
           {"img": "a-768x512.jpg", "cred": None, "leg": None}, "figura sem crédito nem legenda: a imagem fica, o crédito vem vazio")
     igual(figura('<section class="materia__corpo"><figure class="materia__midia"><img src="https://www.camara.leg.br/midias/image/a-768x512.jpg"><figcaption>'
                  '<span class="materia__creditos-imagem">Foto:   GettyImages </span></figcaption></figure></section>')["cred"], "GettyImages", "espaços do crédito")
+    # licença: só foto da Câmara (CC BY); o resto vira ilustração
+    for cred in ("Bruno Spada/Câmara dos Deputados", "Kayo Magalhães / Câmara dos Deputados", "Arquivo/CÂMARA DOS DEPUTADOS", "Marina Ramos / Camara dos Deputados"):
+        igual(foto_livre(cred), True, f"foto livre: {cred}")
+    for cred in ("GettyImages", "depositphotos", "Marcelo Camargo/Agência Brasil", "Divulgação", "Agência Senado", "Agência Brasília", "Governo da Bahia", "", None):
+        igual(foto_livre(cred), False, f"foto que não entra: {cred}")
+    # ilustração do tema: o bloco da primeira categoria da lei; "geral" sem categoria
+    man = ilustracoes()
+    por_cat = {c for e in man["ilustracoes"].values() for c in e.get("categorias") or []}
+    por_bloco = {e["bloco"] for e in man["ilustracoes"].values() if e.get("bloco")}
+    igual(all(b in por_bloco or all(CURTO.get(c, c) in por_cat for c in cs) for b, cs in BLOCOS), True,
+          "todo bloco de tema tem ilustração (a do bloco ou uma por categoria dele)")
+    igual(all(CURTO.get(c, c) in {CURTO.get(x, x) for _, cs in BLOCOS for x in cs} for c in por_cat), True, "as categorias do manifesto existem em temas.py")
+    igual(all((IMG_ILUSTRACOES / f"{s}.jpg").exists() for s in man["ilustracoes"]), True, "as imagens das ilustrações estão no site")
+    igual(all(licenca in ("CC0", "Public domain") or licenca.startswith("CC BY") for licenca in (e.get("licenca") for e in man["ilustracoes"].values())), True,
+          "licença de cada ilustração: CC0, domínio público ou CC BY")
+    igual(tema_da_noticia([["saúde", "pacientes", "e"]], man), "saude", "saúde → a ilustração da própria categoria")
+    igual(tema_da_noticia([["trabalho e emprego", "x", "e"], ["saúde", "y", "e"]], man), "trabalho-e-emprego", "trabalho e emprego não leva a imagem da saúde")
+    igual(tema_da_noticia([["mulheres", "x", "e"], ["saúde", "y", "e"]], man), "grupos-e-direitos", "vale a primeira categoria")
+    igual(tema_da_noticia([], man), "geral", "sem categoria → geral")
+    igual(tema_da_noticia([["categoria que não existe", "x", "e"]], man), "geral", "categoria desconhecida → geral")
     print(f"{ok} verificações passaram")
 
 
@@ -245,6 +299,10 @@ def main():
         if e.get("ids") is not None and not e.get("assinatura"):
             sem_regra.append(link)
 
+    man = ilustracoes()
+    if not man or not all((IMG_ILUSTRACOES / f"{s}.jpg").exists() for s in man["ilustracoes"]):
+        raise SystemExit("faltam as ilustrações do tema (entradas/ilustracoes_noticias.json e site/img/noticias/*.jpg): rode scripts/ilustracoes_noticias.py")
+
     # Só as ligadas a PEC, PL ou PLP, dos últimos DIAS dias.
     limite = (datetime.now(BRASILIA) - timedelta(days=DIAS)).isoformat()[:16]
     # A imagem das que vão para o site e ainda não a têm (histórico anterior à imagem): a página é aberta de novo uma vez, 1 requisição por segundo.
@@ -269,14 +327,14 @@ def main():
                     cats.append(c)
         if not props:
             continue
-        foto = bool(e.get("assinatura") and e.get("img") and e.get("cred")     # sem crédito escrito pela Câmara, a foto não entra
-                    and (not SO_FOTO_DA_CAMARA or "câmara dos deputados" in (e.get("cred") or "").lower()))
+        foto = bool(e.get("assinatura") and e.get("img") and e.get("cred") and foto_livre(e["cred"]))   # sem crédito escrito pela Câmara, ou de outro dono, a foto não entra
         itens.append({"t": ajusta(e["t"]), "u": link, "d": e["d"], "temas": e["temas"], "p": props, "cats": cats,
                       # sem a regra de reprodução no rodapé, só título e link
                       "trecho": ajusta(e["trecho"]) if e.get("assinatura") and e["trecho"] else None,
                       "assinatura": e.get("assinatura"),
-                      # a imagem: caminho no servidor da Câmara (depois de PREFIXO_IMG), o crédito e a legenda dela; nunca copiada para o site
-                      **({"img": e["img"], "cred": e.get("cred"), "leg": e.get("leg")} if foto else {})})
+                      # a foto livre: caminho no servidor da Câmara (depois de PREFIXO_IMG), o crédito e a legenda dela; nunca copiada para o site.
+                      # Sem foto livre, `il` = o slug da ilustração do tema (as imagens e os créditos vão em _ilustracoes)
+                      **({"img": e["img"], "cred": e.get("cred"), "leg": e.get("leg")} if foto else {"il": tema_da_noticia(cats, man)})})
     itens.sort(key=lambda x: x["d"] or "", reverse=True)
 
     # O histórico guarda 1 ano; o site recebe DIAS dias.
@@ -290,7 +348,10 @@ def main():
         "_regra": "A reprodução das notícias é autorizada desde que contenha a assinatura "
                   f"“{assinaturas[0] if len(assinaturas) == 1 else ' / '.join(assinaturas) or 'Agência Câmara'}”"
                   " — texto do rodapé de cada notícia, conferido a cada rodada.",
-        "_imagens": "Fotos referenciadas no servidor da Câmara (camara.leg.br/midias/image/), nunca copiadas, sempre com o crédito que a Câmara escreve nelas.",
+        "_imagens": "Fotos só as creditadas à Câmara dos Deputados (licença Creative Commons BY, conforme a Câmara), referenciadas no servidor dela e nunca copiadas, "
+                    "sempre com o crédito. As demais notícias levam uma ilustração do tema (Wikimedia Commons; CC0, domínio público ou CC BY), em _ilustracoes.",
+        "_ilustracoes": {s: {"arq": f"{s}.jpg", "tema": e.get("tema") or s, "autor": e.get("autor"), "lic": e.get("licenca"),
+                             "licUrl": e.get("licencaUrl"), "pag": e.get("pagina")} for s, e in man["ilustracoes"].items()},
         "_conferidoEm": datetime.now(BRASILIA).date().isoformat(),
         "itens": itens,
     }

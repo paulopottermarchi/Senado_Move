@@ -160,7 +160,7 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 | [Planalto](https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm) (lido à mão, no navegador) | texto compilado do regulamento do IOF (Decreto nº 6.306/2007) e a página de cada decreto que o alterou, para a data e o número dos marcadores |
 | ObrasGov.br, Contratos.gov.br e CGU | obras, contratos, termos aditivos, emendas parlamentares, sanções (CEIS/CNEP) |
 | Contratos.gov.br (PDFs e responsáveis) e Compras.gov.br (dados abertos) | pessoas documentadas de cada obra: quem assinou pelo órgão, responsável no aviso de licitação e gestor do contrato |
-| Enquetes e Agência Câmara (RSS) | enquete de cada lei votada; notícias ligadas às proposições, cada uma com a categoria da lei pela mesma classificação do site e a foto que a Câmara usa nela (pequena, em preto e branco, só referenciada no servidor da Câmara e sempre com o crédito) |
+| Enquetes e Agência Câmara (RSS) | enquete de cada lei votada; notícias ligadas às proposições, cada uma com a categoria da lei pela mesma classificação do site e uma imagem pequena em preto e branco: a foto que a Câmara usa nela, só quando creditada à Câmara dos Deputados (Creative Commons BY; referenciada no servidor da Câmara, com o crédito), ou uma ilustração do tema do Wikimedia Commons (CC0, domínio público ou CC BY), conforme `entradas/ilustracoes_noticias.json` |
 | Wikipédia (API de leituras) | leituras do artigo de cada deputado, ligado por identificador |
 | Logo oficial da Câmara e Wikimedia Commons | logos dos partidos, só referenciados (nenhuma imagem é copiada), com crédito e licença na aba Partidos |
 
