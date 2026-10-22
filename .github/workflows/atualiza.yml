@@ -28,7 +28,7 @@ jobs:
       name: github-pages
       url: ${{ steps.publicar.outputs.page_url }}
     env:
-      CACHE_PREFIX: cache-api-${{ runner.os }}-${{ github.ref_name }}-v1
+      CACHE_PREFIX: cache-api-ubuntu-${{ github.ref_name }}-v1
     defaults:
       run:
         shell: bash
@@ -53,7 +53,7 @@ jobs:
           key: ${{ env.CACHE_PREFIX }}
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-
-            cache-api-${{ runner.os }}-
+            cache-api-ubuntu-
 
       - name: Atualizar pela API (só o que mudou)
         run: python scripts/passo.py atualiza.py
@@ -121,7 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      CACHE_PREFIX: cache-api-${{ runner.os }}-${{ github.ref_name }}-v1
+      CACHE_PREFIX: cache-api-ubuntu-${{ github.ref_name }}-v1
     defaults:
       run:
         shell: bash
@@ -146,7 +146,7 @@ jobs:
           key: ${{ env.CACHE_PREFIX }}
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-
-            cache-api-${{ runner.os }}-
+            cache-api-ubuntu-
 
       # Blocos pesados e não críticos para a publicação do site do dia, mas úteis para enriquecer os dados.
       - name: Notoriedade das leis
