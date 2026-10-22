@@ -7,8 +7,8 @@ Uso:
     python scripts/rodada.py --grupo critico --step atualiza
     python scripts/rodada.py --grupo critico --dry-run
 
-O objetivo é concentrar a ordem da rotina e o tratamento de falhas em um único
-arquivo, reduzindo o acoplamento entre as etapas do workflow do GitHub Actions.
+O objetivo é concentrar a ordem da rotina, o tratamento de falhas e as métricas
+por etapa em um único arquivo.
 """
 
 from __future__ import annotations
@@ -17,9 +17,9 @@ import argparse
 import os
 import subprocess
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 BASE = Path(__file__).resolve().parent.parent
 PASSO = BASE / "scripts" / "passo.py"
@@ -82,12 +82,13 @@ def step_command(step: Step) -> list[str]:
     return cmd
 
 
-def run_step(step: Step, *, dry_run: bool) -> tuple[bool, str | None]:
+def run_step(step: Step, *, dry_run: bool) -> tuple[bool, float]:
     print(f"\n=== {step.name} :: {'DRY-RUN' if dry_run else 'EXEC'} ===")
     if dry_run:
         print("CMD:", " ".join(step_command(step)))
-        return True, None
+        return True, 0.0
 
+    inicio = time.monotonic()
     env = os.environ.copy()
     env.setdefault("PYTHONIOENCODING", "utf-8")
     proc = subprocess.Popen(
@@ -104,8 +105,10 @@ def run_step(step: Step, *, dry_run: bool) -> tuple[bool, str | None]:
     for line in proc.stdout:
         sys.stdout.write(line)
         sys.stdout.flush()
-    code = proc.wait()
-    return code == 0, None
+    codigo = proc.wait()
+    tempo = time.monotonic() - inicio
+    print(f"[tempo] {step.name}: {tempo:.1f}s")
+    return codigo == 0, tempo
 
 
 def run_group(grupo: str, *, dry_run: bool, step_name: str | None) -> int:
@@ -117,10 +120,12 @@ def run_group(grupo: str, *, dry_run: bool, step_name: str | None) -> int:
 
     failed = []
     warnings = []
+    metrics = []
 
     for index, step in enumerate(steps, 1):
         print(f"\n[{index}/{len(steps)}] Grupo: {grupo} | Passo: {step.name}")
-        ok, _ = run_step(step, dry_run=dry_run)
+        ok, tempo = run_step(step, dry_run=dry_run)
+        metrics.append((step.name, tempo, "ok" if ok else "falhou"))
         if not ok:
             if step.critical:
                 failed.append(step.name)
@@ -128,6 +133,10 @@ def run_group(grupo: str, *, dry_run: bool, step_name: str | None) -> int:
                 break
             warnings.append(step.name)
             print(f"\nAVISO: passo opcional '{step.name}' falhou, mas a rodada continua.")
+
+    print("\nResumo de tempo por etapa:")
+    for nome, tempo, status in metrics:
+        print(f"- {nome}: {tempo:.1f}s ({status})")
 
     if failed:
         print("\nResumo: falha crítica em:", ", ".join(failed))
