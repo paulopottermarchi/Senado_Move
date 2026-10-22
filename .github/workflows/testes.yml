@@ -5,7 +5,7 @@ name: Testes
 # Por que também toda segunda: requirements.txt só tem versões mínimas ("requests>=2.31"), então a rodada diária instala sempre a versão MAIS NOVA de cada
 # pacote. Uma versão nova que quebre alguma coisa pararia a rodada sem aviso; aqui ela aparece como falha de segunda-feira, antes de virar falha na rodada.
 #
-# Roda em Windows, o mesmo sistema da rodada diária (atualiza.yml), para um teste que passa aqui passar lá.
+# Roda em Windows para detectar incompatibilidades de plataforma nos scripts e validadores.
 on:
   pull_request:
   schedule:
@@ -44,6 +44,14 @@ jobs:
       - name: Compila todos os scripts
         if: ${{ !cancelled() }}
         run: python -m compileall -q scripts
+
+      - name: Validar JSONs públicos e schemas
+        if: ${{ !cancelled() }}
+        run: python scripts/validar_jsons.py --report
+
+      - name: Validar arquivos reais contra os schemas
+        if: ${{ !cancelled() }}
+        run: python scripts/validar_jsons_reais.py
 
       - name: Comex (testes)
         if: ${{ !cancelled() }}

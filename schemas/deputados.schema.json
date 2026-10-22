@@ -13,7 +13,12 @@
       "federacao": { "type": ["string", "null"] },
       "uf": { "type": "string", "minLength": 2, "maxLength": 2 },
       "urlFoto": { "type": "string", "format": "uri" },
-      "url": { "type": ["string", "null", "uri"] },
+      "url": {
+        "anyOf": [
+          { "type": "string", "format": "uri" },
+          { "type": "null" }
+        ]
+      },
       "score": { "type": ["number", "null"] },
       "ideologia": { "type": ["string", "null"] },
       "ideX": { "type": ["number", "null"] }

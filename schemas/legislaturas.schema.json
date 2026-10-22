@@ -9,7 +9,7 @@
     "properties": {
       "id": { "type": "integer" },
       "inicio": { "type": "string", "format": "date" },
-      "fim": { "type": ["string", "null", "date"] }
+      "fim": { "type": ["string", "null"], "format": "date" }
     }
   }
 }

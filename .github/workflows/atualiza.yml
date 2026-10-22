@@ -11,19 +11,21 @@ on:
   workflow_dispatch:        # botão "Run workflow", para rodar na mão
 
 permissions:
-  contents: write   # commit dos dados
-  pages: write      # publicação
-  id-token: write
+  contents: read
 
 concurrency:
   group: atualizacao-diaria
   cancel-in-progress: false
 
 jobs:
-  rotina_critica:
-    name: Rotina crítica
+  atualizar_publicar:
+    name: Atualizar e publicar
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 360
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.publicar.outputs.page_url }}
@@ -50,7 +52,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: cache
-          key: ${{ env.CACHE_PREFIX }}
+          key: ${{ env.CACHE_PREFIX }}-${{ github.run_id }}
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-
             cache-api-ubuntu-
@@ -60,13 +62,6 @@ jobs:
 
       - name: Regerar deputados.json
         run: python scripts/passo.py coleta.py --limite 513
-
-      - name: Guardar o cache (depois da coleta crítica)
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: cache
-          key: ${{ env.CACHE_PREFIX }}
 
       - name: Votos (arquivos em lote do ano corrente)
         run: python scripts/passo.py votos.py --atualizar
@@ -79,80 +74,6 @@ jobs:
 
       - name: Esta semana na Câmara
         run: python scripts/passo.py semana.py
-
-      - name: Validar JSONs públicos
-        run: python scripts/validar_jsons.py
-
-      - name: Guardar o cache para a próxima rodada
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: cache
-          key: ${{ env.CACHE_PREFIX }}
-
-      - name: Versionar os dados
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git add site/dados entradas site/deputado site/senador site/sitemap.xml site/robots.txt site/img site/*.html
-          if git diff --cached --quiet; then echo "Sem mudança nos dados."; exit 0; fi
-          git commit -q -m "Dados de $(date +%F)"
-          R="${GITHUB_REF_NAME}"
-          for i in 1 2 3; do
-            if git pull -q --rebase -X theirs origin "$R"; then
-              git push -q origin "HEAD:$R" && exit 0
-            else
-              git rebase --abort 2>/dev/null || true
-            fi
-            echo "::warning title=Versionar os dados::envio para $R recusado (tentativa $i de 3); tentando de novo"
-            sleep 15
-          done
-          echo "::error title=Versionar os dados::não consegui enviar os dados para $R depois de 3 tentativas"
-          exit 1
-
-      - name: Validar JSONs críticos
-        run: python scripts/validar_dados.py
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-      - id: publicar
-        uses: actions/deploy-pages@v4
-
-  dados_pesados:
-    name: Coleta pesada (opcional)
-    needs: rotina_critica
-    if: always()
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-    env:
-      CACHE_PREFIX: cache-api-ubuntu-${{ github.ref_name }}-v1
-    defaults:
-      run:
-        shell: bash
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-          cache: pip
-          cache-dependency-path: requirements.txt
-
-      - run: pip install -r requirements.txt
-
-      - name: Restaurar o cache da API
-        uses: actions/cache/restore@v4
-        with:
-          path: cache
-          key: ${{ env.CACHE_PREFIX }}
-          restore-keys: |
-            ${{ env.CACHE_PREFIX }}-
-            cache-api-ubuntu-
 
       # Blocos pesados e não críticos para a publicação do site do dia, mas úteis para enriquecer os dados.
       - name: Notoriedade das leis
@@ -238,4 +159,37 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: cache
-          key: ${{ env.CACHE_PREFIX }}
+          key: ${{ env.CACHE_PREFIX }}-${{ github.run_id }}
+
+      - name: Validar JSONs públicos
+        run: python scripts/validar_jsons.py --report
+
+      - name: Validar JSONs reais contra os schemas
+        run: python scripts/validar_jsons_reais.py
+
+      - name: Versionar os dados e o site gerado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add site entradas
+          if git diff --cached --quiet; then echo "Sem mudança nos dados."; exit 0; fi
+          git commit -q -m "Dados de $(date +%F)"
+          R="${GITHUB_REF_NAME}"
+          for i in 1 2 3; do
+            if git pull -q --rebase -X theirs origin "$R"; then
+              git push -q origin "HEAD:$R" && exit 0
+            else
+              git rebase --abort 2>/dev/null || true
+            fi
+            echo "::warning title=Versionar os dados::envio para $R recusado (tentativa $i de 3); tentando de novo"
+            sleep 15
+          done
+          echo "::error title=Versionar os dados::não consegui enviar os dados para $R depois de 3 tentativas"
+          exit 1
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: publicar
+        uses: actions/deploy-pages@v4
