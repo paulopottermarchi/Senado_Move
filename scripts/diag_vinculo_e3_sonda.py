@@ -25,9 +25,8 @@ import argparse
 import json
 import re
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
 
-import coleta
 import diag_vinculo_comum as D
 
 B = "https://dadosabertos.compras.gov.br"

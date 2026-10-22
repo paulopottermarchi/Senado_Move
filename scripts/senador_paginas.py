@@ -186,7 +186,7 @@ def main():
             votos_total["outras"] += sum(a["o"] for a in por.values())
 
     if divergencias or sem_cache:
-        print(f"CHECAGEM FALHOU — nada foi gravado.")
+        print("CHECAGEM FALHOU — nada foi gravado.")
         if sem_cache:
             print(f"- {len(sem_cache)} senador(es) sem cache de autoria (rode senado.py): {', '.join(sem_cache[:8])}")
         for d in divergencias[:40]:

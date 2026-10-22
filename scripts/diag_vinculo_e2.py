@@ -146,7 +146,6 @@ def blocos_assinatura(paginas):
                             "pagina": pagina_do(offs, m.end() + mi.start()),
                             "trecho": apaga("Documento assinado eletronicamente por: " + mi.group(0))})
     # SEI: cada assinatura tem o seu "Documento assinado eletronicamente por NOME, CARGO, em data, às hora"
-    suap_pos = {a["pagina"] for a in achados}
     for m in _SEI.finditer(plano):
         n, c, d, h = m.groups()
         if re.search(r"\d{2}/\d{2}/\d{4}", n):         # engoliu outra assinatura
@@ -224,7 +223,6 @@ def processar_pdf(cid, c, arq):
         return json.loads(cam.read_text(encoding="utf-8"))
     reg = {"arquivo_id": arq["id"], "contrato_id": cid, "tipo": arq.get("tipo"), "descricao": arq.get("descricao"),
            "url": arq.get("path_arquivo"), "origem": arq.get("origem")}
-    t0 = time.monotonic()
     b, st = D.pedir(arq["path_arquivo"], via="E2", bruto=True, cache_nome=f"pdf_{arq['id']}", intervalo=0.5,
                     timeout=180)
     reg["http"] = st
@@ -280,7 +278,6 @@ def extrato_dou(plano, c):
     m = re.fullmatch(r"0*(\d+)/(\d{4})", num or "")
     cand = []
     if m:
-        n = m[1]
         for mm in re.finditer(r"EXTRATO D[EO][^.]{0,60}?\bN[º°o]?\s*\.?\s*(\d+)\s*/\s*(\d{4})\s*-\s*UASG\s*(\d+)", plano, re.I):
             cand.append(mm)
     proc = D.so_digitos(c.get("processo"))

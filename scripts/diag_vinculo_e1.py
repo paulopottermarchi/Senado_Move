@@ -86,7 +86,6 @@ def main():
                         nome, cargo, ctx = sg
                         # data do ato: "Santos, 11 de abril de 2025." (cidade e data) — ato e publicação separados
                         dm = re.search(rf"(\d{{1,2}})\s+de\s+({MESES})\s+de\s+(\d{{4}})", t, re.I)
-                        mes = E.__dict__ if False else None
                         meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
                         d_ato = None
                         if dm:
