@@ -2,8 +2,9 @@
 Câmara Aberta — "Para onde o Brasil exporta e o que exporta" (site/dados/comex/*.json).
 
 Uso:
-    python scripts/comex.py                 # no máximo uma vez por semana: baixa, confere e grava
+    python scripts/comex.py                 # no máximo uma vez por semana: baixa SÓ O QUE FALTA (o ano corrente, quando a fonte atualizou), confere e grava
     python scripts/comex.py --forcar        # ignora o intervalo de uma semana
+    python scripts/comex.py --completo      # baixa TODOS os anos de novo (os fechados já gravados não são baixados de novo sem isto)
     python scripts/comex.py --so-montar     # não chama a API: remonta os JSON do cache bruto (cache/comex/)
     python scripts/comex.py --reaproveitar  # desenvolvimento: aceita o cache bruto de qualquer dia se a fonte e o último mês forem os mesmos
     python scripts/comex.py --simular       # baixa e confere, mas não grava nada
@@ -18,7 +19,8 @@ tabela oficial). Nenhuma categoria é criada aqui: cada item é um país ou uma 
 Regras (CLAUDE.md, "Exportações"):
   * "valor exportado (US$ FOB)", nunca "lucro", "ganho" ou "receita"; sem julgamento ("dependência", "risco"…) e sem ligar a lei, governo ou partido;
   * ano corrente = só os meses fechados, com o período escrito (jan–set/2026); a comparação com outro ano usa os MESMOS meses;
-  * cada rodada baixa de novo TODOS os anos (a fonte revisa o passado); nada é gravado vazio por cima de dado bom;
+  * ano fechado é baixado UMA vez: o que já está em site/dados/comex/ (12 meses) não é pedido de novo, e o ano corrente só é pedido quando a fonte
+    atualizou desde a última gravação. O MDIC ajusta o ano passado por mais alguns meses; isso só entra com --completo. Nada é gravado vazio por cima de dado bom;
   * checagens que ABORTAM sem gravar: total por país ≠ total do período; soma por produto fora da tolerância do total; valor negativo;
     mês faltando (ano fechado) ou a mais; unidade da métrica diferente; ano faltando na sequência; palavra de julgamento no texto.
 """
@@ -68,6 +70,7 @@ _ultimo = [0.0]
 def pedir(metodo, caminho, params=None, corpo=None):
     """Um pedido à API com espera entre pedidos, repetição em 429, 5xx, falha de rede e corpo que não é JSON.
     Devolve o campo `data` (a API embrulha tudo em {data, success, message})."""
+    problema = "nenhuma resposta"      # o último problema vai na mensagem de aborto: no GitHub Actions o log só aparece para quem está logado, e a anotação é o que sobra
     for n in range(TENTATIVAS):
         espera = _ultimo[0] + INTERVALO - time.monotonic()
         if espera > 0:
@@ -75,13 +78,16 @@ def pedir(metodo, caminho, params=None, corpo=None):
         _ultimo[0] = time.monotonic()
         try:
             r = coleta.sessao.request(metodo, API + caminho, params=params, json=corpo, timeout=180)
-        except (coleta.requests.ConnectionError, coleta.requests.Timeout):
+        except (coleta.requests.ConnectionError, coleta.requests.Timeout) as e:
+            problema = f"falha de rede ({type(e).__name__}: {str(e)[:120]})"
             time.sleep(2 ** n)
             continue
         if r.status_code == 429:
+            problema = _resumo(r)
             time.sleep(ESPERA_429 + 5 * n)
             continue
         if r.status_code >= 500:
+            problema = _resumo(r)
             time.sleep(2 ** n)
             continue
         if r.status_code >= 400:
@@ -89,12 +95,20 @@ def pedir(metodo, caminho, params=None, corpo=None):
         try:
             j = r.json()
         except ValueError:
+            problema = "resposta que não é JSON: " + _resumo(r)
             time.sleep(2 ** n)
             continue
         if not j.get("success", True):
             raise Aborta(f"a API respondeu success=false: {caminho} {j.get('message')}")
         return j["data"]
-    raise Aborta(f"a API não respondeu depois de {TENTATIVAS} tentativas: {caminho}")
+    raise Aborta(f"a API não respondeu depois de {TENTATIVAS} tentativas: {caminho}. Último problema: {problema}")
+
+
+def _resumo(r):
+    """Uma linha com o que a resposta diz (código, tipo, servidor e o começo do corpo), sem cabeçalho de autenticação nem cookie."""
+    h = r.headers
+    return (f"HTTP {r.status_code}, tipo {h.get('content-type')}, servidor {h.get('server')}, cf-ray {h.get('cf-ray')}, "
+            f"retry-after {h.get('retry-after')}, corpo {' '.join(r.text.split())[:160]!r}")
 
 
 def consultar(ano, mes_fim, detalhes, mensal=False, fluxo="export"):
@@ -143,22 +157,79 @@ def coletar_ano(ano, mes_fim, atualizado, reaproveitar=False):
     return c
 
 
-def coletar_mensais(meta, reaproveitar=False):
-    """O total mensal de exportação e de importação de todos os anos: os anos fechados (jan–dez) em blocos de BLOCO_ANOS anos e o ano corrente (jan até o último mês completo) à parte,
-    porque a API repete o intervalo de meses em todos os anos do pedido. {baixadoEm, export: {ano: linhas}, import: {ano: linhas}}."""
+def blocos_de_anos(anos):
+    """Anos seguidos agrupados em blocos de até BLOCO_ANOS: [(primeiro, último)]. Anos que não são seguidos ficam em blocos separados."""
+    blocos = []
+    for a in sorted(anos):
+        if blocos and a == blocos[-1][1] + 1 and a - blocos[-1][0] < BLOCO_ANOS:
+            blocos[-1][1] = a
+        else:
+            blocos.append([a, a])
+    return [tuple(b) for b in blocos]
+
+
+def faixa(anos):
+    """[1997, 1998, 1999, 2001] → "1997–1999 e 2001"."""
+    anos = sorted(anos)
+    partes, ini = [], 0
+    for i, a in enumerate(anos):
+        if i + 1 == len(anos) or anos[i + 1] != a + 1:
+            partes.append(str(a) if anos[ini] == a else f"{anos[ini]}–{a}")
+            ini = i + 1
+    if not partes:
+        return "nenhum"
+    return partes[0] if len(partes) == 1 else ", ".join(partes[:-1]) + " e " + partes[-1]
+
+
+def coletar_mensais(meta, anos, reaproveitar=False):
+    """O total mensal de exportação e de importação dos `anos` pedidos: os anos fechados (jan–dez) em blocos de anos seguidos (até BLOCO_ANOS) e o ano corrente (jan até o último mês completo)
+    à parte, porque a API repete o intervalo de meses em todos os anos do pedido. {baixadoEm, export: {ano: linhas}, import: {ano: linhas}}."""
     arq = CACHE_C / "bruto" / "mensais.json"
     c = ler_cache(arq)
     if cache_vale(c, meta["atualizadoEm"], meta["mesFinal"], reaproveitar):
-        return c
+        tem = {int(a) for a in c.get("export", {})} & {int(a) for a in c.get("import", {})}
+        if set(anos) <= tem:
+            return c
     c = {"atualizadoEm": meta["atualizadoEm"], "mesFinal": meta["mesFinal"], "baixadoEm": HOJE.isoformat(), "export": {}, "import": {}}
-    for fluxo in ("export", "import"):
-        pedidos = [(ini, min(ini + BLOCO_ANOS - 1, meta["ano"] - 1), 12) for ini in range(meta["primeiroAno"], meta["ano"], BLOCO_ANOS)]
+    pedidos = [(ini, fim, 12) for ini, fim in blocos_de_anos(a for a in anos if a < meta["ano"])]
+    if meta["ano"] in anos:
         pedidos.append((meta["ano"], meta["ano"], meta["mesFinal"]))
+    for fluxo in ("export", "import"):
         for ini, fim, mes in pedidos:
             for x in consultar_mensal(fluxo, ini, fim, mes):
                 c[fluxo].setdefault(str(int(x["year"])), []).append(x)
     gravar_cache(arq, c)
     return c
+
+
+def carregar_prontos(meta):
+    """Os anos que já estão gravados em site/dados/comex/ e não precisam ser baixados de novo: {ano: (arquivo de destino, arquivo de produto, item da balança)}.
+    Ano fechado (12 meses) nunca é baixado de novo (o que o MDIC ajustar depois só entra com --completo). O ano corrente só vale se a fonte não atualizou desde a última
+    gravação (mesma data de atualização e mesmo último mês). Arquivo que falta, de outra versão das regras ou que não fecha entre si: o ano é baixado."""
+    ind, bal = ler_cache(SAIDA / "indice.json"), ler_cache(SAIDA / "balanca.json")
+    if not ind or not bal or ind.get("versao") != VERSAO or bal.get("versao") != VERSAO:
+        return {}
+    itens_bal = {x["ano"]: x for x in bal.get("anos", [])}
+    prontos = {}
+    for a in ind.get("anos", []):
+        ano = a["ano"]
+        if not meta["primeiroAno"] <= ano <= meta["ano"]:
+            continue
+        d, p, b = ler_cache(SAIDA / f"destino-{ano}.json"), ler_cache(SAIDA / f"produto-{ano}.json"), itens_bal.get(ano)
+        if not (d and p and b) or d.get("ano") != ano or p.get("ano") != ano:
+            continue
+        meses = d["periodo"]["meses"]
+        if not (p["periodo"]["meses"] == b["meses"] == meses and d["fechado"] == p["fechado"] == b["fechado"] == (meses == 12)):
+            continue
+        if meses == 12:
+            valido = True
+        elif ano == meta["ano"]:
+            valido = ind.get("atualizadoEmFonte") == meta["atualizadoEm"] and meses == meta["mesFinal"]
+        else:
+            valido = False
+        if valido:
+            prontos[ano] = (d, p, b)
+    return prontos
 
 
 # ------------------------------------------------------------------------------------------------ montagem e checagens
@@ -314,11 +385,16 @@ def frase_balanca(item, ref):
     return a + f" {quando}, o saldo foi {condicao_saldo(sr)}, de {com_sinal(sr)} (exportação {dinheiro(xr)}, importação {dinheiro(mr)})."
 
 
-def montar_balanca(brutos, saidas, meta, fonte):
-    """A balança de todos os anos: exportação (a mesma do treemap), importação, saldo e a frase de cada ano. Conferida antes de ir para o arquivo."""
+def montar_balanca(brutos, saidas, meta, fonte, prontos=None):
+    """A balança de todos os anos: exportação (a mesma do treemap), importação, saldo e a frase de cada ano. Conferida antes de ir para o arquivo.
+    Ano que não veio da API nesta rodada (`prontos`) leva os valores do que já estava gravado; a frase é refeita para todos."""
     itens = []
-    for ano in sorted(brutos):
+    for ano in sorted(saidas):
         d, _p = saidas[ano]
+        if ano not in brutos:
+            b = prontos[ano][2]
+            itens.append({k: b[k] for k in ("ano", "fechado", "meses", "rotulo", "exportacao", "importacao", "saldo")})
+            continue
         meses = d["periodo"]["meses"]
         exp = [m["valor"] for m in d["mensal"]]
         imp = mensal_de(brutos[ano]["importacaoMensal"], f"{ano} importação", meses, d["fechado"])
@@ -352,9 +428,11 @@ def conferir_balanca(balanca, saidas):
     checar_textos([it["frase"] for it in balanca["anos"]] + [balanca["definicao"], balanca["nota"]])
 
 
-def montar_tudo(brutos, meta):
-    """Todos os anos, conferidos de uma vez: ou tudo passa ou nada é gravado."""
-    anos = sorted(brutos)
+def montar_tudo(brutos, meta, prontos=None):
+    """Todos os anos, conferidos de uma vez: ou tudo passa ou nada é gravado. `brutos`: o que veio da API nesta rodada; `prontos` (de `carregar_prontos`): os anos que já
+    estavam gravados e não foram baixados de novo, conferidos de novo entre si (o total do treemap tem de bater com a balança e com a soma por país e por produto)."""
+    prontos = prontos or {}
+    anos = sorted(set(brutos) | set(prontos))
     if anos != list(range(anos[0], anos[-1] + 1)):
         raise Aborta(f"anos faltando na sequência: {anos}")
     if anos[0] != meta["primeiroAno"] or anos[-1] != meta["ano"]:
@@ -364,6 +442,14 @@ def montar_tudo(brutos, meta):
     fonte = {"nome": "Comex Stat, Ministério do Desenvolvimento, Indústria, Comércio e Serviços (MDIC)", "url": SITE, "api": API + "/general",
              "documentacao": API + "/docs", "metrica": meta["metrica"]}
     for ano in anos:
+        if ano not in brutos:
+            d, p, _b = prontos[ano]
+            for a in (d, p):
+                checar_textos(textos(a))
+            saidas[ano] = (d, p)
+            indice_anos.append({"ano": ano, "fechado": d["fechado"], "meses": d["periodo"]["meses"], "rotulo": d["periodo"]["rotulo"], "total": d["total"]})
+            anterior = {m["mes"]: m["valor"] for m in d["mensal"]}
+            continue
         fechado = ano < meta["ano"] or meta["mesFinal"] == 12
         base, paises, produtos, residuo = montar_ano(brutos[ano], fechado, anterior)
         d = dict(base, modo="destino", itens=paises, fonte=fonte)
@@ -374,7 +460,7 @@ def montar_tudo(brutos, meta):
         saidas[ano] = (d, p)
         indice_anos.append({"ano": ano, "fechado": fechado, "meses": base["periodo"]["meses"], "rotulo": base["periodo"]["rotulo"], "total": base["total"]})
         anterior = {m["mes"]: m["valor"] for m in base["mensal"]}
-    return saidas, indice_anos, montar_balanca(brutos, saidas, meta, fonte)
+    return saidas, indice_anos, montar_balanca(brutos, saidas, meta, fonte, prontos)
 
 
 # ------------------------------------------------------------------------------------------------ gravação
@@ -403,12 +489,12 @@ def gravar_se_mudou(caminho, obj, coletado, linhas=()):
     return "novo" if antigo is None else "mudou"
 
 
-def gravar_tudo(saidas, indice_anos, balanca, meta, coletado):
-    """Um arquivo por ano e modo, mais a balança. O `coletadoEm` de cada arquivo só muda quando os números mudam (o git não ganha 60 arquivos por semana);
+def gravar_tudo(saidas, indice_anos, balanca, meta, coletado, prontos=()):
+    """Um arquivo por ano e modo, mais a balança; os anos `prontos` (não baixados nesta rodada) não são regravados. O `coletadoEm` de cada arquivo só muda quando os números mudam (o git não ganha 60 arquivos por semana);
     a data da última conferência com a fonte vai no índice. `coletado` é a data em que os dados saíram da API (a do cache bruto), não a de hoje:
     com --so-montar nada foi baixado, e a página não pode dizer "conferido hoje"."""
     resultados = [gravar_se_mudou(SAIDA / f"{modo}-{ano}.json", a, coletado, linhas=("itens",))
-                  for ano, par in saidas.items() for modo, a in zip(("destino", "produto"), par)]
+                  for ano, par in saidas.items() if ano not in prontos for modo, a in zip(("destino", "produto"), par)]
     resultados.append(gravar_se_mudou(SAIDA / "balanca.json", balanca, coletado, linhas=("anos",)))
     novos, mudou = resultados.count("novo"), resultados.count("mudou")
     fechados = [x["ano"] for x in indice_anos if x["fechado"]]
@@ -562,6 +648,76 @@ def testar():
         raise AssertionError("deveria abortar: ano sem exportação mensal na resposta em blocos")
     except Aborta:
         ok += 1
+    # ---- só o que falta é baixado: anos fechados já gravados não são pedidos de novo
+    igual(blocos_de_anos(range(1997, 2026)), [(1997, 2011), (2012, 2025)], "blocos de anos seguidos")
+    igual(blocos_de_anos([2003, 2004, 2010]), [(2003, 2004), (2010, 2010)], "anos que não são seguidos ficam em blocos separados")
+    igual((faixa([1997, 1998, 1999, 2001]), faixa([2026]), faixa([])), ("1997–1999 e 2001", "2026", "nenhum"), "faixa de anos")
+    import tempfile
+    orig_saida, orig_cache = globals()["SAIDA"], globals()["CACHE_C"]
+    with tempfile.TemporaryDirectory() as tmp:
+        globals()["SAIDA"], globals()["CACHE_C"] = Path(tmp) / "comex", Path(tmp) / "cache"
+        try:
+            def grava():
+                s, i, b = montar_tudo(brutos(), meta)
+                gravar_tudo(s, i, b, meta, "2026-01-02")
+            grava()
+            igual(sorted(carregar_prontos(meta)), [2023, 2024, 2025], "a fonte não atualizou: nenhum ano a baixar")
+            meta_nova = dict(meta, atualizadoEm="2026-02-01", mesFinal=10)
+            igual(sorted(carregar_prontos(meta_nova)), [2023, 2024], "a fonte atualizou: o ano corrente é baixado de novo, os fechados não")
+            igual(sorted(carregar_prontos(dict(meta, mesFinal=12))), [2023, 2024], "o ano corrente fechou na fonte: o arquivo de 9 meses não vale")
+            (SAIDA / "destino-2024.json").unlink()
+            igual(sorted(carregar_prontos(meta)), [2023, 2025], "arquivo que falta: o ano é baixado")
+            grava()
+            ind = json.loads((SAIDA / "indice.json").read_text(encoding="utf-8"))
+            (SAIDA / "indice.json").write_text(json.dumps(dict(ind, versao="outra")), encoding="utf-8")
+            igual(carregar_prontos(meta), {}, "índice de outra versão das regras: tudo é baixado")
+            grava()
+            igual(carregar_prontos(dict(meta, primeiroAno=2024)).keys(), {2024, 2025}, "só os anos que a fonte declara")
+            # montar com anos prontos dá exatamente o mesmo que montar tudo da API
+            prontos = carregar_prontos(meta_nova)
+            novo_bruto = {2025: com_importacao(2025, 10)}
+            tudo = brutos()
+            tudo[2025] = com_importacao(2025, 10)
+            s1, i1, b1 = montar_tudo(tudo, meta_nova)
+            s2, i2, b2 = montar_tudo(novo_bruto, meta_nova, prontos)
+            ref = lambda s, i, b: json.dumps([{a: [sem_data(d), sem_data(p)] for a, (d, p) in s.items()}, i, sem_data(b)], sort_keys=True)
+            igual(ref(s1, i1, b1) == ref(s2, i2, b2), True, "anos prontos + ano baixado = o mesmo resultado de baixar tudo")
+            igual(sorted(s2), [2023, 2024, 2025], "todos os anos entram no resultado")
+            # os anos prontos são conferidos de novo: um total adulterado aborta
+            prontos = carregar_prontos(meta_nova)
+            prontos[2024][0]["total"] += 1
+            try:
+                montar_tudo(novo_bruto, meta_nova, prontos)
+                raise AssertionError("deveria abortar: ano pronto com total diferente da balança")
+            except Aborta:
+                ok += 1
+            # e os anos prontos não são regravados
+            prontos = carregar_prontos(meta_nova)
+            antes = {a.name: a.stat().st_mtime_ns for a in SAIDA.glob("*-202[34].json")}
+            gravar_tudo(s2, i2, b2, meta_nova, "2026-02-02", prontos)
+            igual(antes, {a.name: a.stat().st_mtime_ns for a in SAIDA.glob("*-202[34].json")}, "arquivos dos anos prontos não são tocados")
+            # só o que falta é pedido à API (blocos de anos seguidos; o ano corrente à parte)
+            pedidos = []
+            orig_mensal = globals()["consultar_mensal"]
+
+            def falso(fluxo, ini, fim, mes):
+                pedidos.append((fluxo, ini, fim, mes))
+                return [{"year": str(a), "monthNumber": f"{m:02d}", "metricFOB": "1"} for a in range(ini, fim + 1) for m in range(1, mes + 1)]
+            globals()["consultar_mensal"] = falso
+            try:
+                m26 = {"ano": 2026, "mesFinal": 9, "atualizadoEm": "x", "primeiroAno": 1997}
+                c = coletar_mensais(m26, [2026])
+                igual((pedidos, sorted(c["export"])), ([("export", 2026, 2026, 9), ("import", 2026, 2026, 9)], ["2026"]), "só o ano corrente é pedido")
+                pedidos.clear()
+                coletar_mensais(m26, [2026])
+                igual(pedidos, [], "o que foi baixado hoje não é pedido de novo")
+                coletar_mensais(m26, [2024, 2025, 2026])
+                igual(pedidos, [("export", 2024, 2025, 12), ("export", 2026, 2026, 9), ("import", 2024, 2025, 12), ("import", 2026, 2026, 9)],
+                      "ano que faltava no cache: pedido junto, em bloco de anos seguidos")
+            finally:
+                globals()["consultar_mensal"] = orig_mensal
+        finally:
+            globals()["SAIDA"], globals()["CACHE_C"] = orig_saida, orig_cache
     # o texto fixo da página
     html = (Path(__file__).resolve().parent.parent / "site" / "contexto.html")
     if html.exists():
@@ -582,6 +738,7 @@ def testar():
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--forcar", action="store_true")
+    ap.add_argument("--completo", action="store_true", help="baixa todos os anos de novo (sem isto, os anos fechados já gravados em site/dados/comex/ não são pedidos de novo)")
     ap.add_argument("--so-montar", action="store_true")
     ap.add_argument("--reaproveitar", action="store_true", help="aceita o cache bruto de qualquer dia, desde que a fonte e o último mês sejam os mesmos (desenvolvimento)")
     ap.add_argument("--simular", action="store_true")
@@ -606,36 +763,46 @@ def main():
             gravar_cache(CACHE_C / "meta.json", meta)
             brutos = {}
             t0 = time.time()
-            mensais = coletar_mensais(meta, args.reaproveitar)
-            print(f"  totais mensais de exportação e de importação: ok ({time.time() - t0:.0f}s)", flush=True)
-            for ano in range(meta["primeiroAno"], meta["ano"] + 1):
-                mes_fim = 12 if ano < meta["ano"] else meta["mesFinal"]
-                brutos[ano] = juntar_mensais(coletar_ano(ano, mes_fim, meta["atualizadoEm"], args.reaproveitar), mensais, ano)
-                print(f"  {ano}: ok ({time.time() - t0:.0f}s)", flush=True)
+            prontos = {} if args.completo else carregar_prontos(meta)
+            faltam = [a for a in range(meta["primeiroAno"], meta["ano"] + 1) if a not in prontos]
+            print(f"  já gravados, não baixados de novo: {faixa(prontos)}; a baixar: {faixa(faltam)}"
+                  + ("" if faltam else " (a fonte não atualizou desde a última gravação)"), flush=True)
+            if faltam:
+                mensais = coletar_mensais(meta, faltam, args.reaproveitar)
+                print(f"  totais mensais de exportação e de importação: ok ({time.time() - t0:.0f}s)", flush=True)
+                for ano in faltam:
+                    mes_fim = 12 if ano < meta["ano"] else meta["mesFinal"]
+                    brutos[ano] = juntar_mensais(coletar_ano(ano, mes_fim, meta["atualizadoEm"], args.reaproveitar), mensais, ano)
+                    print(f"  {ano}: ok ({time.time() - t0:.0f}s)", flush=True)
         else:
             meta = ler_cache(CACHE_C / "meta.json")
             if not meta:
                 raise Aborta("--so-montar sem cache: rode comex.py antes")
             brutos = {}
+            prontos = {} if args.completo else carregar_prontos(meta)
             mensais = ler_cache(CACHE_C / "bruto" / "mensais.json")
-            if not mensais:
-                raise Aborta("--so-montar: falta o cache dos totais mensais (bruto/mensais.json); rode comex.py (--forcar) antes")
             for ano in range(meta["primeiroAno"], meta["ano"] + 1):
+                if ano in prontos:
+                    continue
                 c = ler_cache(CACHE_C / "bruto" / f"{ano}.json")
-                if not c:
-                    raise Aborta(f"--so-montar: falta o cache de {ano}")
+                if not c or not mensais:
+                    raise Aborta(f"--so-montar: falta o cache de {ano} (e o ano não está gravado em site/dados/comex/); rode comex.py (--forcar) antes")
                 brutos[ano] = juntar_mensais(c, mensais, ano)
-        saidas, indice_anos, balanca = montar_tudo(brutos, meta)
+        saidas, indice_anos, balanca = montar_tudo(brutos, meta, prontos)
     except Aborta as e:
         print(f"ABORTADO (nada gravado; os arquivos anteriores ficam): {e}")
         sys.exit(1)
     if args.simular:
         print("--simular: conferido, nada gravado.")
     else:
-        novos, mudou = gravar_tudo(saidas, indice_anos, balanca, meta, max(c["baixadoEm"] for c in brutos.values()))
+        # a data da conferência: a do que saiu da API nesta rodada; sem nada baixado, hoje (se a fonte foi consultada) ou a que já estava no índice (--so-montar)
+        coletado = max((c["baixadoEm"] for c in brutos.values()), default=None) or (
+            HOJE.isoformat() if rede else (ler_cache(SAIDA / "indice.json") or {}).get("verificadoEm", HOJE.isoformat()))
+        novos, mudou = gravar_tudo(saidas, indice_anos, balanca, meta, coletado, prontos)
         if rede:
             gravar_cache(CACHE_C / "estado.json", {"ultima": HOJE.isoformat()})
-        print(f"Comex Stat: {len(indice_anos)} anos conferidos; {novos} arquivo(s) novo(s), {mudou} com números diferentes dos anteriores; índice atualizado.")
+        print(f"Comex Stat: {len(indice_anos)} anos conferidos ({len(prontos)} já gravados, não baixados de novo); "
+              f"{novos} arquivo(s) novo(s), {mudou} com números diferentes dos anteriores; índice atualizado.")
     if args.imprimir:
         fech = [a["ano"] for a in indice_anos if a["fechado"]]
         anos_impressos = [fech[-2], fech[-1]] + ([indice_anos[-1]["ano"]] if not indice_anos[-1]["fechado"] else [])

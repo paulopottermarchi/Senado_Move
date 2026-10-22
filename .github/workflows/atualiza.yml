@@ -139,9 +139,10 @@ jobs:
 
       # Exportações e balança comercial (Comex Stat, MDIC): valor exportado US$ FOB por destino e por produto (SH4), um arquivo por ano e modo,
       # mais a balança (exportação, importação e saldo, FOB nos dois lados). Os dados mudam por mês, então o próprio script só roda a cada 7 dias
-      # (nas outras rodadas sai na hora). Baixa todos os anos de 1997 em diante de novo (a fonte revisa) e confere antes de gravar: total por país =
-      # total do período, exportação da balança = total do treemap, saldo = exportação menos importação, mês faltando, valor negativo, unidade.
-      # Se algo falhar, os arquivos anteriores ficam. A API limita os pedidos (~40 min por rodada completa, 4 pedidos por ano).
+      # (nas outras rodadas sai na hora). Só baixa o que falta: os anos fechados que já estão em site/dados/comex/ não são pedidos de novo, e o ano
+      # corrente só é pedido quando a fonte atualizou desde a última gravação (senão a rodada faz 3 consultas leves e termina). Confere antes de gravar:
+      # total por país = total do período, exportação da balança = total do treemap, saldo = exportação menos importação, mês faltando, valor negativo,
+      # unidade. Se algo falhar, os arquivos anteriores ficam. A API limita os pedidos (cerca de 4 por ano que falta, 6 s entre eles).
       - name: Exportações e balança comercial (Comex Stat)
         run: python scripts/passo.py --opcional comex.py
 
