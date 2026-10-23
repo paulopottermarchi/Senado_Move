@@ -686,7 +686,7 @@ table.part tr.divisor td{position:static;box-shadow:none}
       <div class="txt">
     <p class="kicker">Câmara dos Deputados · 513 deputados</p>
       <h1 class="t-gigante"><span class="acento" id="dNum">513</span> deputados</h1>
-    <p class="chamada">Quem propõe muito e quem consegue aprovar, da esquerda à direita. Um ponto por deputado; clique para abrir a ficha.</p>
+    <p class="chamada">Quem propõe muito e quem consegue aprovar, da esquerda à direita. Um ponto por deputado; clique ou use as setas e Enter para abrir a ficha.</p>
       </div>
       <div class="lado"><figure class="modelo-ed" data-modelo="bacia" aria-hidden="true"><img src="img/modelo-bacia.svg" alt="" width="480" height="360" decoding="async"></figure></div>
     </div>
@@ -798,12 +798,16 @@ table.part tr.divisor td{position:static;box-shadow:none}
       <aside class="lado">
         <h3>Composição</h3>
         <p class="obs">Cada assento é um deputado, do mais à esquerda ao mais à direita.</p>
-        <svg class="plenario" id="plenario" viewBox="0 0 300 168" role="img"
-             aria-label="Assentos da Câmara ordenados pela posição no espectro"></svg>
+        <svg class="plenario" id="plenario" viewBox="0 0 300 168" role="group"
+             aria-label="Assentos da Câmara ordenados pela posição no espectro. Use as setas para percorrer os deputados; Enter abre a ficha."></svg>
         <p class="total"><b id="totalN">513</b>deputados</p>
         <table class="conta"><tbody id="conta"></tbody></table>
       </aside>
     </div>
+    <details class="dados-grafico">
+      <summary>Ver os dados do gráfico em tabela</summary>
+      <div id="dadosDepTabela"></div>
+    </details>
     <details class="nota">
       <summary>Como ler este gráfico e de onde vêm os dados</summary>
       <p class="rodape" id="rodape"></p>
@@ -964,7 +968,7 @@ table.part tr.divisor td{position:static;box-shadow:none}
         <span id="fFoto"></span>
         <div><h2 id="fNome"></h2><div class="quem" id="fQuem"></div></div>
       </div>
-      <button class="sair" onclick="sair()" aria-label="Fechar">&times;</button>
+      <button class="sair" type="button" onclick="sair()" aria-label="Fechar a ficha">&times;</button>
     </div>
 
     <p class="resumo-exec" id="fExec"></p>
@@ -1587,8 +1591,8 @@ function textos(){
 
 function leituraTexto(){
   document.getElementById('leitura').textContent = medida==='apresentadas'
-    ? 'Cada ponto é um deputado. Quanto mais à direita, mais à direita se situa o partido do deputado. Quanto mais alto, mais proposições apresentou. Clique num ponto para ver a ficha.'
-    : 'Agora a altura é quantas propostas viraram lei de fato. Quem apresenta centenas e emplaca duas desce até a base. Um terço da Câmara fica na linha do zero.';
+    ? 'Cada ponto é um deputado. Quanto mais à direita, mais à direita se situa o partido do deputado. Quanto mais alto, mais proposições apresentou. Clique num ponto ou use as setas e Enter para ver a ficha.'
+    : 'Agora a altura é quantas propostas viraram lei de fato. Quem apresenta centenas e emplaca duas desce até a base. Um terço da Câmara fica na linha do zero. Use as setas e Enter para abrir uma ficha.';
 }
 
 
@@ -1651,6 +1655,7 @@ const valorY=d=>medida==='apresentadas'?(d.apresentadas||0):(d.viraramLei??0);
 // Raio fixo até haver métrica com cobertura real. Ver CLAUDE.md.
 const raioDe=d=>4;
 const tela=document.getElementById('tela'), dica=document.getElementById('dica');
+document.addEventListener('DOMContentLoaded',()=>SVGTeclado.ativar(tela,'circle.pt'));
 const NS='http://www.w3.org/2000/svg';
 const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e};
 
@@ -1680,7 +1685,7 @@ function ligarPonto(c){
     c.setAttribute('r',raioDe(d())); c.setAttribute('opacity',.6);
     dica.classList.remove('on');
   });
-  c.addEventListener('click',()=>{ if(passa(d())) abrir(d()); });
+  c.addEventListener('click',()=>{ if(passa(d())){ c.focus(); abrir(d()); } });
 }
 
 // De onde vêm as leis: a faixa aparece só na vista "Viraram lei" e só quando faz sentido para o que o gráfico mostra. A origem foi
@@ -1703,6 +1708,9 @@ function atualizarOrigem(){
 function desenhar(){
   atualizarLimpar();
   atualizarOrigem();
+  const doMandato=deputados.filter(estaNoMandato);
+  const dados=document.getElementById('dadosDepTabela');
+  if(dados) dados.innerHTML=`<table><caption class="so-leitor">Valores do gráfico de deputados</caption><thead><tr><th scope="col">Deputado</th><th scope="col">Partido e estado</th><th scope="col">Posição no espectro</th><th scope="col">${medida==='apresentadas'?'Proposições apresentadas':'Proposições que viraram lei'}</th></tr></thead><tbody>${[...doMandato].sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')).map(d=>`<tr><th scope="row">${esc(d.nome)}</th><td>${esc(d.partido)} de ${esc(d.uf)}</td><td>${d.score==null?'Sem posição na pesquisa':d.score.toFixed(1).replace('.',',')}</td><td>${nfBR(valorY(d))}</td></tr>`).join('')}</tbody></table>`;
   const W=tela.clientWidth,H=tela.clientHeight;
   if(!W||!H){                       // aba Ranking ativa: o scatter está oculto
     plenarioDesenhar(); contaDesenhar(); votosDesenhar(); rankDesenhar();
@@ -1710,11 +1718,9 @@ function desenhar(){
   }
   const m={t:20,r:48,b:58,l:48};
   const pw=W-m.l-m.r, ph=H-m.t-m.b;
-  // com um mandato escolhido, quem não estava no cargo nele nem entra no gráfico
-  const doMandato=deputados.filter(estaNoMandato);
   const max=Math.max(...doMandato.map(valorY),1);
 
-  const svg=el('svg',{width:W,height:H});
+  const svg=el('svg',{width:W,height:H,role:'group','aria-label':`Cada ponto é um deputado: posição do partido no espectro na horizontal e ${medida==='apresentadas'?'proposições apresentadas':'proposições que viraram lei'} na vertical. Use as setas para percorrer os pontos e Enter para abrir a ficha.`});
   const y=v=>comprimida
     ? m.t+ph-(Math.log10(Math.max(1,v))/Math.log10(max))*ph
     : m.t+ph-(v/max)*ph;
@@ -1767,6 +1773,8 @@ function desenhar(){
       c._d=d;
       c.setAttribute('fill',corDoScore(d.score)); c.setAttribute('r',raioDe(d));
     }
+    c.setAttribute('data-id',d.id);
+    c.setAttribute('aria-label',`${d.nome}, ${d.partido} de ${d.uf}; ${d.score==null?'sem posição na pesquisa':`posição ${d.score.toFixed(1).replace('.',',')} de 10`}; ${nfBR(total)} ${medida==='apresentadas'?'proposições apresentadas':'proposições que viraram lei'}. Pressione Enter para abrir a ficha.`);
     const ok=passa(d);
     c.classList.toggle('apagado',!ok); if(ok) n++;                 // o fade do apagado é a transição de opacity do .pt
     if(!novo&&animar&&ok){
@@ -1779,6 +1787,7 @@ function desenhar(){
   for(const id of [...circulos.keys()]) if(!noRecorte.has(id)) circulos.delete(id);   // saiu do recorte (mandato)
 
   tela.querySelector('svg')?.remove();
+  SVGTeclado.preparar(svg,'circle.pt');
   tela.insertBefore(svg,dica);
   if(mover.length){
     const fim=()=>{ for(const o of mover){ o.c.setAttribute('cx',o.x1); o.c.setAttribute('cy',o.y1); } animaPontos=null; };
@@ -1862,12 +1871,16 @@ function plenarioDesenhar(){
   ordem.forEach((d,i)=>{
     const p=pts[i]; if(!p)return;
     const c=el('circle',{cx:p.x.toFixed(1),cy:p.y.toFixed(1),r:raio,
-      fill:corDoScore(d.score),class:'assento'});
+      fill:corDoScore(d.score),class:'assento','data-id':d.id,
+      'aria-label':`${d.nome}, ${d.partido} de ${d.uf}; ${d.score==null?'sem posição na pesquisa':`posição ${d.score.toFixed(1).replace('.',',')} de 10`}. Pressione Enter para abrir a ficha.`});
     if(!passa(d))c.classList.add('apagado');   // a composição é a de hoje: 513 cadeiras
     const t=el('title',{}); t.textContent=`${d.nome} (${d.partido} de ${d.uf})`;
     c.appendChild(t);
     svg.appendChild(c);
   });
+  SVGTeclado.preparar(svg,'circle.assento');
+  SVGTeclado.ativar(svg,'circle.assento');
+  svg.onclick=e=>{ const c=e.target.closest('.assento'); if(c){ c.focus(); const d=deputados.find(x=>x.id===+c.dataset.id); if(d) abrir(d); } };
 }
 
 function contaDesenhar(){
@@ -2303,7 +2316,15 @@ document.addEventListener('click',e=>{
 });
 
 // ---------- ficha ----------
+const fichaDialog=document.querySelector('.ficha[role="dialog"]');
+let focoFichaAntes=null;
+function restaurarFocoFicha(){
+  const alvo=focoFichaAntes&&focoFichaAntes.isConnected?focoFichaAntes:document.querySelector('#tela circle.pt[tabindex="0"]');
+  focoFichaAntes=null;
+  if(alvo) requestAnimationFrame(()=>alvo.focus());
+}
 function abrir(d){
+  focoFichaAntes=document.activeElement;
   document.getElementById('fFoto').innerHTML=retrato(d,66);
   fNome.textContent=d.nome;
   fQuem.textContent=`${d.partido} de ${d.uf}`+(d.federacao?`, federação ${d.federacao}`:'');
@@ -2430,14 +2451,30 @@ function abrir(d){
 
   veu.classList.add('on');
   document.body.style.overflow='hidden';
+  fichaDialog.querySelector('.sair').focus();
 }
-function sair(){veu.classList.remove('on');document.body.style.overflow=''}
+function sair(){
+  if(!veu.classList.contains('on')) return;
+  veu.classList.remove('on');document.body.style.overflow='';
+  restaurarFocoFicha();
+}
 veu.onclick=e=>{if(e.target.id==='veu')sair()};
 document.addEventListener('keydown',e=>{
+  if(veu.classList.contains('on')){
+    if(e.key==='Escape'){e.preventDefault();sair();return}
+    if(e.key==='Tab'){
+      const focaveis=[...fichaDialog.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+        .filter(el=>!el.hidden&&el.getClientRects().length);
+      if(!focaveis.length){e.preventDefault();return}
+      const primeiro=focaveis[0], ultimo=focaveis[focaveis.length-1];
+      if(e.shiftKey&&(document.activeElement===primeiro||!fichaDialog.contains(document.activeElement))){e.preventDefault();ultimo.focus()}
+      else if(!e.shiftKey&&(document.activeElement===ultimo||!fichaDialog.contains(document.activeElement))){e.preventDefault();primeiro.focus()}
+    }
+    return;
+  }
   if(e.key!=='Escape')return;
   if(popAberto){fecharPop();return}
   if(lista.classList.contains('on')){lista.classList.remove('on');return}
-  sair();
 });
 
 vDisp.onclick=()=>{votosModo='disputadas';vDisp.classList.add('on');vCons.classList.remove('on');votosDesenhar()};

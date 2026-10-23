@@ -200,6 +200,14 @@ Testado com Python 3.13, a versão do workflow.
 pip install -r requirements.txt
 ```
 
+Instale as dependências de desenvolvimento/teste (incluem as de produção), depois o Chromium. Os testes servem o site localmente, sem acessar APIs externas:
+
+```bash
+pip install -r requirements-dev.txt
+python -m playwright install chromium
+python -m unittest discover -s tests -v
+```
+
 A primeira coleta, com o cache vazio, leva cerca de 3 horas (≈106 mil requisições à API da Câmara,
 respeitando o limite de 10 por segundo). Depois disso, regerar os JSON a partir do cache leva segundos.
 Para validar antes, rode com 10 deputados (`--limite 10`).

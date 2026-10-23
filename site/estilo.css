@@ -75,6 +75,15 @@ a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px;
   transition:color var(--t),text-decoration-color var(--t),background-color var(--t),border-color var(--t)}
 :focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:2px;border-radius:4px;animation:foco .2s var(--curva)}
 @keyframes foco{from{outline-color:transparent;outline-offset:-1px}}
+circle.pt:focus-visible,circle.assento:focus-visible,.hv circle:focus-visible{
+  outline:none;stroke:var(--destaque-vivo);stroke-width:2.5px;paint-order:stroke
+}
+.dados-grafico{margin-top:16px;font-size:13px;color:var(--tinta2)}
+.dados-grafico summary{width:max-content;max-width:100%;cursor:pointer;color:var(--destaque);font-weight:500}
+.dados-grafico>div{max-height:420px;overflow:auto;margin-top:12px}
+.dados-grafico table{width:100%;border-collapse:collapse;font-size:13px}
+.dados-grafico th,.dados-grafico td{padding:6px 10px;border-bottom:1px solid var(--linha2);text-align:left}
+.dados-grafico th{position:sticky;top:0;background:var(--papel);color:var(--tinta);font-size:12px}
 ::selection{background:var(--destaque-fundo)}
 button{transition:color var(--t),background-color var(--t),border-color var(--t),box-shadow var(--t),transform var(--t)}
 .pino:active,.mais:active,.sem-mais-btn:active{transform:scale(.97)}           /* o botão cede ao toque */

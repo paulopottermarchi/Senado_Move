@@ -1,5 +1,48 @@
 // Câmara Aberta — comportamento comum a todas as páginas (carregado com defer).
 
+// Pontos SVG interativos: um único ponto entra na ordem de Tab; as setas e Home/End percorrem o gráfico.
+window.SVGTeclado = (() => {
+  function preparar(svg, seletor) {
+    const pontos = [...svg.querySelectorAll(seletor)];
+    if (!pontos.length) return;
+    const ativo = pontos.find(p => p.tabIndex === 0) || pontos[0];
+    pontos.forEach(p => {
+      p.setAttribute('role', 'button');
+      p.tabIndex = p === ativo ? 0 : -1;
+    });
+  }
+  function ativar(container, seletor) {
+    if (container.dataset.svgTeclado) return;
+    container.dataset.svgTeclado = 'true';
+    container.addEventListener('focusin', e => {
+      const ponto = e.target.closest(seletor);
+      if (!ponto || !container.contains(ponto)) return;
+      ponto.ownerSVGElement.querySelectorAll(seletor).forEach(p => { p.tabIndex = p === ponto ? 0 : -1; });
+    });
+    container.addEventListener('keydown', e => {
+      const ponto = e.target.closest(seletor);
+      if (!ponto || !container.contains(ponto)) return;
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        ponto.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+        return;
+      }
+      if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
+      const svg = ponto.ownerSVGElement;
+      const pontos = [...svg.querySelectorAll(seletor)].sort((a, b) =>
+        (+a.getAttribute('cx') - +b.getAttribute('cx')) ||
+        (+a.getAttribute('cy') - +b.getAttribute('cy')));
+      const indice = pontos.indexOf(ponto);
+      const seguinte = e.key === 'Home' ? 0
+        : e.key === 'End' ? pontos.length - 1
+        : (indice + (e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : -1) + pontos.length) % pontos.length;
+      e.preventDefault();
+      pontos[seguinte].focus();
+    });
+  }
+  return { preparar, ativar };
+})();
+
 // Tema claro/escuro. Só vale em página que traz <html data-escuro-ok> (as outras seguem claras). O claro é o padrão; o escuro vem de
 // prefers-color-scheme ou da escolha do leitor, guardada em localStorage (<head> repete a leitura antes da pintura, sem piscar).
 // Escolher o mesmo tema que o sistema usa apaga a escolha: a página volta a seguir o sistema. Quem desenha em canvas ou SVG

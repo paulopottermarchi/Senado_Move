@@ -25,7 +25,7 @@ env:
 jobs:
   testes:
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
 
@@ -33,9 +33,12 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
-          cache-dependency-path: requirements.txt
+          cache-dependency-path: requirements-dev.txt
 
-      - run: pip install -r requirements.txt pyflakes
+      - run: pip install -r requirements-dev.txt
+
+      - name: Instalar Chromium para testes de navegador
+        run: python -m playwright install chromium
 
       # Cada passo roda mesmo se o anterior falhou, para o PR mostrar tudo o que está quebrado de uma vez.
       - name: Lint (pyflakes)
@@ -84,3 +87,7 @@ jobs:
       - name: Pessoas documentadas (regressão sintética)
         if: ${{ !cancelled() }}
         run: python scripts/pessoas_regressao.py --so-sinteticos
+
+      - name: Acessibilidade e interações no navegador
+        if: ${{ !cancelled() }}
+        run: python -m unittest discover -s tests -v

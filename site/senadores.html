@@ -380,13 +380,17 @@ table.part tr.divisor:hover td{background:none}
       <div class="corpo">
         <div>
           <div class="grafico" id="grafico" aria-label="Gráfico de senadores"></div>
+          <details class="dados-grafico">
+            <summary>Ver os dados do gráfico em tabela</summary>
+            <div id="dadosSenTabela"></div>
+          </details>
           <div class="leg"><span>esquerda <i class="grad"></i> direita</span><span><i class="sem"></i>partido sem posição na pesquisa</span>
-            <span>clique num ponto para abrir a ficha</span></div>
+            <span>clique num ponto ou use as setas e Enter para abrir a ficha</span></div>
         </div>
         <aside class="lado">
           <h3>Composição</h3>
           <p class="obs" id="subComp"></p>
-          <svg class="plenario" id="plenario" viewBox="0 0 300 168" role="img" aria-label="Assentos do Senado ordenados pela posição do partido no espectro"></svg>
+          <svg class="plenario" id="plenario" viewBox="0 0 300 168" role="group" aria-label="Assentos do Senado ordenados pela posição do partido no espectro. Use as setas para percorrer os senadores; Enter abre a ficha."></svg>
           <p class="comp-total"><b id="compN">81</b>senadores</p>
           <table class="conta" aria-label="Senadores por faixa do espectro"><tbody id="conta"></tbody></table>
           <!-- só aparece se o navegador tem WebGL e importmap; o Three.js só é pedido quando alguém clica -->
@@ -431,10 +435,10 @@ table.part tr.divisor:hover td{background:none}
   </section>
 </main>
 
-<dialog class="dlg3d" id="dlg3d" aria-labelledby="dlg3dTit">
+<dialog class="dlg3d" id="dlg3d" aria-labelledby="dlg3dTit" aria-describedby="dlg3dDesc">
   <div class="dlg3d-cab">
     <h2 id="dlg3dTit">Plenário do Senado em 3D</h2>
-    <button class="pino" type="button" id="dlg3dFechar">Fechar</button>
+    <button class="pino" type="button" id="dlg3dFechar" autofocus>Fechar</button>
   </div>
   <p class="dlg3d-sub" id="dlg3dSub"></p>
   <div class="dlg3d-cena" id="dlg3dCena"><p class="dlg3d-estado" id="dlg3dEstado" role="status">Carregando o 3D…</p></div>
@@ -444,7 +448,7 @@ table.part tr.divisor:hover td{background:none}
     <button class="pino" type="button" id="zoomMenos" aria-label="Afastar">−</button>
     <div class="leg"><span>esquerda <i class="grad"></i> direita</span><span><i class="sem"></i>partido sem posição na pesquisa</span></div>
   </div>
-  <p class="dlg3d-nota"><b>A ordem dos assentos segue o espectro do partido e não é a disposição real do plenário.</b> A altura dos degraus
+  <p class="dlg3d-nota" id="dlg3dDesc"><b>A ordem dos assentos segue o espectro do partido e não é a disposição real do plenário.</b> A altura dos degraus
     e a profundidade são só de arquibancada e não significam dado: todos os assentos têm o mesmo tamanho. Setas percorrem os assentos,
     Enter abre a ficha, Ctrl e a roda (ou + e −) dão zoom, Esc fecha. O plenário em 2D, ao lado do gráfico, tem os mesmos assentos.</p>
 </dialog>
@@ -599,10 +603,14 @@ function grafico(){
   const rot=[[0,'esquerda','start'],[.5,'centro','middle'],[1,'direita','end']].map(([x,t,a])=>`<text x="${m.l+x*iw}" y="${H-12}" text-anchor="${a}">${t}</text>`).join('')+
     (estreito?`<text x="${semX}" y="${H-24}" text-anchor="middle"><tspan x="${semX}">sem</tspan><tspan x="${semX}" dy="13">posição</tspan></text>`
              :`<text x="${semX}" y="${H-12}" text-anchor="middle">sem posição</text>`);
-  const pts=R.map(s=>{const bate=!q||norm(s.nome+' '+(pos(s).partido||'')+' '+s.uf).includes(q);
+  const pts=R.map(s=>{const bate=!q||norm(s.nome+' '+(pos(s).partido||'')+' '+s.uf).includes(q), valor=valorY(s), ideologia=pos(s).score;
+    const rotulo=`${s.nome}, ${pos(s).partido||'sem partido'} de ${s.uf}; ${ideologia==null?'sem posição na pesquisa':`posição ${ideologia.toFixed(1).replace('.',',')} de 10`}; ${nf.format(valor)} ${eixoY==='apresentadas'?'PEC e PL apresentados':'proposições que viraram lei'}. Pressione Enter para abrir a ficha.`;
     return `<circle class="pt${sel===s.id?' sel':''}" data-id="${s.id}" cx="${X(s).toFixed(1)}" cy="${Y(valorY(s)).toFixed(1)}" r="${sel===s.id?(estreito?7:8):(estreito?5:6.5)}"
-      fill="${corDoScore(pos(s).score)}" opacity="${bate?.92:.12}"/>`}).join('');
-  $('#grafico').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cada ponto é um senador; a tabela abaixo traz os mesmos dados"><g class="eixo">${ticks}${rot}</g>${pts}</svg><div class="dica" id="dica"></div>`;
+      fill="${corDoScore(ideologia)}" opacity="${bate?.92:.12}" aria-label="${esc(rotulo)}"/>`}).join('');
+  $('#grafico').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="group" aria-label="Cada ponto é um senador. Use as setas para percorrer os pontos e Enter para abrir a ficha."><g class="eixo">${ticks}${rot}</g>${pts}</svg><div class="dica" id="dica"></div>`;
+  const svg=$('#grafico svg'); SVGTeclado.preparar(svg,'circle.pt');
+  const dados=$('#dadosSenTabela');
+  if(dados) dados.innerHTML=`<table><caption class="so-leitor">Valores do gráfico de senadores</caption><thead><tr><th scope="col">Senador</th><th scope="col">Partido</th><th scope="col">Posição no espectro</th><th scope="col">${eixoY==='apresentadas'?'PEC e PL apresentados':'Proposições que viraram lei'}</th></tr></thead><tbody>${[...R].sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')).map(s=>{const p=pos(s);return `<tr><th scope="row">${esc(s.nome)}</th><td>${esc(p.partido||'sem partido')}</td><td>${p.score==null?'Sem posição na pesquisa':p.score.toFixed(1).replace('.',',')}</td><td>${nf.format(valorY(s))}</td></tr>`;}).join('')}</tbody></table>`;
   const rotY=eixoY==='apresentadas'?'PEC e PL apresentados':'que viraram lei';
   $('#subGraf').textContent=completo()
     ? `Cada ponto é um senador que exerceu o mandato na legislatura ${rotuloLeg(leg)}, titular ou suplente (${R.length}). Na horizontal, a posição do partido que ele tinha ao entrar em exercício nela; na vertical, ${rotY} nessa legislatura.`
@@ -711,18 +719,43 @@ function fotoFalhou(img){
 }
 // A ficha abre numa janela sobre a página (diálogo nativo), como a dos deputados: o foco fica preso nela e Esc, o × e o clique no fundo fecham.
 const dlgFicha=document.getElementById('dlgFicha');
+let focoFichaAntes=null, idFocoFicha=null;
 function abrirJanela(){
   if(dlgFicha.open) return;
   if(typeof dlgFicha.showModal==='function') dlgFicha.showModal(); else dlgFicha.setAttribute('open','');     // sem <dialog>, abre sem prender o foco
   document.body.style.overflow='hidden';
+  dlgFicha.querySelector('[data-fechar]')?.focus();
 }
 function fecharFicha(){
   if(!dlgFicha.open) return;
   if(typeof dlgFicha.close==='function') dlgFicha.close(); else { dlgFicha.removeAttribute('open'); aoFecharFicha(); }
 }
-function aoFecharFicha(){ document.body.style.overflow=''; if(sel!=null){ sel=null; grafico(); } }       // o ponto destacado volta ao normal
+dlgFicha.addEventListener('keydown',e=>{
+  if(e.key!=='Tab') return;
+  const focaveis=[...dlgFicha.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+    .filter(el=>!el.hidden&&el.getClientRects().length);
+  if(!focaveis.length){e.preventDefault();return}
+  const primeiro=focaveis[0], ultimo=focaveis[focaveis.length-1];
+  if(e.shiftKey&&(document.activeElement===primeiro||!dlgFicha.contains(document.activeElement))){e.preventDefault();ultimo.focus()}
+  else if(!e.shiftKey&&(document.activeElement===ultimo||!dlgFicha.contains(document.activeElement))){e.preventDefault();primeiro.focus()}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&dlgFicha.open){e.preventDefault();fecharFicha()}
+});
+function aoFecharFicha(){
+  document.body.style.overflow='';
+  if(sel!=null){ sel=null; grafico(); }       // o ponto destacado volta ao normal
+  const origem=focoFichaAntes, id=idFocoFicha;
+  focoFichaAntes=null; idFocoFicha=null;
+  requestAnimationFrame(()=>{
+    const alvo=origem&&origem.isConnected?origem:(id!=null?document.querySelector(`#grafico .pt[data-id="${id}"]`):null);
+    (alvo||$('#busca')).focus();
+  });
+}
 function abrir(id){
   const s=ALL().find(x=>x.id===id); if(!s) return;
+  focoFichaAntes=document.activeElement;
+  idFocoFicha=focoFichaAntes?.dataset?.id||null;
   sel=id;
   const vv=votosValem(), v=vv?(s.votos||{}):{}, nc=num(s), r=nc.relatorias||{};
   // sem legislatura escolhida, a frase "nesta legislatura" é da atual (de porLegislatura; o campo antigo vale para JSON ainda não regerado)
@@ -818,8 +851,9 @@ function ordemPlenario(){
 function composicao(){
   const E=window.Espectro, svg=$('#plenario');
   const {R,ordem,denso,pts}=ordemPlenario(), raio=denso?4.4:5.4;
-  svg.innerHTML=ordem.map((x,i)=>{const p=pts[i]; return p?`<circle class="assento" data-id="${x.id}" tabindex="0" role="button" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${raio}"
-    fill="${E.corDoScore(pos(x).score)}" opacity="${estaNaLeg(x)?1:.1}"><title>${esc(x.nome)} (${esc(pos(x).partido||'sem partido')}-${esc(x.uf)})${estaNaLeg(x)?'':' — não estava em exercício nesta legislatura'}</title></circle>`:'';}).join('');
+  svg.innerHTML=ordem.map((x,i)=>{const p=pts[i], score=pos(x).score; return p?`<circle class="assento" data-id="${x.id}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${raio}"
+    fill="${E.corDoScore(score)}" opacity="${estaNaLeg(x)?1:.1}" aria-label="${esc(`${x.nome}, ${pos(x).partido||'sem partido'} de ${x.uf}; ${score==null?'sem posição na pesquisa':`posição ${score.toFixed(1).replace('.',',')} de 10`}. Pressione Enter para abrir a ficha.`)}"><title>${esc(x.nome)} (${esc(pos(x).partido||'sem partido')}-${esc(x.uf)})${estaNaLeg(x)?'':' — não estava em exercício nesta legislatura'}</title></circle>`:'';}).join('');
+  SVGTeclado.preparar(svg,'circle.assento');
   const tot=R.length||1, faixa=x=>pos(x).ideologia||'sem-classificacao';
   // faixas só na legenda (CLAUDE.md): cada assento acima tem a cor contínua do score, não a da faixa
   $('#conta').innerHTML=Object.keys(E.CORES).map(k=>{
@@ -950,11 +984,12 @@ $('#cab').addEventListener('click',e=>{
   const k=th.dataset.k; ordDesc=ordCol===k?!ordDesc:!['nome','partido','sup'].includes(k); ordCol=k; tabela();
 });
 $('#corpo').addEventListener('click',e=>{if(e.target.closest('a.pg-link')) return; const tr=e.target.closest('tr[data-id]'); if(tr) abrir(+tr.dataset.id);});
-$('#plenario').addEventListener('click',e=>{const c=e.target.closest('.assento'); if(c) abrir(+c.dataset.id);});
-$('#plenario').addEventListener('keydown',e=>{const c=e.target.closest('.assento'); if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault(); abrir(+c.dataset.id);}});
+document.addEventListener('DOMContentLoaded',()=>SVGTeclado.ativar($('#plenario'),'circle.assento'));
+$('#plenario').addEventListener('click',e=>{const c=e.target.closest('.assento'); if(c){ c.focus(); abrir(+c.dataset.id); }});
 const g=$('#grafico');
+document.addEventListener('DOMContentLoaded',()=>SVGTeclado.ativar(g,'circle.pt'));
 new ResizeObserver(()=>{ const w=g.clientWidth; if(w&&_larguraGrafico&&Math.abs(w-_larguraGrafico)>2) grafico(); }).observe(g);
-g.addEventListener('click',e=>{const c=e.target.closest('.pt'); if(c) abrir(+c.dataset.id);});
+g.addEventListener('click',e=>{const c=e.target.closest('.pt'); if(c){ c.focus(); abrir(+c.dataset.id); }});
 g.addEventListener('mousemove',e=>{
   const c=e.target.closest('.pt'), d=$('#dica'); if(!d) return;
   if(!c){ d.classList.remove('on'); return; }
