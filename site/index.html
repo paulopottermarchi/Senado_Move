@@ -356,8 +356,8 @@
         <!-- os 513 deputados num hemiciclo, do mais à esquerda ao mais à direita; os pontos nascem aqui e a cor chega com deputados.json -->
         <figure class="hero-viz" id="heroFig" data-entra aria-labelledby="heroCap">
           <div class="hv-box">
-            <svg class="hv" id="heroViz" viewBox="0 0 300 158" role="img"
-                 aria-label="Hemiciclo com os 513 deputados, do mais à esquerda ao mais à direita pela posição do partido no espectro"></svg>
+            <svg class="hv" id="heroViz" viewBox="0 0 300 158" role="group"
+                 aria-label="Hemiciclo com os 513 deputados, do mais à esquerda ao mais à direita pela posição do partido no espectro. Use as setas para percorrer os deputados; Enter abre a ficha."></svg>
             <div class="hv-n" aria-hidden="true"><b data-conta data-conta-atraso=".9" id="hvN">513</b><span>deputados</span></div>
           </div>
           <a class="hv-dica" id="heroDica" href="deputados.html" tabindex="-1" aria-hidden="true">Ficha do deputado</a>
@@ -399,9 +399,13 @@
         </div>
       </div>
     </div>
-    <p class="lede-ed">Cada ponto é um deputado. Na horizontal, a posição do partido, da esquerda à direita; na vertical, quantas proposições ele apresentou.</p>
+    <p class="lede-ed">Cada ponto é um deputado. Na horizontal, a posição do partido, da esquerda à direita; na vertical, quantas proposições ele apresentou. Use as setas para percorrer os pontos e Enter para abrir uma ficha.</p>
 
     <div class="tela-ed" id="telaIni" data-reveal><a class="gr-dica" id="grDica" href="deputados.html" tabindex="-1" aria-hidden="true">Ficha do deputado</a></div>
+    <details class="dados-grafico">
+      <summary>Ver os dados do gráfico em tabela</summary>
+      <div id="dadosIniTabela"></div>
+    </details>
 
     <div class="gr-num" data-reveal>
       <div><div class="n" id="gN1">—</div><div class="r">deputados em partido com posição no espectro</div></div>
@@ -845,6 +849,8 @@ function heroDesenhar(){
   // 513 assentos: o número de cadeiras é fixo; a cor de cada um vem do deputado que ocupa o lugar (heroColorir)
   svg.innerHTML=E.assentos(513,9,54,140).map((p,i)=>`<circle data-i="${i}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}"></circle>`).join('');
   heroPontos=[...svg.children];
+  SVGTeclado.preparar(svg,'circle');
+  SVGTeclado.ativar(svg,'circle');
 }
 function heroAbrir(){
   heroDesenhar();
@@ -881,6 +887,7 @@ function heroColorir(){
     const c=heroPontos[i]; if(!c) return;
     if(anima) c.style.transitionDelay=(i*1.2)+'ms';
     c.style.setProperty('--c',E.corDoScore(d.score,true));     // o hemiciclo fica sobre o escuro
+    c.setAttribute('aria-label',`${d.nome}, ${d.partido} de ${d.uf}; ${d.score==null?'sem posição na pesquisa':`posição ${d.score.toFixed(1).replace('.',',')} de 10`}. Pressione Enter para abrir a ficha.`);
   });
   if(anima) setTimeout(()=>heroPontos.forEach(c=>{c.style.transitionDelay='';}),1800);
   const sem=heroDeps.filter(d=>d.score==null).length;
@@ -889,20 +896,25 @@ function heroColorir(){
 function heroDica(){
   const svg=document.getElementById('heroViz'), fig=document.getElementById('heroFig'), dica=document.getElementById('heroDica');
   let toque=false;
-  svg.addEventListener('pointerover',e=>{
-    toque=e.pointerType==='touch';
-    const c=e.target.closest('circle'), d=c&&heroDeps[+c.dataset.i]; if(!d) return;
+  const mostrar=c=>{
+    const d=heroDeps[+c.dataset.i]; if(!d) return;
     const r=c.getBoundingClientRect(), f=fig.getBoundingClientRect();
     dica.innerHTML=`${esc(d.nome)}<small>${esc(d.partido)} de ${esc(d.uf)}${toque?' · abrir a ficha':''}</small>`;
     dica.href=`deputado.html?id=${encodeURIComponent(d.id)}`;
     dica.style.left=(r.left+r.width/2-f.left)+'px'; dica.style.top=(r.top-f.top)+'px';
     dica.classList.add('on');
+  };
+  svg.addEventListener('pointerover',e=>{
+    toque=e.pointerType==='touch';
+    const c=e.target.closest('circle'); if(c) mostrar(c);
   });
+  svg.addEventListener('focusin',e=>{ const c=e.target.closest('circle'); if(c) mostrar(c); });
+  svg.addEventListener('focusout',e=>{ if(e.target.closest('circle')) dica.classList.remove('on'); });
   svg.addEventListener('pointerleave',e=>{ if(e.pointerType!=='touch') dica.classList.remove('on'); });
   document.addEventListener('pointerdown',e=>{ if(!fig.contains(e.target)) dica.classList.remove('on'); });
   svg.addEventListener('click',e=>{                    // mouse: o ponto abre a ficha; no toque, o primeiro toque só mostra quem é
     const c=e.target.closest('circle'), d=c&&heroDeps[+c.dataset.i];
-    if(d&&!toque) location.href=`deputado.html?id=${encodeURIComponent(d.id)}`;
+    if(d&&(!toque||e.detail===0)) location.href=`deputado.html?id=${encodeURIComponent(d.id)}`;
   });
 }
 
@@ -929,7 +941,7 @@ function gDesenhar(animar){
   const est=W<520, m=est?{t:16,r:52,b:56,l:46}:{t:16,r:80,b:56,l:56}, pw=W-m.l-m.r, ph=H-m.t-m.b, semX=W-m.r+(est?26:44);
   const max=Math.max(...deputados.map(gValor),1), lmax=Math.max(Math.log10(max),1e-9);
   const y=v=>gEscalaLog?m.t+ph-(Math.log10(Math.max(1,v))/lmax)*ph:m.t+ph-(v/max)*ph;
-  const svg=svgEl('svg',{width:W,height:H,role:'img','aria-label':'Cada ponto é um deputado: a posição do partido no espectro na horizontal e as proposições apresentadas na vertical. Para chegar a um deputado pelo teclado, use a busca no topo da página.'});
+  const svg=svgEl('svg',{width:W,height:H,role:'group','aria-label':'Cada ponto é um deputado: a posição do partido no espectro na horizontal e as proposições apresentadas na vertical. Use as setas para percorrer os pontos e Enter para abrir a ficha.'});
   const ticks=gEscalaLog?[1,2,5,10,25,50,100,250,500,1000].filter(t=>t<=max):[0,Math.round(max*.25),Math.round(max*.5),Math.round(max*.75),max];
   ticks.forEach(t=>{
     const yy=y(t);
@@ -960,10 +972,15 @@ function gDesenhar(animar){
       const x0=+c.getAttribute('cx'), y0=+c.getAttribute('cy');
       if(Math.abs(x0-cx)>.4||Math.abs(y0-cy)>.4) mover.push({c,x0,y0,x1:cx,y1:cy}); else { c.setAttribute('cx',cx); c.setAttribute('cy',cy); }
     }else{ c.setAttribute('cx',cx); c.setAttribute('cy',cy); }
+    c.setAttribute('data-id',d.id);
+    c.setAttribute('aria-label',`${d.nome}, ${d.partido} de ${d.uf}; ${d.score==null?'sem posição na pesquisa':`posição ${d.score.toFixed(1).replace('.',',')} de 10`}; ${nf.format(gValor(d))} ${gMedida==='apresentadas'?'proposições apresentadas':'proposições que viraram lei'}. Pressione Enter para abrir a ficha.`);
     svg.appendChild(c);
   });
   tela.querySelector('svg')?.remove();
+  SVGTeclado.preparar(svg,'circle.pt');
   tela.insertBefore(svg,document.getElementById('grDica'));
+  const tabela=document.getElementById('dadosIniTabela');
+  if(tabela) tabela.innerHTML=`<table><caption class="so-leitor">Valores do gráfico de deputados</caption><thead><tr><th scope="col">Deputado</th><th scope="col">Partido e estado</th><th scope="col">Posição no espectro</th><th scope="col">${gMedida==='apresentadas'?'Proposições apresentadas':'Proposições que viraram lei'}</th></tr></thead><tbody>${[...deputados].sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')).map(d=>`<tr><th scope="row">${esc(d.nome)}</th><td>${esc(d.partido)} de ${esc(d.uf)}</td><td>${d.score==null?'Sem posição na pesquisa':d.score.toFixed(1).replace('.',',')}</td><td>${nf.format(gValor(d))}</td></tr>`).join('')}</tbody></table>`;
   if(mover.length){
     const fim=()=>{ for(const o of mover){ o.c.setAttribute('cx',o.x1); o.c.setAttribute('cy',o.y1); } gAnima=null; };
     let anterior=null, soma=0, quadros=0;
@@ -980,6 +997,7 @@ function gDesenhar(animar){
 }
 function gLigar(){
   const tela=document.getElementById('telaIni'), dica=document.getElementById('grDica');
+  SVGTeclado.ativar(tela,'circle.pt');
   let toque=false;
   const mostrar=c=>{
     const d=c._d, v=gValor(d), uni=gMedida==='apresentadas'?'proposições apresentadas':'viraram lei';
@@ -994,7 +1012,7 @@ function gLigar(){
   document.addEventListener('pointerdown',e=>{ if(!tela.contains(e.target)) dica.classList.remove('on'); });
   tela.addEventListener('click',e=>{                    // mouse: o ponto abre a ficha; no toque, o primeiro toque só mostra quem é
     const c=e.target.closest&&e.target.closest('circle.pt');
-    if(c&&!toque) location.href=`deputado.html?id=${encodeURIComponent(c._d.id)}`;
+    if(c&&(!toque||e.detail===0)) location.href=`deputado.html?id=${encodeURIComponent(c._d.id)}`;
   });
   const $i=id=>document.getElementById(id);
   const A=$i('gBtnA'), L=$i('gBtnL'), LOG=$i('gBtnLog'), LIN=$i('gBtnLin');
