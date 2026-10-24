@@ -261,7 +261,10 @@ Scripts que não entram na rodada diária:
 `scripts/pessoas.py` roda depois de `obras.py` (usa o cache dele) e **só escreve em `site/` com `--publicar`**. Sem a
 flag, grava em `cache/` as arestas (`pessoas_arestas.jsonl`) e o candidato (`pessoas_candidato.json`); a amostra de validação
 (`amostra_fase1.csv`) só é regravada com `--amostra`. `--vias e2,e8` (padrão) escolhe as vias do candidato e da publicação; o E3 só
-entra se pedido (`--vias e2,e3,e8`). `--dry-run` mostra o relatório e o diff sem atualizar a rodada anterior. Os testes de
+entra se pedido (`--vias e2,e3,e8`). "Sem arquivo" só vale confirmado: a lista vazia do Contratos.gov.br é consultada de novo no fim
+da passada, 404 fica pendente, vazio nunca apaga uma lista com arquivos já guardada, e 15 ou mais contratos seguidos sem arquivo são
+tratados como falha da API (ficam pendentes, com aviso). A queda de pessoas também é medida contra o `obras_pessoas.json` publicado,
+que fica no repositório se o cache do Actions se perder. `--dry-run` mostra o relatório e o diff sem atualizar a rodada anterior. Os testes de
 regressão (`python scripts/pessoas_regressao.py`) usam os casos conferidos à mão: quem não é representante nunca sai como tal, e o
 filtro conservador, o cargo "Substituto(a)" e as supressões têm teste. Usa `pypdf` (BSD-3) e, para a segunda leitura, `pdfminer.six`
 (MIT); nada de `pymupdf` (AGPL).
