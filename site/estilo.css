@@ -783,3 +783,23 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 .pg .pg-acao{margin-top:24px}
 .pg .pg-fonte{margin-top:24px;font-size:13px;color:var(--tinta3);line-height:1.7}
 .pg .pg-fonte a{overflow-wrap:anywhere}
+
+/* ============ VOLTAR AO TOPO (o botão é criado pelo site.js em todas as páginas) ============
+   Escondido = invisível E fora da ordem de Tab (visibility:hidden); aparece depois de uma tela e meia de rolagem. Cor invertida do texto
+   nos dois temas, com um contorno da cor do papel: some sobre a página, mas separa o círculo das faixas escuras de uma página clara
+   (a de "Esta semana" na inicial). z-index 70: abaixo da barra do topo (80), da ficha dos deputados (100) e dos diálogos. */
+.volta-topo{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:70;
+  width:48px;height:48px;padding:0;border:0;border-radius:50%;cursor:pointer;display:grid;place-items:center;
+  background:var(--inverso);color:var(--sobre-inverso);box-shadow:0 0 0 2px var(--papel),var(--sombra-md);
+  opacity:0;visibility:hidden;transform:translateY(8px);
+  transition:opacity .3s var(--curva),transform .3s var(--curva),box-shadow .3s var(--curva),visibility 0s linear .3s}
+.volta-topo[data-visivel]{opacity:1;visibility:visible;transform:none;
+  transition:opacity .3s var(--curva),transform .3s var(--curva),box-shadow .3s var(--curva),visibility 0s}
+.volta-topo:hover{box-shadow:0 0 0 2px var(--papel),var(--sombra-lg);transform:translateY(-2px)}
+.volta-topo:active{transform:none}
+.volta-topo:focus-visible{outline:2px solid var(--destaque-vivo);outline-offset:3px}
+.volta-topo svg{width:22px;height:22px}
+@media (min-width:760px){.volta-topo{right:24px;bottom:24px}}
+@media (prefers-reduced-motion:reduce){.volta-topo,.volta-topo:hover{transform:none}}
+@media (forced-colors:active){.volta-topo{border:2px solid ButtonText}}
+@media print{.volta-topo{display:none}}

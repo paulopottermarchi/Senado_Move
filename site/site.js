@@ -385,3 +385,32 @@ window.Modelo3D = (() => {
   return { varrer };
 })();
 Modelo3D.varrer();
+
+// Botão "voltar ao topo", em todas as páginas (inclusive as de cada deputado e senador, que carregam este arquivo). Aparece depois de
+// descer uma tela e meia (no mínimo 700 px) e some de novo perto do topo; escondido, fica fora da ordem de Tab (visibility:hidden no
+// CSS). O clique sobe a página (suave, salvo com movimento reduzido) e põe o foco na marca da barra do topo, para quem usa teclado ou
+// leitor de tela continuar do começo. Fica atrás das fichas e dos diálogos (z-index menor que o deles).
+(() => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'volta-topo';
+  b.title = 'Voltar ao topo';
+  b.setAttribute('aria-label', 'Voltar ao topo da página');
+  b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg>';
+  document.body.appendChild(b);
+  let visivel = false, pendente = false;
+  const atualizar = () => {
+    pendente = false;
+    const v = scrollY > Math.max(700, innerHeight * 1.5);
+    if (v !== visivel) { visivel = v; b.toggleAttribute('data-visivel', v); }
+  };
+  addEventListener('scroll', () => { if (!pendente) { pendente = true; requestAnimationFrame(atualizar); } }, { passive: true });
+  addEventListener('resize', atualizar, { passive: true });
+  atualizar();
+  b.addEventListener('click', () => {
+    const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    scrollTo({ top: 0, behavior: reduz ? 'instant' : 'smooth' });
+    const marca = document.querySelector('.topo .marca');
+    if (marca) marca.focus({ preventScroll: true });
+  });
+})();

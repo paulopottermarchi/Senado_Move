@@ -254,7 +254,7 @@ Scripts que não entram na rodada diária:
   o cartão cujos números mudaram. Também põe as tags (canonical, `og:image`, `twitter:card`) em todas as páginas atuais, entre `<!-- seo:inicio -->` e `<!-- seo:fim -->`.
   `--dry-run` gera tudo em `cache/paginas_dryrun/` sem tocar em `site/` e mede peso e tempo; `--so-estaticas` só as tags; `--teste` roda os testes sem rede.
 - `scripts/signatarios.py` — piloto que lê os PDFs dos contratos de obra para achar quem assinou.
-  Não publica nada; precisa de `pymupdf` (fora do `requirements.txt`; licença AGPL ou comercial, por isso fora do projeto, que é MIT).
+  Não publica nada; precisa de `pymupdf` (fora do `requirements.txt`; licença AGPL ou comercial, por isso fora do projeto).
 - `scripts/diag_vinculo_*.py` — o diagnóstico de viabilidade que deu origem às pessoas documentadas (relatório em `cache/`).
   Medição e registro; `diag_vinculo_e2.py` e `signatarios.py` usam `pymupdf` em comparações locais.
 
@@ -354,7 +354,9 @@ Para publicar pela primeira vez: *Settings → Pages → Source: GitHub Actions*
 
 ## Licença
 
-Código sob a [licença MIT](LICENSE). Os dados são públicos e pertencem às fontes citadas.
+Código sob [licença proprietária](LICENSE): todos os direitos reservados a Paulo Potter. Uso comercial, redistribuição e obras
+derivadas só com autorização por escrito. As bibliotecas e fontes de terceiros em `site/vendor/` seguem as licenças delas.
+Os dados são públicos e pertencem às fontes citadas.
 
 Encontrou um erro? Abra uma [issue](https://github.com/paulopottermarchi/Senado_Move/issues) com o
 link da página e o que está errado.
