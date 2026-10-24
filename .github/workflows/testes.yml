@@ -84,6 +84,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: python scripts/ilustracoes_noticias.py --teste
 
+      - name: Frescor dos dados (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/frescor.py --teste
+
       - name: Pessoas documentadas (regressão sintética)
         if: ${{ !cancelled() }}
         run: python scripts/pessoas_regressao.py --so-sinteticos
