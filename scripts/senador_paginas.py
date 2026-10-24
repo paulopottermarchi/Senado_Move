@@ -18,6 +18,7 @@ entrega a indexação junto da lista de autoria, então não há segunda camada:
 "sem categoria", nunca some. Precisão não medida, como na Câmara. Ver CLAUDE.md, "Página do senador".
 """
 
+import os
 import sys
 import time
 from collections import Counter
@@ -134,7 +135,7 @@ def main():
         sys.exit(f"Sem {senado.SAIDA.name}. Rode senado.py antes.")
     todos = [(s, False) for s in atuais] + [(s, True) for s in antigos]
 
-    saidas, divergencias, sem_cache = {}, [], []
+    saidas, divergencias, sem_cache, pulados = {}, [], [], set()
     votos_total = Counter()
     listas = {}
     distintas, leis_sem_norma = {}, []
@@ -142,6 +143,7 @@ def main():
         cod = s["id"]
         if not (senado.CACHE_S / "autorias" / f"{cod}.json").exists():
             sem_cache.append(s["nome"])
+            pulados.add(cod)
             continue
         try:
             _, meus = senado.proposicoes_de(str(cod), False, LONGA, LONGA)
@@ -185,17 +187,22 @@ def main():
             votos_total["sem_tema"] += sum(a["s"] for a in por.values())
             votos_total["outras"] += sum(a["o"] for a in por.values())
 
-    if divergencias or sem_cache:
+    if divergencias:
         print("CHECAGEM FALHOU — nada foi gravado.")
-        if sem_cache:
-            print(f"- {len(sem_cache)} senador(es) sem cache de autoria (rode senado.py): {', '.join(sem_cache[:8])}")
         for d in divergencias[:40]:
             print("-", d)
         print("Provável causa: senadores.json de outra rodada do cache. Rode senado.py e depois este script.")
         sys.exit(2)
+    # Sem cache de autoria (o cache do Actions foi zerado e o senado.py ainda não refez todos os que já saíram: ele para no limite de --minutos e
+    # continua na rodada seguinte): a página dele FICA como estava, da última rodada que conseguiu montá-la, em vez de derrubar as dos outros.
+    # O senadores_antigos.json também só é regravado com todos prontos, então os números da página continuam batendo com os do gráfico.
+    if sem_cache:
+        msg = (f"{len(sem_cache)} senador(es) sem cache de autoria: a página de cada um ficou como estava "
+               f"(o senado.py refaz o cache nas próximas rodadas). Ex.: {', '.join(sem_cache[:6])}")
+        print(f"::warning title=senador_paginas::{msg}" if os.environ.get("GITHUB_ACTIONS") else f"AVISO: {msg}", flush=True)
 
     SAIDA.mkdir(exist_ok=True)
-    validos = {f"{i}.json" for i in saidas} | {"resumo.json"}
+    validos = {f"{i}.json" for i in saidas} | {f"{i}.json" for i in pulados} | {"resumo.json"}
     for velho in SAIDA.glob("*.json"):
         if velho.name not in validos:
             velho.unlink()                                  # senador que saiu da lista
@@ -207,6 +214,10 @@ def main():
         obj["versao"] = VERSAO
         frases[cod] = obj["frase"]
         mudaram += temas.gravar_se_mudou(SAIDA / f"{cod}.json", obj)
+    for cod in pulados:                                      # a frase de quem ficou como estava: a do arquivo dele, se existe
+        antigo = coleta.ler_cache(SAIDA / f"{cod}.json")
+        if antigo and antigo.get("frase"):
+            frases[cod] = antigo["frase"]
     temas.gravar_se_mudou(SAIDA / "resumo.json", {"inicioLegislatura": temas.INICIO_LEGISLATURA, "versao": VERSAO,
                                                   "temasVersao": temas.VERSAO, "geradoEm": date.today().isoformat(),
                                                   "frases": frases})
@@ -214,7 +225,7 @@ def main():
     # Só os arquivos de quem tem votos; o que sobrou de quem saiu da lista é apagado.
     VOTOS_DIR.mkdir(exist_ok=True)
     for velho in VOTOS_DIR.glob("*.json"):
-        if velho.stem not in {str(c) for c in listas}:
+        if velho.stem not in {str(c) for c in listas} | {str(c) for c in pulados}:
             velho.unlink()
     for cod, obj in listas.items():
         temas.gravar_se_mudou(VOTOS_DIR / f"{cod}.json", {**obj, "versao": VERSAO})
