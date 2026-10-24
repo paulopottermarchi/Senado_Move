@@ -74,6 +74,8 @@ INTERVALO_COMPRAS = 1.0
 VALIDADE_ERRO = timedelta(days=7)
 VALIDADE_COMPRA = timedelta(days=30)
 QUEDA_MAXIMA = 0.20            # a rodada falha se uma via perder mais que isso das pessoas da rodada anterior
+VAZIOS = CACHE_P / "arquivos_vazios.json"   # {contrato: quando} — só a lista vazia CONFIRMADA vale "sem arquivo" (ver listar_arquivos)
+SEQUENCIA_VAZIA_SUSPEITA = 15  # tantas consultas seguidas sem arquivo = falha da API, não dos contratos (o máximo verdadeiro, em 303, foi 8)
 
 CAT_E2 = "assinou pelo órgão contratante (representante, contrato ou termo em PDF)"
 CAT_E3 = "responsável registrado no aviso de licitação (Compras.gov.br)"
@@ -87,7 +89,7 @@ MOTIVOS = {   # texto que a interface mostra no lugar do nome ("—")
     "sem_representante_no_documento": "o texto do PDF não traz o representante do órgão ao mesmo tempo no preâmbulo e no bloco de assinatura",
     "identificador_nao_localizado": "o número do contrato (nem o processo) não consta no texto do PDF",
     "nome_ilegivel": "o nome saiu corrompido do PDF e não foi possível reconciliar",
-    "pendente": "ainda não lido (falha de rede nesta rodada)",
+    "pendente": "ainda não lido: a consulta falhou nesta rodada e é refeita na próxima",
     "sem_registro_na_fonte": "o Compras.gov.br não tem registro desta licitação",
     "ano_nao_coberto": "licitação de 2025 em diante: o Compras.gov.br não traz o nome do responsável neste aviso (a licitação consta do PNCP, que não foi consultado para nomes)",
     "sem_nome_no_registro": "o registro da licitação existe, mas sem nome de responsável",
@@ -178,18 +180,109 @@ def baixar(url):
 
 # ---------------------------------------------------------------- E2: PDF do contrato e dos termos
 
-def listar_arquivos(cid, so_montar):
+VAZIO_PROVISORIO = "vazio_provisorio"     # a lista veio vazia nesta rodada e ainda não foi confirmada (confirmar_vazios)
+
+
+def aviso(msg):
+    print(f"::warning title=pessoas.py::{msg}" if os.environ.get("GITHUB_ACTIONS") else f"AVISO: {msg}", flush=True)
+
+
+def listar_arquivos(cid, so_montar, vazios, consultas, est):
+    """Arquivos anexados ao contrato: a lista (com arquivos), [] (sem arquivo, CONFIRMADO), None (não consultado: pendente) ou
+    VAZIO_PROVISORIO. "Sem arquivo" vai para a página como fato ("o contrato não tem arquivo anexado"), então só vale confirmado.
+    Medido na rodada de 22/10/2026 no GitHub: a API do Contratos.gov.br devolveu lista vazia para TODOS os contratos de um trecho
+    inteiro da consulta (47 com PDF saíram "sem arquivo", e o vazio ficou guardado por 7 a 13 dias; consultados de novo, daqui e de
+    fora do Brasil, os arquivos estavam lá). Por isso:
+      - 404 não é "sem arquivo": fica pendente e não vai para o cache;
+      - lista vazia nunca apaga uma lista com arquivos já guardada (anexo não some);
+      - lista vazia nova é provisória e só é confirmada por uma segunda consulta, no fim da passada (confirmar_vazios);
+      - a lista vazia guardada sem confirmação (antes desta regra, ou por outro script) é consultada de novo.
+    `vazios` = {contrato: quando foi confirmado}; `consultas` recebe (contrato, "vazio" | "cheio" | "falha") de TODOS os contratos, na
+    ordem, inclusive os lidos do cache: a sequência suspeita é de contratos vizinhos, não só dos que foram consultados nesta rodada."""
     cam = obras.CACHE_O / "arquivos" / f"{cid}.json"
     arqs = obras.fresco(cam, False)
-    if arqs is None:
-        if so_montar:
-            return coleta.ler_cache(cam)
+    if arqs and isinstance(arqs, list):
+        consultas.append((cid, "cheio"))
+        return arqs
+    if arqs == [] and cid in vazios:
+        consultas.append((cid, "vazio"))
+        return []
+    antigo = coleta.ler_cache(cam)
+    antigo = antigo if isinstance(antigo, list) else None
+    reserva = antigo if antigo else ([] if antigo == [] and cid in vazios else None)
+    if so_montar:
+        return reserva
+    try:
+        novo = obras.pedir(f"{obras.CT}/contrato/{cid}/arquivos", intervalo=INTERVALO_PDF)
+    except RuntimeError:
+        est["arquivos_falha"] += 1
+        consultas.append((cid, "falha"))
+        return reserva                            # a API cai por minutos às vezes: vale o antigo, se houver
+    if novo is None:
+        est["arquivos_404"] += 1
+        consultas.append((cid, "falha"))
+        return reserva
+    if novo:
+        consultas.append((cid, "cheio"))
+        vazios.pop(cid, None)
+        coleta.gravar_cache(cam, novo)
+        return novo
+    consultas.append((cid, "vazio"))
+    if antigo:
+        est["arquivos_vazio_contra_cache"] += 1      # a lista guardada tinha arquivos: fica ela
+        return antigo
+    return VAZIO_PROVISORIO
+
+
+def confirmar_vazios(provisorios, consultas, vazios, est):
+    """{contrato: lista} para cada lista que veio vazia nesta rodada. SEQUENCIA_VAZIA_SUSPEITA ou mais contratos seguidos sem arquivo
+    (na ordem da passada, contando os lidos do cache; uma falha de consulta não interrompe nem conta) é falha da API: nenhum contrato
+    novo dela é confirmado (fica pendente e é consultado de novo na próxima rodada). Os demais são consultados uma segunda vez, depois
+    da passada inteira: vazio de novo = confirmado; com arquivos = a primeira resposta estava errada."""
+    provisorio, suspeitos, seq = set(provisorios), set(), []
+    for cid, res in consultas + [(None, "fim")]:
+        if res == "falha":
+            continue
+        if res == "vazio":
+            seq.append(cid)
+            continue
+        if len(seq) >= SEQUENCIA_VAZIA_SUSPEITA:
+            suspeitos.update(c for c in seq if c in provisorio)
+        seq = []
+    if suspeitos:
+        aviso(f"{len(suspeitos)} contratos vieram sem arquivo em sequência na consulta ao Contratos.gov.br: falha da API, não dos "
+              f"contratos. Nenhum foi dado como 'sem arquivo' nesta rodada (ficam pendentes e são consultados de novo na próxima).")
+    out = {}
+    for cid in provisorios:
+        cam = obras.CACHE_O / "arquivos" / f"{cid}.json"
+        if cid in suspeitos:
+            est["arquivos_vazio_suspeito"] += 1
+            out[cid] = None
+            continue
         try:
-            arqs = obras.pedir(f"{obras.CT}/contrato/{cid}/arquivos", intervalo=INTERVALO_PDF) or []
+            novo = obras.pedir(f"{obras.CT}/contrato/{cid}/arquivos", intervalo=INTERVALO_PDF)
         except RuntimeError:
-            return coleta.ler_cache(cam)          # a API cai por minutos às vezes: vale o antigo, se houver
-        coleta.gravar_cache(cam, arqs)
-    return arqs
+            novo = None
+        if novo is None:
+            est["arquivos_falha"] += 1
+            out[cid] = None
+        elif novo:
+            est["arquivos_vazio_desmentido"] += 1
+            coleta.gravar_cache(cam, novo)
+            out[cid] = novo
+        else:
+            est["arquivos_vazio_confirmado"] += 1
+            coleta.gravar_cache(cam, [])
+            vazios[cid] = agora()
+            out[cid] = []
+    if est["arquivos_vazio_desmentido"]:
+        aviso(f"{est['arquivos_vazio_desmentido']} contrato(s) vieram sem arquivo na 1ª consulta e com arquivos na 2ª: a API do "
+              f"Contratos.gov.br falhou durante a rodada (a 2ª consulta valeu).")
+    return out
+
+
+def docs_de(arqs, c, args, est):
+    return [(a, ler_pdf(a, c, args, est)) for a in (arqs or []) if a.get("tipo") in P.TIPOS_ARQUIVO and a.get("path_arquivo")]
 
 
 def ler_pdf(arq, c, args, est):
@@ -513,20 +606,25 @@ def montar(args):
 
     # 1) E2: PDFs
     por_contrato, regs_c = {}, {}
+    vazios = coleta.ler_cache(VAZIOS) or {}
+    consultas, provisorios = [], []
     for n, cid in enumerate(ids, 1):
         c = contratos[cid]
         cc = obras.contrato(cid, False) if not args.so_montar else (coleta.ler_cache(obras.CACHE_O / "contratos" / f"{cid}.json") or {})
         regs_c[cid] = cc
-        arqs = listar_arquivos(cid, args.so_montar)
-        docs = []
-        if arqs is not None:
-            for a in arqs:
-                if a.get("tipo") in P.TIPOS_ARQUIVO and a.get("path_arquivo"):
-                    docs.append((a, ler_pdf(a, c, args, est)))
-        por_contrato[cid] = (arqs, docs)
+        arqs = listar_arquivos(cid, args.so_montar, vazios, consultas, est)
+        if arqs == VAZIO_PROVISORIO:
+            provisorios.append(cid)
+            arqs = None
+        por_contrato[cid] = (arqs, docs_de(arqs, c, args, est))
         if n % 25 == 0:
             print(f"   E2 {n}/{len(ids)} contratos · {est['pdf_baixados']} PDFs baixados · {est['pdf_em_cache']} do cache · "
                   f"{time.monotonic() - t0:.0f}s", flush=True)
+    # a lista vazia só vale confirmada; os confirmados entram no índice (cache, como as listas)
+    for cid, arqs in confirmar_vazios(provisorios, consultas, vazios, est).items():
+        por_contrato[cid] = (arqs, docs_de(arqs, contratos[cid], args, est))
+    if not args.so_montar:
+        coleta.gravar_cache(VAZIOS, dict(sorted(vazios.items(), key=lambda kv: int(kv[0]))))
     fases["E2 (PDFs)"] = time.monotonic() - t0
 
     # 2) E3: avisos de licitação
@@ -834,14 +932,22 @@ def contagens(saida):
     return dict(c)
 
 
-def queda(saida, anterior):
+def queda(saida, anterior, publicado=None):
     """A rodada falha se uma via LIGADA perder mais que QUEDA_MAXIMA das pessoas da anterior. Não compara rodadas de regras diferentes
-    (`versao` do estado): a queda que o filtro conservador causa de propósito não é falha."""
-    if not anterior or anterior.get("versao") != VERSAO:
-        return []
-    novo, velho_ = contagens(saida), anterior.get("pessoas", {})
-    return [f"{via}: {velho_[via]} pessoas na rodada anterior, {novo.get(via, 0)} agora (queda maior que {QUEDA_MAXIMA:.0%})"
-            for via in velho_ if via in saida.get("_vias", ["E2", "E3", "E8"]) and velho_[via] >= 20 and novo.get(via, 0) < velho_[via] * (1 - QUEDA_MAXIMA)]
+    (`versao` do estado, `_versao` do arquivo publicado): a queda que o filtro conservador causa de propósito não é falha.
+    Compara com o estado da rodada anterior (cache) E com o arquivo já publicado (site/dados/), que fica no repositório quando o cache
+    do Actions se perde — foi o que aconteceu na troca do runner para Ubuntu, e a 1ª rodada fria não tinha com o que comparar."""
+    refs = []
+    if anterior and anterior.get("versao") == VERSAO:
+        refs.append(("na rodada anterior", anterior.get("pessoas", {})))
+    if publicado and publicado.get("_versao") == VERSAO and publicado.get("contratos"):
+        refs.append(("no arquivo publicado", contagens(publicado)))
+    novo, erros = contagens(saida), []
+    for rot, velho_ in refs:
+        erros += [f"{via}: {velho_[via]} pessoas {rot}, {novo.get(via, 0)} agora (queda maior que {QUEDA_MAXIMA:.0%})"
+                  for via in velho_ if via in saida.get("_vias", ["E2", "E3", "E8"]) and velho_[via] >= 20
+                  and novo.get(via, 0) < velho_[via] * (1 - QUEDA_MAXIMA)]
+    return erros
 
 
 def amostra_csv(arestas, caminho, n2=60, n3=20, semente=20261019):
@@ -973,6 +1079,9 @@ def relatorio(saida, arestas, ids, est, fases, args, erros, diff_linhas, amostra
     L.append("ATIVIDADE")
     L.append(f"   PDFs baixados {est['pdf_baixados']} ({est['bytes_baixados'] / 1e6:.0f} MB) · do cache {est['pdf_em_cache']} · "
              f"falha de rede {est['pdf_falha_de_rede']} · 404 {est['pdf_erro_404']} · não é PDF {est['pdf_erro_nao_pdf']} · grandes {est['pdf_erro_grande']}")
+    L.append(f"   listas de arquivos: sem arquivo confirmado {est['arquivos_vazio_confirmado']} · vazio desmentido na 2ª consulta "
+             f"{est['arquivos_vazio_desmentido']} · vazio em sequência (falha da API, pendente) {est['arquivos_vazio_suspeito']} · "
+             f"vazio contra lista guardada {est['arquivos_vazio_contra_cache']} · 404 {est['arquivos_404']} · falha {est['arquivos_falha']}")
     L.append("   tempo: " + " · ".join(f"{k} {v:.0f}s" for k, v in fases.items()) + f" · total {sum(fases.values()):.0f}s")
     L.append(f"   leitura de PDF (pypdf): {est['segundos_leitura']:.0f}s · segunda leitura ({P.leitor2_id() or 'NÃO INSTALADA'}): {est['segundos_leitura2']:.0f}s")
     L.append("")
@@ -1018,8 +1127,8 @@ def main():
     fases["regras e arestas"] = time.monotonic() - t
 
     anterior_estado = coleta.ler_cache(ESTADO)
-    erros = checagens(saida, arestas) + queda(saida, anterior_estado if not args.limite else None)
     anterior_site = json.loads(SAIDA.read_text(encoding="utf-8")) if SAIDA.exists() else None
+    erros = checagens(saida, arestas) + (queda(saida, anterior_estado, anterior_site) if not args.limite else [])
     anterior_cand = coleta.ler_cache(CANDIDATO)
 
     # tudo em cache/: as arestas (todas) e o candidato (o que seria publicado)

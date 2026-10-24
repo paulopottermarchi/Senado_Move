@@ -157,6 +157,7 @@ def parte_a():
     confere(PE.portaria("PORTARIA Nº 12/2023 - DRG/ITP/IFSP DE 17 DE FEVEREIRO DE 2023")["data"] == "2023-02-17", "portaria completa: número e data")
     confere(PE.portaria("1163/2025") is None, "portaria só com número e ano não é publicada como completa")
     novos_a()
+    listas_vazias_a()
 
 
 def contrato_sintetico(reps, cargo_corpus=None):
@@ -370,6 +371,119 @@ def novos_a():
     confere(PE.queda({"_vias": ["E2"], "contratos": {"1": {"assinou": {"pessoas": []}, "aviso": {"pessoas": []}, "registro": {"gestores": []}}}},
                      {"versao": PE.VERSAO, "pessoas": {"E2": 190}}), "queda na mesma regra continua derrubando a rodada")
     confere(not PE.queda({"_vias": ["E2"], "contratos": {}}, {"versao": PE.VERSAO, "pessoas": {"E3": 246}}), "via desligada não conta como queda")
+
+
+def listas_vazias_a():
+    """"Sem arquivo" só confirmado (rodada de 22/10/2026 no GitHub: a API devolveu vazio para um trecho inteiro e 47 contratos com PDF
+    saíram "sem arquivo"). Sem rede: a consulta ao Contratos.gov.br é trocada por respostas prontas e o cache vai para uma pasta temporária."""
+    import os
+    import tempfile
+    import time
+    from collections import Counter
+    from pathlib import Path
+    print("A4) lista de arquivos: 'sem arquivo' só confirmado")
+    pedir_orig, cache_orig = PE.obras.pedir, PE.obras.CACHE_O
+    respostas, pedidos = {}, []
+
+    def falso(url, params=None, intervalo=1.0, tentativas=6):
+        cid = url.rstrip("/").split("/")[-2]
+        pedidos.append(cid)
+        fila = respostas.get(cid) or ["404"]
+        r = fila.pop(0) if len(fila) > 1 else fila[0]
+        if r == "404":
+            return None
+        if r == "erro":
+            raise RuntimeError("sem resposta")
+        return r
+    with tempfile.TemporaryDirectory() as tmp:
+        PE.obras.pedir, PE.obras.CACHE_O = falso, Path(tmp)
+        try:
+            (Path(tmp) / "arquivos").mkdir()
+            cam = lambda cid: Path(tmp) / "arquivos" / f"{cid}.json"
+            arq = [{"id": 1, "tipo": "Contrato", "path_arquivo": "https://x/1.pdf"}]
+            vazios, consultas, est = {}, [], Counter()
+            # 404 não é "sem arquivo"
+            respostas["1"] = ["404"]
+            confere(PE.listar_arquivos("1", False, vazios, consultas, est) is None and not cam("1").exists(), "404: pendente e fora do cache")
+            # com arquivos: vale e vai para o cache
+            respostas["2"] = [arq]
+            confere(PE.listar_arquivos("2", False, vazios, consultas, est) == arq and cam("2").exists(), "lista com arquivos vale e é guardada")
+            # vazio novo é provisório; a 2ª consulta decide
+            respostas["3"], respostas["4"] = [[], arq], [[], []]
+            p3 = PE.listar_arquivos("3", False, vazios, consultas, est)
+            p4 = PE.listar_arquivos("4", False, vazios, consultas, est)
+            confere(p3 == PE.VAZIO_PROVISORIO and p4 == PE.VAZIO_PROVISORIO and not cam("3").exists(), "vazio novo é provisório e não vai para o cache")
+            out = PE.confirmar_vazios(["3", "4"], consultas, vazios, est)
+            confere(out["3"] == arq and "3" not in vazios, "vazio desmentido pela 2ª consulta: valem os arquivos")
+            confere(out["4"] == [] and "4" in vazios and PE.coleta.ler_cache(cam("4")) == [], "vazio nas duas consultas: confirmado (índice e cache)")
+            # confirmado e recente: não consulta de novo
+            pedidos.clear()
+            confere(PE.listar_arquivos("4", False, vazios, [], est) == [] and not pedidos, "vazio confirmado e recente: sem nova consulta")
+            # vazio guardado sem confirmação (regra antiga): consulta de novo
+            PE.coleta.gravar_cache(cam("5"), [])
+            respostas["5"] = [arq]
+            confere(PE.listar_arquivos("5", False, vazios, [], est) == arq, "vazio guardado sem confirmação é consultado de novo")
+            # vazio não apaga lista com arquivos guardada (vencida)
+            PE.coleta.gravar_cache(cam("6"), arq)
+            velho_ = time.time() - 40 * 86400
+            os.utime(cam("6"), (velho_, velho_))
+            respostas["6"] = [[]]
+            confere(PE.listar_arquivos("6", False, vazios, [], est) == arq and PE.coleta.ler_cache(cam("6")) == arq, "vazio não apaga a lista guardada")
+            respostas["7"] = ["erro"]
+            confere(PE.listar_arquivos("7", False, vazios, [], est) is None, "API fora do ar e nada guardado: pendente")
+            # --so-montar: vazio sem confirmação = pendente; confirmado = sem arquivo
+            confere(PE.listar_arquivos("5b", True, vazios, [], est) is None, "--so-montar sem nada guardado: pendente")
+            PE.coleta.gravar_cache(cam("8"), [])
+            os.utime(cam("8"), (velho_, velho_))
+            confere(PE.listar_arquivos("8", True, vazios, [], est) is None, "--so-montar com vazio não confirmado: pendente")
+            confere(PE.listar_arquivos("4", True, vazios, [], est) == [], "--so-montar com vazio confirmado: sem arquivo")
+            # sequência longa de vazios = falha da API: ninguém é confirmado e não há 2ª consulta
+            seq = [str(100 + i) for i in range(PE.SEQUENCIA_VAZIA_SUSPEITA)]
+            for c in seq:
+                respostas[c] = [[]]
+            cons, est2, vz = [], Counter(), {}
+            prov = [c for c in seq if PE.listar_arquivos(c, False, vz, cons, est2) == PE.VAZIO_PROVISORIO]
+            pedidos.clear()
+            out = PE.confirmar_vazios(prov, cons, vz, est2)
+            confere(all(v is None for v in out.values()) and not vz and not pedidos and est2["arquivos_vazio_suspeito"] == len(seq),
+                    f"{len(seq)} vazios seguidos: falha da API, todos pendentes, sem confirmação")
+            # sequência curta (o máximo verdadeiro foi 8) é consultada de novo e confirmada
+            curta = [str(200 + i) for i in range(8)]
+            for c in curta:
+                respostas[c] = [[]]
+            cons, est3, vz = [("x", "cheio")], Counter(), {}
+            prov = [c for c in curta if PE.listar_arquivos(c, False, vz, cons, est3) == PE.VAZIO_PROVISORIO]
+            cons.append(("y", "cheio"))
+            out = PE.confirmar_vazios(prov, cons, vz, est3)
+            confere(all(v == [] for v in out.values()) and set(vz) == set(curta), "8 vazios seguidos: confirmados pela 2ª consulta")
+            # os contratos com arquivo lidos do cache contam na sequência: 20 vazios antigos consultados de novo, entre contratos com
+            # arquivo guardados, não são "falha da API" (caso real: a 1ª rodada com esta regra reconsulta só os 120 vazios antigos)
+            ordem, cons, est4, vz = [], [], Counter(), {}
+            for i in range(60):
+                c = str(300 + i)
+                if i % 3:
+                    PE.coleta.gravar_cache(cam(c), arq)
+                else:
+                    PE.coleta.gravar_cache(cam(c), [])
+                    respostas[c] = [[]]
+                ordem.append(c)
+            prov = [c for c in ordem if PE.listar_arquivos(c, False, vz, cons, est4) == PE.VAZIO_PROVISORIO]
+            out = PE.confirmar_vazios(prov, cons, vz, est4)
+            confere(len(prov) == 20 and all(v == [] for v in out.values()) and not est4["arquivos_vazio_suspeito"],
+                    "vazios intercalados com contratos de arquivo guardado: confirmados, sem alarme")
+            # uma falha de consulta no meio não esconde a sequência
+            cons = [(str(400 + i), "vazio") for i in range(10)] + [("x", "falha")] + [(str(420 + i), "vazio") for i in range(10)]
+            out = PE.confirmar_vazios([c for c, r in cons if r == "vazio"], cons, {}, Counter())
+            confere(all(v is None for v in out.values()), "falha de consulta no meio da sequência não a interrompe")
+        finally:
+            PE.obras.pedir, PE.obras.CACHE_O = pedir_orig, cache_orig
+    # a queda também se mede contra o arquivo publicado (o cache pode sumir; o arquivo do repositório fica)
+    pessoa = {"assinou": {"pessoas": [{"nome": "X"}]}, "aviso": {"pessoas": []}, "registro": {"gestores": []}}
+    vazio = {"assinou": {"pessoas": []}, "aviso": {"pessoas": []}, "registro": {"gestores": []}}
+    pub = {"_versao": PE.VERSAO, "contratos": {str(i): pessoa for i in range(30)}}
+    novo = {"_vias": ["E2", "E8"], "contratos": {str(i): (pessoa if i < 10 else vazio) for i in range(30)}}
+    confere(any("arquivo publicado" in e for e in PE.queda(novo, None, pub)), "sem estado no cache, a queda contra o arquivo publicado derruba a rodada")
+    confere(PE.queda(novo, None, dict(pub, _versao="pessoas-1")) == [], "arquivo publicado de outra regra não conta")
 
 
 # ------------------------------------------------------------------------------------------------ B) validados
