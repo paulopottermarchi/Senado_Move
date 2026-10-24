@@ -51,6 +51,7 @@ from temas import BLOCOS, CATEGORIAS, CURTO, classificar
 SAIDA = coleta.DADOS / "noticias.json"
 CACHE_N = coleta.CACHE / "noticias"
 HISTORICO = CACHE_N / "historico.json"
+SEMENTE = coleta.ENTRADAS / "noticias_semente.json"    # notícias que o cache perdeu (ver semear); some sozinha da página depois de DIAS dias
 PAGINA_RSS = "https://www.camara.leg.br/noticias/rss"
 TIPOS = ("PEC", "PL", "PLP")
 DIAS = 120          # quanto do histórico vai para o site
@@ -119,6 +120,27 @@ def trecho(conteudo):
         if len(t) >= 60:
             return t if len(t) <= MAX_TRECHO else t[:MAX_TRECHO].rsplit(" ", 1)[0] + "…"
     return None
+
+
+def semear(hist, *fontes):
+    """Devolve ao histórico as notícias que estão em `fontes` (listas de itens no formato de noticias.json) e faltam nele; diz quantas voltaram.
+    O histórico mora no cache, e o cache pode ser zerado: na troca do runner de Windows para Ubuntu (22/10/2026) a lista do site caiu de 212 para 92
+    notícias, porque o feed só traz as últimas. O noticias.json do próprio repositório e a semente em entradas/ são a memória que sobra.
+    Volta o que o arquivo publicado guardava (título, data, trecho, temas, proposições, assinatura e a foto livre); a imagem de quem não tinha foto livre e a
+    categoria são refeitas como as de qualquer notícia. Nunca sobrescreve o que o histórico já tem."""
+    n = 0
+    for itens in fontes:
+        for x in itens or []:
+            u = x.get("u")
+            if not u or u in hist or not x.get("p"):
+                continue
+            e = {"t": x.get("t") or "", "d": x.get("d"), "trecho": x.get("trecho") or "", "temas": list(x.get("temas") or []),
+                 "ids": [q[0] for q in x["p"]], "assinatura": x.get("assinatura")}
+            if x.get("img"):
+                e.update(img=x["img"], cred=x.get("cred"), leg=x.get("leg"))
+            hist[u] = e
+            n += 1
+    return n
 
 
 def foto_livre(cred):
@@ -245,6 +267,19 @@ def testar():
     igual(tema_da_noticia([["mulheres", "x", "e"], ["saúde", "y", "e"]], man), "grupos-e-direitos", "vale a primeira categoria")
     igual(tema_da_noticia([], man), "geral", "sem categoria → geral")
     igual(tema_da_noticia([["categoria que não existe", "x", "e"]], man), "geral", "categoria desconhecida → geral")
+    # o histórico perdido volta do arquivo publicado e da semente, sem sobrescrever o que já existe
+    h = {"https://x/1": {"t": "já no histórico", "ids": [9]}}
+    pub = [{"u": "https://x/1", "t": "versão publicada", "p": [[9, "PL 1/2026"]]},
+           {"u": "https://x/2", "t": "Perdida", "d": "2026-10-01T10:00", "trecho": "Texto.", "temas": ["Saude"], "p": [[7, "PL 7/2026"], [8, "PEC 8/2026"]],
+            "assinatura": "Agência Câmara", "img": "2026/10/a-768x473.jpg", "cred": "Fulano/Câmara dos Deputados", "leg": "Legenda"},
+           {"u": "https://x/3", "t": "sem proposição", "p": []}, {"t": "sem link", "p": [[1, "PL 1/2026"]]}]
+    sem = [{"u": "https://x/4", "t": "Da semente", "d": "2026-09-05T09:00", "trecho": None, "p": [[5, "PL 5/2026"]], "assinatura": None, "il": "saude"}]
+    igual(semear(h, pub, sem), 2, "voltam só as que faltam e têm link e proposição")
+    igual(h["https://x/1"]["t"], "já no histórico", "o que o histórico já tem não é sobrescrito")
+    igual((h["https://x/2"]["ids"], h["https://x/2"]["img"], h["https://x/2"]["assinatura"]), ([7, 8], "2026/10/a-768x473.jpg", "Agência Câmara"),
+          "a notícia volta com as proposições, a foto livre e a assinatura")
+    igual(("img" in h["https://x/4"], h["https://x/4"]["trecho"]), (False, ""), "sem foto livre, a imagem é refeita pela página; trecho vazio vira texto vazio")
+    igual(semear(h, None, []), 0, "fonte que falta não quebra")
     print(f"{ok} verificações passaram")
 
 
@@ -254,6 +289,9 @@ def main():
         testar()
         return
     hist = coleta.ler_cache(HISTORICO) or {}
+    voltaram = semear(hist, (coleta.ler_cache(SAIDA) or {}).get("itens"), (coleta.ler_cache(SEMENTE) or {}).get("itens"))
+    if voltaram:
+        print(f"{voltaram} notícia(s) voltaram ao histórico a partir do noticias.json publicado e da semente (o cache não as tinha)", flush=True)
     lista = feeds()
     print(f"{len(lista)} feeds", flush=True)
 
