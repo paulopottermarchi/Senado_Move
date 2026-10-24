@@ -167,15 +167,12 @@ def periodo_para_data(chave, freq):
 
 
 def sidra_serie(C, nome, e):
-    """Série do SIDRA (API de agregados do IBGE) com os "..." registrados à parte: 'sem dado' nunca vira zero."""
-    params = {"localidades": "N1[all]"}
-    if e.get("cls"):
-        params["classificacao"] = e["cls"]
-    j = C.buscar(f"{C.URL_IBGE}/{e['tab']}/periodos/all/variaveis/{e['var']}", params)
-    r = j[0]["resultados"]
-    if len(r) != 1:
-        raise Aborta(f"{nome}: o SIDRA devolveu {len(r)} recortes para a tabela {e['tab']} (esperado 1)")
-    serie = r[0]["series"][0]["serie"]
+    """Série do SIDRA (contexto.agregado_sidra: apisidra, com a API de agregados de reserva) com os "..." registrados à parte: 'sem dado' nunca vira zero."""
+    try:
+        a = C.agregado_sidra(e["tab"], e["var"], e.get("cls"))
+    except RuntimeError as erro:
+        raise Aborta(f"{nome}: {erro}")
+    serie = a["serie"]
     pontos, ausentes = [], []
     for chave in sorted(serie):
         data = periodo_para_data(chave, e["freq"])
@@ -183,7 +180,7 @@ def sidra_serie(C, nome, e):
             pontos.append((data, float(serie[chave])))
         except ValueError:
             ausentes.append(data)
-    return {"pontos": pontos, "ausentes": ausentes, "unidade": j[0]["unidade"], "nome": j[0]["variavel"],
+    return {"pontos": pontos, "ausentes": ausentes, "unidade": a["unidade"], "nome": a["variavel"],
             "tab": e["tab"], "var": e["var"], "freq": e["freq"]}
 
 
