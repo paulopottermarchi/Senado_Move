@@ -1,7 +1,7 @@
 {
 "baseUrl": "https://congressoclaro.com.br",
 "versao": "paginas-1",
-"geradoEm": "2026-10-26",
+"geradoEm": "2026-10-27",
 "padrao": "2a09f008ac2669af",
 "deputados": {
   "62881": {"slug":"danilo-forte","h":"b3ec392ab8c5c054","hi":"c8ea547bec076f01","lastmod":"2026-10-22"},
@@ -197,7 +197,7 @@
   "178943": {"slug":"marcos-soares","h":"2ee00bf0225a416c","hi":"c7c67259f8e9e0ff","lastmod":"2026-10-22"},
   "178945": {"slug":"rosangela-gomes","h":"fc71e236c393ac4f","hi":"2c54c7fa86896964","lastmod":"2026-10-22"},
   "178946": {"slug":"soraya-santos","h":"5401c8fb23ae361e","hi":"a6bf3af84495a7a8","lastmod":"2026-10-22"},
-  "178947": {"slug":"sostenes-cavalcante","h":"7991f3c8897f2ce5","hi":"41920225f54440e9","lastmod":"2026-10-22"},
+  "178947": {"slug":"sostenes-cavalcante","h":"e5a0ef43d943c092","hi":"dc51d45fb67b5223","lastmod":"2026-10-27"},
   "178954": {"slug":"lucio-mosquini","h":"7f3268ba2864530a","hi":"9abec72b1510db7e","lastmod":"2026-10-22"},
   "178962": {"slug":"carlos-gomes","h":"1b40be0ee5d6a4fc","hi":"441478e92d5f098a","lastmod":"2026-10-22"},
   "178963": {"slug":"covatti-filho","h":"1fecb13001ce3283","hi":"e918ee999f252101","lastmod":"2026-10-22"},
@@ -284,7 +284,7 @@
   "204482": {"slug":"euclydes-pettersen","h":"1d5a57397d57b8db","hi":"0e07f6fb9a2dcb52","lastmod":"2026-10-22"},
   "204485": {"slug":"luiz-carlos-motta","h":"48e53e5d3be50f0a","hi":"80c9de5968875841","lastmod":"2026-10-22"},
   "204486": {"slug":"mauro-benevides-filho","h":"fa288aa414542dfb","hi":"c0d39dadcaf9b1c5","lastmod":"2026-10-22"},
-  "204488": {"slug":"celio-studart","h":"2267a38cd3d734d0","hi":"13f67794e42f9a76","lastmod":"2026-10-22"},
+  "204488": {"slug":"celio-studart","h":"9719a306496ffcda","hi":"f7758c4031f7cc58","lastmod":"2026-10-27"},
   "204489": {"slug":"roberio-monteiro","h":"ef614e47945ad2a1","hi":"2ad65e10a853964c","lastmod":"2026-10-22"},
   "204491": {"slug":"gilberto-abramo","h":"75cc793dc94475cb","hi":"8061875dc2a6ae4c","lastmod":"2026-10-22"},
   "204492": {"slug":"paulo-guedes","h":"055c979e195c2747","hi":"34c259fae12117fc","lastmod":"2026-10-22"},
