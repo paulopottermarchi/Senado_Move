@@ -14,9 +14,9 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 if __package__:
-    from .arquivos_criticos import CRITICOS
+    from .arquivos_criticos import CRITICOS, OPCIONAIS
 else:
-    from arquivos_criticos import CRITICOS
+    from arquivos_criticos import CRITICOS, OPCIONAIS
 
 BASE = Path(__file__).resolve().parent.parent
 SCHEMA_DIR = BASE / "schemas"
@@ -62,14 +62,15 @@ def validar_arquivo(relpath: str, schema_name: str) -> None:
 
 def main() -> int:
     print("Validando JSONs públicos com schemas...")
+    opcionais = [(p.relative_to(BASE).as_posix(), s) for padrao, s in OPCIONAIS for p in sorted(BASE.glob(padrao))]
     try:
-        for relpath, schema_name in CRITICOS:
+        for relpath, schema_name in CRITICOS + opcionais:
             validar_arquivo(relpath, schema_name)
     except Exception as exc:  # noqa: BLE001
         print(f"VALIDAÇÃO FALHOU: {exc}", file=sys.stderr)
         return 1
 
-    print(f"Validação OK: {len(CRITICOS)} arquivos JSON conferidos.")
+    print(f"Validação OK: {len(CRITICOS)} arquivos JSON conferidos e {len(opcionais)} de camadas opcionais.")
     return 0
 
 

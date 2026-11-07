@@ -69,6 +69,15 @@
 .ob-l li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:8px 0;border-top:1px solid var(--linha2,var(--linha2));font-size:14px}
 .ob-l small{display:block;color:var(--tinta3);font-size:12px}
 .ob-l .v{text-align:right;font-weight:600;white-space:nowrap}
+/* Obras com emenda deste deputado (dados/emendas/{id}.json, opcional: sem o arquivo a seção não aparece) */
+.em-det{margin-top:12px;border-top:1px solid var(--linha2)}
+.em-det>summary{cursor:pointer;padding:12px 0 4px;font-weight:600;font-size:15px}
+.em-det .ob-l .v{white-space:normal;max-width:220px}
+.em-det .ob-l .v small{font-weight:400}
+@media (max-width:560px){.em-det .ob-l li{grid-template-columns:minmax(0,1fr)}.em-det .ob-l .v{text-align:left;max-width:none}}
+.em-fonte{display:block;color:var(--tinta3);font-size:12px;margin-top:2px}
+.em-fonte a{color:var(--link)}
+@media (pointer:coarse){.em-det>summary{padding:14px 0 10px;min-height:44px}}
 .carreira{font-size:13px;color:var(--tinta3);margin-top:8px}
 
 .av-cx{position:relative;display:inline-block;flex-shrink:0;border-radius:50%;
@@ -571,6 +580,32 @@ async function obrasDoDeputado(id,uf){
       exato e com todas as emendas daquele código dentro do mandato na Câmara.</p>`;
 }
 
+// Obras com emenda deste deputado (emendas_obras.py → dados/emendas/{id}.json, só o arquivo dele): as obras de SP no ObrasGov em cujo
+// empenho está o código de uma emenda INDIVIDUAL dele, depois da bateria de conferências do script. Recolhida, em ordem de ano e nome
+// (nunca de valor), com o empenhado de cada vínculo e nenhum total por pessoa. Sem o arquivo (404: sem vínculo), a seção não aparece.
+async function emendasDoDeputado(id){
+  let E; try{ const r=await fetch(`dados/emendas/${encodeURIComponent(id)}.json`,{cache:'no-cache'}); if(!r.ok) return; E=await r.json(); }catch(e){ return; }
+  const lista=E.itens||[], el=document.getElementById('emendasDep');
+  if(!el||!lista.length) return;
+  const grafias=(E.grafiasCgu||[]).map(g=>`Na CGU, o código de autor ${esc(g.codigo)} aparece com ${g.grafias.length} grafias (${g.grafias.map(esc).join(', ')});
+    o histórico da Câmara registra todas para este deputado.`).join(' ');
+  const REAIS=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+  const mun=m=>!m.length?'município não informado':m.length>3?m.slice(0,2).join(', ')+' e mais '+(m.length-2):m.join(', ');
+  const erro=x=>'https://github.com/paulopottermarchi/Senado_Move/issues/new?title='+encodeURIComponent('Emenda vinculada a obra: '+x.id)+
+    '&body='+encodeURIComponent(`Vínculo: ${x.id}\nObra (ObrasGov): ${x.obra}\nEmenda: ${x.codigo}\nEmpenhos: ${x.empenhos.map(e=>e.join(' ')).join('; ')}\n\nO que está errado:\n`);
+  el.hidden=false;
+  el.innerHTML=`${cab('emendasTit','Obras com emenda deste deputado',`obras de ${esc(E._uf)} no ObrasGov`)}
+    <p class="cqv-av">${esc(E._texto)} ${esc(E._notaValores||'')}</p>
+    <details class="em-det"><summary>Ver ${NF.format(lista.length)} ${lista.length>1?'obras':'obra'} com emenda individual deste deputado</summary>
+    <ul class="ob-l">${lista.map(x=>`<li><span>${x.noSite?`<a href="obras.html?obra=${encodeURIComponent(x.obra)}">${esc(x.nome)}</a>`:`<b>${esc(x.nome)}</b>`}
+        <small>${esc(mun(x.municipios))} · emenda de ${esc(x.ano)}</small>
+        <span class="em-fonte">Fonte: ObrasGov, obra ${esc(x.obra)}, empenho ${esc(x.empenhos.map(e=>e[1]).join(', '))} · CGU, emenda ${esc(x.codigo)} ·
+          <a href="${erro(x)}" target="_blank" rel="noopener">Reportar erro</a></span></span>
+        <span class="v">${REAIS.format(x.empenhado)}<small>empenhado nesta obra</small>${x.emendaEmpenhado==null?'':`<small>emenda inteira: ${REAIS.format(x.emendaEmpenhado)} empenhado, ${REAIS.format(x.emendaPago||0)} pago</small>`}</span></li>`).join('')}</ul>
+    <p class="cqv-av">${esc(E._regras)} ${grafias} Ex-deputados e senadores ficam de fora nesta fase.
+      ${E._empenhosDe?`Empenhos do ObrasGov baixados em ${data(E._empenhosDe)}.`:''}</p></details>`;
+}
+
 function montar(){
   const d=dep, apres=d.pecs+d.leis, vl=d.viraramLei;
   document.title=`${d.nome}: proposições por tema | Câmara Aberta`;
@@ -602,6 +637,7 @@ function montar(){
         <section class="cx" id="noto" hidden aria-labelledby="notoTit"></section>
         <section class="cx" id="obrasDep" hidden aria-labelledby="obrasTit"></section>
       </div>
+      <section class="cx" id="emendasDep" hidden aria-labelledby="emendasTit"></section>
     </div>
 
     <div class="controles por-tema" id="por-tema">
@@ -630,7 +666,7 @@ function montar(){
       versão ${esc(tax.versao)}, dados de ${data(tax.geradoEm)}.</p>`;
   if(window.Modelo3D) Modelo3D.varrer();       // o modelo entra depois que a ficha é montada (a página é desenhada por script)
   atividade(); comoVota(); mandatos();          // os cartões ficam no HTML de cima: só dá para preenchê-los depois de montá-lo
-  notoriedade(d.id); obrasDoDeputado(d.id,d.uf);
+  notoriedade(d.id); obrasDoDeputado(d.id,d.uf); emendasDoDeputado(d.id);
 
   document.querySelectorAll('[data-leg]').forEach(b=>b.onclick=()=>{
     filtro.leg=b.dataset.leg==='1'; ligar('[data-leg]',b); limite=PASSO; desenhar();

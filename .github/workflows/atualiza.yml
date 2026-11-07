@@ -124,6 +124,11 @@ jobs:
       - name: Pessoas documentadas das obras
         run: python scripts/passo.py --opcional pessoas.py --publicar --vias e2,e8
 
+      # depois de obras.py (as obras de obras.html) e de coleta.py (deputados e mandatos); falhou, site/dados/emendas/ fica como estava.
+      # As listas do ObrasGov valem 7 dias: nos outros dias o passo leva segundos; no 7º, ou com o cache vazio, ~12 min (medido). --minutos é o teto.
+      - name: Emendas de deputados nas obras
+        run: python scripts/passo.py --opcional emendas_obras.py --publicar --minutos 40
+
       - name: Senadores
         run: python scripts/passo.py --opcional senado.py
 
@@ -171,7 +176,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git add site entradas
+          # -A: arquivo que a rodada apagou (ex.: deputado que perdeu o último vínculo em site/dados/emendas/) sai do repositório também
+          git add -A site entradas
           if git diff --cached --quiet; then echo "Sem mudança nos dados."; exit 0; fi
           git commit -q -m "Dados de $(date +%F)"
           R="${GITHUB_REF_NAME}"

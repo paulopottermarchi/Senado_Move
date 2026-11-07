@@ -88,6 +88,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: python scripts/pessoas_regressao.py --so-sinteticos
 
+      - name: Emendas de deputados nas obras (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/emendas_obras.py --teste
+
       - name: Acessibilidade e interações no navegador
         if: ${{ !cancelled() }}
         run: python -m unittest discover -s tests -v
