@@ -1,0 +1,4 @@
+{
+  "_leia": "Vínculos emenda × obra retirados da publicação depois de revisão (scripts/emendas_obras.py). Cada item é o id do vínculo, 'obra:código da emenda' (o mesmo que aparece no 'Reportar erro'), ou {\"id\": \"…\", \"motivo\": \"…\"}. Id fora desse formato ou JSON inválido derruba a rodada; id que não corresponde a nenhum vínculo só gera aviso.",
+  "suprimir": []
+}

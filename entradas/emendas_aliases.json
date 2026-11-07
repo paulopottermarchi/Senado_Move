@@ -1,0 +1,29 @@
+{
+  "_leia": "Códigos de autor da CGU (arquivo EmendasParlamentares.csv) gravados com mais de uma grafia para o MESMO deputado. Lido por scripts/emendas_obras.py: com o alias, o filtro (a) (código do autor e nome um a um) conta como resolvido para aquele código; sem alias, o vínculo continua retido. O alias só vale se: o deputado está entre os de hoje; a regra do site (nome exato e mandato) liga o código ao MESMO id (id diferente derruba a rodada); toda grafia que a CGU grava para o código está na lista; nenhuma grafia é também de outro código na CGU; e o histórico de exercício da Câmara (/deputados/{id}/historico) registra cada grafia para aquele id. Entrada fora do formato, código repetido ou JSON inválido derruba a rodada.",
+  "aliases": [
+    {
+      "codigoAutor": "2813",
+      "deputado": 160558,
+      "nomeNaCamara": "Paulo Freire Costa",
+      "grafias": ["PAULO FREIRE", "PAULO FREIRE COSTA"],
+      "evidencia": "CGU: código 2813 como PAULO FREIRE nas emendas de 2015 a 2019 e como PAULO FREIRE COSTA de 2020 a 2026. Câmara, histórico do id 160558: nome PAULO FREIRE e nome eleitoral PAULO FREIRE COSTA.",
+      "conferidoEm": "2026-10-26"
+    },
+    {
+      "codigoAutor": "2532",
+      "deputado": 141518,
+      "nomeNaCamara": "Paulinho da Força",
+      "grafias": ["PAULO PEREIRA DA SILVA", "PAULINHO DA FORÇA"],
+      "evidencia": "CGU: código 2532 como PAULO PEREIRA DA SILVA nas emendas de 2015 a 2022 e como PAULINHO DA FORCA de 2023 a 2026. Câmara, histórico do id 141518: nome PAULINHO DA FORÇA e nome eleitoral PAULO PEREIRA DA SILVA.",
+      "conferidoEm": "2026-10-26"
+    },
+    {
+      "codigoAutor": "9060",
+      "deputado": 204531,
+      "nomeNaCamara": "Guilherme Derrite",
+      "grafias": ["GUILHERME DERRITE", "CAPITÃO DERRITE"],
+      "evidencia": "CGU: código 9060 como GUILHERME DERRITE nas emendas de 2020 a 2022 e de 2026, e como CAPITAO DERRITE nas de 2023. Câmara, histórico do id 204531: nome Capitão Derrite e nome eleitoral GUILHERME DERRITE.",
+      "conferidoEm": "2026-10-26"
+    }
+  ]
+}

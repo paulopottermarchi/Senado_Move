@@ -17,4 +17,12 @@ CRITICOS = [
     ("site/dados/origem_leis.json", "origem_leis.schema.json"),
     ("site/dados/legislaturas.json", "legislaturas.schema.json"),
     ("site/dados/ecidadania.json", "ecidadania.schema.json"),
+    ("entradas/emendas_aliases.json", "emendas_aliases.schema.json"),
+]
+
+# Camadas que só existem depois da primeira rodada que as publica: cada padrão (glob, a partir da raiz) é validado quando há
+# arquivo; nenhum arquivo não é erro (o passo que gera é opcional, e a página some sem ele).
+OPCIONAIS = [
+    ("site/dados/emendas/indice.json", "emendas_indice.schema.json"),
+    ("site/dados/emendas/[0-9]*.json", "emendas_deputado.schema.json"),
 ]

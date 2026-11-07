@@ -8,9 +8,9 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 if __package__:
-    from .arquivos_criticos import CRITICOS
+    from .arquivos_criticos import CRITICOS, OPCIONAIS
 else:
-    from arquivos_criticos import CRITICOS
+    from arquivos_criticos import CRITICOS, OPCIONAIS
 
 BASE = Path(__file__).resolve().parent.parent
 SCHEMA_DIR = BASE / "schemas"
@@ -50,7 +50,9 @@ def validar_arquivo(relpath: str, schema_name: str):
 
 def main() -> int:
     print("Validando arquivos reais contra os schemas...")
-    for relpath, schema_name in CRITICOS:
+    # camadas opcionais: só os arquivos que existem (antes da primeira publicação, nenhum)
+    opcionais = [(p.relative_to(BASE).as_posix(), s) for padrao, s in OPCIONAIS for p in sorted(BASE.glob(padrao))]
+    for relpath, schema_name in CRITICOS + opcionais:
         try:
             validar_arquivo(relpath, schema_name)
             print(f"OK: {relpath} -> {schema_name}")
@@ -59,7 +61,7 @@ def main() -> int:
             print(exc, file=sys.stderr)
             return 1
 
-    print(f"Validação OK: {len(CRITICOS)} arquivos conferidos.")
+    print(f"Validação OK: {len(CRITICOS)} arquivos conferidos e {len(opcionais)} de camadas opcionais.")
     return 0
 
 

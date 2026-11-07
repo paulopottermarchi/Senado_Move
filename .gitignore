@@ -7,3 +7,6 @@ __pycache__/
 .claude/
 CLAUDE.md
 _site/
+# pastas transitórias da troca atômica de uma camada publicada (emendas_obras.py: {pasta}.novo e {pasta}.velho)
+site/dados/*.novo/
+site/dados/*.velho/

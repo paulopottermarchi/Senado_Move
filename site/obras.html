@@ -325,7 +325,7 @@ const pctDe=o=>o.inicial>0?(o.atual/o.inicial-1)*100:null;
 const listaCurta=(l,n=3)=>l.length<=n+1?l.join(', '):`${l.slice(0,n).join(', ')} e mais ${nf.format(l.length-n)}`;
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 
-let OBRAS=[], META={}, lista=[], mostrando=30, aberta=null, PES=null;
+let OBRAS=[], META={}, lista=[], mostrando=30, aberta=null, PES=null, EMO=null;
 
 function textoBusca(o){
   return norm([o.nome,o.descricao,o.orgao,...o.executores,...o.municipios,
@@ -599,7 +599,23 @@ function detalhe(o){
         <small>${esc([...new Set(outros.map(r=>r.funcao))].join(', '))} — nomes não exibidos; portarias ${esc([...new Set(outros.map(r=>r.portaria).filter(Boolean))].slice(0,4).join('; '))}</small></span>
         <span class="v"></span></div>`:'')+`</div>`);
   } else h.push(`<p><b>Gestão do contrato:</b> nenhum gestor ou fiscal cadastrado no Contratos.gov.br para ${o.contratos.length>1?'estes contratos':'este contrato'}.</p>`);
-  if(o.emendas.length){
+  const em=EMO&&EMO.obrasDoSite&&EMO.obrasDoSite[o.id];
+  if(em&&em.length){
+    // a camada "Emendas de deputados nas obras" (emendas_obras.py): uma linha por emenda, com o nome só da emenda individual que passou na bateria
+    const erro=e=>'https://github.com/paulopottermarchi/Senado_Move/issues/new?title='+encodeURIComponent('Emenda vinculada a obra: '+e.id)+
+      '&body='+encodeURIComponent(`Vínculo: ${e.id}\nObra (ObrasGov): ${o.id}\nEmenda: ${e.codigo}\nEmpenhos: ${e.empenhos.map(x=>x.join(' ')).join('; ')}\n\nO que está errado:\n`);
+    h.push(`<p class="nota">${em.some(e=>e.autor)?esc(EMO._texto)+' ':''}${esc(EMO._notaValores||'')}</p><div class="pessoas">`+
+      em.map(e=>{
+        const tipo=(EMO._tipos||{})[e.tipo]||e.tipo;
+        const quem=e.autor?`<a href="deputado.html?id=${e.autor.id}">${esc(e.autor.nome)}</a> <small style="display:inline">(${esc(e.autor.partido||'')}-${esc(e.autor.uf||'')})</small>`:esc(tipo[0].toUpperCase()+tipo.slice(1));
+        const porque=e.autor?'':e.semAutor==='tipo'?'não é uma pessoa: o site mostra só o tipo':esc((EMO._motivos||{})[e.semAutor]||'autor não exibido');
+        return `<div class="pe"><span><b>Emenda parlamentar vinculada:</b> ${quem}
+          <small>${esc(tipo)} de ${esc(e.ano)}${porque?' · '+porque:''}</small>
+          <small>Fonte: ObrasGov, empenho ${esc(e.empenhos.map(x=>x[1]).join(', '))} · CGU, emenda ${esc(e.codigo)} ·
+            <a href="${erro(e)}" target="_blank" rel="noopener">Reportar erro</a></small></span>
+        <span class="v">${reais.format(e.empenhado)}<small style="font-weight:400;color:var(--tinta2)">empenhado nesta obra</small>
+          ${e.emendaEmpenhado==null?'':`<small style="font-weight:400;color:var(--tinta2)">emenda inteira: ${reais.format(e.emendaEmpenhado)} empenhado, ${reais.format(e.emendaPago||0)} pago</small>`}</span></div>`}).join('')+`</div>`);
+  } else if(o.emendas.length){
     h.push(`<p class="nota">Vínculo financeiro: autor da emenda parlamentar que empenhou recurso nesta obra, no ano da emenda.
       A emenda manda o dinheiro; o contrato e os aditivos são assinados pelo órgão que executa, não por quem fez a emenda.</p><div class="pessoas">`+
       o.emendas.map(e=>{
@@ -654,11 +670,12 @@ function resumo(){
 async function carregar(){
   // camada opcional (sem o arquivo, ainda não publicado, a página fica como era); sai junto com o pedido principal, não depois dele
   const pPessoas=fetch('dados/obras_pessoas.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
+  const pEmendas=fetch('dados/emendas/indice.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
   try{
     const r=await fetch('dados/obras.json',{cache:'no-cache'}); if(!r.ok) throw new Error('HTTP '+r.status);
     const d=await r.json(); META=d; OBRAS=d.obras; OBRAS.forEach(o=>o._busca=textoBusca(o));
   }catch(e){ $('#lista').innerHTML=`<p class="erro">Não foi possível carregar obras.json (${esc(e.message)}).</p>`; return }
-  PES=await pPessoas;
+  PES=await pPessoas; EMO=await pEmendas;
   const sits=[...new Set(OBRAS.map(o=>o.situacao).filter(Boolean))].sort();
   $('#fSit').insertAdjacentHTML('beforeend',sits.map(s=>`<option>${esc(s)}</option>`).join(''));
   resumo();

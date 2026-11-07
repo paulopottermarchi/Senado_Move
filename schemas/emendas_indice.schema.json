@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Emendas de deputados nas obras: índice (site/dados/emendas/indice.json)",
+  "description": "Gerado por scripts/emendas_obras.py. Contagem de vínculos por deputado (nunca valor) e as emendas das obras que estão em obras.html. Nome de pessoa só em emenda individual; nas outras, o motivo de não haver nome.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_versao", "_uf", "_texto", "_notaValores", "_regras", "_geradoEm", "_fontes", "_motivos", "_tipos", "deputados", "obrasDoSite"],
+  "properties": {
+    "_versao": { "type": "string", "pattern": "^emendas-[0-9]+$" },
+    "_uf": { "type": "string", "pattern": "^[A-Z]{2}$" },
+    "_texto": { "type": "string", "minLength": 1 },
+    "_notaValores": { "type": "string", "minLength": 1 },
+    "_regras": { "type": "string", "minLength": 1 },
+    "_geradoEm": { "type": ["string", "null"], "format": "date-time" },
+    "_fontes": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "obrasgov": { "type": ["string", "null"] },
+        "empenhosBaixadosEm": { "type": ["string", "null"] },
+        "cgu": { "type": ["string", "null"] }
+      }
+    },
+    "_motivos": { "type": "object", "additionalProperties": { "type": "string", "minLength": 1 } },
+    "_tipos": { "type": "object", "additionalProperties": { "type": "string", "minLength": 1 } },
+    "deputados": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[0-9]+$" },
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "obrasDoSite": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[0-9]+\\.[0-9]{2}-[0-9]{2}$" },
+      "additionalProperties": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/emenda" } }
+    }
+  },
+  "$defs": {
+    "empenhos": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "prefixItems": [
+          { "type": "integer", "minimum": 100000, "maximum": 999999 },
+          { "type": "string", "pattern": "^[0-9]{4}NE[0-9]{6}$" }
+        ]
+      }
+    },
+    "autor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nome", "partido", "uf"],
+      "properties": {
+        "id": { "type": "integer", "minimum": 1 },
+        "nome": { "type": "string", "minLength": 1 },
+        "partido": { "type": ["string", "null"] },
+        "uf": { "type": ["string", "null"] }
+      }
+    },
+    "emenda": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "codigo", "tipo", "ano", "empenhado", "emendaEmpenhado", "emendaPago", "empenhos", "autor", "semAutor"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[0-9]+\\.[0-9]{2}-[0-9]{2}:[0-9]{12}$" },
+        "codigo": { "type": "string", "pattern": "^[0-9]{12}$" },
+        "tipo": { "enum": ["individual", "comissão", "relator", "bancada", "outro"] },
+        "ano": { "type": "string", "pattern": "^[0-9]{4}$" },
+        "empenhado": { "type": "number", "minimum": 0 },
+        "emendaEmpenhado": { "type": ["number", "null"], "minimum": 0 },
+        "emendaPago": { "type": ["number", "null"], "minimum": 0 },
+        "empenhos": { "$ref": "#/$defs/empenhos" },
+        "autor": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/autor" }] },
+        "semAutor": { "type": ["string", "null"] }
+      },
+      "if": { "properties": { "autor": { "type": "object" } } },
+      "then": { "properties": { "tipo": { "const": "individual" }, "semAutor": { "type": "null" } } },
+      "else": { "properties": { "semAutor": { "type": "string", "minLength": 1 } } }
+    }
+  }
+}

@@ -10,7 +10,7 @@ Roda no fim de `semana.py`, que é o último passo da rodada diária, ou à mão
 import json
 from datetime import datetime, timedelta, timezone
 
-from coleta import DADOS
+from coleta import DADOS, gravar_texto
 
 SAIDA = DADOS / "inicio.json"
 TIPOS_FLUXO = ("PL", "PLP", "PEC")      # o recorte da página "Entre as casas" (decretos legislativos ficam à parte)
@@ -71,7 +71,7 @@ def montar():
 
 def main():
     saida = montar()
-    SAIDA.write_text(json.dumps(saida, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    gravar_texto(SAIDA, json.dumps(saida, ensure_ascii=False, separators=(",", ":")))
     print(f"{SAIDA.name}: " + ", ".join(f"{k}={v}" for k, v in saida.items() if k != "geradoEm"))
 
 

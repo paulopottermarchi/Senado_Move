@@ -225,8 +225,20 @@ completa da rodada diária, incluindo as coletas pesadas opcionais, está no wor
 
 ```
 atualiza → coleta → votos → blocos → temas → semana → coletas pesadas opcionais → paginas
-→ validação → commit → publicação
+→ restauração → validação → commit → publicação
 ```
+
+Tempo da rodada (desde 26/10/2026; em 25/10 um passo opcional levou 317 min, o job foi cortado no limite de 360 e nada
+foi publicado). Os passos obrigatórios (até `semana`) rodam sem teto: se um falha, não há publicação. Cada passo
+opcional tem um teto (`passo.py --minutos`, 20 min se não disser outro) e `continue-on-error`, e todos juntos têm um
+orçamento: o workflow grava `RODADA_FIM` no começo, e o passo opcional que começaria sem tempo é pulado (o que começa
+com pouco tempo é cortado no que resta). Assim a restauração, a validação, o commit e a publicação sempre rodam; o que
+ficou para trás roda na rodada seguinte, a partir do cache, que é salvo mesmo quando um passo é cortado.
+Passo cortado não deixa arquivo pela metade: os scripts gravam de forma atômica (arquivo ao lado e troca de uma vez), e
+`scripts/restaurar_parciais.py`, antes da validação, apaga temporários e pastas de troca e devolve ao último commit o
+arquivo de `site/` ou `entradas/` que não estiver inteiro (o GitHub Pages publica a pasta, não o commit).
+`pessoas.py` tem o seu teto (`--minutos`, 45), tempo curto por pedido e um disjuntor; cortado, não publica e diz no log o
+que ficou pendente.
 
 Para ver o site, sirva a pasta `site/` (o navegador não carrega os JSON de arquivos abertos direto
 do disco) e abra `http://localhost:8000`:
@@ -272,6 +284,24 @@ que fica no repositório se o cache do Actions se perder. `--dry-run` mostra o r
 regressão (`python scripts/pessoas_regressao.py`) usam os casos conferidos à mão: quem não é representante nunca sai como tal, e o
 filtro conservador, o cargo "Substituto(a)" e as supressões têm teste. Usa `pypdf` (BSD-3) e, para a segunda leitura, `pdfminer.six`
 (MIT); nada de `pymupdf` (AGPL).
+
+`scripts/emendas_obras.py` liga o autor de emenda **individual** às obras de SP pelo código exato da emenda no empenho do ObrasGov
+(o país inteiro em `/empenho`, as obras em `/projeto-investimento`, os municípios em `/geometria`) e na CGU (arquivo de emendas
+parlamentares), com a regra de deputado do site (nome exato e mandato). Sem `--publicar` (o padrão, `--dry-run`) só grava o candidato,
+a auditoria e o relatório em `cache/emendas/` (é assim que o passo do workflow diário roda até a conferência à mão de uma amostra
+dos vínculos); com `--publicar` troca `site/dados/emendas/` pelo
+candidato: um arquivo por deputado (`{id}.json`, o único que o perfil baixa) e `indice.json` (as contagens e as emendas das obras de
+`obras.html`), montados ao lado e trocados de uma vez, para uma falha não publicar nada pela metade. Retém o vínculo se o ano da emenda
+não for o do empenho, se o código do autor e o nome não se corresponderem um a um na CGU, se a UF de aplicação não for São Paulo ou
+"Múltiplo", ou se o valor empenhado for zero. `entradas/emendas_aliases.json` lista os códigos de autor que a CGU grava com duas
+grafias do mesmo deputado (conferidas no histórico da Câmara); `entradas/emendas_supressoes.json` retira vínculos depois de revisão.
+Comissão, relator e bancada aparecem só pelo tipo. Valores: o empenhado nesta obra (ObrasGov) e o empenhado e pago da emenda inteira
+(CGU), nunca o custo da obra e nunca somados por pessoa. Erro de fonte nunca vira "sem emenda": cada página do ObrasGov é conferida
+(200 itens, ou o resto exato na última, e os mesmos totais do começo ao fim), e página com erro, vazia ou truncada, lista 10% menor que
+a anterior param o passo sem tocar em `site/dados/emendas/`; se o zip novo da CGU vier cortado ou não baixar, vale a cópia
+completa anterior só se tiver até 3 dias (com aviso no log da rodada), e acima disso o passo para. A publicação é conferida contra
+`schemas/emendas_indice.schema.json` e `schemas/emendas_deputado.schema.json` antes de trocar a pasta; `schemas/emendas_aliases.schema.json`
+descreve a tabela de aliases. `--so-montar` remonta sem rede; `--teste` roda os casos sintéticos, inclusive a rodada com a API quebrada.
 
 ### Chaves de API (opcionais)
 
