@@ -576,7 +576,8 @@ def gerar(dry=False, limite=None, so_estaticas=False):
             pid = str(f["id"])
             ant = anteriores.get(pid, {})
             slug = ant.get("slug") or slugar(f["nome"])
-            h, hi = hash_de(f, VERSAO), hash_de(fatos_cartao(f), VERSAO_IMG)
+            # o rodapé (copiado da inicial) entra no hash: mudou o rodapé, todas as páginas são refeitas, mesmo sem dado novo
+            h, hi = hash_de({"f": f, "rodape": rod}, VERSAO), hash_de(fatos_cartao(f), VERSAO_IMG)
             pasta = raiz / tipo / f"{pid}-{slug}"
             existe = (SITE / tipo / f"{pid}-{slug}" / "index.html").exists() and not dry
             if ant.get("h") == h and existe:
