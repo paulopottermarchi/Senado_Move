@@ -60,6 +60,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: python scripts/comex.py --teste
 
+      - name: Indicadores da economia, cada fonte sozinha (testes)
+        if: ${{ !cancelled() }}
+        run: python scripts/contexto.py --teste
+
       - name: Abertura comercial (testes)
         if: ${{ !cancelled() }}
         run: python scripts/contexto_abertura.py --teste

@@ -741,10 +741,10 @@ table.part tr.divisor td{position:static;box-shadow:none}
       <p class="kicker">Deputados</p>
       <h2 id="depTit">Onde cada um está no espectro, e quanto propôs</h2>
     </div>
-    <div class="abas">
-      <button class="aba on" data-vista="vGrafico">Gráfico</button>
-      <button class="aba" data-vista="vRanking">Ranking</button>
-      <button class="aba" data-vista="vPartidos" id="abaPartidos" hidden>Partidos</button>
+    <div class="abas" role="group" aria-label="Vista dos deputados">
+      <button class="aba on" type="button" aria-pressed="true" data-vista="vGrafico">Gráfico</button>
+      <button class="aba" type="button" aria-pressed="false" data-vista="vRanking">Ranking</button>
+      <button class="aba" type="button" aria-pressed="false" data-vista="vPartidos" id="abaPartidos" hidden>Partidos</button>
     </div>
 
     <!-- Filtros comuns ao Gráfico e ao Ranking: o mesmo estado, as duas vistas. -->
@@ -2284,16 +2284,21 @@ const semAcento=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLower
 campo.addEventListener('input',()=>{
   const q=semAcento(campo.value.trim());
   if(q.length<2){lista.classList.remove('on');return}
-  atuais=deputados.filter(d=>
-    semAcento(d.nome).includes(q)||semAcento(d.partido).includes(q)).slice(0,25);
+  // a mesma ordem da busca da inicial: sigla exata, nome que começa pela busca, nome que a contém, sigla que começa por ela
+  // (antes, "contém" em tudo: "PSD" trazia primeiro o PSDB e cortava o PSD no 25º)
+  const nota=d=>{ const p=semAcento(d.partido), nm=semAcento(d.nome);
+    return p===q?0:(nm.startsWith(q)||nm.includes(' '+q))?1:nm.includes(q)?2:p.startsWith(q)?3:9; };
+  const todos=deputados.map(d=>[nota(d),d]).filter(([v])=>v<9).sort((a,b)=>a[0]-b[0]).map(([,d])=>d);
+  atuais=todos.slice(0,25);
   sel=-1;
   lista.innerHTML = atuais.length
     ? atuais.map((d,i)=>`<div class="achado" data-i="${i}">
         ${retrato(d,30)}
         <div class="achado-txt"><b><span class="pastilha"
-          style="background:${corDoScore(d.score)}"></span>${d.nome}</b>${FRASES[d.id]&&!demo
-          ?`<i class="achado-fr">${FRASES[d.id]}</i>`:''}</div>
-        <span>${d.partido} de ${d.uf}</span></div>`).join('')
+          style="background:${corDoScore(d.score)}"></span>${esc(d.nome)}</b>${FRASES[d.id]&&!demo
+          ?`<i class="achado-fr">${esc(FRASES[d.id])}</i>`:''}</div>
+        <span>${esc(d.partido)} de ${esc(d.uf)}</span></div>`).join('')
+      +(todos.length>atuais.length?`<div class="nada">Mais ${todos.length-atuais.length} ${todos.length-atuais.length===1?'resultado':'resultados'}: digite mais letras do nome para achar.</div>`:'')
     : '<div class="nada">Nenhum deputado com esse nome.</div>';
   lista.classList.add('on');
   lista.querySelectorAll('.achado').forEach(x=>
@@ -2496,7 +2501,8 @@ yLei.onclick=()=>{
 };
 
 document.querySelectorAll('.aba').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.aba').forEach(x=>x.classList.toggle('on',x===b));
+  // aria-pressed: o leitor de tela diz qual vista está aberta (antes só a cor e o sublinhado diziam)
+  document.querySelectorAll('.aba').forEach(x=>{ x.classList.toggle('on',x===b); x.setAttribute('aria-pressed',String(x===b)); });
   document.querySelectorAll('.vista').forEach(v=>
     v.classList.toggle('on',v.id===b.dataset.vista));
   // a aba Partidos é da legislatura inteira: os filtros de região, estado, mandato e faixa não se aplicam

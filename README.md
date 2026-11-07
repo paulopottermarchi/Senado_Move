@@ -256,8 +256,12 @@ Scripts que não entram na rodada diária:
   `--reaproveitar` (desenvolvimento) aceita o cache bruto de qualquer dia. Também grava `balanca.json` (exportação, importação e saldo por ano e mês, FOB nos dois lados).
 - `scripts/frescor.py` — último passo da rodada diária: confere a DATA de cada arquivo publicado (a validação por esquema confere só o formato) e deixa
   a rodada vermelha (`--estrito`) se um dado diário não muda há duas rodadas, com a tabela no resumo da rodada. `--teste` roda os testes.
+  Nos indicadores da economia vale a data do bloco mais antigo, e o aviso diz quais blocos estão parados.
 - O SIDRA do IBGE é lido de `apisidra.ibge.gov.br`, que responde de qualquer país. A API de agregados (`servicodados.ibge.gov.br`) só responde do Brasil
   (medido em 23/10/2026) e fica de reserva em `contexto.agregado_sidra`; o runner do GitHub fica fora do país.
+- Indicadores da economia (`contexto.py`): cada fonte (IBGE, Banco Central, Tesouro) é baixada e conferida sozinha. Se uma cai, os blocos dela ficam com a
+  última coleta boa (do cache ou, sem cache, do arquivo publicado), a página diz a data dessa coleta em cada bloco, e os outros blocos atualizam. Em 7/11/2026 a
+  API do Tesouro respondia 503 "Application is not available" até do Brasil e, antes disso, segurava IPCA, PIB e dívida junto. `--teste` roda os testes, sem rede.
 - `scripts/contexto_abertura.py` — roda dentro de `contexto.py` (módulo irmão, diário): abertura comercial a partir das Contas Nacionais do IBGE, grava `site/dados/contexto/abertura.json`.
 - `scripts/receita.py` — arrecadação do IOF, do Imposto sobre Importação e do IPI (Receita Federal), grava `site/dados/contexto/tributos.json`. Roda na rodada diária mas só trabalha a cada 7 dias
   (`--forcar`, `--so-montar`, `--simular`, `--imprimir`, `--teste`). `scripts/xlsx_lite.py` lê as planilhas só com a biblioteca padrão (sem `openpyxl`).

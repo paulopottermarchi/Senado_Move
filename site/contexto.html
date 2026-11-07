@@ -650,6 +650,10 @@ function bilhoes(v){ const a=abs(v); return a>=1e6?`${sinal(v)}R$ ${fmt(a/1e6,2)
 
 function blocoHTML(id,b){
   const fontes=(b.fontes||[]).map(f=>`<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`).join('; ');
+  // cada bloco tem a própria data de coleta (contexto.py: uma fonte fora do ar não segura as outras); a do arquivo é a de reserva
+  const coleta=b.coletadoEm||IND.coletadoEm||IND.hoje;
+  const atraso=coleta&&IND.hoje?Math.round((Date.parse(IND.hoje+'T12:00:00Z')-Date.parse(coleta+'T12:00:00Z'))/864e5):0;
+  const aviso=atraso>1?` <b>Atenção: a fonte deste bloco não respondeu nas últimas rodadas; os números são os da última coleta bem-sucedida, de ${dataBR(coleta)}.</b>`:'';
   return `<article class="ind" id="ind-${id}" aria-labelledby="ind-${id}-t">
     <header><h3 id="ind-${id}-t" style="font-family:var(--serif);font-size:24px;font-weight:500;line-height:1.2">${esc(b.titulo)}</h3>
       ${id==='resultado'?'<button class="btn-ent" type="button" data-entenda>Entenda</button>':''}</header>
@@ -659,7 +663,7 @@ function blocoHTML(id,b){
     <div id="ind-${id}-g"></div>
     <div class="gr-leg" id="ind-${id}-l"></div>
     <p class="fixa peq">Este gráfico não mostra que uma lei causou a variação de nenhum indicador.${MAN?' Os traços de início de mandato presidencial são só referência de calendário: não mostram que o mandato causou a variação.':''}</p>
-    <p class="ind-fonte">Fonte${(b.fontes||[]).length>1?'s':''}: ${fontes}. Dados até <b id="ind-${id}-ref"></b>; coletados em ${dataBR(IND.coletadoEm||IND.hoje)}. ${b.deflator?`Valores reais: IPCA, em reais de ${rotMes(b.deflator.mesBase+'-01')} (${esc(b.deflator.quem)}).`:''}</p>
+    <p class="ind-fonte">Fonte${(b.fontes||[]).length>1?'s':''}: ${fontes}. Dados até <b id="ind-${id}-ref"></b>; coletados em ${dataBR(coleta)}.${aviso} ${b.deflator?`Valores reais: IPCA, em reais de ${rotMes(b.deflator.mesBase+'-01')} (${esc(b.deflator.quem)}).`:''}</p>
     <details class="avanc" id="ind-${id}-a"><summary>Camada avançada: notas de método, valores e fontes</summary><div id="ind-${id}-av"></div></details>
   </article>`;
 }
