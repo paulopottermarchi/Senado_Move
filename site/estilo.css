@@ -405,9 +405,14 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 
 /* três números grandes, separados por filetes */
 .numeros-ed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--linha-forte);margin-top:24px}
+/* O número nunca passa da coluna: o tamanho é o menor entre o do desenho e o que cabe (--em = largura do número mais longo da linha, em em,
+   posta pela página: na Barlow Condensed 600 o algarismo tem ~0,475 em e o ponto ~0,23; a página usa 0,48 e 0,24). Em 7/11/2026 "1.141" a 120 px tinha 253 px numa coluna de 185 e encostava no vizinho. */
+/* A conta usa a linha inteira (container), não cada coluna: a primeira não tem recuo, e assim os três números saem do mesmo tamanho.
+   36 px = os 24 do recuo da coluna + 12 de folga antes do filete da coluna seguinte. */
+.numeros-ed{container-type:inline-size}
 .numeros-ed>div{padding:16px 0 0 24px;border-left:1px solid var(--linha-forte);min-width:0}
 .numeros-ed>div:first-child{padding-left:0;border-left:0}
-.numeros-ed b{display:block;font-family:var(--cond);font-weight:600;font-size:clamp(40px,4.6vw,64px);line-height:1;letter-spacing:0;color:var(--tinta)}
+.numeros-ed b{display:block;font-family:var(--cond);font-weight:600;font-size:min(clamp(40px,4.6vw,64px),calc((100cqi / 3 - 36px) / var(--em,1.5)));line-height:1;letter-spacing:0;color:var(--tinta);white-space:nowrap}
 .numeros-ed span{display:block;margin-top:6px;font-size:13px;line-height:1.35;color:var(--tinta3)}
 
 /* abertura das páginas internas (leis, blocos, fluxo, obras): título grande à esquerda, modelo à direita; o resto da página como era */
