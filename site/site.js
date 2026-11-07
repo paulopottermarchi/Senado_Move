@@ -317,14 +317,21 @@ window.Contar = (() => {
   const fmt = (v, dec) => v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
   const ativo = () => window.Motion && window.Motion.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Contar muda a largura do número (0 → 2.700) e, num texto corrido, a quebra de linha: o resto da frase pularia. Por isso o
-  // número reserva a largura do valor final enquanto conta (inline-block, alinhado à direita) e volta ao normal no fim.
+  // número reserva a largura do valor final enquanto conta e volta ao normal no fim. O alinhamento NÃO muda: é o do próprio texto.
+  // (Até 7/11/2026 ficava alinhado à direita enquanto contava; num número em bloco, como os totais de "Esta semana", a caixa tem a
+  // largura da coluna inteira, então o número contava encostado à direita e pulava para a esquerda no fim.)
   const reservar = (el, final) => {
     const w = el.getBoundingClientRect().width;
     if (!w) return false;
-    el.style.display = 'inline-block'; el.style.minWidth = w + 'px'; el.style.textAlign = 'right';
+    if (getComputedStyle(el).display === 'inline') {
+      // num texto corrido: caixa com a largura EXATA do valor final; um valor do meio mais largo (algarismos de larguras diferentes)
+      // transborda sem empurrar o resto da frase
+      el.style.display = 'inline-block'; el.style.width = w + 'px'; el.style.whiteSpace = 'nowrap';
+    }
+    el.style.minWidth = w + 'px';                                                         // em bloco não muda nada visível
     return true;
   };
-  const soltarLargura = el => { el.style.removeProperty('display'); el.style.removeProperty('min-width'); el.style.removeProperty('text-align'); };
+  const soltarLargura = el => { for (const p of ['display', 'min-width', 'width', 'white-space']) el.style.removeProperty(p); };
   const levar = (el, de, para, x, final, atraso = 0, dur = 1.2) => {
     if (el._conta) el._conta.stop();
     if (!el.style.minWidth) { const antes = el.textContent; el.textContent = final; reservar(el, final); el.textContent = antes; }
@@ -346,7 +353,8 @@ window.Contar = (() => {
     }
   };
   const para = (el, texto) => {
-    texto = String(texto);
+    // número cru (1282) vira texto em pt-BR (1.282): o valor final tem o mesmo formato da contagem, e não perde o ponto no fim
+    texto = typeof texto === 'number' ? texto.toLocaleString('pt-BR') : String(texto);
     const de = ler(el.textContent), x = ler(texto);
     if (!ativo() || !de || !x || de.num === x.num) { if (el._conta) el._conta.stop(); el._conta = null; el.textContent = texto; return; }
     levar(el, de.num, x.num, x, texto, 0, 0.6);
