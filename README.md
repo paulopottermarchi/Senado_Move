@@ -284,7 +284,8 @@ filtro conservador, o cargo "Substituto(a)" e as supressões têm teste. Usa `py
 `scripts/emendas_obras.py` liga o autor de emenda **individual** às obras de SP pelo código exato da emenda no empenho do ObrasGov
 (o país inteiro em `/empenho`, as obras em `/projeto-investimento`, os municípios em `/geometria`) e na CGU (arquivo de emendas
 parlamentares), com a regra de deputado do site (nome exato e mandato). Sem `--publicar` (o padrão, `--dry-run`) só grava o candidato,
-a auditoria e o relatório em `cache/emendas/`; com `--publicar` (o passo do workflow diário, opcional) troca `site/dados/emendas/` pelo
+a auditoria e o relatório em `cache/emendas/` (é assim que o passo do workflow diário roda até a conferência à mão de uma amostra
+dos vínculos); com `--publicar` troca `site/dados/emendas/` pelo
 candidato: um arquivo por deputado (`{id}.json`, o único que o perfil baixa) e `indice.json` (as contagens e as emendas das obras de
 `obras.html`), montados ao lado e trocados de uma vez, para uma falha não publicar nada pela metade. Retém o vínculo se o ano da emenda
 não for o do empenho, se o código do autor e o nome não se corresponderem um a um na CGU, se a UF de aplicação não for São Paulo ou
