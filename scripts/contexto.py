@@ -83,24 +83,36 @@ def aviso(txt):
 
 # ---------------------------------------------------------------- HTTP (fora da Câmara)
 
+def texto_da_resposta(r, n=160):
+    """O começo do corpo de uma resposta de erro, sem HTML: diz POR QUE a fonte falhou (ex.: "Application is not available", a página do servidor
+    do Tesouro fora do ar em 7/11/2026). Só texto da própria fonte; nada de cabeçalho com dado pessoal."""
+    t = re.sub(r"<(style|script)\b.*?</\1>", " ", r.text or "", flags=re.S | re.I)
+    t = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", t)).strip()
+    return t[:n] + ("…" if len(t) > n else "")
+
+
 def buscar(url, params=None, limitador=LIM_OUTROS, tentativas=5):
+    ultimo = "sem resposta"
     for n in range(tentativas):
         limitador.esperar()
         try:
             r = coleta.sessao.get(url, params=params, timeout=90)
-        except (coleta.requests.ConnectionError, coleta.requests.Timeout):
+        except (coleta.requests.ConnectionError, coleta.requests.Timeout) as e:
+            ultimo = f"{type(e).__name__}: {str(e)[:160]}"
             time.sleep(2 ** n)
             continue
         if r.status_code == 429 or r.status_code >= 500:
+            ultimo = f"HTTP {r.status_code}" + (f", {texto_da_resposta(r)!r}" if r.text else "")
             time.sleep(2 ** n)
             continue
         r.raise_for_status()
         try:
             return r.json()
         except ValueError:      # corpo vazio ou página de bloqueio no lugar do JSON (o SGS faz isso de vez em quando): repete
+            ultimo = f"HTTP {r.status_code} sem JSON ({r.headers.get('content-type') or 'sem tipo'})" + (f", {texto_da_resposta(r)!r}" if r.text else ", corpo vazio")
             time.sleep(2 ** n)
             continue
-    raise RuntimeError(f"falhou após {tentativas} tentativas: {url} {params or ''}")
+    raise RuntimeError(f"falhou após {tentativas} tentativas ({ultimo}): {url} {params or ''}")
 
 
 def mes_de(rotulo):
@@ -315,59 +327,113 @@ def parse_metas(texto_json):
     return linhas
 
 
-def montar_indicadores(forcar_rede):
-    """Baixa (ou lê do cache) as séries, confere e devolve o bloco `indicadores`."""
+# As três fontes dos indicadores. Cada uma é baixada, conferida e usada SOZINHA: se uma falha (fora do ar, como o Tesouro em 7/11/2026, que respondia
+# 503 "Application is not available" até do Brasil, ou uma checagem que não passa), os blocos dela ficam com a última versão boa, com a data dessa
+# coleta escrita na página, e os outros blocos atualizam. Antes, uma fonte fora do ar segurava o arquivo inteiro: de 21/10 a 7/11/2026 IPCA, PIB e
+# dívida ficaram parados por causa do IBGE e, depois, do Tesouro.
+GRUPOS = {
+    "ibge": ("IBGE", ("ipca12", "ipcaMes", "pib4t", "pibTri")),
+    "bcb": ("Banco Central", ("dbgg", "dlgg", "meta_sgs", "metas_pagina", "bcb12m")),
+    "tesouro": ("Tesouro Nacional", ("despesa", "primario", "nominal")),
+}
+BLOCO_GRUPOS = {"ipca": ("ibge", "bcb"), "pib": ("ibge",), "despesa": ("tesouro", "ibge"), "divida": ("bcb",), "resultado": ("tesouro",)}
+
+
+class FonteAusente(Exception):
+    """A fonte de um bloco não respondeu nesta rodada e não há coleta anterior dela no cache."""
+
+
+def coletar_grupo(g):
+    """As séries de uma fonte, da API. Qualquer falha levanta: quem chama decide o que fica no lugar."""
+    if g == "ibge":
+        return {"ipca12": sidra(1737, 2265), "ipcaMes": sidra(1737, 63),
+                "pib4t": sidra(5932, 6562, "11255[90707]", trimestral=True), "pibTri": sidra(5932, 6564, "11255[90707]", trimestral=True)}
+    if g == "bcb":
+        return {"dbgg": sgs(13762), "dlgg": sgs(4536), "meta_sgs": sgs(13521),
+                "metas_pagina": json.dumps(buscar(URL_BCB_METAS), ensure_ascii=False), "bcb12m": buscar(URL_BCB_12M)}
+    if g == "tesouro":
+        return {"despesa": tesouro("10.03.1", True), "primario": tesouro("10.04.1", True), "nominal": tesouro("10.09.1", True)}
+    raise ValueError(f"fonte desconhecida: {g}")
+
+
+def coleta_por_grupo(br):
+    """{fonte: data da coleta}, só das fontes que o cache tem inteiras. O cache de antes de 7/11/2026 tem uma data só (`coletadoEm`), que vale para todas."""
+    datas = br.get("_coleta") or {}
+    out = {}
+    for g, (_, chaves) in GRUPOS.items():
+        d = datas.get(g) or (None if datas else br.get("coletadoEm"))
+        if d and all(k in br for k in chaves):
+            out[g] = d
+    return out
+
+
+def montar_indicadores(forcar_rede, coletar=coletar_grupo):
+    """Baixa (ou, com --so-montar, lê do cache) as séries de cada fonte. Devolve (brutos, falhas).
+    Fonte que falha fica com a coleta anterior do cache, com a data dela; sem coleta anterior, os blocos dela vêm do arquivo publicado
+    (construir_indicadores). O cache só guarda séries que vieram da fonte: nunca uma cópia do que foi publicado."""
     arq = CACHE_C / "indicadores_brutos.json"
-    if forcar_rede:
-        br = {}
-        print("Indicadores: IPCA, PIB (IBGE), metas (BCB), dívida (BCB), despesa e resultado (Tesouro)…", flush=True)
-        br["ipca12"] = sidra(1737, 2265)
-        br["ipcaMes"] = sidra(1737, 63)
-        br["pib4t"] = sidra(5932, 6562, "11255[90707]", trimestral=True)
-        br["pibTri"] = sidra(5932, 6564, "11255[90707]", trimestral=True)
-        br["dbgg"] = sgs(13762)
-        br["dlgg"] = sgs(4536)
-        br["meta_sgs"] = sgs(13521)
-        br["despesa"] = tesouro("10.03.1", True)
-        br["primario"] = tesouro("10.04.1", True)
-        br["nominal"] = tesouro("10.09.1", True)
-        j = buscar(URL_BCB_METAS)
-        br["metas_pagina"] = json.dumps(j, ensure_ascii=False)
-        br["bcb12m"] = buscar(URL_BCB_12M)
-        br["coletadoEm"] = HOJE.isoformat()
-        gravar_cache(arq, br)
-    else:
-        br = ler_cache(arq)
-        if not br:
+    antes = ler_cache(arq) or {}
+    datas_antes = coleta_por_grupo(antes)
+    if not forcar_rede:
+        if not datas_antes:
             raise Aborta("--so-montar sem cache de indicadores: rode contexto.py inteiro antes")
-    return br
+        return antes, []
+    print("Indicadores: IPCA, PIB (IBGE), metas e dívida (Banco Central), despesa e resultado (Tesouro)…", flush=True)
+    br, datas, falhas = {}, {}, []
+    for g, (nome, chaves) in GRUPOS.items():
+        try:
+            br.update(coletar(g))
+            datas[g] = HOJE.isoformat()
+        except Exception as e:
+            txt = str(e) if isinstance(e, Aborta) else f"{type(e).__name__}: {e}"
+            if g in datas_antes:
+                br.update({k: antes[k] for k in chaves})
+                datas[g] = datas_antes[g]
+                falhas.append((nome, f"{txt} (fica a coleta de {datas_antes[g]}, do cache)"))
+            else:
+                falhas.append((nome, f"{txt} (sem coleta anterior no cache)"))
+    if datas:
+        br["_coleta"] = datas
+        br["coletadoEm"] = min(datas.values())
+        gravar_cache(arq, br)
+    return br, falhas
 
 
-def derivar_indicadores(br):
-    """Confere as fontes entre si e monta as séries que a página desenha."""
-    S = {k: v for k, v in br.items() if isinstance(v, dict) and "pontos" in v}
-    for k in S:
-        S[k]["pontos"] = [tuple(p) for p in S[k]["pontos"]]
-    # ---- unidades e faixas plausíveis (aborta se a fonte mudou de sentido)
+def series_de(br):
+    """As séries do cache, com os pontos como tuplas (cópia: o cache não é alterado)."""
+    return {k: dict(v, pontos=[tuple(p) for p in v["pontos"]]) for k, v in br.items() if isinstance(v, dict) and "pontos" in v}
+
+
+def checar_ibge(S):
     checar_serie("IPCA 12 meses", S["ipca12"]["pontos"], "M", -10, 10000, S["ipca12"]["unidade"], "%")
     checar_serie("IPCA mensal", S["ipcaMes"]["pontos"], "M", -10, 100, S["ipcaMes"]["unidade"], "%")
     checar_serie("PIB 4 trimestres", S["pib4t"]["pontos"], "T", -15, 15, S["pib4t"]["unidade"], "%")
     checar_serie("PIB trimestre/trimestre", S["pibTri"]["pontos"], "T", -15, 15, S["pibTri"]["unidade"], "%")
+
+
+def checar_divida(S):
     checar_serie("Dívida bruta (DBGG)", S["dbgg"]["pontos"], "M", 0, 200)
     checar_serie("Dívida líquida do Governo Geral", S["dlgg"]["pontos"], "M", 0, 200)
+    if (S["dbgg"].get("unidade") or "Percentual") != "Percentual" or (S["dlgg"].get("unidade") or "Percentual") != "Percentual":
+        raise Aborta("BCB: a unidade da dívida deixou de ser Percentual (% do PIB)")
+
+
+def checar_tesouro(S):
     for k, nome in (("despesa", "Despesa total"), ("primario", "Resultado primário"), ("nominal", "Resultado nominal")):
         checar_serie(nome, S[k]["pontos"], "M", -1_500_000, 1_500_000)
     for k, esperado in (("despesa", "Despesa total"), ("primario", "Resultado Primário - Governo Central"),
                         ("nominal", "Resultado Nominal do Governo Central")):
         if S[k]["nome"] != esperado:
             raise Aborta(f"Tesouro: o nome da série mudou ({S[k]['nome']!r}, esperado {esperado!r})")
-    if (S["dbgg"].get("unidade") or "Percentual") != "Percentual" or (S["dlgg"].get("unidade") or "Percentual") != "Percentual":
-        raise Aborta("BCB: a unidade da dívida deixou de ser Percentual (% do PIB)")
-    # ---- IPCA em dezembro × 'inflação efetiva' da tabela oficial do BC (1999 em diante)
+
+
+def metas_conferidas(S, br):
+    """Tabela de metas do BC conferida contra o IPCA do IBGE e o SGS 13521; devolve (metas, série mensal da meta e da banda, regime contínuo)."""
     ipca = dict(S["ipca12"]["pontos"])
     metas = parse_metas(br["metas_pagina"])
     if len(metas) < 26 or min(metas) != 1999:
         raise Aborta(f"BCB: a tabela de metas veio com {len(metas)} anos (esperado 26 ou mais, desde 1999)")
+    # ---- IPCA em dezembro × 'inflação efetiva' da tabela oficial do BC (1999 em diante)
     for ano, l in metas.items():
         v = ipca.get(f"{ano}-12-01")
         if v is None or abs(v - l["efetiva"]) > 0.006:
@@ -401,17 +467,7 @@ def derivar_indicadores(br):
             m, t = metas[ano]["metas"][0], metas[ano]["tolerancias"][0]
         meta_pts.append((d, m, round(m - t, 2), round(m + t, 2)))
         d = proximo_mes(d)
-    # ---- derivados do Tesouro: soma de 12 meses (R$ do último mês da série) e crescimento real da despesa
-    base = S["despesa"]["pontos"][-1][0]
-    desp12 = soma_12m(S["despesa"]["pontos"])
-    prim12 = soma_12m(S["primario"]["pontos"])
-    nom12 = soma_12m(S["nominal"]["pontos"])
-    desp_cresc = variacao_12m_da_soma(desp12)
-    # mesmo critério do PIB (4 trimestres terminados no trimestre): só os meses de fim de trimestre
-    desp_trim = [(inicio_do_trimestre(m), v) for m, v in desp_cresc if m[5:7] in ("03", "06", "09", "12")]
-    janela_comum = (max(desp_trim[0][0], S["pib4t"]["pontos"][0][0]),
-                    min(desp_trim[-1][0], S["pib4t"]["pontos"][-1][0]))
-    return S, metas, meta_pts, CONT, base, desp12, prim12, nom12, desp_trim, janela_comum
+    return metas, meta_pts, CONT
 
 
 def inicio_do_trimestre(mes_fim):
@@ -439,19 +495,25 @@ def fato_variacao(pontos, unidade, meses=12, passo="M"):
     return out
 
 
-def construir_indicadores(br):
-    S, metas, meta_pts, CONT, base, desp12, prim12, nom12, desp_trim, janela = derivar_indicadores(br)
-    mes_base = base[:7]
-    fonte_ibge = lambda tab, var: {"nome": f"IBGE — SIDRA, tabela {tab}", "url": f"https://sidra.ibge.gov.br/tabela/{tab}",
-                                         "api": f"{URL_IBGE}/{tab}/periodos/all/variaveis/{var}"}
-    fonte_sgs = lambda cod: {"nome": f"Banco Central — SGS {cod}", "url": f"https://dadosabertos.bcb.gov.br/dataset/{cod}",
-                                   "api": URL_SGS.format(cod)}
-    fonte_tes = {"nome": "Tesouro Nacional — API de Séries Temporais (Resultado do Tesouro Nacional, tema 10)",
-                 "url": "https://www.tesourotransparente.gov.br/temas/estatisticas-fiscais-e-planejamento/resultado-do-tesouro-nacional-rtn",
-                 "api": "https://apiapex.tesouro.gov.br/aria/v1/series-temporais/docs"}
-    pib_ult = S["pib4t"]["pontos"]
-    B = {}
-    B["ipca"] = {
+def fonte_ibge(tab, var):
+    return {"nome": f"IBGE — SIDRA, tabela {tab}", "url": f"https://sidra.ibge.gov.br/tabela/{tab}", "api": f"{URL_IBGE}/{tab}/periodos/all/variaveis/{var}"}
+
+
+def fonte_sgs(cod):
+    return {"nome": f"Banco Central — SGS {cod}", "url": f"https://dadosabertos.bcb.gov.br/dataset/{cod}", "api": URL_SGS.format(cod)}
+
+
+FONTE_TES = {"nome": "Tesouro Nacional — API de Séries Temporais (Resultado do Tesouro Nacional, tema 10)",
+             "url": "https://www.tesourotransparente.gov.br/temas/estatisticas-fiscais-e-planejamento/resultado-do-tesouro-nacional-rtn",
+             "api": "https://apiapex.tesouro.gov.br/aria/v1/series-temporais/docs"}
+ANOT_FGTS = {"data": "2012-03-01", "texto": "A partir de 1/3/2012 a despesa inclui recursos de complementação do FGTS e as despesas feitas com recursos dessa contribuição.",
+             "fonte": "Resultado do Tesouro Nacional, nota 2 da série histórica", "url": FONTE_TES["url"]}
+
+
+def bloco_ipca(S, br):
+    checar_ibge(S)
+    metas, meta_pts, CONT = metas_conferidas(S, br)
+    return {
         "titulo": "Inflação (IPCA) e a meta",
         "definicao": "Variação do Índice Nacional de Preços ao Consumidor Amplo (IPCA) nos últimos 12 meses, medida pelo IBGE; "
                      "a meta e o intervalo de tolerância são fixados pelo Conselho Monetário Nacional.",
@@ -475,33 +537,52 @@ def construir_indicadores(br):
         "metasPorAno": [{"ano": a, "meta": l["metas"][0], "tolerancia": l["tolerancias"][0], "normas": l["normas"], "datas": l["datas"],
                          "efetiva": l["efetiva"], "cartaAberta": l["cartaAberta"]} for a, l in sorted(metas.items())],
     }
-    B["pib"] = {
+
+
+def bloco_pib(S, br):
+    checar_ibge(S)
+    pib = S["pib4t"]["pontos"]
+    return {
         "titulo": "Crescimento do PIB",
         "definicao": "Crescimento do volume do PIB nos últimos quatro trimestres em relação aos quatro trimestres imediatamente anteriores, segundo o IBGE (Contas Nacionais Trimestrais).",
-        "fontes": [fonte_ibge(5932, 6562)], "referencia": pib_ult[-1][0], "unidade": "%",
-        "series": [{"id": "pib4t", "nome": "PIB, acumulado em 4 trimestres", "unidade": "%", "freq": "T", "pontos": pontos_json(pib_ult, 2)}],
-        "ultimo": fato_variacao(pib_ult, "%", 12, "T"),
+        "fontes": [fonte_ibge(5932, 6562)], "referencia": pib[-1][0], "unidade": "%",
+        "series": [{"id": "pib4t", "nome": "PIB, acumulado em 4 trimestres", "unidade": "%", "freq": "T", "pontos": pontos_json(pib, 2)}],
+        "ultimo": fato_variacao(pib, "%", 12, "T"),
         "trimestre": fato_variacao(S["pibTri"]["pontos"], "%", 3, "T") | {"nota": "variação sobre o trimestre anterior, com ajuste sazonal"},
         "anotacoes": [],
     }
-    B["despesa"] = {
+
+
+def bloco_despesa(S, br):
+    checar_tesouro(S)
+    checar_ibge(S)
+    pib = S["pib4t"]["pontos"]
+    mes_base = S["despesa"]["pontos"][-1][0][:7]
+    # soma de 12 meses (R$ do último mês da série) e crescimento real; mesmo critério do PIB (4 trimestres terminados no trimestre):
+    # só os meses de fim de trimestre
+    desp_cresc = variacao_12m_da_soma(soma_12m(S["despesa"]["pontos"]))
+    desp_trim = [(inicio_do_trimestre(m), v) for m, v in desp_cresc if m[5:7] in ("03", "06", "09", "12")]
+    janela = (max(desp_trim[0][0], pib[0][0]), min(desp_trim[-1][0], pib[-1][0]))
+    return {
         "titulo": "Despesa do governo e crescimento do PIB",
         "definicao": "Despesa total do Governo Central (pagamento efetivo, Tesouro Nacional) corrigida pelo IPCA para reais de "
                      f"{mes_base[5:]}/{mes_base[:4]}: crescimento da soma de 12 meses sobre os 12 meses anteriores, ao lado do crescimento do PIB em 4 trimestres.",
-        "fontes": [fonte_tes, fonte_ibge(5932, 6562)], "referencia": desp_trim[-1][0], "unidade": "%",
+        "fontes": [FONTE_TES, fonte_ibge(5932, 6562)], "referencia": desp_trim[-1][0], "unidade": "%",
         "deflator": {"indice": "IPCA", "mesBase": mes_base, "quem": "calculado pela própria API do Tesouro (correcao_ipca=true)"},
         "janelaComum": list(janela),
         "series": [{"id": "despesa", "nome": "Despesa total do Governo Central, real (soma de 12 meses)", "unidade": "%", "freq": "T",
                     "pontos": pontos_json([(d, v) for d, v in desp_trim if janela[0] <= d <= janela[1]], 2)},
                    {"id": "pib", "nome": "PIB, volume (acumulado em 4 trimestres)", "unidade": "%", "freq": "T",
-                    "pontos": pontos_json([(d, v) for d, v in pib_ult if janela[0] <= d <= janela[1]], 2)}],
+                    "pontos": pontos_json([(d, v) for d, v in pib if janela[0] <= d <= janela[1]], 2)}],
         "ultimo": {"despesa": fato_variacao([(d, v) for d, v in desp_trim if d <= janela[1]], "%", 12, "T"),
-                   "pib": fato_variacao([(d, v) for d, v in pib_ult if d <= janela[1]], "%", 12, "T")},
-        "anotacoes": [
-            {"data": "2012-03-01", "texto": "A partir de 1/3/2012 a despesa inclui recursos de complementação do FGTS e as despesas feitas com recursos dessa contribuição.",
-             "fonte": "Resultado do Tesouro Nacional, nota 2 da série histórica", "url": fonte_tes["url"]}],
+                   "pib": fato_variacao([(d, v) for d, v in pib if d <= janela[1]], "%", 12, "T")},
+        "anotacoes": [ANOT_FGTS],
     }
-    B["divida"] = {
+
+
+def bloco_divida(S, br):
+    checar_divida(S)
+    return {
         "titulo": "Dívida do governo",
         "definicao": "Dívida Bruta e Dívida Líquida do Governo Geral (Governo Federal, INSS e governos estaduais e municipais), em % do PIB, conforme o Banco Central.",
         "fontes": [fonte_sgs(13762), fonte_sgs(4536)],
@@ -516,23 +597,132 @@ def construir_indicadores(br):
              "o Banco Central publica outra série da dívida bruta, no conceito do FMI, que não é emendada a esta.",
              "fonte": "Banco Central, SGS 13762; Estatísticas fiscais, Tabela 17", "url": "https://dadosabertos.bcb.gov.br/dataset/13762-divida-bruta-do-governo-geral--pib---metodologia-utilizada-a-partir-de-2008"}],
     }
-    B["resultado"] = {
+
+
+def bloco_resultado(S, br):
+    checar_tesouro(S)
+    mes_base = S["despesa"]["pontos"][-1][0][:7]
+    prim12 = soma_12m(S["primario"]["pontos"])
+    nom12 = soma_12m(S["nominal"]["pontos"])
+    return {
         "titulo": "Resultado primário e nominal do Governo Central",
         "definicao": "Resultado primário: receitas menos despesas do Governo Central, sem contar os juros da dívida (apurado pelo Tesouro, 'acima da linha'). "
                      "Resultado nominal: o primário mais os juros nominais, apurado pelo Banco Central ('abaixo da linha'). Negativo = déficit.",
-        "fontes": [fonte_tes], "referencia": prim12[-1][0], "unidade": "R$ milhões",
+        "fontes": [FONTE_TES], "referencia": prim12[-1][0], "unidade": "R$ milhões",
         "deflator": {"indice": "IPCA", "mesBase": mes_base, "quem": "calculado pela própria API do Tesouro (correcao_ipca=true)"},
         "series": [{"id": "primario", "nome": "Resultado primário, soma de 12 meses", "unidade": "R$ milhões", "freq": "M", "pontos": pontos_json(prim12, 1)},
                    {"id": "nominal", "nome": "Resultado nominal, soma de 12 meses", "unidade": "R$ milhões", "freq": "M", "pontos": pontos_json(nom12, 1)}],
         "ultimo": {"primario": fato_variacao(prim12, "R$ milhões"), "nominal": fato_variacao(nom12, "R$ milhões")},
-        "anotacoes": [
-            {"data": "2012-03-01", "texto": "A partir de 1/3/2012 a despesa inclui recursos de complementação do FGTS e as despesas feitas com recursos dessa contribuição.",
-             "fonte": "Resultado do Tesouro Nacional, nota 2 da série histórica", "url": fonte_tes["url"]}],
+        "anotacoes": [ANOT_FGTS],
     }
+
+
+CONSTRUTORES = {"ipca": bloco_ipca, "pib": bloco_pib, "despesa": bloco_despesa, "divida": bloco_divida, "resultado": bloco_resultado}
+
+
+def construir_indicadores(br, anterior=None):
+    """Monta cada bloco da página a partir das fontes dele; devolve (blocos, falhas). Cada bloco leva `coletadoEm`, a data da coleta mais antiga
+    entre as fontes que ele usa. Bloco cuja fonte faltou ou não passou nas checagens fica com a versão do arquivo publicado (`anterior`), com a data
+    dela; sem versão publicada, sai da página ("Dados indisponíveis"). Nunca um bloco montado com metade das fontes."""
+    S = series_de(br)
+    datas = coleta_por_grupo(br)
+    ant = (anterior or {}).get("blocos") or {}
+    data_ant = (anterior or {}).get("coletadoEm") or ((anterior or {}).get("geradoEm") or "")[:10] or None
+    B, falhas = {}, []
+    for bid, grupos in BLOCO_GRUPOS.items():
+        try:
+            faltam = [GRUPOS[g][0] for g in grupos if g not in datas]
+            if faltam:
+                raise FonteAusente(" e ".join(faltam) + ": sem dados nesta rodada nem no cache")
+            b = CONSTRUTORES[bid](S, br)
+            b["coletadoEm"] = min(datas[g] for g in grupos)
+            B[bid] = b
+        except Exception as e:
+            txt = str(e) if isinstance(e, (Aborta, FonteAusente)) else f"{type(e).__name__}: {e}"
+            velho = ant.get(bid)
+            if isinstance(velho, dict) and velho.get("series"):
+                B[bid] = dict(velho, coletadoEm=velho.get("coletadoEm") or data_ant)
+                falhas.append((bid, f"{txt} (o bloco fica com a versão publicada, coletada em {B[bid]['coletadoEm']})"))
+            else:
+                falhas.append((bid, f"{txt} (sem versão publicada: o bloco sai da página)"))
     B["ifi"] = {"titulo": "Projeções da Instituição Fiscal Independente",
                 "definicao": "A IFI, órgão do Senado Federal, publica projeções para os indicadores fiscais; o site não as reproduz.",
                 "url": "https://www12.senado.leg.br/ifi/publicacoes-1/relatorio-de-acompanhamento-fiscal"}
-    return B
+    return B, falhas
+
+
+def frescos(B):
+    """Quantos blocos foram montados nesta rodada com dado coletado hoje."""
+    return sum(1 for b in B.values() if isinstance(b, dict) and b.get("series") and b.get("coletadoEm") == HOJE.isoformat())
+
+
+def testar():
+    """python scripts/contexto.py --teste: a regra "cada fonte falha sozinha", com fontes e blocos falsos (sem rede)."""
+    import tempfile
+    from unittest import mock
+    ok = 0
+
+    def igual(a, b, msg):
+        nonlocal ok
+        assert a == b, f"{msg}: {a!r} != {b!r}"
+        ok += 1
+    hoje = HOJE.isoformat()
+    falso = lambda nome: (lambda S, br: {"titulo": nome, "series": [{"id": nome, "pontos": [["2026-01-01", 1.0]]}]})
+    construtores = {k: falso(k) for k in BLOCO_GRUPOS}
+    def coletor(fora):
+        def c(g):
+            if g in fora:
+                raise RuntimeError(f"falhou após 5 tentativas (HTTP 503, 'Application is not available'): {g}")
+            return {k: {"pontos": [["2026-01-01", 1.0]]} if k not in ("metas_pagina", "bcb12m") else "x" for k in GRUPOS[g][1]}
+        return c
+    with tempfile.TemporaryDirectory() as t, mock.patch.dict(CONSTRUTORES, construtores), mock.patch(f"{__name__}.CACHE_C", __import__("pathlib").Path(t)):
+        # 1. Tesouro fora do ar e sem cache: IBGE e BC atualizam; despesa e resultado vêm do arquivo publicado, com a data dele
+        anterior = {"geradoEm": "2026-10-21T11:56-03:00", "coletadoEm": "2026-10-21",
+                    "blocos": {k: {"titulo": f"{k} velho", "series": [{"id": k, "pontos": [["2025-01-01", 0.0]]}]} for k in BLOCO_GRUPOS}}
+        br, f1 = montar_indicadores(True, coletor({"tesouro"}))
+        igual([n for n, _ in f1], ["Tesouro Nacional"], "só o Tesouro falha na coleta")
+        igual("Application is not available" in f1[0][1] and "sem coleta anterior" in f1[0][1], True, "o motivo vai na mensagem")
+        igual(sorted(coleta_por_grupo(br)), ["bcb", "ibge"], "o cache guarda só o que veio da fonte")
+        B, f2 = construir_indicadores(br, anterior)
+        igual({k: B[k]["titulo"] for k in BLOCO_GRUPOS}, {"ipca": "ipca", "pib": "pib", "despesa": "despesa velho", "divida": "divida", "resultado": "resultado velho"},
+              "os blocos do Tesouro ficam com a versão publicada; os outros atualizam")
+        igual({k: B[k]["coletadoEm"] for k in BLOCO_GRUPOS}, {"ipca": hoje, "pib": hoje, "despesa": "2026-10-21", "divida": hoje, "resultado": "2026-10-21"},
+              "cada bloco diz a data da própria coleta")
+        igual(sorted(b for b, _ in f2), ["despesa", "resultado"], "as falhas de bloco são contadas")
+        igual(frescos(B), 3, "três blocos com dado de hoje")
+        # 2. no dia seguinte o Tesouro volta: tudo atualiza
+        br, f3 = montar_indicadores(True, coletor(set()))
+        B, f4 = construir_indicadores(br, {"blocos": B})
+        igual((f3, f4, frescos(B)), ([], [], 5), "com as três fontes, os cinco blocos atualizam")
+        # 3. depois o IBGE cai: fica a coleta do cache (de hoje, neste teste), sem tocar no que veio do BC e do Tesouro
+        br, f5 = montar_indicadores(True, coletor({"ibge"}))
+        igual(([n for n, _ in f5], "fica a coleta de" in f5[0][1]), (["IBGE"], True), "fonte que falha usa a coleta anterior do cache")
+        igual(sorted(coleta_por_grupo(br)), ["bcb", "ibge", "tesouro"], "com o cache, as três fontes seguem disponíveis")
+        # 4. --so-montar lê o cache e não chama a rede
+        br2, f6 = montar_indicadores(False, coletor({"ibge", "bcb", "tesouro"}))
+        igual((br2["_coleta"], f6), (br["_coleta"], []), "--so-montar usa o cache")
+        # 5. uma checagem que não passa derruba só o bloco dela
+        def quebra(S, br):
+            raise Aborta("Tesouro: o nome da série mudou")
+        with mock.patch.dict(CONSTRUTORES, {"resultado": quebra}):
+            B2, f7 = construir_indicadores(br, {"blocos": dict(B, resultado=dict(B["resultado"], titulo="resultado de ontem", coletadoEm="2026-11-06"))})
+        igual((B2["resultado"]["titulo"], [b for b, _ in f7], frescos(B2)), ("resultado de ontem", ["resultado"], 4), "checagem que falha mantém o bloco anterior, com a data dele")
+        # 6. sem versão publicada, o bloco sai (a página escreve "Dados indisponíveis") e nada é inventado
+        with mock.patch.dict(CONSTRUTORES, {"resultado": quebra}):
+            B3, f8 = construir_indicadores(br, None)
+        igual(("resultado" in B3, "sai da página" in f8[0][1]), (False, True), "sem versão anterior, o bloco não aparece")
+    # cache antigo, de uma data só: vale para as três fontes
+    velho = {k: {"pontos": []} for _, (_, ch) in GRUPOS.items() for k in ch} | {"coletadoEm": "2026-10-23"}
+    igual(coleta_por_grupo(velho), {"ibge": "2026-10-23", "bcb": "2026-10-23", "tesouro": "2026-10-23"}, "cache de antes de 7/11/2026")
+    igual(coleta_por_grupo({"_coleta": {"ibge": "2026-11-07"}, "coletadoEm": "2026-11-07", "despesa": {}, "primario": {}, "nominal": {}}), {},
+          "fonte com as séries mas sem data própria não conta (nem a do IBGE incompleto)")
+
+    class R:
+        def __init__(self, texto):
+            self.text = texto
+    igual(texto_da_resposta(R("<html><style>body{}</style><h1>Application is not available</h1><p>The application</p></html>")),
+          "Application is not available The application", "o motivo sai sem HTML")
+    print(f"{ok} verificações passaram")
 
 
 # ---------------------------------------------------------------- AGENDA
@@ -998,15 +1188,19 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--so-montar", action="store_true", help="não chama API: remonta os JSON do cache")
     ap.add_argument("--so-mandatos", action="store_true", help="só os mandatos presidenciais: consulta o Wikidata e grava mandatos.json")
+    ap.add_argument("--teste", action="store_true", help="testes sem rede da regra 'cada fonte falha sozinha'")
     args = ap.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
+    if args.teste:
+        testar()
+        return
     rede = not args.so_montar
     ultima = (ler_cache(CACHE_C / "estado.json") or {}).get("ultima")
     gerado = datetime.now(BRASILIA).isoformat(timespec="minutes")
     falhas = []   # cada bloco falha sozinho: o arquivo anterior do bloco que falhou fica, e o outro bloco segue
 
     def falhar(bloco, e):
-        txt = str(e) if isinstance(e, Aborta) else f"{type(e).__name__}: {e}"
+        txt = e if isinstance(e, str) else str(e) if isinstance(e, Aborta) else f"{type(e).__name__}: {e}"
         falhas.append(f"{bloco}: {txt}")
         print(f"::error title=contexto ({bloco})::{txt}" if os.environ.get("GITHUB_ACTIONS") else f"FALHOU ({bloco}): {txt}", flush=True)
 
@@ -1022,15 +1216,23 @@ def main():
             sys.exit(1)
         return
 
-    # ---- indicadores
+    # ---- indicadores: cada fonte (IBGE, Banco Central, Tesouro) e cada bloco falham sozinhos (ver GRUPOS)
     B = indicadores = None
     try:
-        br = montar_indicadores(rede)
-        B = construir_indicadores(br)
-        indicadores = {"geradoEm": gerado, "hoje": HOJE.isoformat(), "coletadoEm": br.get("coletadoEm"), "blocos": B}
         anterior = ler_cache(SAIDA / "indicadores.json")
+        br, falhas_fonte = montar_indicadores(rede)
+        for nome, txt in falhas_fonte:
+            falhar(f"indicadores, {nome}", txt)
+        B, falhas_bloco = construir_indicadores(br, anterior)
+        for bid, txt in falhas_bloco:
+            falhar(f"indicadores, bloco {bid}", txt)
+        datas = [b["coletadoEm"] for b in B.values() if isinstance(b, dict) and b.get("series") and b.get("coletadoEm")]
+        # coletadoEm = a coleta MAIS ANTIGA entre os blocos publicados: é a data que frescor.py confere (um bloco parado não some na média)
+        indicadores = {"geradoEm": gerado, "hoje": HOJE.isoformat(), "coletadoEm": min(datas) if datas else None, "blocos": B}
         if anterior and pontos_dos_indicadores(anterior) and pontos_dos_indicadores(indicadores) < 0.9 * pontos_dos_indicadores(anterior):
             raise Aborta(f"os indicadores encolheram de {pontos_dos_indicadores(anterior)} para {pontos_dos_indicadores(indicadores)} pontos; nada gravado")
+        if rede and not frescos(B):
+            raise Aborta("nenhum bloco com dado novo nesta rodada; o arquivo anterior fica como está")
     except Exception as e:      # Aborta (checagem) ou falha de rede/formato: nada é gravado deste bloco
         falhar("indicadores", e)
         indicadores = None

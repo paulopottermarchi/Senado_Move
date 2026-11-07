@@ -41,7 +41,8 @@ LIMITES = [
     ("obras.json", "_geradoEm", 1, "obras e contratos"),
     ("obras_pessoas.json", "_geradoEm", 1, "pessoas documentadas das obras"),
     ("contexto/agenda.json", "geradoEm", 1, "economia: agenda legislativa"),
-    ("contexto/indicadores.json", "geradoEm", 1, "economia: IPCA, PIB, dívida, resultado"),
+    # coletadoEm = a coleta mais antiga entre os blocos (contexto.py grava cada bloco com a data da própria fonte): um bloco parado conta
+    ("contexto/indicadores.json", "coletadoEm", 1, "economia: IPCA, PIB, dívida, resultado"),
     ("contexto/trabalho.json", "geradoEm", 1, "economia: trabalho, renda e setor externo"),
     ("contexto/abertura.json", "geradoEm", 1, "economia: abertura comercial"),
     ("contexto/tributos.json", "geradoEm", 8, "economia: tributos (semanal)"),
@@ -54,8 +55,23 @@ def hoje():
     return datetime.now(BRASILIA).date()
 
 
+def blocos_velhos(d, limite, dia):
+    """Num arquivo com `blocos` que trazem a própria data de coleta (contexto/indicadores.json), os títulos dos blocos velhos demais, com a data."""
+    blocos = d.get("blocos")
+    out = []
+    for b in blocos.values() if isinstance(blocos, dict) else ():
+        try:
+            c = date.fromisoformat(str(b.get("coletadoEm"))[:10]) if isinstance(b, dict) and b.get("coletadoEm") else None
+        except ValueError:
+            c = None
+        if c and (dia - c).days > limite:
+            out.append(f"{b.get('titulo') or '?'} (coleta de {c.isoformat()})")
+    return out
+
+
 def conferir(dados=DADOS, limites=LIMITES, dia=None):
-    """[(arquivo, data ou None, idade em dias ou None, limite, situação, descrição)]; situação é "ok", "velho", "sem data" ou "falta"."""
+    """[(arquivo, data ou None, idade em dias ou None, limite, situação, descrição)]; situação é "ok", "velho", "sem data" ou "falta".
+    Arquivo com blocos datados (indicadores da economia): a descrição de um velho diz QUAIS blocos estão parados."""
     dia = dia or hoje()
     out = []
     for arq, campo, limite, desc in limites:
@@ -73,6 +89,10 @@ def conferir(dados=DADOS, limites=LIMITES, dia=None):
             out.append((arq, None, None, limite, "sem data", desc))
             continue
         idade = (dia - data).days
+        if idade > limite and isinstance(d, dict):
+            velhos = blocos_velhos(d, limite, dia)
+            if velhos:
+                desc = f"{desc}; parados: {'; '.join(velhos)}"
         out.append((arq, data.isoformat(), idade, limite, "ok" if idade <= limite else "velho", desc))
     return out
 
@@ -136,6 +156,14 @@ def testar():
         igual(r["E"][4], "sem data", "lista no lugar de objeto")
         md = relatorio(list(r.values()))
         igual(("velho" in md, md.count("\n| ") >= 7), (True, True), "a tabela do resumo traz todos")
+        # blocos com a data da própria coleta: o velho diz qual bloco está parado
+        (t / "ind.json").write_text(json.dumps({"geradoEm": "2026-11-07", "coletadoEm": "2026-10-21", "blocos": {
+            "pib": {"titulo": "Crescimento do PIB", "coletadoEm": "2026-11-07"}, "resultado": {"titulo": "Resultado primário", "coletadoEm": "2026-10-21"},
+            "ifi": {"titulo": "IFI"}}}), encoding="utf-8")
+        (ind,) = conferir(t, [("ind.json", "coletadoEm", 1, "economia")], date(2026, 11, 7))
+        igual((ind[4], ind[5]), ("velho", "economia; parados: Resultado primário (coleta de 2026-10-21)"), "o bloco parado é nomeado")
+        (ind,) = conferir(t, [("ind.json", "geradoEm", 1, "economia")], date(2026, 11, 7))
+        igual((ind[4], ind[5]), ("ok", "economia"), "em dia pelo campo da tabela: a descrição não muda")
     igual(len({a for a, *_ in LIMITES}), len(LIMITES), "nenhum arquivo repetido na tabela")
     # todos os arquivos da tabela existem no site e têm o campo de data (pega erro de digitação na tabela)
     faltam = [x[0] for x in conferir() if x[4] in ("falta", "sem data")]

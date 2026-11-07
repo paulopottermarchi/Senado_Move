@@ -294,6 +294,16 @@
   .mapa{padding:20px}
   .numeros-sem b{font-size:clamp(48px,16vw,72px)}
 }
+/* Toque: links soltos de texto pequeno tinham 15 a 23 px de altura (medido a 375 px). O ::after aumenta só a área de toque, sem mudar o desenho;
+   em "Esta semana" o número cresce para cima e o autor para baixo, porque os dois ficam a 2 px um do outro e não podem disputar o mesmo toque. */
+@media(pointer:coarse){
+  #heroCap>a,.gr-escala>a,.sem-l1>a,.sem-aut a{position:relative}
+  #heroCap>a::after,.gr-escala>a::after,.sem-l1>a::after,.sem-aut a::after{content:"";position:absolute}
+  #heroCap>a::after{inset:-12px -4px}
+  .gr-escala>a::after{inset:-10px 0}
+  .sem-l1>a::after{inset:-10px -4px -1px}
+  .sem-aut a::after{inset:-1px 0 -10px}
+}
 </style>
 <!-- seo:inicio -->
 <link rel="canonical" href="https://congressoclaro.com.br/">
@@ -806,6 +816,14 @@ function carregarSenadores(){
   return pSen;
 }
 const hrefDe=d=>`${d.senador?'senador':'deputado'}.html?id=${encodeURIComponent(d.id)}`;
+// Quem bate com a busca, na ordem: a sigla exata do partido, o nome que começa pela busca (ou uma palavra dele), o nome que a contém e, por último,
+// a sigla que começa pela busca. Antes era "contém" em tudo, sem ordem: "PSD" trazia primeiro os deputados do PSDB e cortava os do PSD no 20º.
+function achar(lista,q,n){
+  const nota=d=>{ const p=norm(d.partido), nm=norm(d.nome);
+    return p===q?0:(nm.startsWith(q)||nm.includes(' '+q))?1:nm.includes(q)?2:p.startsWith(q)?3:9; };
+  const todos=lista.map(d=>[nota(d),d]).filter(([v])=>v<9).sort((a,b)=>a[0]-b[0]).map(([,d])=>d);
+  return {itens:todos.slice(0,n), total:todos.length};
+}
 function ligarBusca(){
   const campo=document.getElementById('busca'), lista=document.getElementById('achados');
   let sel=-1, atuais=[];
@@ -814,14 +832,16 @@ function ligarBusca(){
     const q=norm(campo.value.trim());
     if(q.length<2){ lista.classList.remove('on'); return; }
     if(!pSen) carregarSenadores().then(()=>{ if(norm(campo.value.trim()).length>=2) campo.dispatchEvent(new Event('input')); });
-    atuais=[...deputados.filter(d=>norm(d.nome).includes(q)||norm(d.partido).includes(q)).slice(0,20),
-            ...senadores.filter(d=>norm(d.nome).includes(q)||norm(d.partido).includes(q)).slice(0,10)];
+    const dep=achar(deputados,q,20), sen=achar(senadores,q,10);
+    atuais=[...dep.itens,...sen.itens];
+    const fora=(dep.total-dep.itens.length)+(sen.total-sen.itens.length);
     sel=-1;
     lista.innerHTML=atuais.length?atuais.map(d=>{ const fr=(d.senador?FRASES_S:FRASES)[d.id]; return `<a class="achado" href="${hrefDe(d)}">
         ${retrato(d,30)}
         <div class="achado-txt"><b><span class="pastilha" style="background:${E.corDoScore(d.score,true)}"></span>${esc(d.nome)}</b>${fr
           ?`<i class="achado-fr">${esc(fr)}</i>`:''}</div>
         <span>${d.senador?'Senado · ':''}${esc(d.partido)} de ${esc(d.uf)}</span></a>`; }).join('')
+        +(fora>0?`<div class="nada">Mais ${fora} ${fora===1?'resultado':'resultados'}: digite mais letras do nome para achar.</div>`:'')
       :'<div class="nada">Nenhum deputado ou senador com esse nome.</div>';
     lista.classList.add('on');
   });
