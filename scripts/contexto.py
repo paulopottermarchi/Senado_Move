@@ -36,7 +36,6 @@ import time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
-from functools import lru_cache
 
 import coleta
 from coleta import API, CACHE, DADOS, ENTRADAS, Limitador, ler_cache, gravar_cache
@@ -62,7 +61,8 @@ SIT_ENCERRADAS = {923, 930, 931, 940, 941, 950, 1120, 1230, 1250, 1260, 1285, 12
 SIT_EVENTO_NORMA = {"251", "1012"}   # "Transformação em Norma Jurídica" · "…com Veto Parcial"
 TOLERANCIA_DOU = 3                   # dias entre o evento da Câmara e o DOU
 
-URL_IBGE = "https://servicodados.ibge.gov.br/api/v3/agregados"
+URL_IBGE = "https://servicodados.ibge.gov.br/api/v3/agregados"     # reserva: só responde do Brasil (ver agregado_sidra)
+URL_SIDRA = "https://apisidra.ibge.gov.br/values"                  # a fonte do SIDRA: responde de qualquer país
 URL_SGS = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{}/dados"
 URL_BCB_METAS = "https://www.bcb.gov.br/api/paginasite/sitebcb/controleinflacao/historicometas"
 URL_BCB_12M = "https://www.bcb.gov.br/api/servico/sitebcb/meta-vs-inflacao-efetiva"
@@ -110,19 +110,71 @@ def mes_de(rotulo):
 
 # ---------------------------------------------------------------- INDICADORES
 
-@lru_cache(maxsize=None)
-def metadados_sidra(tabela):
-    return buscar(f"{URL_IBGE}/{tabela}/metadados")
+_PERIODO_SIDRA = re.compile(r"^(Mês|Trimestre|Trimestre Móvel|Ano) \(Código\)$")
+
+
+def agregado_sidra(tabela, variavel, classificacao=None):
+    """Uma série do SIDRA para o Brasil: {"serie": {período: valor em texto}, "unidade", "variavel", "fonte"}. O período vem como a API de agregados o
+    escreve (202608, 202602, 2025) e o valor sem conversão ("..." continua "..."): quem chama decide o que é dado.
+
+    Fonte: apisidra.ibge.gov.br, que responde de qualquer país. A API de agregados (servicodados.ibge.gov.br) só responde do Brasil: medido em 23/10/2026
+    (check-host.net), São Paulo em 0,3 s e tempo esgotado de Los Angeles, Frankfurt, Nuremberg, Paris, Zurique, Amsterdã e Londres. O runner do GitHub fica
+    fora do país, e por isso os indicadores pararam em 21/10. A API de agregados fica de reserva (vale numa máquina no Brasil).
+    `classificacao` no formato da API de agregados ("11255[90707]")."""
+    caminho = f"{URL_SIDRA}/t/{tabela}/n1/all/v/{variavel}/p/all"
+    if classificacao:
+        m = re.fullmatch(r"(\d+)\[(\d+)\]", classificacao)
+        if not m:
+            raise ValueError(f"classificação em formato inesperado: {classificacao!r} (esperado 'NNNN[CCCC]')")
+        caminho += f"/c{m[1]}/{m[2]}"
+    try:
+        return do_apisidra(buscar(caminho), tabela, variavel)
+    except (RuntimeError, coleta.requests.HTTPError) as erro:
+        print(f"   apisidra falhou na tabela {tabela} ({erro}); tentando a API de agregados", flush=True)
+    params = {"localidades": "N1[all]", **({"classificacao": classificacao} if classificacao else {})}
+    j = buscar(f"{URL_IBGE}/{tabela}/periodos/all/variaveis/{variavel}", params)
+    r = j[0]["resultados"]
+    if len(r) != 1:
+        raise RuntimeError(f"a API de agregados devolveu {len(r)} recortes para a tabela {tabela} (esperado 1)")
+    return {"serie": r[0]["series"][0]["serie"], "unidade": j[0]["unidade"], "variavel": j[0]["variavel"], "fonte": "servicodados"}
+
+
+def do_apisidra(j, tabela, variavel):
+    """A resposta do apisidra (a 1ª linha é o cabeçalho) no formato de agregado_sidra. Aborta se o formato mudar: período repetido (mais de um recorte),
+    variável, unidade ou nome que mudam entre as linhas, cabeçalho sem a coluna do período."""
+    if not isinstance(j, list) or len(j) < 2:
+        raise RuntimeError(f"apisidra: resposta vazia ou fora do formato para a tabela {tabela}, variável {variavel}")
+    cab, linhas = j[0], j[1:]
+    kp = next((k for k, v in cab.items() if _PERIODO_SIDRA.match(str(v))), None)
+    kv = next((k for k, v in cab.items() if v == "Variável (Código)"), None)
+    kn = next((k for k, v in cab.items() if v == "Variável"), None)
+    if not (kp and kv and kn and cab.get("MN") == "Unidade de Medida" and cab.get("V") == "Valor"):
+        raise RuntimeError(f"apisidra: cabeçalho fora do formato na tabela {tabela}: {cab}")
+    serie, unidades, nomes = {}, set(), set()
+    for x in linhas:
+        if str(x.get(kv)) != str(variavel):
+            raise RuntimeError(f"apisidra: veio a variável {x.get(kv)} na tabela {tabela} (pedida {variavel})")
+        if x[kp] in serie:
+            raise RuntimeError(f"apisidra: período {x[kp]} repetido na tabela {tabela} (mais de um recorte)")
+        serie[x[kp]] = x["V"]
+        nomes.add(x[kn])
+        if x["MN"]:
+            unidades.add(x["MN"])
+        else:                     # o apisidra deixa a unidade em branco nas linhas sem dado ("..."); valor de verdade sem unidade é formato novo
+            try:
+                float(x["V"])
+            except ValueError:
+                continue
+            raise RuntimeError(f"apisidra: valor {x['V']} sem unidade no período {x[kp]} da tabela {tabela}")
+    if len(unidades) != 1 or len(nomes) != 1:
+        raise RuntimeError(f"apisidra: a tabela {tabela} veio com {len(unidades)} unidades e {len(nomes)} nomes de variável (esperado 1 de cada)")
+    return {"serie": serie, "unidade": unidades.pop(), "variavel": nomes.pop(), "fonte": "apisidra"}
 
 
 def sidra(tabela, variavel, classificacao=None, trimestral=False):
-    """Série do SIDRA (API de agregados do IBGE) + a unidade lida nos metadados da própria tabela."""
-    params = {"localidades": "N1[all]"}
-    if classificacao:
-        params["classificacao"] = classificacao
-    j = buscar(f"{URL_IBGE}/{tabela}/periodos/all/variaveis/{variavel}", params)
-    serie = j[0]["resultados"][0]["series"][0]["serie"]
-    var = next(v for v in metadados_sidra(tabela)["variaveis"] if str(v["id"]) == str(variavel))
+    """Série do SIDRA (ver agregado_sidra) com a unidade e o nome da variável que a própria fonte informa."""
+    a = agregado_sidra(tabela, variavel, classificacao)
+    serie = a["serie"]
     pontos = []
     for per in sorted(serie):
         try:
@@ -134,7 +186,7 @@ def sidra(tabela, variavel, classificacao=None, trimestral=False):
             pontos.append((f"{per[:4]}-{(q - 1) * 3 + 1:02d}-01", v))
         else:
             pontos.append((mes_de(per), v))
-    return {"pontos": pontos, "unidade": var["unidade"], "nome": var["nome"]}
+    return {"pontos": pontos, "unidade": a["unidade"], "nome": a["variavel"]}
 
 
 def sgs(cod):

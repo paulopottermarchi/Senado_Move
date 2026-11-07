@@ -193,3 +193,10 @@ jobs:
 
       - id: publicar
         uses: actions/deploy-pages@v4
+
+      # Frescor: a validação acima confere o FORMATO; esta confere a DATA de cada arquivo publicado (scripts/frescor.py). Roda no fim, depois de publicar,
+      # para não segurar o site, e deixa a rodada VERMELHA se um dado diário não muda há duas rodadas (o GitHub avisa por e-mail). A tabela vai para o
+      # resumo da rodada. Os passos de coleta são opcionais de propósito; sem isto, a falha de um deles só aparecia como aviso no meio de dezenas de outros.
+      - name: Frescor dos dados publicados
+        if: always()
+        run: python scripts/frescor.py --estrito

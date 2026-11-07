@@ -242,6 +242,10 @@ Scripts que não entram na rodada diária:
 - `scripts/comex.py` — exportações por destino e por produto (Comex Stat), grava `site/dados/comex/`. Roda na rodada diária mas só trabalha a cada 7 dias e só baixa o que falta: ano fechado já gravado não é pedido de novo, e o ano
   corrente só quando a fonte atualizou; `--forcar` ignora o intervalo, `--completo` baixa todos os anos de novo, `--so-montar` remonta do cache, `--simular` confere sem gravar, `--imprimir` mostra totais, os 10 maiores e as frases, `--teste` roda os testes sem rede,
   `--reaproveitar` (desenvolvimento) aceita o cache bruto de qualquer dia. Também grava `balanca.json` (exportação, importação e saldo por ano e mês, FOB nos dois lados).
+- `scripts/frescor.py` — último passo da rodada diária: confere a DATA de cada arquivo publicado (a validação por esquema confere só o formato) e deixa
+  a rodada vermelha (`--estrito`) se um dado diário não muda há duas rodadas, com a tabela no resumo da rodada. `--teste` roda os testes.
+- O SIDRA do IBGE é lido de `apisidra.ibge.gov.br`, que responde de qualquer país. A API de agregados (`servicodados.ibge.gov.br`) só responde do Brasil
+  (medido em 23/10/2026) e fica de reserva em `contexto.agregado_sidra`; o runner do GitHub fica fora do país.
 - `scripts/contexto_abertura.py` — roda dentro de `contexto.py` (módulo irmão, diário): abertura comercial a partir das Contas Nacionais do IBGE, grava `site/dados/contexto/abertura.json`.
 - `scripts/receita.py` — arrecadação do IOF, do Imposto sobre Importação e do IPI (Receita Federal), grava `site/dados/contexto/tributos.json`. Roda na rodada diária mas só trabalha a cada 7 dias
   (`--forcar`, `--so-montar`, `--simular`, `--imprimir`, `--teste`). `scripts/xlsx_lite.py` lê as planilhas só com a biblioteca padrão (sem `openpyxl`).
