@@ -412,7 +412,7 @@ html[data-ed] .t-grande{font-size:clamp(52px,7.8vw,112px);line-height:.92}
 .numeros-ed{container-type:inline-size}
 .numeros-ed>div{padding:16px 0 0 24px;border-left:1px solid var(--linha-forte);min-width:0}
 .numeros-ed>div:first-child{padding-left:0;border-left:0}
-.numeros-ed b{display:block;font-family:var(--cond);font-weight:600;font-size:min(clamp(40px,4.6vw,64px),calc((100cqi / 3 - 36px) / var(--em,1.5)));line-height:1;letter-spacing:0;color:var(--tinta);white-space:nowrap}
+.numeros-ed b{display:block;font-family:var(--cond);font-weight:600;font-size:clamp(40px,4.6vw,64px);font-size:min(clamp(40px,4.6vw,64px),calc((100cqi / 3 - 36px) / var(--em,1.5)));line-height:1;letter-spacing:0;color:var(--tinta);white-space:nowrap}
 .numeros-ed span{display:block;margin-top:6px;font-size:13px;line-height:1.35;color:var(--tinta3)}
 
 /* abertura das páginas internas (leis, blocos, fluxo, obras): título grande à esquerda, modelo à direita; o resto da página como era */
