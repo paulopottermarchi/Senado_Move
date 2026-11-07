@@ -153,7 +153,7 @@
 .sem-per{margin-top:20px;font-size:15px;color:var(--tinta3)}
 .numeros-sem{grid-column:7/span 6;margin-top:0}
 .numeros-sem>div{padding-top:20px}
-.numeros-sem b{font-size:clamp(64px,8.3vw,120px);line-height:.95}
+.numeros-sem b{font-size:clamp(64px,8.3vw,120px);font-size:min(clamp(64px,8.3vw,120px),calc((100cqi / 3 - 36px) / var(--em,1.5)));line-height:.95}
 .numeros-sem span{margin-top:8px;font-size:14px;color:var(--tinta2)}
 .sem-grade{display:grid;grid-template-columns:1fr 1fr;gap:0 48px;margin-top:56px}
 .sem-col{padding-top:16px;margin-top:12px;border-top:1px solid var(--linha-forte)}
@@ -292,7 +292,7 @@
   .reg{grid-template-columns:78px minmax(0,1fr) 44px;gap:8px}
   .reg-uf{display:none}
   .mapa{padding:20px}
-  .numeros-sem b{font-size:clamp(48px,16vw,72px)}
+  .numeros-sem b{font-size:clamp(48px,16vw,72px);font-size:min(clamp(48px,16vw,72px),calc((100cqi / 3 - 36px) / var(--em,1.5)))}
 }
 /* Toque: links soltos de texto pequeno tinham 15 a 23 px de altura (medido a 375 px). O ::after aumenta só a área de toque, sem mudar o desenho;
    em "Esta semana" o número cresce para cima e o autor para baixo, porque os dois ficam a 2 px um do outro e não podem disputar o mesmo toque. */
@@ -735,7 +735,8 @@ async function carregarSemana(){
       <div class="sem-tit"><p class="kicker">Últimos 7 dias</p>
         <h2 class="h2-ed" id="semanaTit">Esta semana na Câmara</h2>
         <p class="sem-per">${periodo(s.de,s.ate)}. Atualizado em ${dataLonga(s.geradoEm)}, às ${hora}.</p></div>
-      <div class="numeros-ed numeros-sem" role="group" aria-label="Totais da semana">
+      <div class="numeros-ed numeros-sem" role="group" aria-label="Totais da semana"
+           style="--em:${Math.max(...[s.viraramLei.total,s.andaram.total,s.novas.total].map(v=>[...nf.format(v)].reduce((a,c)=>a+(/\d/.test(c)?.48:.24),0))).toFixed(2)}">
         <div><b data-conta>${nf.format(s.viraramLei.total)}</b><span>viraram lei</span></div>
         <div><b data-conta>${nf.format(s.andaram.total)}</b><span>andaram</span></div>
         <div><b data-conta>${nf.format(s.novas.total)}</b><span>novas proposições</span></div>
