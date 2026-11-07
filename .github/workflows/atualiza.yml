@@ -168,13 +168,13 @@ jobs:
 
       # depois de obras.py (as obras de obras.html) e de coleta.py (deputados e mandatos); falhou, site/dados/emendas/ fica como estava.
       # As listas do ObrasGov valem 7 dias: nos outros dias o passo leva segundos; no 7º, ou com o cache vazio, ~12 min (medido). --minutos é o teto.
-      # SEM --publicar até a conferência à mão de uma amostra dos vínculos (decidido em 7/11/2026): o passo roda e grava só em
-      # cache/emendas/ (candidato, auditoria, relatório), para medir a coleta no runner. Para publicar, trocar --dry-run por --publicar.
+      # Publicação ligada em 7/11/2026, depois da conferência à mão de uma amostra de 20 vínculos (um por deputado, os 3 de alias
+      # sempre; capturas/amostra_emendas.csv): as 20 conferidas. Para voltar a só medir, trocar --publicar por --dry-run.
       - name: Emendas de deputados nas obras
         # teto 45 min: 12 min com o cache zerado; teto interno --minutos 40
         continue-on-error: true
         timeout-minutes: 50
-        run: python scripts/passo.py --opcional --minutos 45 emendas_obras.py --dry-run --minutos 40
+        run: python scripts/passo.py --opcional --minutos 45 emendas_obras.py --publicar --minutos 40
 
       - name: Senadores
         # teto 60 min: 50 min com o cache zerado
