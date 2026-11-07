@@ -105,25 +105,35 @@ contador_req = 0
 _trava_contador = threading.Lock()
 
 
+def motivo_http(r, n=160):
+    """'HTTP 503, "Service Unavailable …"': o código e o começo do corpo, sem HTML, para a mensagem de erro dizer POR QUE a fonte falhou."""
+    t = re.sub(r"<(style|script)\b.*?</\1>", " ", r.text or "", flags=re.S | re.I)
+    t = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", t)).strip()
+    return f"HTTP {r.status_code}" + (f", {t[:n] + ('…' if len(t) > n else '')!r}" if t else "")
+
+
 def get(url, params=None, tentativas=6):
     global contador_req
+    ultimo = "sem resposta"   # o motivo da última falha vai na mensagem (7/11/2026: a Câmara não respondeu ao GitHub por ~19 min e o log não dizia por quê)
     for n in range(tentativas):
         limitador.esperar()
         with _trava_contador:
             contador_req += 1
         try:
             r = sessao.get(url, params=params, timeout=60)
-        except (requests.ConnectionError, requests.Timeout):
+        except (requests.ConnectionError, requests.Timeout) as e:
+            ultimo = f"{type(e).__name__}: {str(e)[:160]}"
             time.sleep(2 ** n)
             continue
         if r.status_code == 404:
             return None
         if r.status_code == 429 or r.status_code >= 500:
+            ultimo = motivo_http(r)
             time.sleep(2 ** n)
             continue
         r.raise_for_status()
         return r.json()
-    raise RuntimeError(f"falhou após {tentativas} tentativas: {url} {params or ''}")
+    raise RuntimeError(f"falhou após {tentativas} tentativas ({ultimo}): {url} {params or ''}")
 
 
 def get_paginado(url, params):
