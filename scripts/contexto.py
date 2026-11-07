@@ -1202,7 +1202,11 @@ def main():
     def falhar(bloco, e):
         txt = e if isinstance(e, str) else str(e) if isinstance(e, Aborta) else f"{type(e).__name__}: {e}"
         falhas.append(f"{bloco}: {txt}")
-        print(f"::error title=contexto ({bloco})::{txt}" if os.environ.get("GITHUB_ACTIONS") else f"FALHOU ({bloco}): {txt}", flush=True)
+        # no título da anotação do GitHub, vírgula e dois-pontos separam propriedades: sem o escape, "indicadores, Tesouro Nacional" virava
+        # o título "contexto (indicadores" (rodada de 7/11/2026)
+        titulo = bloco.replace("%", "%25").replace(",", "%2C").replace(":", "%3A")
+        corpo = txt.replace("%", "%25").replace("\r", "").replace("\n", "%0A")
+        print(f"::error title=contexto ({titulo})::{corpo}" if os.environ.get("GITHUB_ACTIONS") else f"FALHOU ({bloco}): {txt}", flush=True)
 
     def resumo_mandatos(m):
         ms = m["mandatos"]
