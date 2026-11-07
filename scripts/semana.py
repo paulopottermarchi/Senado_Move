@@ -26,7 +26,7 @@ import sys
 from collections import Counter
 from datetime import date, datetime, timedelta, timezone
 
-from coleta import CACHE, DADOS, TIPOS, e_autor, ler_cache, virou_lei
+from coleta import CACHE, DADOS, TIPOS, e_autor, gravar_texto, ler_cache, virou_lei
 from temas import CATEGORIAS, CURTO, classificar
 import resumos
 
@@ -132,8 +132,7 @@ def main():
                   "itens": novas[:MAX_ITENS]},
         "pauta": pauta,
     }
-    SAIDA.write_text(json.dumps(saida, ensure_ascii=False, separators=(",", ":")),
-                     encoding="utf-8")
+    gravar_texto(SAIDA, json.dumps(saida, ensure_ascii=False, separators=(",", ":")))
     print(f"{SAIDA.name}: {janela[0]} a {janela[1]} · {len(novas)} novas · {len(andaram)} andaram · "
           f"{len(leis)} viraram lei · pauta: "
           + ("sem cache/pauta.json" if pauta is None else f"{len(pauta['eventos'])} evento(s)"))

@@ -153,7 +153,7 @@ def main():
             sem.append(sigla)
     out = {"_gerado": date.today().isoformat(), "partidos": saida, "sem": sem}
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
-    SAIDA.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    coleta.gravar_texto(SAIDA, json.dumps(out, ensure_ascii=False, separators=(",", ":")))
     cam = sum(1 for v in saida.values() if any(e["f"] == "camara" for e in v))
     com = sum(1 for v in saida.values() if any(e["f"] == "commons" for e in v))
     print(f"{len(siglas)} siglas · com logo {len(saida)} (Câmara {cam}, Commons {com}) · sem logo {len(sem)}")

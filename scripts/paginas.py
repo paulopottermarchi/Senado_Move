@@ -428,9 +428,15 @@ def desenhar_cartao(rotulos, destino):
     d.text((x0, 580), rotulos["rodape"], font=fonte(500, 26), fill="#a3b1c2")
     dom = rotulos["dominio"]
     d.text((x0 + larg - d.textlength(dom, font=fonte(600, 26)), 580), dom, font=fonte(600, 26), fill="#2dd4bf")
-    q = img.quantize(colors=16, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
-    destino.parent.mkdir(parents=True, exist_ok=True)
-    q.save(destino, format="PNG", optimize=True)
+    salvar_png(img.quantize(colors=16, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE), destino)
+
+
+def salvar_png(q, destino):
+    """PNG atômico: um passo cortado no meio não deixa imagem pela metade em site/ (ver coleta.gravar_texto)."""
+    import io
+    b = io.BytesIO()
+    q.save(b, format="PNG", optimize=True)
+    coleta.gravar_bytes(destino, b.getvalue())
 
 
 def rotulos_cartao(f):
@@ -462,9 +468,7 @@ def cartao_padrao(destino):
     d.text((x0, 580), "Site independente, sem vínculo com a Câmara, o Senado ou o TSE", font=fonte(500, 26), fill="#a3b1c2")
     dom = BASE_URL.split("//", 1)[-1]
     d.text((x0 + 1056 - d.textlength(dom, font=fonte(600, 26)), 580), dom, font=fonte(600, 26), fill="#2dd4bf")
-    q = img.quantize(colors=16, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
-    destino.parent.mkdir(parents=True, exist_ok=True)
-    q.save(destino, format="PNG", optimize=True)
+    salvar_png(img.quantize(colors=16, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE), destino)
 
 
 # ---------------------------------------------------------------------------------------------------------- tags nas páginas atuais
@@ -501,7 +505,7 @@ def injetar(arquivo, escrever=True):
     if novo == t:
         return False
     if escrever:
-        p.write_bytes(novo.replace("\n", nl).encode("utf-8"))
+        coleta.gravar_bytes(p, novo.replace("\n", nl).encode("utf-8"))
     return True
 
 
@@ -538,8 +542,7 @@ def gravar_manifesto(m, destino):
     texto = ('{\n"baseUrl": ' + json.dumps(m["baseUrl"]) + ',\n"versao": ' + json.dumps(m["versao"]) + ',\n"geradoEm": ' + json.dumps(m["geradoEm"]) +
              ',\n"padrao": ' + json.dumps(m.get("padrao")) + ',\n"deputados": {\n' + linhas(m["deputados"]) + '\n},\n"senadores": {\n' + linhas(m["senadores"]) + "\n}\n}\n")
     json.loads(texto)
-    destino.parent.mkdir(parents=True, exist_ok=True)
-    destino.write_text(texto, encoding="utf-8", newline="\n")
+    coleta.gravar_texto(destino, texto, newline="\n")
 
 
 # ---------------------------------------------------------------------------------------------------------- geração
@@ -585,8 +588,7 @@ def gerar(dry=False, limite=None, so_estaticas=False):
             else:
                 lastmod = data
                 pagina = html_pagina(f, slug, lastmod, rod)
-                pasta.mkdir(parents=True, exist_ok=True)
-                (pasta / "index.html").write_text(pagina, encoding="utf-8", newline="\n")
+                coleta.gravar_texto(pasta / "index.html", pagina, newline="\n")
                 stats["escritas"] += 1
             png = pasta / "og.png"
             if ant.get("hi") != hi or not (SITE / tipo / f"{pid}-{slug}" / "og.png").exists() or dry:
@@ -603,8 +605,8 @@ def gerar(dry=False, limite=None, so_estaticas=False):
     entradas = [(f"{BASE_URL}/{a}", data) for a in PAGINAS_SITEMAP]
     for chave, tipo in (("deputados", "deputado"), ("senadores", "senador")):
         entradas += [(f"{BASE_URL}/{tipo}/{pid}-{e['slug']}/", e["lastmod"]) for pid, e in sorted(novo[chave].items(), key=lambda kv: int(kv[0]))]
-    (raiz / "sitemap.xml").write_text(sitemap(entradas, data), encoding="utf-8", newline="\n")
-    (raiz / "robots.txt").write_text(robots(), encoding="utf-8", newline="\n")
+    coleta.gravar_texto(raiz / "sitemap.xml", sitemap(entradas, data), newline="\n")
+    coleta.gravar_texto(raiz / "robots.txt", robots(), newline="\n")
     if not dry:
         gravar_manifesto(novo, MANIFESTO)
     # 5. medidas

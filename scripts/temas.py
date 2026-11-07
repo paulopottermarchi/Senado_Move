@@ -29,7 +29,7 @@ import unicodedata
 from collections import Counter
 from datetime import date
 
-from coleta import CACHE, DADOS, TIPOS, e_autor, ler_cache, virou_lei
+from coleta import CACHE, DADOS, TIPOS, e_autor, gravar_texto, ler_cache, virou_lei
 import resumos  # passo 8: resumo do inteiro teor, gerado por resumos.py
 import tramitacoes  # histórico de tramitação → etapas (tramitacoes.py baixa; aqui só se lê o cache)
 
@@ -251,7 +251,7 @@ def gravar_se_mudou(caminho, obj):
             return False
     except FileNotFoundError:
         pass
-    caminho.write_text(novo, encoding="utf-8")
+    gravar_texto(caminho, novo)
     return True
 
 
@@ -352,8 +352,7 @@ def main():
                    for b, cs in BLOCOS],
         "categorias": CATEGORIAS,
     }
-    (SAIDA / "taxonomia.json").write_text(json.dumps(taxonomia, ensure_ascii=False),
-                                          encoding="utf-8")
+    gravar_texto(SAIDA / "taxonomia.json", json.dumps(taxonomia, ensure_ascii=False))
     mudaram = 0
     resumo = {}
     for id_dep, obj in saidas.items():

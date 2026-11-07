@@ -257,20 +257,22 @@ def sem_cpf(lista):
     return saida
 
 
-def contrato(cid, atualizar):
-    """Registro, histórico, empenhos, publicações no DOU e responsáveis de um contrato (cache)."""
+def contrato(cid, atualizar, pedir_json=None):
+    """Registro, histórico, empenhos, publicações no DOU e responsáveis de um contrato (cache).
+    `pedir_json`: outra função de consulta com a mesma assinatura de pedir (pessoas.py passa a sua, com teto e disjuntor)."""
+    p = pedir_json or pedir
     caminho = CACHE_O / "contratos" / f"{cid}.json"
     c = fresco(caminho, atualizar)
     if c is None:
-        reg = pedir(f"{CT}/contrato/id/{cid}", intervalo=0.5)
+        reg = p(f"{CT}/contrato/id/{cid}", intervalo=0.5)
         if isinstance(reg, list):
             reg = reg[0] if reg else None
         c = {"registro": reg,
-             "historico": pedir(f"{CT}/contrato/{cid}/historico", intervalo=0.5) or [],
-             "empenhos": pedir(f"{CT}/contrato/{cid}/empenhos", intervalo=0.5) or [],
-             "publicacoes": pedir(f"{CT}/contrato/{cid}/publicacoes", intervalo=0.5) or []}
+             "historico": p(f"{CT}/contrato/{cid}/historico", intervalo=0.5) or [],
+             "empenhos": p(f"{CT}/contrato/{cid}/empenhos", intervalo=0.5) or [],
+             "publicacoes": p(f"{CT}/contrato/{cid}/publicacoes", intervalo=0.5) or []}
     if "responsaveis" not in c:   # cache anterior a 29/9/2026: só esta parte é pedida
-        c["responsaveis"] = sem_cpf(pedir(f"{CT}/contrato/{cid}/responsaveis", intervalo=0.5))
+        c["responsaveis"] = sem_cpf(p(f"{CT}/contrato/{cid}/responsaveis", intervalo=0.5))
         coleta.gravar_cache(caminho, c)
     elif not caminho.exists():
         coleta.gravar_cache(caminho, c)

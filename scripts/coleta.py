@@ -155,6 +155,23 @@ def gravar_cache(caminho, obj):
     os.replace(tmp, caminho)  # atômico: um Ctrl+C nunca deixa arquivo pela metade
 
 
+def gravar_texto(caminho, texto, newline=None):
+    """write_text atômico: escrito ao lado (nome + ".tmp") e trocado de uma vez. Um passo da rodada cortado no meio (teto do passo,
+    limite do job) deixa o arquivo anterior inteiro, nunca a metade dele; o .tmp que sobrar é apagado por restaurar_parciais.py."""
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    tmp = caminho.with_name(caminho.name + ".tmp")
+    tmp.write_text(texto, encoding="utf-8", newline=newline)
+    os.replace(tmp, caminho)
+
+
+def gravar_bytes(caminho, dados):
+    """write_bytes atômico (ver gravar_texto)."""
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    tmp = caminho.with_name(caminho.name + ".tmp")
+    tmp.write_bytes(dados)
+    os.replace(tmp, caminho)
+
+
 # ---------------------------------------------------------------- coleta
 
 def lista_deputados():
@@ -684,8 +701,7 @@ def main():
     os.replace(tmp, SAIDA)   # atômico: interrompido, o arquivo anterior fica inteiro
     # Datas das legislaturas que aparecem nos dados — rótulos do filtro de mandato.
     usadas = {int(k) for d in resultado for k in (*d["mandatos"], *d["porLegislatura"])}
-    LEGISLATURAS.write_text(json.dumps([l for l in legs if l["id"] in usadas],
-                                       ensure_ascii=False, indent=1), encoding="utf-8")
+    gravar_texto(LEGISLATURAS, json.dumps([l for l in legs if l["id"] in usadas], ensure_ascii=False, indent=1))
     print("\nChecagem de sanidade OK: nenhuma proposição 'rejeitada' virou lei; recorte "
           "por mandato fecha com o total em todos.")
     print(f"{SAIDA.name} gravado · {len(resultado)} deputados · "

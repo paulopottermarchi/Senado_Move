@@ -19,6 +19,7 @@ Uso (a partir da raiz; roda depois de obras.py):
     python scripts/pessoas.py --so-montar   # sem rede: remonta tudo do cache
     python scripts/pessoas.py --limite 20   # só os 20 primeiros contratos (teste)
     python scripts/pessoas.py --revalidar   # baixa os PDFs de novo e confere o hash
+    python scripts/pessoas.py --minutos 45  # teto da rodada (o padrão): passado ele, nenhuma consulta nova e NADA publicado (ver Rede)
 A PUBLICAÇÃO É DESLIGADA POR PADRÃO: sem --publicar este script nunca escreve em site/.
 
 Regras (as do pedido, e do CLAUDE.md, "Obras"):
@@ -76,6 +77,23 @@ VALIDADE_COMPRA = timedelta(days=30)
 QUEDA_MAXIMA = 0.20            # a rodada falha se uma via perder mais que isso das pessoas da rodada anterior
 VAZIOS = CACHE_P / "arquivos_vazios.json"   # {contrato: quando} — só a lista vazia CONFIRMADA vale "sem arquivo" (ver listar_arquivos)
 SEQUENCIA_VAZIA_SUSPEITA = 15  # tantas consultas seguidas sem arquivo = falha da API, não dos contratos (o máximo verdadeiro, em 303, foi 8)
+
+# Rede (ver a classe Rede). A rodada de 25/10/2026 foi cortada no limite do job (360 min) com este passo em 317 min; em 26/10, 10,8 min.
+# Antes, cada pedido de lista podia esperar 120 s por tentativa, com 6 tentativas e até 90 s entre elas (~15 min), cada PDF 180 s × 2,
+# e nada limitava o total.
+MINUTOS_PADRAO = 45            # teto da rodada inteira (--minutos); passado ele, nenhuma consulta nova e nada publicado
+CONEXAO = 10                   # s para abrir a conexão
+LEITURA = 30                   # s sem receber nenhum byte
+TOTAL_JSON = 60                # s por pedido de lista ou registro (o timeout de leitura do requests não limita o total: basta um byte a cada 29 s)
+TOTAL_PDF = 120                # s por PDF (até P.MAX_PDF)
+TENTATIVAS = 2                 # por pedido: a primeira e mais uma
+ESPERA_MAX = 30                # s de espera depois de uma falha, Retry-After incluído
+NOVAS_TENTATIVAS_MAX = 30      # na rodada inteira; esgotadas, cada pedido tem uma tentativa só
+FALHAS_SEGUIDAS_MAX = 8        # tentativas seguidas sem resposta (erro de rede, tempo esgotado, HTTP que não é 200 nem 404) abrem o disjuntor
+# Depois de uma falha, a próxima tentativa (do mesmo pedido ou do seguinte) espera 5, 10, 20, 30, 30… s: o disjuntor só abre depois de
+# ~2,5 min de falha contínua (mais o tempo das próprias falhas). Visto em 26/10/2026 nesta máquina: 6 erros de rede seguidos em menos de
+# um minuto (causa não vista: a API ou a rede daqui), e nenhum nas rodadas seguintes; com a espera só dentro do pedido, um soluço assim
+# custaria a publicação do dia.
 
 CAT_E2 = "assinou pelo órgão contratante (representante, contrato ou termo em PDF)"
 CAT_E3 = "responsável registrado no aviso de licitação (Compras.gov.br)"
@@ -149,33 +167,175 @@ def numero_ano(lic):
     return (int(m[1]), int(m[2])) if m else (None, None)
 
 
-_ultimo = defaultdict(float)
+def aviso(msg):
+    print(f"::warning title=pessoas.py::{msg}" if os.environ.get("GITHUB_ACTIONS") else f"AVISO: {msg}", flush=True)
 
 
-def baixar(url):
-    """(bytes, estado): PDF na memória, nunca em disco. 404, 'nao_pdf' e 'grande' são definitivos; 'rede' e 'http_5xx' não."""
-    host = url.split("/")[2]
-    for tentativa in range(2):
-        espera = INTERVALO_PDF - (time.monotonic() - _ultimo[host])
+# ---------------------------------------------------------------- rede: teto da rodada, tempo por pedido, disjuntor
+
+class Cortada(RuntimeError):
+    """A rodada parou de consultar a rede (teto de tempo ou disjuntor). É RuntimeError para quem já trata a falha de consulta como
+    "fica o que está no cache" (obras.contrato, por exemplo); quem precisa distinguir (pendente por corte × falha) testa este tipo antes."""
+
+
+class Lento(Exception):
+    def __init__(self, por_teto):
+        super().__init__()
+        self.por_teto = por_teto          # o pedido foi limitado pelo que restava do teto, não pelo total por pedido: não é falha da API
+
+
+class Rede:
+    """Todas as consultas deste script passam por aqui (Contratos.gov.br e, com o E3 ligado, Compras.gov.br).
+      - teto da rodada (`minutos`): passado ele, nenhum pedido novo; quem chama fica com o cache, como no --so-montar;
+      - por pedido: CONEXAO para conectar, LEITURA sem byte nenhum, e um total (TOTAL_JSON, TOTAL_PDF) que o requests sozinho não
+        dá; o total nunca passa do que resta do teto;
+      - TENTATIVAS por pedido e NOVAS_TENTATIVAS_MAX na rodada; depois de cada falha, espera que cresce com as falhas SEGUIDAS (de qualquer
+        pedido) até ESPERA_MAX, Retry-After também limitado;
+      - disjuntor: FALHAS_SEGUIDAS_MAX tentativas seguidas sem resposta, ou SEQUENCIA_VAZIA_SUSPEITA contratos seguidos "sem arquivo"
+        (listar_arquivos), cortam a rede como o teto.
+    Cortada a rede, a rodada termina com o que está no cache e NÃO publica (main). `relogio` e `dormir` são trocados nos testes."""
+
+    def __init__(self, minutos=MINUTOS_PADRAO, sessao=None, relogio=time.monotonic, dormir=time.sleep):
+        self.sessao = sessao or obras.sessao
+        self.relogio, self.dormir = relogio, dormir
+        self.minutos = minutos
+        self.inicio = relogio()
+        self.fim = self.inicio + minutos * 60 if minutos and minutos > 0 else float("inf")
+        self.motivo = None
+        self.falhas_seguidas = 0
+        self.ultimo_erro = None
+        self.novas = 0
+        self.cont = Counter()
+        self._ultimo = defaultdict(float)
+
+    def restante(self):
+        return self.fim - self.relogio()
+
+    def cortar(self, motivo):
+        if self.motivo is None:
+            self.motivo = motivo
+            aviso(f"rede cortada depois de {(self.relogio() - self.inicio) / 60:.1f} min: {motivo}. Nenhuma consulta nova nesta "
+                  f"rodada; o que veio fica no cache para a próxima, e nada é publicado.")
+
+    def aberta(self):
+        if self.motivo is None and self.restante() <= 0:
+            self.cortar(f"teto de {self.minutos:g} min da rodada (--minutos)")
+        return self.motivo is None
+
+    def _falhou(self, tipo, detalhe=None):
+        self.cont["falha_" + tipo] += 1
+        self.falhas_seguidas += 1
+        self.ultimo_erro = f"{tipo}" + (f", {detalhe}" if detalhe else "")
+        if self.falhas_seguidas >= FALHAS_SEGUIDAS_MAX:
+            self.cortar(f"disjuntor: {self.falhas_seguidas} tentativas seguidas sem resposta (a última: {self.ultimo_erro})")
+
+    def _tentativa(self, url, params, intervalo, total, max_bytes):
+        host = url.split("/")[2]
+        espera = intervalo - (self.relogio() - self._ultimo[host])
         if espera > 0:
-            time.sleep(espera)
-        _ultimo[host] = time.monotonic()
+            self.dormir(espera)
+        self._ultimo[host] = self.relogio()
+        limite = max(1.0, min(total, self.restante()))
+        t0 = self.relogio()
+        self.cont["tentativas"] += 1
+        r = self.sessao.get(url, params=params, timeout=(CONEXAO, LEITURA), stream=True)
         try:
-            r = obras.sessao.get(url, timeout=180)
-        except requests.RequestException:
-            time.sleep(5)
-            continue
-        if r.status_code == 404:
-            return None, "404"
-        if r.status_code != 200:
-            time.sleep(5)
-            continue
-        if len(r.content) > P.MAX_PDF:
-            return None, "grande"
-        if r.content[:4] != b"%PDF":
-            return None, "nao_pdf"
-        return r.content, "ok"
-    return None, "rede"
+            if r.status_code != 200:
+                return r.status_code, r.headers, None
+            partes, n = [], 0
+            for bloco in r.iter_content(1 << 16):
+                partes.append(bloco)
+                n += len(bloco)
+                if max_bytes and n > max_bytes:
+                    return 200, r.headers, None       # grande demais: para de ler
+                if self.relogio() - t0 > limite:
+                    raise Lento(limite < total)
+            return 200, r.headers, b"".join(partes)
+        finally:
+            r.close()
+
+    def pedir(self, url, params=None, intervalo=INTERVALO_PDF, total=TOTAL_JSON, max_bytes=None, ler=None):
+        """(status, conteúdo) de um pedido que terminou: 200 (conteúdo = bytes, `ler(bytes)` se dado, ou None se passou de max_bytes)
+        ou 404 (None). Cortada se a rede está ou ficou cortada; RuntimeError se as tentativas acabaram. Qualquer HTTP que não seja 200
+        nem 404, erro de rede, tempo esgotado ou `ler` que levanta ValueError conta como falha (nova tentativa e disjuntor)."""
+        ultimo, ra, feitas = None, None, 0
+        for n in range(TENTATIVAS):
+            if not self.aberta():
+                raise Cortada(self.motivo)
+            if n:
+                if self.novas >= NOVAS_TENTATIVAS_MAX:
+                    break
+                self.novas += 1
+            if self.falhas_seguidas:          # a falha anterior (deste pedido ou de outro) pede espera, que cresce até ESPERA_MAX
+                espera = ra if ra is not None else 5 * 2 ** (self.falhas_seguidas - 1)
+                self.dormir(max(0.0, min(ESPERA_MAX, espera, self.restante())))
+                if not self.aberta():
+                    raise Cortada(self.motivo)
+            ra, feitas = None, feitas + 1
+            try:
+                st, hd, corpo = self._tentativa(url, params, intervalo, total, max_bytes)
+            except Lento as e:
+                if not e.por_teto:
+                    self._falhou("lento")
+                ultimo = f"mais de {total:.0f} s"
+                continue
+            except requests.RequestException as e:
+                ultimo = f"{type(e).__name__}: {str(e)[:160]}"
+                self._falhou("rede", f"{ultimo} em {url.split('/')[2]}")
+                continue
+            if st == 404:
+                self.falhas_seguidas = 0
+                return 404, None
+            if st != 200:
+                self._falhou(f"http_{st}", url.split("/")[2])
+                ultimo = f"HTTP {st}"
+                try:
+                    ra = float(hd.get("retry-after") or "")
+                except (TypeError, ValueError):
+                    ra = None
+                continue
+            if ler is not None and corpo is not None:
+                try:
+                    corpo = ler(corpo)
+                except ValueError:
+                    self._falhou("resposta_invalida")
+                    ultimo = "resposta que não é JSON"
+                    continue
+            self.falhas_seguidas = 0
+            return 200, corpo
+        if not self.aberta():
+            raise Cortada(self.motivo)
+        raise RuntimeError(f"sem resposta em {feitas} tentativa(s): {url} ({ultimo})")
+
+    def pedir_json(self, url, params=None, intervalo=INTERVALO_PDF):
+        """Como obras.pedir (JSON, ou None no 404; RuntimeError se não veio), com os limites desta classe."""
+        st, d = self.pedir(url, params, intervalo, TOTAL_JSON, None, lambda b: json.loads(b.decode("utf-8")))
+        return None if st == 404 else d
+
+
+def pedir_json(url, rede, params=None, intervalo=INTERVALO_PDF):
+    """Sem `rede` (os testes de regressão antigos trocam obras.pedir), a consulta é a de obras.pedir."""
+    if rede is None:
+        return obras.pedir(url, params, intervalo=intervalo)
+    return rede.pedir_json(url, params, intervalo=intervalo)
+
+
+def baixar(url, rede):
+    """(bytes, estado): PDF na memória, nunca em disco. 404, 'nao_pdf' e 'grande' são definitivos; 'rede' (não veio) e 'adiado' (rede
+    cortada) não."""
+    try:
+        st, b = rede.pedir(url, intervalo=INTERVALO_PDF, total=TOTAL_PDF, max_bytes=P.MAX_PDF)
+    except Cortada:
+        return None, "adiado"
+    except RuntimeError:
+        return None, "rede"
+    if st == 404:
+        return None, "404"
+    if b is None:
+        return None, "grande"
+    if b[:4] != b"%PDF":
+        return None, "nao_pdf"
+    return b, "ok"
 
 
 # ---------------------------------------------------------------- E2: PDF do contrato e dos termos
@@ -183,11 +343,19 @@ def baixar(url):
 VAZIO_PROVISORIO = "vazio_provisorio"     # a lista veio vazia nesta rodada e ainda não foi confirmada (confirmar_vazios)
 
 
-def aviso(msg):
-    print(f"::warning title=pessoas.py::{msg}" if os.environ.get("GITHUB_ACTIONS") else f"AVISO: {msg}", flush=True)
+def _vazios_no_fim(consultas):
+    """Quantos contratos seguidos, no fim da passada até aqui, vieram sem arquivo (a falha de consulta não interrompe nem conta)."""
+    n = 0
+    for _, res in reversed(consultas):
+        if res == "falha":
+            continue
+        if res != "vazio":
+            break
+        n += 1
+    return n
 
 
-def listar_arquivos(cid, so_montar, vazios, consultas, est):
+def listar_arquivos(cid, so_montar, vazios, consultas, est, rede=None):
     """Arquivos anexados ao contrato: a lista (com arquivos), [] (sem arquivo, CONFIRMADO), None (não consultado: pendente) ou
     VAZIO_PROVISORIO. "Sem arquivo" vai para a página como fato ("o contrato não tem arquivo anexado"), então só vale confirmado.
     Medido na rodada de 22/10/2026 no GitHub: a API do Contratos.gov.br devolveu lista vazia para TODOS os contratos de um trecho
@@ -198,7 +366,9 @@ def listar_arquivos(cid, so_montar, vazios, consultas, est):
       - lista vazia nova é provisória e só é confirmada por uma segunda consulta, no fim da passada (confirmar_vazios);
       - a lista vazia guardada sem confirmação (antes desta regra, ou por outro script) é consultada de novo.
     `vazios` = {contrato: quando foi confirmado}; `consultas` recebe (contrato, "vazio" | "cheio" | "falha") de TODOS os contratos, na
-    ordem, inclusive os lidos do cache: a sequência suspeita é de contratos vizinhos, não só dos que foram consultados nesta rodada."""
+    ordem, inclusive os lidos do cache: a sequência suspeita é de contratos vizinhos, não só dos que foram consultados nesta rodada.
+    Com `rede`: cortada, o contrato fica com o que está guardado (contado em `adiado_lista`); SEQUENCIA_VAZIA_SUSPEITA contratos seguidos
+    sem arquivo abrem o disjuntor (a API está devolvendo vazio; continuar seria só gastar o tempo da rodada)."""
     cam = obras.CACHE_O / "arquivos" / f"{cid}.json"
     arqs = obras.fresco(cam, False)
     if arqs and isinstance(arqs, list):
@@ -212,8 +382,14 @@ def listar_arquivos(cid, so_montar, vazios, consultas, est):
     reserva = antigo if antigo else ([] if antigo == [] and cid in vazios else None)
     if so_montar:
         return reserva
+    if rede is not None and not rede.aberta():
+        est["adiado_lista"] += 1
+        return reserva
     try:
-        novo = obras.pedir(f"{obras.CT}/contrato/{cid}/arquivos", intervalo=INTERVALO_PDF)
+        novo = pedir_json(f"{obras.CT}/contrato/{cid}/arquivos", rede)
+    except Cortada:
+        est["adiado_lista"] += 1
+        return reserva
     except RuntimeError:
         est["arquivos_falha"] += 1
         consultas.append((cid, "falha"))
@@ -228,17 +404,23 @@ def listar_arquivos(cid, so_montar, vazios, consultas, est):
         coleta.gravar_cache(cam, novo)
         return novo
     consultas.append((cid, "vazio"))
+    if rede is not None and _vazios_no_fim(consultas) >= SEQUENCIA_VAZIA_SUSPEITA:
+        rede.cortar(f"disjuntor: {_vazios_no_fim(consultas)} contratos seguidos sem arquivo no Contratos.gov.br (o máximo verdadeiro "
+                    f"medido foi 8): a API está devolvendo lista vazia")
     if antigo:
         est["arquivos_vazio_contra_cache"] += 1      # a lista guardada tinha arquivos: fica ela
         return antigo
     return VAZIO_PROVISORIO
 
 
-def confirmar_vazios(provisorios, consultas, vazios, est):
+def confirmar_vazios(provisorios, consultas, vazios, est, rede=None):
     """{contrato: lista} para cada lista que veio vazia nesta rodada. SEQUENCIA_VAZIA_SUSPEITA ou mais contratos seguidos sem arquivo
     (na ordem da passada, contando os lidos do cache; uma falha de consulta não interrompe nem conta) é falha da API: nenhum contrato
     novo dela é confirmado (fica pendente e é consultado de novo na próxima rodada). Os demais são consultados uma segunda vez, depois
-    da passada inteira: vazio de novo = confirmado; com arquivos = a primeira resposta estava errada."""
+    da passada inteira: vazio de novo = confirmado; com arquivos = a primeira resposta estava errada.
+    Contrato que JÁ estava confirmado sem arquivo (o cache venceu, 7 a 13 dias) e veio vazio de novo fora de uma sequência suspeita é
+    reconfirmado sem a 2ª consulta: a resposta concorda com o que já estava confirmado. Antes, cada um desses custava dois pedidos a cada
+    vencimento (~120 contratos). Com a rede cortada, quem falta confirmar fica pendente (`adiado_confirmacao`)."""
     provisorio, suspeitos, seq = set(provisorios), set(), []
     for cid, res in consultas + [(None, "fim")]:
         if res == "falha":
@@ -259,8 +441,22 @@ def confirmar_vazios(provisorios, consultas, vazios, est):
             est["arquivos_vazio_suspeito"] += 1
             out[cid] = None
             continue
+        if cid in vazios:
+            est["arquivos_vazio_reconfirmado"] += 1
+            coleta.gravar_cache(cam, [])
+            vazios[cid] = agora()
+            out[cid] = []
+            continue
+        if rede is not None and not rede.aberta():
+            est["adiado_confirmacao"] += 1
+            out[cid] = None
+            continue
         try:
-            novo = obras.pedir(f"{obras.CT}/contrato/{cid}/arquivos", intervalo=INTERVALO_PDF)
+            novo = pedir_json(f"{obras.CT}/contrato/{cid}/arquivos", rede)
+        except Cortada:
+            est["adiado_confirmacao"] += 1
+            out[cid] = None
+            continue
         except RuntimeError:
             novo = None
         if novo is None:
@@ -296,12 +492,15 @@ def ler_pdf(arq, c, args, est):
     if args.so_montar or (em_dia and not args.revalidar):
         est["pdf_em_cache"] += bool(rec)
         return rec
-    b, estado = baixar(arq["path_arquivo"])
+    if not args.rede.aberta():
+        est["adiado_pdf"] += 1
+        return rec                          # rede cortada: fica o que havia, e a próxima rodada baixa
+    b, estado = baixar(arq["path_arquivo"], args.rede)
     registro = {"arquivo_id": arq["id"], "tipo": arq.get("tipo"), "descricao": arq.get("descricao"),
                 "url": arq["path_arquivo"], "leitor": P.VERSAO_LEITOR, "consultado_em": agora()}
     if b is None:
-        if estado == "rede":
-            est["pdf_falha_de_rede"] += 1
+        if estado in ("rede", "adiado"):
+            est["pdf_falha_de_rede" if estado == "rede" else "adiado_pdf"] += 1
             return rec                      # mantém o que havia; a próxima rodada tenta de novo
         novo = dict(registro, erro=estado)
         coleta.gravar_cache(cam, novo)
@@ -484,7 +683,7 @@ def id_compra(reg):
     return f"{reg['unidade_compra']}{int(reg['codigo_modalidade']):02d}{n:05d}{ano}"
 
 
-def consultar_compra(reg, so_montar):
+def consultar_compra(reg, so_montar, rede=None):
     """Aviso da licitação por identificador exato (UASG da compra + modalidade + número + ano).
     Endpoints do OpenAPI do Compras.gov.br (cache/diag_vinculo/doc_dadosabertos.compras.gov.br_v3.json):
     /modulo-legado/1.1_consultarLicitacao_Id (pregão, concorrência, tomada de preços) e /modulo-legado/7_consultarRdc."""
@@ -499,8 +698,8 @@ def consultar_compra(reg, so_montar):
     rec = coleta.ler_cache(cam)
     if rec and (so_montar or not velho(rec.get("consultado_em"), VALIDADE_COMPRA)):
         return rec
-    if so_montar:
-        return {"estado": "pendente", "ano": ano, "id_compra": idc}
+    if so_montar or (rede is not None and not rede.aberta()):
+        return rec or {"estado": "pendente", "ano": ano, "id_compra": idc}
     try:
         if mod == 99:
             url, params = COMPRAS + "/modulo-legado/7_consultarRdc", dict(
@@ -508,8 +707,8 @@ def consultar_compra(reg, so_montar):
                 data_publicacao_max=f"{ano}-12-31", pagina=1, tamanhoPagina=50)
         else:
             url, params = COMPRAS + "/modulo-legado/1.1_consultarLicitacao_Id", dict(id_compra=idc)
-        d = obras.pedir(url, params, intervalo=INTERVALO_COMPRAS)
-    except RuntimeError:
+        d = pedir_json(url, rede, params, intervalo=INTERVALO_COMPRAS)
+    except RuntimeError:                    # inclui Cortada
         return rec or {"estado": "pendente", "ano": ano, "id_compra": idc}
     achados = (d or {}).get("resultado") or []
     if mod == 99:
@@ -591,6 +790,43 @@ def carregar_supressoes(caminho=None):
 
 # ---------------------------------------------------------------- montagem
 
+def registro_contrato(cid, args, est):
+    """Registro, histórico e responsáveis do contrato (obras.contrato, mesmo cache). Na rodada diária o obras.py, que roda antes, já os
+    deixa em dia, e aqui não se pede nada. Rede cortada ou consulta que falhou: fica o que está guardado."""
+    cam = obras.CACHE_O / "contratos" / f"{cid}.json"
+    if args.so_montar:
+        return coleta.ler_cache(cam) or {}
+    if not args.rede.aberta():
+        if obras.fresco(cam, False) is None:
+            est["adiado_contrato"] += 1
+        return coleta.ler_cache(cam) or {}
+    try:
+        return obras.contrato(cid, False, pedir_json=args.rede.pedir_json)
+    except Cortada:
+        est["adiado_contrato"] += 1
+    except RuntimeError:
+        est["contrato_falha"] += 1
+    return coleta.ler_cache(cam) or {}
+
+
+def pendencias(est, ids, rede):
+    """O que a rodada cortada deixou para a próxima (o log diz; o cache guarda o que veio)."""
+    linhas = [f"RODADA CORTADA: {rede.motivo}. Nada foi publicado; {SAIDA.name} continua o da rodada anterior.",
+              f"   tempo até o corte: {(rede.relogio() - rede.inicio) / 60:.1f} min · tentativas de pedido {rede.cont['tentativas']} · "
+              f"novas tentativas {rede.novas} de {NOVAS_TENTATIVAS_MAX} · falhas: "
+              + (", ".join(f"{k[6:]} {v}" for k, v in sorted(rede.cont.items()) if k.startswith("falha_")) or "nenhuma"),
+              f"   pendente para a próxima rodada (de {len(ids)} contratos):",
+              f"      listas de arquivos não consultadas {est['adiado_lista']} (valeu a lista guardada, quando havia) · "
+              f"listas que falharam {est['arquivos_falha']}",
+              f"      listas vazias à espera da 2ª consulta {est['adiado_confirmacao']} · vazias em sequência (falha da API) "
+              f"{est['arquivos_vazio_suspeito']}",
+              f"      PDFs não baixados {est['adiado_pdf']} · PDFs que falharam {est['pdf_falha_de_rede']}",
+              f"      registros de contrato não atualizados {est['adiado_contrato']} · que falharam {est['contrato_falha']}",
+              f"   já feito nesta rodada e guardado no cache: {est['pdf_baixados']} PDFs baixados ({est['bytes_baixados'] / 1e6:.0f} MB), "
+              f"{est['arquivos_vazio_confirmado'] + est['arquivos_vazio_reconfirmado']} listas vazias confirmadas"]
+    return "\n".join(linhas)
+
+
 def montar(args):
     base = json.loads(obras.SAIDA.read_text(encoding="utf-8"))
     contratos, obras_de = {}, defaultdict(list)
@@ -610,18 +846,17 @@ def montar(args):
     consultas, provisorios = [], []
     for n, cid in enumerate(ids, 1):
         c = contratos[cid]
-        cc = obras.contrato(cid, False) if not args.so_montar else (coleta.ler_cache(obras.CACHE_O / "contratos" / f"{cid}.json") or {})
-        regs_c[cid] = cc
-        arqs = listar_arquivos(cid, args.so_montar, vazios, consultas, est)
+        regs_c[cid] = registro_contrato(cid, args, est)
+        arqs = listar_arquivos(cid, args.so_montar, vazios, consultas, est, args.rede)
         if arqs == VAZIO_PROVISORIO:
             provisorios.append(cid)
             arqs = None
         por_contrato[cid] = (arqs, docs_de(arqs, c, args, est))
         if n % 25 == 0:
             print(f"   E2 {n}/{len(ids)} contratos · {est['pdf_baixados']} PDFs baixados · {est['pdf_em_cache']} do cache · "
-                  f"{time.monotonic() - t0:.0f}s", flush=True)
+                  f"{time.monotonic() - t0:.0f}s" + (" · REDE CORTADA" if args.rede and args.rede.motivo else ""), flush=True)
     # a lista vazia só vale confirmada; os confirmados entram no índice (cache, como as listas)
-    for cid, arqs in confirmar_vazios(provisorios, consultas, vazios, est).items():
+    for cid, arqs in confirmar_vazios(provisorios, consultas, vazios, est, args.rede).items():
         por_contrato[cid] = (arqs, docs_de(arqs, contratos[cid], args, est))
     if not args.so_montar:
         coleta.gravar_cache(VAZIOS, dict(sorted(vazios.items(), key=lambda kv: int(kv[0]))))
@@ -635,7 +870,7 @@ def montar(args):
         if "E3" not in args.vias:                      # via desligada: nem consulta o Compras.gov.br
             compras[cid] = {"estado": "via_desligada", "ano": numero_ano((reg or {}).get("licitacao_numero"))[1], "id_compra": None}
             continue
-        compras[cid] = consultar_compra(reg, args.so_montar) if reg else {"estado": "pendente", "ano": None, "id_compra": None}
+        compras[cid] = consultar_compra(reg, args.so_montar, args.rede) if reg else {"estado": "pendente", "ano": None, "id_compra": None}
         if n % 50 == 0:
             print(f"   E3 {n}/{len(ids)} licitações · {time.monotonic() - t1:.0f}s", flush=True)
     fases["E3 (Compras.gov.br)"] = time.monotonic() - t1
@@ -1081,7 +1316,13 @@ def relatorio(saida, arestas, ids, est, fases, args, erros, diff_linhas, amostra
              f"falha de rede {est['pdf_falha_de_rede']} · 404 {est['pdf_erro_404']} · não é PDF {est['pdf_erro_nao_pdf']} · grandes {est['pdf_erro_grande']}")
     L.append(f"   listas de arquivos: sem arquivo confirmado {est['arquivos_vazio_confirmado']} · vazio desmentido na 2ª consulta "
              f"{est['arquivos_vazio_desmentido']} · vazio em sequência (falha da API, pendente) {est['arquivos_vazio_suspeito']} · "
-             f"vazio contra lista guardada {est['arquivos_vazio_contra_cache']} · 404 {est['arquivos_404']} · falha {est['arquivos_falha']}")
+             f"vazio contra lista guardada {est['arquivos_vazio_contra_cache']} · 404 {est['arquivos_404']} · falha {est['arquivos_falha']} · "
+             f"já confirmado e vazio de novo (sem 2ª consulta) {est['arquivos_vazio_reconfirmado']}")
+    if args.rede:
+        r = args.rede
+        L.append(f"   rede: {r.cont['tentativas']} tentativas · {r.novas} novas tentativas (máx. {NOVAS_TENTATIVAS_MAX}) · falhas: "
+                 + (", ".join(f"{k[6:]} {v}" for k, v in sorted(r.cont.items()) if k.startswith("falha_")) or "nenhuma")
+                 + f" · teto {r.minutos:g} min, usados {(r.relogio() - r.inicio) / 60:.1f}")
     L.append("   tempo: " + " · ".join(f"{k} {v:.0f}s" for k, v in fases.items()) + f" · total {sum(fases.values()):.0f}s")
     L.append(f"   leitura de PDF (pypdf): {est['segundos_leitura']:.0f}s · segunda leitura ({P.leitor2_id() or 'NÃO INSTALADA'}): {est['segundos_leitura2']:.0f}s")
     L.append("")
@@ -1100,7 +1341,7 @@ def relatorio(saida, arestas, ids, est, fases, args, erros, diff_linhas, amostra
     return "\n".join(L)
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--dry-run", action="store_true", help="não atualiza o estado da rodada anterior; nunca escreve em site/")
     ap.add_argument("--publicar", action="store_true", help="grava site/dados/obras_pessoas.json (só se as checagens passarem)")
@@ -1110,16 +1351,26 @@ def main():
     ap.add_argument("--vias", default=",".join(v.lower() for v in VIAS_PADRAO),
                     help="vias que entram no candidato e na publicação, separadas por vírgula (e2,e3,e8); padrão: e2,e8 (o E3 está desligado)")
     ap.add_argument("--amostra", action="store_true", help="regrava cache/amostra_fase1.csv (por padrão não: é a amostra já conferida)")
-    args = ap.parse_args()
+    ap.add_argument("--minutos", type=float, default=MINUTOS_PADRAO,
+                    help=f"teto da rodada (padrão {MINUTOS_PADRAO}; 0 = sem teto): passado ele, nenhuma consulta nova e nada publicado")
+    args = ap.parse_args(argv)
     args.vias = tuple(dict.fromkeys(v.strip().upper() for v in args.vias.split(",") if v.strip()))
     if not args.vias or any(v not in ("E2", "E3", "E8") for v in args.vias):
         sys.exit(f"--vias: use e2, e3 e/ou e8 (recebi {args.vias})")
-    sys.stdout.reconfigure(encoding="utf-8")
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     if args.publicar and args.dry_run:
         sys.exit("--publicar e --dry-run não combinam")
     if args.publicar and args.limite:
         sys.exit("--publicar e --limite não combinam (publicaria só uma parte dos contratos)")
+    args.rede = None if args.so_montar else Rede(args.minutos)
     base, contratos, obras_de, ids, por_contrato, regs_c, compras, est, fases = montar(args)
+    if args.rede and args.rede.motivo:
+        # cortada: o cache já guardou o que veio; sem candidato, sem estado, sem publicação (o arquivo publicado fica o da véspera)
+        texto = pendencias(est, ids, args.rede)
+        RELATORIO.write_text(texto + "\n", encoding="utf-8")
+        print("\n" + texto, flush=True)
+        sys.exit(f"rede cortada ({args.rede.motivo}): nada publicado")
     t = time.monotonic()
     args.supressoes = carregar_supressoes()
     arestas, blocos = montar_arestas(contratos, obras_de, ids, por_contrato, regs_c, compras, args.supressoes)

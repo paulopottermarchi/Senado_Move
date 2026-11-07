@@ -225,8 +225,20 @@ completa da rodada diária, incluindo as coletas pesadas opcionais, está no wor
 
 ```
 atualiza → coleta → votos → blocos → temas → semana → coletas pesadas opcionais → paginas
-→ validação → commit → publicação
+→ restauração → validação → commit → publicação
 ```
+
+Tempo da rodada (desde 26/10/2026; em 25/10 um passo opcional levou 317 min, o job foi cortado no limite de 360 e nada
+foi publicado). Os passos obrigatórios (até `semana`) rodam sem teto: se um falha, não há publicação. Cada passo
+opcional tem um teto (`passo.py --minutos`, 20 min se não disser outro) e `continue-on-error`, e todos juntos têm um
+orçamento: o workflow grava `RODADA_FIM` no começo, e o passo opcional que começaria sem tempo é pulado (o que começa
+com pouco tempo é cortado no que resta). Assim a restauração, a validação, o commit e a publicação sempre rodam; o que
+ficou para trás roda na rodada seguinte, a partir do cache, que é salvo mesmo quando um passo é cortado.
+Passo cortado não deixa arquivo pela metade: os scripts gravam de forma atômica (arquivo ao lado e troca de uma vez), e
+`scripts/restaurar_parciais.py`, antes da validação, apaga temporários e pastas de troca e devolve ao último commit o
+arquivo de `site/` ou `entradas/` que não estiver inteiro (o GitHub Pages publica a pasta, não o commit).
+`pessoas.py` tem o seu teto (`--minutos`, 45), tempo curto por pedido e um disjuntor; cortado, não publica e diz no log o
+que ficou pendente.
 
 Para ver o site, sirva a pasta `site/` (o navegador não carrega os JSON de arquivos abertos direto
 do disco) e abra `http://localhost:8000`:
