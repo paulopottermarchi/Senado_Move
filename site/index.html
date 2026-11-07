@@ -736,9 +736,9 @@ async function carregarSemana(){
         <h2 class="h2-ed" id="semanaTit">Esta semana na Câmara</h2>
         <p class="sem-per">${periodo(s.de,s.ate)}. Atualizado em ${dataLonga(s.geradoEm)}, às ${hora}.</p></div>
       <div class="numeros-ed numeros-sem" role="group" aria-label="Totais da semana">
-        <div><b data-conta>${s.viraramLei.total}</b><span>viraram lei</span></div>
-        <div><b data-conta>${s.andaram.total}</b><span>andaram</span></div>
-        <div><b data-conta>${s.novas.total}</b><span>novas proposições</span></div>
+        <div><b data-conta>${nf.format(s.viraramLei.total)}</b><span>viraram lei</span></div>
+        <div><b data-conta>${nf.format(s.andaram.total)}</b><span>andaram</span></div>
+        <div><b data-conta>${nf.format(s.novas.total)}</b><span>novas proposições</span></div>
       </div>
     </div>
     <div class="sem-grade">

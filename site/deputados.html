@@ -2334,7 +2334,7 @@ function abrir(d){
   fNome.textContent=d.nome;
   fQuem.textContent=`${d.partido} de ${d.uf}`+(d.federacao?`, federação ${d.federacao}`:'');
   // os quatro números da ficha contam de 0 até o valor do deputado (sem Motion ou com movimento reduzido, aparecem prontos)
-  const conta=(el,v)=>{ if(window.Contar&&typeof v==='number'){ el.textContent='0'; Contar.para(el,v); } else el.textContent=v; };
+  const conta=(el,v)=>{ if(window.Contar&&typeof v==='number'){ el.textContent='0'; Contar.para(el,v); } else el.textContent=typeof v==='number'?v.toLocaleString('pt-BR'):v; };
   conta(fPec,d.pecs); conta(fPl,d.leis); conta(fLei,d.viraramLei??'—'); conta(fPlen,d.aprovadasPlenario??'—');
 
   // os dois números divergem nos dois sentidos e isso confunde sem explicação
