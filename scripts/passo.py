@@ -6,6 +6,7 @@ Uso (é o que o workflow faz):
     python scripts/passo.py coleta.py --limite 513
     python scripts/passo.py --opcional notoriedade.py               # falha vira aviso e a rodada segue
     python scripts/passo.py --opcional --minutos 70 fluxo.py ...    # teto do passo, em minutos
+    python scripts/passo.py --repetir 10 atualiza.py                # falhou: espera 10 min e tenta mais uma vez
 
 Por que existe: no GitHub Actions o log completo só aparece para quem está logado; a página da
 rodada mostra a todos só "Process completed with exit code 1". A 1ª rodada agendada (29/9/2026)
@@ -20,6 +21,9 @@ nada foi publicado naquele dia):
   - RODADA_FIM (variável de ambiente, segundos desde 1970, gravada no começo da rodada pelo workflow): orçamento dos passos
     OPCIONAIS. O teto de um opcional nunca passa do que resta, e o passo é pulado se restar menos de um minuto. Assim o commit e
     a publicação, que vêm depois, sempre têm tempo; o que ficou para trás roda na rodada seguinte, a partir do cache.
+Segunda tentativa (desde 7/11/2026; naquele dia a API da Câmara não respondeu ao GitHub por ~19 min e a rodada parou no
+1º passo, que é obrigatório, sem publicar nada): --repetir N espera N minutos depois de uma falha e roda o script de novo, uma
+vez. A 1ª falha vira aviso; só a 2ª vira erro. Não vale para o passo cortado pelo teto (ele já gastou o tempo dele).
 O script encerrado no meio não deixa arquivo pela metade em site/: a gravação é atômica, e restaurar_parciais.py, antes do
 commit, apaga o temporário que sobrar e devolve ao último commit o que não estiver inteiro.
 """
@@ -58,28 +62,8 @@ def teto(minutos, opcional, agora=None):
     return seg, motivo
 
 
-def main():
-    # a saída dos scripts tem →, ×, acentos: no Windows o padrão (cp1252) quebraria aqui
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    args = sys.argv[1:]
-    opcional = minutos = None
-    while args and args[0] in ("--opcional", "--minutos"):
-        if args[0] == "--opcional":
-            opcional, args = True, args[1:]
-        else:
-            minutos, args = float(args[1]), args[2:]
-    opcional = bool(opcional)
-    if not args:
-        sys.exit(__doc__)
-    script, resto = args[0], args[1:]
-    nivel = "warning" if opcional else "error"
-
-    seg, motivo = teto(minutos, opcional)
-    if seg == 0:
-        print(f"::warning title={script}::{anotacao('pulado: ' + motivo + '. Os passos opcionais param a tempo de o commit e a publicação rodarem; este roda na próxima rodada, a partir do cache.')}",
-              flush=True)
-        sys.exit(0)
-
+def rodar(script, resto, seg):
+    """Roda o script com a saída ao vivo; devolve (código, cortado pelo teto?, últimas linhas, segundos)."""
     ultimas = collections.deque(maxlen=12)
     env = dict(os.environ, PYTHONIOENCODING="utf-8")
     proc = subprocess.Popen([sys.executable, "-u", str(AQUI / script), *resto],
@@ -107,10 +91,52 @@ def main():
     codigo = proc.wait()
     if relogio:
         relogio.cancel()
+    return codigo, cortado.is_set(), ultimas, time.monotonic() - t0
 
-    if cortado.is_set():
+
+def main():
+    # a saída dos scripts tem →, ×, acentos: no Windows o padrão (cp1252) quebraria aqui
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    args = sys.argv[1:]
+    opcional = minutos = repetir = None
+    while args and args[0] in ("--opcional", "--minutos", "--repetir"):
+        if args[0] == "--opcional":
+            opcional, args = True, args[1:]
+        elif args[0] == "--minutos":
+            minutos, args = float(args[1]), args[2:]
+        else:
+            repetir, args = float(args[1]), args[2:]
+    opcional = bool(opcional)
+    if not args:
+        sys.exit(__doc__)
+    script, resto = args[0], args[1:]
+    nivel = "warning" if opcional else "error"
+
+    seg, motivo = teto(minutos, opcional)
+    if seg == 0:
+        print(f"::warning title={script}::{anotacao('pulado: ' + motivo + '. Os passos opcionais param a tempo de o commit e a publicação rodarem; este roda na próxima rodada, a partir do cache.')}",
+              flush=True)
+        sys.exit(0)
+
+    codigo, cortado, ultimas, dur = rodar(script, resto, seg)
+    if codigo and not cortado and repetir is not None:
+        fim = chr(10).join(ultimas)[-1200:]
+        print(f"::warning title={script}::{anotacao(f'saiu com código {codigo} (tentativa 1 de 2); nova tentativa em {repetir:g} min. Fim da saída:' + chr(10) + fim)}",
+              flush=True)
+        time.sleep(repetir * 60)
+        if opcional:
+            seg, motivo = teto(minutos, opcional)
+            if seg == 0:
+                print(f"::warning title={script}::{anotacao('2ª tentativa pulada: ' + motivo + '.')}", flush=True)
+                sys.exit(0)
+        print(f"--- {script}: 2ª tentativa ---", flush=True)
+        codigo, cortado, ultimas, dur = rodar(script, resto, seg)
+        if not codigo and not cortado:
+            print(f"--- {script}: a 2ª tentativa deu certo ---", flush=True)
+
+    if cortado:
         fim = "\n".join(ultimas)[-1200:]
-        print(f"::{nivel} title={script}::{anotacao(f'cortado depois de {(time.monotonic() - t0) / 60:.1f} min: {motivo}. O que ele gravou de forma atômica fica; o resto restaurar_parciais.py desfaz antes do commit. Fim da saída:' + chr(10) + fim)}",
+        print(f"::{nivel} title={script}::{anotacao(f'cortado depois de {dur / 60:.1f} min: {motivo}. O que ele gravou de forma atômica fica; o resto restaurar_parciais.py desfaz antes do commit. Fim da saída:' + chr(10) + fim)}",
               flush=True)
         sys.exit(0 if opcional else 1)
     if codigo:

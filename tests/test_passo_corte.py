@@ -97,6 +97,41 @@ class Corte(unittest.TestCase):
             else:
                 os.environ["RODADA_FIM"] = antes
 
+    def test_repetir_segunda_tentativa_da_certo(self):
+        # falha na 1ª vez (como a Câmara fora do ar por alguns minutos), funciona na 2ª: a rodada segue, com aviso
+        marca = self.T / "ja_falhou"
+        instavel = self.T / "instavel.py"
+        instavel.write_text(textwrap.dedent(f"""
+            import sys, pathlib
+            m = pathlib.Path({str(marca)!r})
+            if not m.exists():
+                m.write_text("x")
+                print("RuntimeError: falhou após 6 tentativas (ReadTimeout: ...)")
+                sys.exit(1)
+            print("deu certo")
+        """), encoding="utf-8")
+        codigo, out, seg = rodar_passo("--repetir", "0.01", str(instavel))
+        self.assertEqual(codigo, 0)
+        self.assertIn("::warning title=", out)
+        self.assertIn("tentativa 1 de 2", out)
+        self.assertIn("ReadTimeout", out, "o motivo da 1ª falha vai no aviso")
+        self.assertIn("a 2ª tentativa deu certo", out)
+        self.assertNotIn("::error", out)
+        self.assertGreaterEqual(seg, 0.6, "esperou antes de tentar de novo")
+
+    def test_repetir_falha_duas_vezes_e_erro(self):
+        ruim = self.T / "ruim.py"
+        ruim.write_text("import sys\nprint('fora do ar')\nsys.exit(3)\n", encoding="utf-8")
+        codigo, out, _ = rodar_passo("--repetir", "0.01", str(ruim))
+        self.assertEqual(codigo, 3)
+        self.assertEqual(out.splitlines().count("fora do ar"), 2, "rodou duas vezes")
+        self.assertIn("::error title=", out)
+
+    def test_repetir_nao_vale_para_o_cortado_pelo_teto(self):
+        codigo, out, _ = rodar_passo("--repetir", "0.01", "--minutos", "0.05", str(self.lento))
+        self.assertEqual(codigo, 1)
+        self.assertEqual(out.splitlines().count("comecei"), 1, "cortado pelo teto não roda de novo")
+
     def test_sem_teto_o_obrigatorio_termina(self):
         rapido = self.T / "rapido.py"
         rapido.write_text("print('ok')\n", encoding="utf-8")

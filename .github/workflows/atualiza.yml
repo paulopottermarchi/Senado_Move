@@ -64,8 +64,10 @@ jobs:
             ${{ env.CACHE_PREFIX }}-
             cache-api-ubuntu-
 
+      # --repetir 10: se a API da Câmara não responder, espera 10 min e tenta mais uma vez (em 7/11/2026 ela ficou ~19 min sem responder ao
+      # GitHub e a rodada parou aqui, sem publicar nada). Rodar atualiza.py de novo é seguro: ele só grava a data da rodada no fim.
       - name: Atualizar pela API (só o que mudou)
-        run: python scripts/passo.py atualiza.py
+        run: python scripts/passo.py --repetir 10 atualiza.py
 
       - name: Regerar deputados.json
         run: python scripts/passo.py coleta.py --limite 513
