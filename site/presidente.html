@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Presidente | Câmara Aberta</title>
-<meta name="description" content="O mandato presidencial atual e cada medida provisória editada nele, com a situação registrada pelo Congresso: convertida em lei, perdeu a eficácia, revogada ou em tramitação, com o link da fonte de cada uma.">
+<meta name="description" content="O mandato presidencial atual, cada medida provisória editada nele e cada veto, com a situação registrada pelo Congresso e o link da fonte de cada um: MP convertida em lei, que perdeu a eficácia ou em tramitação; veto mantido, derrubado ou em tramitação.">
 <meta name="theme-color" content="#ffffff">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Câmara Aberta">
 <meta property="og:title" content="Presidente | Câmara Aberta">
-<meta property="og:description" content="Cada medida provisória do mandato presidencial atual, com a situação registrada pelo Congresso e o link da fonte.">
+<meta property="og:description" content="Cada medida provisória e cada veto do mandato presidencial atual, com a situação registrada pelo Congresso e o link da fonte.">
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Cpath d='M8 13.5h16a8 8 0 0 1-16 0z' fill='%232dd4bf'/%3E%3Crect x='7' y='23.5' width='18' height='2' rx='1' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,6 +60,21 @@
 .pr-sem{padding:24px 12px;text-align:center;color:var(--tinta3)}
 .pr-pag{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px;font-size:13px;color:var(--tinta2)}
 
+.pr-abre{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px 28px;padding:0;list-style:none}
+.pr-abre li{font-size:15px;line-height:1.5;color:var(--tinta2);min-width:0}
+.pr-abre b{font-family:var(--cond);font-weight:600;font-size:28px;line-height:1;color:var(--tinta)}
+.pr-abre a{color:var(--destaque)}
+.pr-aparte{margin-top:16px}
+.pr-aparte h3,.pr-disp h3{font-size:14px;font-weight:600;color:var(--tinta);margin-top:20px}
+.pr-cont.pr-p b{font-size:30px}
+.pr-tabw{margin-top:8px;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.pr-tab{border-collapse:collapse;font-size:13px;line-height:1.45;min-width:560px}
+.pr-tab caption{text-align:left;font-size:12px;color:var(--tinta3);padding:0 0 6px;caption-side:top}
+.pr-tab th,.pr-tab td{border-top:1px solid var(--linha2);padding:6px 10px 6px 0;text-align:left;vertical-align:top}
+.pr-tab th{font-size:12px;font-weight:600;color:var(--tinta3)}
+.pr-tab td.n{white-space:nowrap;font-variant-numeric:tabular-nums}
+.pr-det details{margin-top:4px}
+.pr-det summary{cursor:pointer;color:var(--destaque);font-weight:500}
 .pr-glos{margin:16px 0 0;display:grid;gap:14px;max-width:84ch}
 .pr-glos dt{font-size:15px;font-weight:600;color:var(--tinta)}
 .pr-glos dd{margin:4px 0 0;font-size:14px;line-height:1.6;color:var(--tinta2)}
@@ -102,18 +117,20 @@
       <div class="txt">
         <p class="kicker">Presidência da República · mandato atual</p>
         <h1 class="t-grande">Presidente</h1>
-        <p class="chamada" id="chamada">O mandato presidencial em curso e cada medida provisória editada nele, com a situação que o Congresso registra para ela.</p>
+        <p class="chamada" id="chamada">O mandato presidencial em curso, cada medida provisória editada nele e cada veto, com a situação que o Congresso registra.</p>
         <ul class="pr-mandato" id="mandato" hidden></ul>
+        <ul class="pr-abre" id="abre" hidden></ul>
       </div>
       <div class="lado"><figure class="modelo-ed" data-modelo="folhas" aria-hidden="true"><img src="img/modelo-folhas.svg" alt="" width="480" height="360" decoding="async"></figure></div>
     </div>
 
     <div class="aviso" role="note">
-      <p><b>O que esta página faz.</b> Mostra cada medida provisória (MP) editada no mandato atual e a situação que o Congresso registra para ela,
-         com o link da fonte em cada linha, e conta quantas estão em cada situação. Cada número tem a definição ao lado.</p>
-      <p><b>O que ela se recusa a fazer.</b> Não diz se uma MP foi boa ou ruim, não atribui resultado a ninguém, não calcula taxa nem ordena por desempenho
-         e não liga uma MP a nenhum indicador. Quando a fonte não traz a situação, a página mostra “—” com o motivo, nunca um palpite.
-         <b>Perder a eficácia não é ser rejeitada</b>: é o prazo para votar que terminou (veja o glossário).</p>
+      <p><b>O que esta página faz.</b> Mostra cada medida provisória (MP) editada no mandato atual e cada veto do Presidente, com a situação que o
+         Congresso registra e o link da fonte em cada linha, e conta quantos estão em cada situação. Cada número tem a definição ao lado.</p>
+      <p><b>O que ela se recusa a fazer.</b> Não diz se uma MP ou um veto foi bom ou ruim, não atribui resultado a ninguém, não calcula taxa nem ordena por
+         desempenho e não liga nada disso a nenhum indicador. Quando a fonte não traz um dado, a página mostra “—” com o motivo, nunca um palpite.
+         <b>Perder a eficácia não é ser rejeitada</b>: é o prazo para votar que terminou. E o placar de um veto total não está nos dados abertos:
+         a página diz isso em vez de transcrever o documento (veja o glossário).</p>
     </div>
   </div>
 
@@ -139,6 +156,31 @@
     <div class="pr-pag"><button class="pino" type="button" id="mais" hidden>Mostrar mais</button></div>
   </section>
 
+  <section class="painel" id="vetos" aria-labelledby="vContTit" hidden>
+    <h2 id="vContTit">Vetos do mandato, por situação</h2>
+    <p class="pr-sub" id="vContSub"></p>
+    <ul class="pr-cont" id="vContLista"></ul>
+    <div class="pr-aparte" id="vAparte"></div>
+    <div class="pr-disp" id="vDisp"></div>
+    <p class="pr-ano" id="vContAno"></p>
+  </section>
+
+  <section class="painel" id="vListaSec" aria-labelledby="vListaTit" hidden>
+    <h2 id="vListaTit">Cada veto</h2>
+    <p class="pr-sub">Do mais recente para o mais antigo. O número leva à página do veto no Congresso. No veto parcial, “ver os dispositivos” mostra cada
+       parte vetada, a situação e o placar de cada Casa: <b>Sim é manter o veto, Não é derrubar</b>; derrubar exige 257 votos Não na Câmara e 41 no Senado,
+       contados em separado. A segunda Casa só é apurada quando a primeira derruba.</p>
+    <div class="pr-filtros">
+      <label class="pr-campo">Situação<select class="sel" id="vSit"><option value="">Todas</option></select></label>
+      <label class="pr-campo">Tipo<select class="sel" id="vTipo"><option value="">Todos</option><option value="t">Veto total</option><option value="p">Veto parcial</option></select></label>
+      <label class="pr-campo">Ano<select class="sel" id="vAno"><option value="">Todos</option></select></label>
+      <label class="pr-campo">Buscar<input class="texto" id="vQ" type="search" placeholder="Número, assunto ou projeto vetado" autocomplete="off"></label>
+    </div>
+    <p class="pr-conta" id="vConta" aria-live="polite"></p>
+    <ol class="pr-lista" id="vItens"></ol>
+    <div class="pr-pag"><button class="pino" type="button" id="vMais" hidden>Mostrar mais</button></div>
+  </section>
+
   <section class="painel" id="glossario" aria-labelledby="glosTit">
     <h2 id="glosTit">Glossário</h2>
     <dl class="pr-glos">
@@ -160,6 +202,30 @@
         <dd>O Congresso declarou a MP sem objeto, segundo o registro.</dd></div>
       <div><dt>Em tramitação</dt>
         <dd>A MP ainda está em análise: primeiro numa comissão mista de deputados e senadores, depois no Plenário da Câmara e no do Senado.</dd></div>
+      <div><dt>Veto</dt>
+        <dd>Recusa do Presidente da República a um projeto aprovado pelo Congresso, no todo ou em parte (Constituição, art. 66, § 1º). O Congresso
+            vota o veto em sessão conjunta de deputados e senadores e pode mantê-lo ou derrubá-lo.</dd></div>
+      <div><dt>Veto total e veto parcial</dt>
+        <dd>Total: o projeto inteiro foi vetado; conta como 1 veto. Parcial: só alguns trechos (dispositivos), e o resto virou lei. A contagem de
+            dispositivos desta página vem só dos vetos parciais.</dd></div>
+      <div><dt>Dispositivo</dt>
+        <dd>Cada trecho vetado (um artigo, um parágrafo, um item), votado em separado. O rótulo do veto sai da situação dos seus dispositivos.</dd></div>
+      <div><dt>Mantido</dt>
+        <dd>O Congresso votou e manteve o veto: o trecho vetado continua fora da lei.</dd></div>
+      <div><dt>Derrubado (no registro oficial, “rejeitado”)</dt>
+        <dd>O Congresso derrubou o veto: o trecho vetado vai à promulgação e passa a valer. Exige a maioria absoluta de cada Casa, votando em separado:
+            257 dos 513 deputados e 41 dos 81 senadores votando Não (Constituição, art. 66, § 4º). Derrubado em parte: parte dos dispositivos
+            derrubada e parte mantida.</dd></div>
+      <div><dt>Prejudicado (veto ou dispositivo)</dt>
+        <dd>Declarado prejudicado, sem votação, segundo o registro do Congresso. Fica à parte dos mantidos e dos derrubados.</dd></div>
+      <div><dt>Veto em tramitação</dt>
+        <dd>Pelo menos um dispositivo ainda não foi votado (no registro, “não apreciado”). A página mostra quantos já foram decididos e quantos faltam.</dd></div>
+      <div><dt>Sobrestando a pauta</dt>
+        <dd>Passados 30 dias do recebimento sem votação, o veto vai para a ordem do dia da sessão seguinte e as demais proposições ficam para depois da
+            votação dele (Constituição, art. 66, § 6º). A data vem do registro do Congresso.</dd></div>
+      <div><dt>Placar do veto total</dt>
+        <dd>Os dados abertos do Congresso trazem os votos de cada dispositivo de veto parcial, mas não os do veto total: o resultado dele está só
+            no documento em PDF da sessão. A página diz “placar não disponível nos dados abertos” em vez de transcrever o documento.</dd></div>
     </dl>
   </section>
 </main>
@@ -171,6 +237,9 @@
        (registro de cada processo, com a deliberação e a lei gerada). A contagem de cada ano é conferida com os <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Dados Abertos da Câmara</a>:
        se as duas fontes não derem o mesmo número, nada é publicado. O mandato vem de uma tabela aberta no código (<code>entradas/governos.json</code>), com as datas conferidas no Wikidata.</p>
     <p id="rodapeData"></p>
+    <p>Os vetos vêm da mesma fonte: a lista de cada ano (numerada de 1 em diante, sem buraco), as listas de vetos em tramitação e encerrados (que têm de
+       bater com o registro de cada veto), o resultado de cada veto e os votos de cada dispositivo votado de veto parcial. Um veto “derrubado” sem os
+       257 e 41 votos Não, um “mantido” que os alcança ou uma votação que a fonte devolve para outro dispositivo ficam fora da lista e das contagens, com o motivo.</p>
     <p>A situação é a do campo oficial; se ele vier vazio, vale a deliberação oficial; sem as duas, “—”. Uma MP que a fonte dá como convertida mas sem a lei registrada fica fora da lista e das contagens, com o motivo.
        Código e dados abertos no <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">GitHub</a>.</p>
   </div>
@@ -224,7 +293,7 @@ const dataBR=d=>d?`${d.slice(8,10)}/${d.slice(5,7)}/${d.slice(0,4)}`:'—';
 const semAcento=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const POR_PAGINA=30;
 const REPORTAR='https://github.com/paulopottermarchi/Senado_Move/issues/new';
-let D=null, ROT={}, PAG=1;
+let D=null, ROT={}, PAG=1, RV={}, VPAG=1;
 const url=(modelo,obj)=>modelo.replace(/\{(\w+)\}/g,(_,k)=>encodeURIComponent(obj[k]));
 const linkErro=x=>REPORTAR+'?title='+encodeURIComponent(`Presidente: MPV ${x.numero}/${x.ano}`)+
   '&body='+encodeURIComponent(`MP: MPV ${x.numero}/${x.ano}\nSituação na página: ${ROT[x.situacao]||x.situacao}\nO que está errado:\n`);
@@ -234,6 +303,12 @@ function mandato(m){
   $('mandato').innerHTML=[['Presidente',m.presidente||'—'],['Partido',partido],['Mandato',m.rotulo||'—'],['Início',dataBR(m.inicio)],['Fim',m.fim?dataBR(m.fim):'—']]
     .map(([k,v])=>`<li><small>${esc(k)}</small><b>${esc(v)}</b></li>`).join('');
   $('mandato').hidden=false;
+}
+function abertura(){
+  const V=D.vetos, M=D.mps, itens=[];
+  if(V) itens.push(`<li><b>${nf.format(V.contagem.em_tramitacao)}</b> de <a href="#vetos">${nf.format(V.total)} vetos</a> ainda em tramitação</li>`);
+  itens.push(`<li><b>${nf.format(M.total)}</b> <a href="#contagem">medidas provisórias</a>, ${nf.format(M.contagem.em_tramitacao)} em tramitação</li>`);
+  $('abre').innerHTML=itens.join(''); $('abre').hidden=false;
 }
 function contagem(){
   const M=D.mps;
@@ -276,14 +351,90 @@ function lista(){
   $('itens').innerHTML=L.length?L.slice(0,PAG*POR_PAGINA).map(linha).join(''):'<li class="pr-sem">Nenhuma MP com esses filtros.</li>';
   $('mais').hidden=L.length<=PAG*POR_PAGINA;
 }
+// ---------------------------------------------------------------- vetos
+const vid=x=>`VET ${x.numero}/${x.ano}`;
+const vetada=x=>{const m=x.materiaVetada;return m.sigla==='MPV'?`à lei de conversão da MPV ${m.numero}/${m.ano}`:`ao ${m.sigla} ${m.numero}/${m.ano}`;};
+const linkErroV=x=>REPORTAR+'?title='+encodeURIComponent(`Presidente: ${vid(x)}`)+
+  '&body='+encodeURIComponent(`Veto: ${vid(x)}\nSituação na página: ${RV[x.situacao]||x.situacao}\nO que está errado:\n`);
+const plural=(n,um,muitos)=>`${nf.format(n)} ${n===1?um:muitos}`;
+function vContagem(){
+  const V=D.vetos;
+  $('vContSub').innerHTML=`<b>${nf.format(V.total)} vetos</b> publicados desde ${dataBR(D.mandato.inicio)} (${plural(V.totais.total,'total','totais')} e `+
+    `${plural(V.totais.parcial,'parcial','parciais')}). O rótulo de cada veto sai da situação dos seus dispositivos, como o Congresso a registra.`+
+    (V.retidos.length?` ${V.retidos.length} ${V.retidos.length===1?'ficou':'ficaram'} fora por inconsistência na fonte (ver o fim da página).`:'');
+  const card=d=>`<li><b>${nf.format(V.contagem[d.id]||0)}</b><span class="r">${esc(d.rotulo)}</span><span class="d">${esc(d.definicao)}</span></li>`;
+  $('vContLista').innerHTML=V.definicoes.filter(d=>d.id!=='prejudicado').map(card).join('');
+  const pj=V.definicoes.find(d=>d.id==='prejudicado');
+  $('vAparte').innerHTML=pj?`<h3>À parte</h3><ul class="pr-cont pr-p">${card(pj)}</ul>`:'';
+  $('vDisp').innerHTML=`<h3>Dispositivos dos ${nf.format(V.totais.parcial)} vetos parciais</h3><ul class="pr-cont pr-p">`+
+    V.definicoesDispositivo.map(d=>`<li><b>${nf.format(V.dispositivos[d.id]||0)}</b><span class="r">${esc(d.rotulo)}</span><span class="d">${esc(d.definicao)}</span></li>`).join('')+'</ul>';
+  $('vContAno').textContent='Por ano: '+V.porAno.map(a=>`${a.ano}, ${nf.format(a.noMandato)}`).join(' · ')+
+    '. Em cada ano, a lista do Congresso é numerada de 1 em diante sem buraco; o veto total conta como 1 veto e não entra na contagem de dispositivos.';
+  $('vetos').hidden=false;
+}
+function vFiltros(){
+  const V=D.vetos;
+  $('vSit').insertAdjacentHTML('beforeend',V.definicoes.filter(d=>V.contagem[d.id]).map(d=>`<option value="${d.id}">${esc(d.rotulo)}</option>`).join(''));
+  $('vAno').insertAdjacentHTML('beforeend',[...new Set(V.itens.map(x=>x.ano))].sort((a,b)=>b-a).map(a=>`<option>${a}</option>`).join(''));
+  ['vSit','vTipo','vAno'].forEach(id=>$(id).addEventListener('change',()=>{VPAG=1;vLista();}));
+  $('vQ').addEventListener('input',()=>{VPAG=1;vLista();});
+  $('vMais').addEventListener('click',()=>{VPAG++;vLista();});
+}
+const placarTxt=p=>p?`${nf.format(p[0])} Sim · ${nf.format(p[1])} Não · ${nf.format(p[2])} abst. · ${nf.format(p[3])} em branco`:'não apurada';
+function vDispositivos(x){
+  if(x.total) return '';
+  const nome=Object.fromEntries(D.vetos.definicoesDispositivo.map(d=>[d.id,d.rotulo]));
+  const linhas=x.dispositivos.map(d=>`<tr><td>${esc(d[0])}</td><td>${esc(d[1]||'—')}</td><td>${esc(nome[d[2]]||d[2])}</td>`+
+    `<td class="n">${d[3]?dataBR(d[3]):'—'}</td><td class="n">${d[2]==='mantido'||d[2]==='rejeitado'?placarTxt(d[5]):'—'}</td>`+
+    `<td class="n">${d[2]==='mantido'||d[2]==='rejeitado'?placarTxt(d[6]):'—'}</td></tr>`).join('');
+  return `<details><summary>Ver os ${nf.format(x.dispositivos.length)} dispositivos e o placar</summary><div class="pr-tabw"><table class="pr-tab">`+
+    `<caption>Sim = manter o veto; Não = derrubar (são precisos 257 na Câmara e 41 no Senado). “Não apurada”: a Casa não chegou a ser contada.</caption>`+
+    `<thead><tr><th scope="col">Dispositivo</th><th scope="col">Parte vetada</th><th scope="col">Situação</th><th scope="col">Sessão</th>`+
+    `<th scope="col">Câmara</th><th scope="col">Senado</th></tr></thead><tbody>${linhas}</tbody></table></div></details>`;
+}
+function vLinha(x){
+  const U=D.urls, c=x.contagem;
+  const FORMAS={nao_apreciado:['não apreciado','não apreciados'],mantido:['mantido','mantidos'],rejeitado:['derrubado (rejeitado)','derrubados (rejeitados)'],prejudicado:['prejudicado','prejudicados']};
+  const lei=x.lei?`<b>${esc(x.lei.descricao)}</b> (<a href="${esc(url(U.lei,x.lei))}" target="_blank" rel="noopener">texto da norma no Senado</a>)`:'';
+  let disp;
+  if(x.situacao==='em_tramitacao'){
+    const pend=c.nao_apreciado, dec=x.dispositivos.length-pend;
+    disp=`dispositivos: ${plural(dec,'decidido','decididos')}, ${plural(pend,'pendente','pendentes')}`;
+  } else disp='dispositivos: '+Object.entries(c).filter(([,n])=>n).map(([k,n])=>FORMAS[k]?plural(n,...FORMAS[k]):`${nf.format(n)} ${k}`).join(', ');
+  const plac=x.total&&x.situacao!=='em_tramitacao'&&x.situacao!=='prejudicado'?'placar não disponível nos dados abertos':'';
+  const sob=x.sobrestandoDesde?`sobrestando a pauta desde ${dataBR(x.sobrestandoDesde)}`:'';
+  const fonte=[`<a class="lk" href="${esc(url(U.veto,x))}" target="_blank" rel="noopener">Congresso</a>`,
+               `<a class="lk" href="${esc(url(U.vetoApi,x))}" target="_blank" rel="noopener">dados abertos</a>`]
+    .concat(x.mensagem?[`<a class="lk" href="${esc(x.mensagem.url)}" target="_blank" rel="noopener">mensagem de veto ${x.mensagem.numero}/${x.mensagem.ano} (Planalto)</a>`]:[]).join(' · ');
+  return `<li>
+    <div class="pr-cab"><a class="num" href="${esc(url(U.veto,x))}" target="_blank" rel="noopener">${vid(x)}</a>
+      <span class="dt">${dataBR(x.dataPublicacao)}</span><span class="pr-etq">${esc(RV[x.situacao]||'—')}</span><span class="dt">${x.total?'veto total':'veto parcial'}</span></div>
+    <p class="pr-em">${esc(x.assunto||'—')}</p>
+    <p class="pr-det">${[`Veto ${x.total?'total':'parcial'} ${esc(vetada(x))}`, lei, disp, plac, sob].filter(Boolean).join(' · ')}</p>
+    ${x.total?'':`<div class="pr-det">${vDispositivos(x)}</div>`}
+    <p class="pr-det">Fonte: ${fonte} · <a href="${esc(linkErroV(x))}" target="_blank" rel="noopener">Reportar erro</a></p>
+  </li>`;
+}
+function vLista(){
+  const s=$('vSit').value, tp=$('vTipo').value, a=$('vAno').value, q=semAcento($('vQ').value.trim());
+  const V=D.vetos, L=V.itens.filter(x=>(!s||x.situacao===s)&&(!tp||(tp==='t')===x.total)&&(!a||String(x.ano)===a)&&
+    (!q||semAcento(`vet ${x.numero}/${x.ano}`).includes(q)||String(x.numero)===q||semAcento(x.assunto).includes(q)||
+     semAcento(`${x.materiaVetada.sigla} ${x.materiaVetada.numero}/${x.materiaVetada.ano}`).includes(q)));
+  $('vConta').textContent=`${nf.format(L.length)} de ${nf.format(V.total)} vetos.`;
+  $('vItens').innerHTML=L.length?L.slice(0,VPAG*POR_PAGINA).map(vLinha).join(''):'<li class="pr-sem">Nenhum veto com esses filtros.</li>';
+  $('vMais').hidden=L.length<=VPAG*POR_PAGINA;
+}
 function rodape(){
-  const r=D.mps.retidas;
-  $('rodapeData').innerHTML=`Dados gerados em ${dataBR(D._geradoEm.slice(0,10))}.`+(r.length?` Fora da lista por inconsistência na fonte: ${r.map(x=>`${esc(x.identificacao)} (${esc(x.motivo)})`).join('; ')}.`:'');
+  const r=D.mps.retidas, rv=(D.vetos||{}).retidos||[];
+  $('rodapeData').innerHTML=`Dados gerados em ${dataBR(D._geradoEm.slice(0,10))}.`+(r.length?` Medidas provisórias fora da lista por inconsistência na fonte: ${r.map(x=>`${esc(x.identificacao)} (${esc(x.motivo)})`).join('; ')}.`:'')+
+    (rv.length?` Vetos fora da lista por inconsistência na fonte: ${rv.map(x=>`${esc(x.identificacao)} (${esc(x.motivo)})`).join('; ')}.`:'');
 }
 fetch('dados/presidencia.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null).then(j=>{
   if(!j||!j.mps){ $('vazio').hidden=false; return; }
   D=j; ROT=Object.fromEntries(D.mps.definicoes.map(d=>[d.id,d.rotulo]));
-  mandato(D.mandato); contagem(); filtros(); lista(); rodape();
+  mandato(D.mandato); abertura(); contagem(); filtros(); lista();
+  if(D.vetos){ RV=Object.fromEntries(D.vetos.definicoes.map(d=>[d.id,d.rotulo])); vContagem(); vFiltros(); vLista(); $('vListaSec').hidden=false; }
+  rodape();
   $('lista').hidden=false;
   const dias=Math.floor((Date.now()-Date.parse(D._geradoEm))/864e5);
   if(dias>3) $('rodapeData').insertAdjacentHTML('beforeend',` <b>Atenção: a coleta não é atualizada há ${dias} dias; os números são os dessa data.</b>`);

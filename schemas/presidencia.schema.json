@@ -1,15 +1,53 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Presidente: mandato e medidas provisórias (site/dados/presidencia.json)",
-  "description": "Gerado por scripts/presidencia.py. O mandato vem de entradas/governos.json; cada MP traz a situação oficial do Congresso, a deliberação oficial e, quando convertida, a lei registrada. Nenhum campo de placar, taxa ou ranking.",
+  "title": "Presidente: mandato, medidas provisórias e vetos (site/dados/presidencia.json)",
+  "description": "Gerado por scripts/presidencia.py. O mandato vem de entradas/governos.json; cada MP traz a situação oficial do Congresso, a deliberação oficial e, quando convertida, a lei registrada; cada veto traz o rótulo tirado dos dispositivos e, nos dispositivos votados de veto parcial, o placar [sim, não, abstenção] por Casa. Nenhum campo de taxa ou ranking.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["_versao", "_geradoEm", "_fontes", "urls", "mandato", "mps"],
+  "required": ["_versao", "_geradoEm", "_fontes", "urls", "mandato", "mps", "vetos"],
   "$defs": {
     "data": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
     "dataOuNada": { "oneOf": [{ "$ref": "#/$defs/data" }, { "type": "null" }] },
     "textoOuNada": { "type": ["string", "null"] },
     "categoria": { "enum": ["convertida", "aprovada_sem_lei", "perdeu_eficacia", "revogada", "rejeitada", "prejudicada", "em_tramitacao", "sem_situacao"] },
+    "rotuloVeto": { "enum": ["em_tramitacao", "mantido", "derrubado_em_parte", "derrubado", "prejudicado"] },
+    "situacaoDispositivo": { "enum": ["nao_apreciado", "mantido", "rejeitado", "prejudicado"] },
+    "inteiro": { "type": "integer", "minimum": 0 },
+    "lei": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numero", "ano", "data", "descricao", "codigo"],
+      "properties": {
+        "numero": { "type": "integer", "minimum": 1 },
+        "ano": { "type": "integer" },
+        "data": { "$ref": "#/$defs/data" },
+        "descricao": { "type": "string" },
+        "codigo": { "type": "integer" }
+      }
+    },
+    "placar": {
+      "description": "[sim, não, abstenção, em branco] de uma Casa; null = Casa não apurada (ou veto total: placar fora dos dados abertos)",
+      "oneOf": [
+        { "type": "null" },
+        { "type": "array", "prefixItems": [{ "$ref": "#/$defs/inteiro" }, { "$ref": "#/$defs/inteiro" }, { "$ref": "#/$defs/inteiro" }, { "$ref": "#/$defs/inteiro" }],
+          "items": false, "minItems": 4 }
+      ]
+    },
+    "contagemDispositivo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nao_apreciado", "mantido", "rejeitado", "prejudicado"],
+      "properties": {
+        "nao_apreciado": { "$ref": "#/$defs/inteiro" }, "mantido": { "$ref": "#/$defs/inteiro" },
+        "rejeitado": { "$ref": "#/$defs/inteiro" }, "prejudicado": { "$ref": "#/$defs/inteiro" }
+      }
+    },
+    "definicao": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "rotulo", "definicao"],
+      "properties": { "id": { "type": "string" }, "rotulo": { "type": "string" }, "definicao": { "type": "string" } }
+    },
     "fonte": {
       "type": "object",
       "additionalProperties": false,
@@ -37,12 +75,14 @@
     "urls": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["congresso", "api", "camara", "lei"],
+      "required": ["congresso", "api", "camara", "lei", "veto", "vetoApi"],
       "properties": {
         "congresso": { "type": "string", "pattern": "^https://.*\\{codigoMateria\\}" },
         "api": { "type": "string", "pattern": "^https://.*\\{id\\}" },
         "camara": { "type": "string", "pattern": "^https://.*\\{camaraId\\}" },
-        "lei": { "type": "string", "pattern": "^https://.*\\{codigo\\}" }
+        "lei": { "type": "string", "pattern": "^https://.*\\{codigo\\}" },
+        "veto": { "type": "string", "pattern": "^https://.*\\{codigo\\}" },
+        "vetoApi": { "type": "string", "pattern": "^https://.*\\{codigo\\}" }
       }
     },
     "mandato": {
@@ -158,6 +198,111 @@
             "if": { "properties": { "situacao": { "const": "convertida" } } },
             "then": { "properties": { "lei": { "type": "object" } } },
             "else": { "properties": { "lei": { "type": "null" } } }
+          }
+        }
+      }
+    },
+    "vetos": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["definicoes", "definicoesDispositivo", "necessarios", "camposDispositivo", "total", "contagem", "totais", "dispositivos",
+                   "porAno", "retidos", "itens"],
+      "properties": {
+        "definicoes": { "type": "array", "items": { "$ref": "#/$defs/definicao" } },
+        "definicoesDispositivo": { "type": "array", "items": { "$ref": "#/$defs/definicao" } },
+        "necessarios": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["camara", "senado"],
+          "properties": { "camara": { "const": 257 }, "senado": { "const": 41 } }
+        },
+        "camposDispositivo": { "const": ["identificador", "descricao", "situacao", "dataSessao", "tipoVotacao", "camara", "senado"] },
+        "total": { "$ref": "#/$defs/inteiro" },
+        "contagem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["em_tramitacao", "mantido", "derrubado_em_parte", "derrubado", "prejudicado"],
+          "properties": {
+            "em_tramitacao": { "$ref": "#/$defs/inteiro" }, "mantido": { "$ref": "#/$defs/inteiro" },
+            "derrubado_em_parte": { "$ref": "#/$defs/inteiro" }, "derrubado": { "$ref": "#/$defs/inteiro" },
+            "prejudicado": { "$ref": "#/$defs/inteiro" }
+          }
+        },
+        "totais": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["total", "parcial"],
+          "properties": { "total": { "$ref": "#/$defs/inteiro" }, "parcial": { "$ref": "#/$defs/inteiro" } }
+        },
+        "dispositivos": { "$ref": "#/$defs/contagemDispositivo" },
+        "porAno": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ano", "fonte", "noMandato"],
+            "properties": { "ano": { "type": "integer", "minimum": 1995 }, "fonte": { "$ref": "#/$defs/inteiro" }, "noMandato": { "$ref": "#/$defs/inteiro" } }
+          }
+        },
+        "retidos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["identificacao", "motivo"],
+            "properties": { "identificacao": { "type": "string", "pattern": "^VET [0-9]+/[0-9]{4}$" }, "motivo": { "type": "string" } }
+          }
+        },
+        "itens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["codigo", "codigoMateria", "numero", "ano", "total", "assunto", "dataPublicacao", "situacao", "materiaVetada", "lei",
+                         "mensagem", "sobrestandoDesde", "contagem", "dispositivos"],
+            "properties": {
+              "codigo": { "type": "integer" },
+              "codigoMateria": { "type": "integer" },
+              "numero": { "type": "integer", "minimum": 1 },
+              "ano": { "type": "integer", "minimum": 1995 },
+              "total": { "type": "boolean" },
+              "assunto": { "$ref": "#/$defs/textoOuNada" },
+              "dataPublicacao": { "$ref": "#/$defs/data" },
+              "situacao": { "$ref": "#/$defs/rotuloVeto" },
+              "materiaVetada": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["sigla", "numero", "ano"],
+                "properties": { "sigla": { "type": "string", "pattern": "^[A-Z]{2,4}$" }, "numero": { "type": "integer", "minimum": 1 }, "ano": { "type": "integer" } }
+              },
+              "lei": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/lei" }] },
+              "mensagem": {
+                "oneOf": [
+                  { "type": "null" },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["numero", "ano", "url"],
+                    "properties": { "numero": { "type": "integer" }, "ano": { "type": "integer" }, "url": { "type": "string", "pattern": "^https://" } }
+                  }
+                ]
+              },
+              "sobrestandoDesde": { "$ref": "#/$defs/dataOuNada" },
+              "contagem": { "$ref": "#/$defs/contagemDispositivo" },
+              "dispositivos": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "array",
+                  "prefixItems": [
+                    { "type": "string" }, { "$ref": "#/$defs/textoOuNada" }, { "$ref": "#/$defs/situacaoDispositivo" }, { "$ref": "#/$defs/dataOuNada" },
+                    { "$ref": "#/$defs/textoOuNada" }, { "$ref": "#/$defs/placar" }, { "$ref": "#/$defs/placar" }
+                  ],
+                  "items": false,
+                  "minItems": 7
+                }
+              }
+            }
           }
         }
       }
