@@ -55,7 +55,8 @@ FONTES = SITE / "vendor" / "fonts"
 DRY = coleta.CACHE / "paginas_dryrun"
 
 # páginas atuais: arquivo → (canonical, descrição curta do cartão padrão). Só estas entram no sitemap.
-PAGINAS_SITEMAP = ["", "deputados.html", "senadores.html", "leis.html", "blocos.html", "fluxo.html", "obras.html", "contexto.html", "origem.html"]
+PAGINAS_SITEMAP = ["", "deputados.html", "senadores.html", "presidente.html", "leis.html", "blocos.html", "fluxo.html", "obras.html", "contexto.html",
+                   "origem.html"]
 # páginas atuais que ficam fora do sitemap (precisam de ?id= para mostrar algo): ganham canonical para a versão sem parâmetros
 PAGINAS_FORA_SITEMAP = ["votos.html"]
 # páginas que só têm sentido com ?id=: o canonical é posto por JavaScript (aponta para a página nova); aqui só ganham a imagem e o card
@@ -319,6 +320,7 @@ def html_pagina(f, slug, lastmod, rodape):
     <nav class="nav" aria-label="Páginas do site">
       <a href="../../deputados.html"{' aria-current="page"' if f['tipo'] == 'deputado' else ''}>Deputados</a>
       <a href="../../senadores.html"{' aria-current="page"' if f['tipo'] == 'senador' else ''}>Senadores</a>
+      <a href="../../presidente.html">Presidente</a>
       <a href="../../leis.html">Leis votadas</a>
       <a href="../../blocos.html">Quem vota com quem</a>
       <a href="../../fluxo.html">Entre as casas</a>

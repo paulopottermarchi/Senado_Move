@@ -25,4 +25,5 @@ CRITICOS = [
 OPCIONAIS = [
     ("site/dados/emendas/indice.json", "emendas_indice.schema.json"),
     ("site/dados/emendas/[0-9]*.json", "emendas_deputado.schema.json"),
+    ("site/dados/presidencia.json", "presidencia.schema.json"),
 ]

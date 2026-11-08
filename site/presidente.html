@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-escuro-ok data-ed>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Presidente | Câmara Aberta</title>
+<meta name="description" content="O mandato presidencial atual e cada medida provisória editada nele, com a situação registrada pelo Congresso: convertida em lei, perdeu a eficácia, revogada ou em tramitação, com o link da fonte de cada uma.">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Câmara Aberta">
+<meta property="og:title" content="Presidente | Câmara Aberta">
+<meta property="og:description" content="Cada medida provisória do mandato presidencial atual, com a situação registrada pelo Congresso e o link da fonte.">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Cpath d='M8 13.5h16a8 8 0 0 1-16 0z' fill='%232dd4bf'/%3E%3Crect x='7' y='23.5' width='18' height='2' rx='1' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<script>try{var _t=localStorage.getItem('tema');if(_t==='claro'||_t==='escuro')document.documentElement.dataset.tema=_t}catch(e){}</script>
+<link rel="stylesheet" href="estilo.css">
+<link rel="preload" href="vendor/fonts/barlow-condensed-600.woff2" as="font" type="font/woff2" crossorigin>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
+<link rel="modulepreload" href="vendor/motion-14.0.0.js">
+<script type="module" src="motion-init.js" onerror="document.documentElement.classList.add('m-ok')"></script>
+<script src="site.js" defer></script>
+<style>
+/* Presidente. Tinta neutra: a situação de uma MP é um fato do registro do Congresso, não uma posição; nada aqui usa a cor do espectro. */
+.painel{background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio);box-shadow:var(--sombra);padding:24px 28px;margin-top:28px}
+.painel h2{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.25}
+.pr-sub{margin-top:8px;max-width:72ch;font-size:14px;line-height:1.6;color:var(--tinta2)}
+.pr-sub b{font-weight:600;color:var(--tinta)}
+.pr-sub a{color:var(--destaque)}
+.pr-vazio{margin-top:28px;font-size:14px;color:var(--tinta2);max-width:72ch}
+.pr-mandato{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:20px;padding:0;list-style:none}
+.pr-mandato li{display:grid;gap:2px;min-width:0}
+.pr-mandato small{font-size:12px;font-weight:500;color:var(--tinta3)}
+.pr-mandato b{font-size:16px;font-weight:600;color:var(--tinta)}
+
+.pr-cont{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin:20px 0 0;padding:0;list-style:none}
+.pr-cont li{border:1px solid var(--linha);border-radius:var(--raio-p);padding:14px 16px;min-width:0}
+.pr-cont b{display:block;font-family:var(--cond);font-weight:600;font-size:40px;line-height:1;color:var(--tinta)}
+.pr-cont .r{display:block;margin-top:6px;font-size:15px;font-weight:600;color:var(--tinta)}
+.pr-cont .d{display:block;margin-top:6px;font-size:13px;line-height:1.55;color:var(--tinta2)}
+.pr-ano{margin-top:18px;font-size:13px;line-height:1.6;color:var(--tinta3);max-width:84ch}
+
+.pr-filtros{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;margin-top:20px}
+.pr-campo{display:grid;gap:4px;font-size:12px;font-weight:500;color:var(--tinta3);min-width:0}
+.pr-campo .sel,.pr-campo .texto{min-width:150px;max-width:100%}
+.pr-conta{margin-top:14px;font-size:13px;color:var(--tinta2)}
+.pr-lista{list-style:none;margin:8px 0 0;padding:0}
+.pr-lista>li{border-top:1px solid var(--linha2);padding:14px 0;display:grid;gap:6px;min-width:0}
+.pr-cab{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.pr-cab a.num{font-family:var(--cond);font-weight:600;font-size:20px;color:var(--tinta);text-decoration:none}
+.pr-cab a.num:hover{text-decoration:underline}
+.pr-cab .dt{font-size:13px;color:var(--tinta3)}
+.pr-etq{display:inline-block;font-size:12px;font-weight:600;color:var(--tinta);border:1px solid var(--linha-forte);border-radius:999px;padding:1px 10px;white-space:nowrap}
+.pr-em{font-family:var(--serif);font-size:16px;line-height:1.5;color:var(--tinta);max-width:84ch;overflow-wrap:anywhere}
+.pr-det{font-size:13px;line-height:1.6;color:var(--tinta2);max-width:90ch}
+.pr-det a{color:var(--destaque)}
+.pr-det .lk{white-space:nowrap}
+.pr-sem{padding:24px 12px;text-align:center;color:var(--tinta3)}
+.pr-pag{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px;font-size:13px;color:var(--tinta2)}
+
+.pr-glos{margin:16px 0 0;display:grid;gap:14px;max-width:84ch}
+.pr-glos dt{font-size:15px;font-weight:600;color:var(--tinta)}
+.pr-glos dd{margin:4px 0 0;font-size:14px;line-height:1.6;color:var(--tinta2)}
+@media(max-width:820px){ .painel{padding:20px} }
+@media(pointer:coarse){ .pr-det a,.pr-cab a.num{display:inline-block;padding:6px 0} }
+</style>
+<!-- seo:inicio -->
+<link rel="canonical" href="https://congressoclaro.com.br/presidente.html">
+<meta property="og:url" content="https://congressoclaro.com.br/presidente.html">
+<meta property="og:image" content="https://congressoclaro.com.br/img/og-padrao.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Câmara Aberta: O que o Congresso propõe, aprova e vota">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://congressoclaro.com.br/img/og-padrao.png">
+<!-- seo:fim -->
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="index.html" aria-label="Câmara Aberta, página inicial"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+    <nav class="nav" aria-label="Páginas do site">
+      <a href="deputados.html">Deputados</a>
+      <a href="senadores.html">Senadores</a>
+      <a href="presidente.html" aria-current="page">Presidente</a>
+      <a href="leis.html">Leis votadas</a>
+      <a href="blocos.html">Quem vota com quem</a>
+      <a href="fluxo.html">Entre as casas</a>
+      <a href="obras.html">Obras</a>
+      <a href="contexto.html">Economia</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="conteudo">
+  <div class="capa">
+    <div class="hero-ed">
+      <div class="txt">
+        <p class="kicker">Presidência da República · mandato atual</p>
+        <h1 class="t-grande">Presidente</h1>
+        <p class="chamada" id="chamada">O mandato presidencial em curso e cada medida provisória editada nele, com a situação que o Congresso registra para ela.</p>
+        <ul class="pr-mandato" id="mandato" hidden></ul>
+      </div>
+      <div class="lado"><figure class="modelo-ed" data-modelo="folhas" aria-hidden="true"><img src="img/modelo-folhas.svg" alt="" width="480" height="360" decoding="async"></figure></div>
+    </div>
+
+    <div class="aviso" role="note">
+      <p><b>O que esta página faz.</b> Mostra cada medida provisória (MP) editada no mandato atual e a situação que o Congresso registra para ela,
+         com o link da fonte em cada linha, e conta quantas estão em cada situação. Cada número tem a definição ao lado.</p>
+      <p><b>O que ela se recusa a fazer.</b> Não diz se uma MP foi boa ou ruim, não atribui resultado a ninguém, não calcula taxa nem ordena por desempenho
+         e não liga uma MP a nenhum indicador. Quando a fonte não traz a situação, a página mostra “—” com o motivo, nunca um palpite.
+         <b>Perder a eficácia não é ser rejeitada</b>: é o prazo para votar que terminou (veja o glossário).</p>
+    </div>
+  </div>
+
+  <p class="pr-vazio" id="vazio" hidden>Os dados desta página ainda não foram gerados. Eles saem da rodada diária (<code>presidencia.py</code>); se a rodada falhar, a página mantém a versão anterior e mostra a data dela.</p>
+
+  <section class="painel" id="contagem" aria-labelledby="contTit" hidden>
+    <h2 id="contTit">Medidas provisórias do mandato, por situação</h2>
+    <p class="pr-sub" id="contSub"></p>
+    <ul class="pr-cont" id="contLista"></ul>
+    <p class="pr-ano" id="contAno"></p>
+  </section>
+
+  <section class="painel" id="lista" aria-labelledby="listaTit" hidden>
+    <h2 id="listaTit">Cada medida provisória</h2>
+    <p class="pr-sub">Da mais recente para a mais antiga. O número leva à página da MP no Congresso; ao lado ficam a situação oficial, como o Congresso a grava, e a lei, quando houver.</p>
+    <div class="pr-filtros">
+      <label class="pr-campo">Situação<select class="sel" id="fSit"><option value="">Todas</option></select></label>
+      <label class="pr-campo">Ano<select class="sel" id="fAno"><option value="">Todos</option></select></label>
+      <label class="pr-campo">Buscar<input class="texto" id="fQ" type="search" placeholder="Número ou palavra da ementa" autocomplete="off"></label>
+    </div>
+    <p class="pr-conta" id="conta" aria-live="polite"></p>
+    <ol class="pr-lista" id="itens"></ol>
+    <div class="pr-pag"><button class="pino" type="button" id="mais" hidden>Mostrar mais</button></div>
+  </section>
+
+  <section class="painel" id="glossario" aria-labelledby="glosTit">
+    <h2 id="glosTit">Glossário</h2>
+    <dl class="pr-glos">
+      <div><dt>Medida provisória (MP)</dt>
+        <dd>Ato do Presidente da República com força de lei desde a publicação, para casos de relevância e urgência (Constituição, art. 62). O Congresso tem de votá-la para que continue valendo.</dd></div>
+      <div><dt>Prazo da MP</dt>
+        <dd>60 dias, prorrogáveis uma vez por mais 60 (art. 62, §§ 3º e 7º). Depois de 45 dias sem votação, ela passa a ter prioridade na pauta da Casa em que estiver (art. 62, § 6º).</dd></div>
+      <div><dt>Convertida em lei</dt>
+        <dd>O Congresso aprovou a MP e ela virou lei. Pode ser aprovada na íntegra, como foi editada, ou na forma de um projeto de lei de conversão, quando o Congresso muda o texto.</dd></div>
+      <div><dt>Projeto de lei de conversão (PLV)</dt>
+        <dd>O texto da MP com as mudanças feitas pelo Congresso. Depois de aprovado, vai à sanção do Presidente, que pode vetar partes.</dd></div>
+      <div><dt>Perdeu a eficácia</dt>
+        <dd>O prazo terminou sem votação final, e a MP deixou de valer. <b>Não é rejeição</b>: ninguém votou contra; ela não foi votada a tempo. O Congresso pode regular por decreto legislativo o que aconteceu enquanto valeu (art. 62, § 3º).</dd></div>
+      <div><dt>Rejeitada</dt>
+        <dd>A Câmara ou o Senado votou e rejeitou a MP.</dd></div>
+      <div><dt>Revogada</dt>
+        <dd>A MP foi revogada antes da conclusão da votação no Congresso, segundo o registro do Congresso.</dd></div>
+      <div><dt>Prejudicada</dt>
+        <dd>O Congresso declarou a MP sem objeto, segundo o registro.</dd></div>
+      <div><dt>Em tramitação</dt>
+        <dd>A MP ainda está em análise: primeiro numa comissão mista de deputados e senadores, depois no Plenário da Câmara e no do Senado.</dd></div>
+    </dl>
+  </section>
+</main>
+
+<footer class="rodape-site">
+  <div class="wrap">
+    <h2>De onde vem cada número</h2>
+    <p>As medidas provisórias e a situação de cada uma vêm dos <a href="https://legis.senado.leg.br/dadosabertos/" target="_blank" rel="noopener">Dados Abertos do Senado Federal e do Congresso Nacional</a>
+       (registro de cada processo, com a deliberação e a lei gerada). A contagem de cada ano é conferida com os <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Dados Abertos da Câmara</a>:
+       se as duas fontes não derem o mesmo número, nada é publicado. O mandato vem de uma tabela aberta no código (<code>entradas/governos.json</code>), com as datas conferidas no Wikidata.</p>
+    <p id="rodapeData"></p>
+    <p>A situação é a do campo oficial; se ele vier vazio, vale a deliberação oficial; sem as duas, “—”. Uma MP que a fonte dá como convertida mas sem a lei registrada fica fora da lista e das contagens, com o motivo.
+       Código e dados abertos no <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">GitHub</a>.</p>
+  </div>
+</footer>
+<footer class="rodape-global">
+  <div class="wrap">
+    <div class="rg">
+      <div class="rg-sobre">
+        <a class="marca" href="index.html"><svg class="marca-ico" viewBox="0 0 32 32" aria-hidden="true"><rect class="fundo" width="32" height="32" rx="8"/><path d="M8 13.5h16a8 8 0 0 1-16 0z" fill="#2dd4bf"/><rect x="7" y="23.5" width="18" height="2" rx="1" fill="#fff"/></svg><span>Câmara Aberta</span></a>
+        <p>O que o Congresso propõe, aprova e vota, a partir de dados públicos oficiais atualizados todos os dias.</p>
+      </div>
+      <nav class="rg-col" aria-label="Páginas">
+        <h2>Páginas</h2>
+        <a href="index.html">Início</a>
+        <a href="deputados.html">Deputados</a>
+        <a href="senadores.html">Senadores</a>
+        <a href="presidente.html" aria-current="page">Presidente</a>
+        <a href="leis.html">Leis votadas</a>
+        <a href="blocos.html">Quem vota com quem</a>
+        <a href="fluxo.html">Entre as casas</a>
+        <a href="obras.html">Obras</a>
+      <a href="contexto.html">Contexto econômico</a>
+      <a href="origem.html">De onde vêm as leis</a>
+      </nav>
+      <div class="rg-col">
+        <h2>Fontes</h2>
+        <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Câmara dos Deputados</a>
+        <a href="https://legis.senado.leg.br/dadosabertos/" target="_blank" rel="noopener">Senado Federal</a>
+        <a href="https://www.tse.jus.br" target="_blank" rel="noopener">Tribunal Superior Eleitoral</a>
+        <a href="https://dataverse.harvard.edu/dataverse/bls" target="_blank" rel="noopener">Brazilian Legislative Survey</a>
+        <a href="https://portaldatransparencia.gov.br" target="_blank" rel="noopener">Portal da Transparência</a>
+      </div>
+      <div class="rg-col">
+        <h2>Projeto</h2>
+        <a href="index.html#sobre">Sobre os dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move" target="_blank" rel="noopener">Código e dados</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/issues" target="_blank" rel="noopener">Informar um erro</a>
+        <a href="https://github.com/paulopottermarchi/Senado_Move/blob/main/LICENSE" target="_blank" rel="noopener">Licença proprietária</a>
+      </div>
+    </div>
+    <div class="rg-pe"><p>Site independente, sem vínculo com a Câmara dos Deputados, o Senado Federal ou o TSE.
+      Os números vêm das fontes oficiais citadas; as escolhas de método estão escritas em cada página.</p></div>
+  </div>
+</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf=new Intl.NumberFormat('pt-BR');
+const dataBR=d=>d?`${d.slice(8,10)}/${d.slice(5,7)}/${d.slice(0,4)}`:'—';
+const semAcento=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const POR_PAGINA=30;
+const REPORTAR='https://github.com/paulopottermarchi/Senado_Move/issues/new';
+let D=null, ROT={}, PAG=1;
+const url=(modelo,obj)=>modelo.replace(/\{(\w+)\}/g,(_,k)=>encodeURIComponent(obj[k]));
+const linkErro=x=>REPORTAR+'?title='+encodeURIComponent(`Presidente: MPV ${x.numero}/${x.ano}`)+
+  '&body='+encodeURIComponent(`MP: MPV ${x.numero}/${x.ano}\nSituação na página: ${ROT[x.situacao]||x.situacao}\nO que está errado:\n`);
+
+function mandato(m){
+  const partido=(m.partido||[]).join(', ')||'—';
+  $('mandato').innerHTML=[['Presidente',m.presidente||'—'],['Partido',partido],['Mandato',m.rotulo||'—'],['Início',dataBR(m.inicio)],['Fim',m.fim?dataBR(m.fim):'—']]
+    .map(([k,v])=>`<li><small>${esc(k)}</small><b>${esc(v)}</b></li>`).join('');
+  $('mandato').hidden=false;
+}
+function contagem(){
+  const M=D.mps;
+  $('contSub').innerHTML=`<b>${nf.format(M.total)} medidas provisórias</b> editadas desde ${dataBR(D.mandato.inicio)}, contadas pela situação que o Congresso registra.`+
+    (M.retidas.length?` ${M.retidas.length} ${M.retidas.length===1?'ficou':'ficaram'} fora por inconsistência na fonte (ver o fim da página).`:'');
+  $('contLista').innerHTML=M.definicoes.filter(d=>d.id!=='sem_situacao'||M.contagem[d.id]).map(d=>
+    `<li><b>${nf.format(M.contagem[d.id]||0)}</b><span class="r">${esc(d.rotulo)}</span><span class="d">${esc(d.definicao)}</span></li>`).join('');
+  $('contAno').textContent='Por ano: '+M.porAno.map(a=>`${a.ano}, ${nf.format(a.noMandato)}`).join(' · ')+
+    '. Em cada ano, o total do Congresso foi conferido com o da Câmara ('+M.porAno.map(a=>`${nf.format(a.fonte)} e ${nf.format(a.camara)}`).join('; ')+').';
+  $('contagem').hidden=false;
+}
+function filtros(){
+  $('fSit').insertAdjacentHTML('beforeend',D.mps.definicoes.filter(d=>D.mps.contagem[d.id]).map(d=>`<option value="${d.id}">${esc(d.rotulo)}</option>`).join(''));
+  $('fAno').insertAdjacentHTML('beforeend',[...new Set(D.mps.itens.map(x=>x.ano))].sort((a,b)=>b-a).map(a=>`<option>${a}</option>`).join(''));
+  ['fSit','fAno'].forEach(id=>$(id).addEventListener('change',()=>{PAG=1;lista();}));
+  $('fQ').addEventListener('input',()=>{PAG=1;lista();});
+  $('mais').addEventListener('click',()=>{PAG++;lista();});
+}
+function linha(x){
+  const U=D.urls, lei=x.lei?`<b>${esc(x.lei.descricao)}</b> (<a href="${esc(url(U.lei,x.lei))}" target="_blank" rel="noopener">texto da norma no Senado</a>)`:'';
+  const fonte=[`<a class="lk" href="${esc(url(U.congresso,x))}" target="_blank" rel="noopener">Congresso</a>`,
+               `<a class="lk" href="${esc(url(U.api,x))}" target="_blank" rel="noopener">dados abertos</a>`]
+    .concat(x.camaraId?[`<a class="lk" href="${esc(url(U.camara,x))}" target="_blank" rel="noopener">Câmara</a>`]:[]).join(' · ');
+  // a data vem com a deliberação, no vocabulário da fonte: "deliberada em" leria como votação, e perda de eficácia e revogação não são voto
+  const sit=x.situacaoFonte?`situação na fonte: ${esc(x.situacaoFonte.toLowerCase())}`:'';
+  const deli=x.deliberacaoFonte&&x.situacao!=='em_tramitacao'?`deliberação registrada na fonte: ${esc((D.mps.deliberacoes||{})[x.deliberacaoFonte]||x.deliberacaoFonte)}${x.dataDeliberacao?` (${dataBR(x.dataDeliberacao)})`:''}`:'';
+  return `<li>
+    <div class="pr-cab"><a class="num" href="${esc(url(U.congresso,x))}" target="_blank" rel="noopener">MPV ${x.numero}/${x.ano}</a>
+      <span class="dt">${dataBR(x.data)}</span><span class="pr-etq">${esc(ROT[x.situacao]||'—')}</span></div>
+    <p class="pr-em">${esc(x.ementa||'—')}</p>
+    <p class="pr-det">${[lei, sit, deli, x.motivo?esc(x.motivo):''].filter(Boolean).join(' · ')}</p>
+    <p class="pr-det">Fonte: ${fonte} · <a href="${esc(linkErro(x))}" target="_blank" rel="noopener">Reportar erro</a></p>
+  </li>`;
+}
+function lista(){
+  const s=$('fSit').value, a=$('fAno').value, q=semAcento($('fQ').value.trim());
+  const L=D.mps.itens.filter(x=>(!s||x.situacao===s)&&(!a||String(x.ano)===a)&&
+    (!q||`mpv ${x.numero}/${x.ano}`.includes(q)||String(x.numero).startsWith(q)||semAcento(x.ementa).includes(q)));
+  $('conta').textContent=`${nf.format(L.length)} de ${nf.format(D.mps.total)} medidas provisórias.`;
+  $('itens').innerHTML=L.length?L.slice(0,PAG*POR_PAGINA).map(linha).join(''):'<li class="pr-sem">Nenhuma MP com esses filtros.</li>';
+  $('mais').hidden=L.length<=PAG*POR_PAGINA;
+}
+function rodape(){
+  const r=D.mps.retidas;
+  $('rodapeData').innerHTML=`Dados gerados em ${dataBR(D._geradoEm.slice(0,10))}.`+(r.length?` Fora da lista por inconsistência na fonte: ${r.map(x=>`${esc(x.identificacao)} (${esc(x.motivo)})`).join('; ')}.`:'');
+}
+fetch('dados/presidencia.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null).then(j=>{
+  if(!j||!j.mps){ $('vazio').hidden=false; return; }
+  D=j; ROT=Object.fromEntries(D.mps.definicoes.map(d=>[d.id,d.rotulo]));
+  mandato(D.mandato); contagem(); filtros(); lista(); rodape();
+  $('lista').hidden=false;
+  const dias=Math.floor((Date.now()-Date.parse(D._geradoEm))/864e5);
+  if(dias>3) $('rodapeData').insertAdjacentHTML('beforeend',` <b>Atenção: a coleta não é atualizada há ${dias} dias; os números são os dessa data.</b>`);
+});
+</script>
+</body>
+</html>

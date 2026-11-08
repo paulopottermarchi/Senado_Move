@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Presidente: mandato e medidas provisórias (site/dados/presidencia.json)",
+  "description": "Gerado por scripts/presidencia.py. O mandato vem de entradas/governos.json; cada MP traz a situação oficial do Congresso, a deliberação oficial e, quando convertida, a lei registrada. Nenhum campo de placar, taxa ou ranking.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_versao", "_geradoEm", "_fontes", "urls", "mandato", "mps"],
+  "$defs": {
+    "data": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "dataOuNada": { "oneOf": [{ "$ref": "#/$defs/data" }, { "type": "null" }] },
+    "textoOuNada": { "type": ["string", "null"] },
+    "categoria": { "enum": ["convertida", "aprovada_sem_lei", "perdeu_eficacia", "revogada", "rejeitada", "prejudicada", "em_tramitacao", "sem_situacao"] },
+    "fonte": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nome", "url"],
+      "properties": {
+        "nome": { "type": "string" },
+        "url": { "type": "string", "pattern": "^https://" },
+        "documentacao": { "type": "string", "pattern": "^https://" }
+      }
+    }
+  },
+  "properties": {
+    "_versao": { "type": "string", "pattern": "^presidencia-[0-9]+$" },
+    "_geradoEm": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T" },
+    "_fontes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mps", "conferencia", "mandato"],
+      "properties": {
+        "mps": { "$ref": "#/$defs/fonte" },
+        "conferencia": { "$ref": "#/$defs/fonte" },
+        "mandato": { "type": "string" }
+      }
+    },
+    "urls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["congresso", "api", "camara", "lei"],
+      "properties": {
+        "congresso": { "type": "string", "pattern": "^https://.*\\{codigoMateria\\}" },
+        "api": { "type": "string", "pattern": "^https://.*\\{id\\}" },
+        "camara": { "type": "string", "pattern": "^https://.*\\{camaraId\\}" },
+        "lei": { "type": "string", "pattern": "^https://.*\\{codigo\\}" }
+      }
+    },
+    "mandato": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "rotulo", "presidente", "inicio", "fim", "partido", "nota"],
+      "properties": {
+        "id": { "type": "string" },
+        "rotulo": { "type": "string" },
+        "presidente": { "$ref": "#/$defs/textoOuNada" },
+        "inicio": { "$ref": "#/$defs/data" },
+        "fim": { "$ref": "#/$defs/dataOuNada" },
+        "partido": { "type": "array", "items": { "type": "string" } },
+        "nota": { "$ref": "#/$defs/textoOuNada" }
+      }
+    },
+    "mps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["definicoes", "deliberacoes", "total", "contagem", "porAno", "retidas", "itens"],
+      "properties": {
+        "definicoes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "rotulo", "definicao"],
+            "properties": { "id": { "$ref": "#/$defs/categoria" }, "rotulo": { "type": "string" }, "definicao": { "type": "string" } }
+          }
+        },
+        "deliberacoes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "PERDA_EFICACIA": { "type": "string" }, "SEM_EFICACIA": { "type": "string" }, "REVOGADO": { "type": "string" },
+            "PREJUDICADO": { "type": "string" }, "REJEITADO_PLENARIO": { "type": "string" }, "REJEITADO_PLENARIO_CD": { "type": "string" },
+            "APROVADO_NA_INTEGRA": { "type": "string" }, "APROVADO_PLV": { "type": "string" }
+          }
+        },
+        "total": { "type": "integer", "minimum": 0 },
+        "contagem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["convertida", "aprovada_sem_lei", "perdeu_eficacia", "revogada", "rejeitada", "prejudicada", "em_tramitacao", "sem_situacao"],
+          "properties": {
+            "convertida": { "type": "integer", "minimum": 0 }, "aprovada_sem_lei": { "type": "integer", "minimum": 0 },
+            "perdeu_eficacia": { "type": "integer", "minimum": 0 }, "revogada": { "type": "integer", "minimum": 0 },
+            "rejeitada": { "type": "integer", "minimum": 0 }, "prejudicada": { "type": "integer", "minimum": 0 },
+            "em_tramitacao": { "type": "integer", "minimum": 0 }, "sem_situacao": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "porAno": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ano", "fonte", "camara", "noMandato"],
+            "properties": {
+              "ano": { "type": "integer", "minimum": 2001 },
+              "fonte": { "type": "integer", "minimum": 0 },
+              "camara": { "type": "integer", "minimum": 0 },
+              "noMandato": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "retidas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["identificacao", "motivo"],
+            "properties": { "identificacao": { "type": "string", "pattern": "^MPV [0-9]+/[0-9]{4}$" }, "motivo": { "type": "string" } }
+          }
+        },
+        "itens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "codigoMateria", "numero", "ano", "ementa", "data", "situacao", "situacaoFonte", "deliberacaoFonte",
+                         "dataDeliberacao", "lei", "camaraId"],
+            "properties": {
+              "id": { "type": "integer" },
+              "codigoMateria": { "type": "integer" },
+              "numero": { "type": "integer", "minimum": 1 },
+              "ano": { "type": "integer", "minimum": 2001 },
+              "ementa": { "$ref": "#/$defs/textoOuNada" },
+              "data": { "$ref": "#/$defs/dataOuNada" },
+              "situacao": { "$ref": "#/$defs/categoria" },
+              "situacaoFonte": { "$ref": "#/$defs/textoOuNada" },
+              "deliberacaoFonte": { "$ref": "#/$defs/textoOuNada" },
+              "dataDeliberacao": { "$ref": "#/$defs/dataOuNada" },
+              "lei": {
+                "oneOf": [
+                  { "type": "null" },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["numero", "ano", "data", "descricao", "codigo"],
+                    "properties": {
+                      "numero": { "type": "integer", "minimum": 1 },
+                      "ano": { "type": "integer" },
+                      "data": { "$ref": "#/$defs/data" },
+                      "descricao": { "type": "string" },
+                      "codigo": { "type": "integer" }
+                    }
+                  }
+                ]
+              },
+              "camaraId": { "type": ["integer", "null"] },
+              "motivo": { "type": "string" }
+            },
+            "if": { "properties": { "situacao": { "const": "convertida" } } },
+            "then": { "properties": { "lei": { "type": "object" } } },
+            "else": { "properties": { "lei": { "type": "null" } } }
+          }
+        }
+      }
+    }
+  }
+}
