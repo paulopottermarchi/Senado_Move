@@ -48,6 +48,7 @@ LIMITES = [
     ("contexto/tributos.json", "geradoEm", 8, "economia: tributos (semanal)"),
     ("comex/indice.json", "verificadoEm", 8, "exportações e balança (semanal)"),
     ("fluxo.json", "_gerado", 7, "Entre as casas (só é regravado com a coleta completa)"),
+    ("presidencia.json", "_geradoEm", 1, "Presidente: medidas provisórias do mandato"),
 ]
 
 
@@ -165,8 +166,15 @@ def testar():
         (ind,) = conferir(t, [("ind.json", "geradoEm", 1, "economia")], date(2026, 11, 7))
         igual((ind[4], ind[5]), ("ok", "economia"), "em dia pelo campo da tabela: a descrição não muda")
     igual(len({a for a, *_ in LIMITES}), len(LIMITES), "nenhum arquivo repetido na tabela")
-    # todos os arquivos da tabela existem no site e têm o campo de data (pega erro de digitação na tabela)
-    faltam = [x[0] for x in conferir() if x[4] in ("falta", "sem data")]
+    # todos os arquivos da tabela existem no site e têm o campo de data (pega erro de digitação na tabela). Exceção: as camadas de
+    # arquivos_criticos.OPCIONAIS, que só existem depois da 1ª rodada que as publica (no PR que as cria, site/dados/ não as tem); na rodada,
+    # se ela não publicar, o "falta" aparece na conferência de verdade
+    from fnmatch import fnmatch
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from arquivos_criticos import OPCIONAIS
+    novas = lambda a: any(fnmatch(f"site/dados/{a}", padrao) for padrao, _ in OPCIONAIS)
+    igual(novas("presidencia.json"), True, "presidencia.json é camada opcional (some do teste de existência até a 1ª publicação)")
+    faltam = [x[0] for x in conferir() if x[4] == "sem data" or (x[4] == "falta" and not novas(x[0]))]
     igual(faltam, [], f"arquivos e campos da tabela existem em site/dados ({faltam})")
     print(f"{ok} verificações passaram")
 
