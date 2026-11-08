@@ -150,12 +150,13 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
   dispositivo votado de veto parcial (`/plenario/resultado/veto/dispositivo/{código}`). Cada resposta é conferida contra o
   dispositivo pela parte vetada, pelo tipo e pela data da sessão, porque o código do veto e o do dispositivo são numerações que se
   cruzam. Fica retido, com o motivo: o dispositivo "rejeitado" sem 257 votos Não na Câmara e 41 no Senado, o "mantido" que alcança
-  os dois e a votação que não confere. **O placar do veto total não está nos dados abertos** (só no PDF da sessão, que não é lido):
-  a página diz isso. Votos são guardados por um ano (o de um dispositivo apurado não muda).
+  os dois e a votação que não confere. **O placar do veto total não está nos dados abertos**: a página diz isso e leva ao documento
+  do resultado oficial (o PDF da sessão, que a fonte indica no próprio registro), sem ler nem transcrever o arquivo.
 - **robots.txt**: o de `legis.senado.leg.br` responde 403 (também no navegador), então não foi possível lê-lo. O que o script
   consulta ali é a API oficial de dados abertos do Senado (`/dadosabertos`, documentada em `/dadosabertos/v3/api-docs`), com um
-  User-Agent que identifica o projeto e o endereço do repositório, sem e-mail. São no máximo dois pedidos por segundo nas listas e
-  quatro nos resultados de veto e nos votos (o `fluxo.py` usa cinco na mesma API), com cache de um dia.
+  User-Agent que identifica o projeto e o endereço do repositório, sem e-mail. São no máximo dois pedidos por segundo, somando
+  todas as conexões e as novas tentativas, e o script espera o que a fonte pedir no `Retry-After`. O cache é de um dia (um ano para
+  o voto de um dispositivo já apurado).
 - **Alinhamento ao Governo (deputados e senadores)**: coluna no ranking dos deputados e na tabela dos senadores. É a parcela dos
   votos Sim ou Não, nas votações nominais do Plenário desde 2023 em que o líder do Governo orientou Sim ou Não (o registro de
   orientação de cada Casa), em que a pessoa votou como ele orientou; mínimo de 50 votações na Câmara e 30 no Senado. Mede

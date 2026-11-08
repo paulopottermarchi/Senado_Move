@@ -227,8 +227,9 @@ jobs:
         run: python scripts/passo.py --opcional origem_leis.py
 
       # Presidente: as medidas provisórias e os vetos do mandato atual (presidencia.py). Publica site/dados/presidencia.json (o menu leva à página, que
-      # não pode ficar vazia); para voltar a só medir, trocar --publicar por --dry-run. A frio, 396 s e 1.475 pedidos (8/11/2026: 205 resultados de veto e
-      # 1.201 votações de dispositivo, a 4 pedidos por segundo); depois, ~130 pedidos por dia (listas e os vetos em tramitação; voto apurado fica 1 ano).
+      # não pode ficar vazia); para voltar a só medir, trocar --publicar por --dry-run. No máximo 2 pedidos por segundo, com o Retry-After respeitado.
+      # Medido em 8/11/2026 (API real): a frio 768 s e 1.475 pedidos (205 resultados de veto e 1.201 votações de dispositivo); duas rodadas diárias
+      # seguidas, 94 s e 84 s, 127 pedidos cada (listas, os vetos em tramitação e as MPs aprovadas sem lei; voto apurado fica 1 ano no cache).
       # Cortado pelo teto, nada é publicado e o cache guarda o que veio: a rodada seguinte continua. Erro da fonte (lista vazia, numeração com buraco,
       # contagem que não bate com a Câmara, variação de mais de 10%) para o passo e site/dados/presidencia.json fica; o frescor.py avisa depois de 1 dia.
       - name: Presidente (medidas provisórias e vetos)

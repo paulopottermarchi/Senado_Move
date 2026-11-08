@@ -259,7 +259,7 @@
             "type": "object",
             "additionalProperties": false,
             "required": ["codigo", "codigoMateria", "numero", "ano", "total", "assunto", "dataPublicacao", "situacao", "materiaVetada", "lei",
-                         "mensagem", "sobrestandoDesde", "contagem", "dispositivos"],
+                         "mensagem", "sobrestandoDesde", "contagem", "dispositivos", "resultadoPdf"],
             "properties": {
               "codigo": { "type": "integer" },
               "codigoMateria": { "type": "integer" },
@@ -288,6 +288,16 @@
                 ]
               },
               "sobrestandoDesde": { "$ref": "#/$defs/dataOuNada" },
+              "resultadoPdf": {
+                "description": "Só no veto total: o documento do resultado oficial, como link (o arquivo não é lido). Vazio no veto parcial.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["url", "descricao"],
+                  "properties": { "url": { "type": "string", "pattern": "^https://" }, "descricao": { "$ref": "#/$defs/textoOuNada" } }
+                }
+              },
               "contagem": { "$ref": "#/$defs/contagemDispositivo" },
               "dispositivos": {
                 "type": "array",

@@ -36,6 +36,7 @@ Regras (o que a página promete):
 """
 
 import argparse
+import email.utils
 import json
 import random
 import re
@@ -63,7 +64,8 @@ BRASILIA = timezone(timedelta(hours=-3))
 VALIDADE = timedelta(days=1)            # listas e MPs abertas
 VALIDADE_FECHADA = timedelta(days=30)   # detalhe de MP já encerrada (a lei gerada não muda)
 VARIACAO = 0.10                         # mais ou menos que isto de MPs contra o publicado: falha de fonte, a rodada para
-INTERVALO = 0.5                         # segundos entre dois pedidos
+INTERVALO = 0.5                         # segundos entre o COMEÇO de dois pedidos, somando todas as threads: no máximo 2 por segundo
+ESPERA_MAX = 300                        # teto de uma espera pedida pela fonte (Retry-After), em segundos
 PRAZO = [None]
 URLS = {"congresso": "https://www.congressonacional.leg.br/materias/medidas-provisorias/-/mpv/{codigoMateria}",
         "api": SENADO + "/processo/{id}",
@@ -73,8 +75,7 @@ URLS = {"congresso": "https://www.congressonacional.leg.br/materias/medidas-prov
         "vetoApi": SENADO + "/plenario/resultado/veto/{codigo}"}
 VOTOS_NECESSARIOS = {"camara": 257, "senado": 41}   # maioria absoluta de cada Casa (CF, art. 66, § 4º): 513 deputados e 81 senadores
 VALIDADE_VOTOS = timedelta(days=365)               # a votação de um dispositivo já apurado não muda
-INTERVALO_PARALELO = 0.25                          # resultados de veto e votos de dispositivo: até 4 pedidos começando por segundo
-PARALELO = 4                                       # e no máximo 4 em voo (o fluxo.py usa 5 por segundo na mesma API)
+PARALELO = 3                                       # resultados de veto e votos de dispositivo: até 3 em voo, no mesmo ritmo de 2 por segundo
 
 # Categorias da página, na ordem em que aparecem; cada uma com a definição que vai ao lado do número.
 SITUACOES = [
@@ -137,7 +138,9 @@ POR_SITUACAO_DISP = {"Não Apreciado": "nao_apreciado", "Mantido": "mantido", "R
 VOTOS = {"Sim": 0, "Não": 1, "Abstenção": 2, "Branco": 3}
 FORA_DO_PLACAR = {"Art. 17"}
 CAMPOS_DISPOSITIVO = ["identificador", "descricao", "situacao", "dataSessao", "tipoVotacao", "camara", "senado"]
-PROIBIDAS = re.compile(r"derrot|vit[oó]ri|culp|governista|fracass|ranking", re.I)
+# palavras que julgam ou acusam: nunca em texto da saída nem da página (o teste lê presidente.html inteiro). "parado" com fronteira de
+# palavra, porque "separado" (votar em separado) é texto da página.
+PROIBIDAS = re.compile(r"derrot|vit[oó]ri|culp|governista|fracass|ranking|\batras(?:o|os|ad[oa]s?)\b|\bdemor|\bparad[oa]s?\b", re.I)
 TEXTO_PAGINA = coleta.BASE / "site" / "presidente.html"
 
 
@@ -173,7 +176,7 @@ def pedir(url, params=None, tentativas=3, intervalo=None, aceitar_404=False):
     for n in range(tentativas):
         if PRAZO[0] is not None and time.monotonic() > PRAZO[0]:
             raise Prazo(f"prazo da rodada esgotado antes de pedir {url}")
-        time.sleep(INTERVALO if intervalo is None else intervalo)
+        no_ritmo(INTERVALO if intervalo is None else intervalo)
         try:
             r = sessao().get(url, params=params, timeout=(10, 60))
         except (coleta.requests.ConnectionError, coleta.requests.Timeout) as e:
@@ -182,7 +185,10 @@ def pedir(url, params=None, tentativas=3, intervalo=None, aceitar_404=False):
             continue
         if r.status_code == 429 or r.status_code >= 500:
             ultimo = coleta.motivo_http(r)
-            time.sleep(2 ** n)
+            espera = espera_pedida(r, 2 ** n)
+            if PRAZO[0] is not None and time.monotonic() + espera > PRAZO[0]:
+                raise Prazo(f"{url}: a fonte pediu {espera:.0f} s de espera (Retry-After) e o prazo da rodada acaba antes ({ultimo})")
+            time.sleep(espera)
             continue
         if r.status_code == 404 and aceitar_404:
             return None
@@ -196,13 +202,25 @@ def pedir(url, params=None, tentativas=3, intervalo=None, aceitar_404=False):
     raise FonteFalhou(f"{url} {params or ''}: falhou após {tentativas} tentativas ({ultimo})")
 
 
+def espera_pedida(r, padrao):
+    """Segundos de espera que a fonte pede no Retry-After (número ou data HTTP), com teto de ESPERA_MAX; sem o cabeçalho, `padrao`."""
+    v = (r.headers.get("Retry-After") or "").strip()
+    if v.isdigit():
+        return min(float(v), ESPERA_MAX)
+    try:
+        quando = email.utils.parsedate_to_datetime(v)
+        return max(0.0, min((quando - datetime.now(timezone.utc)).total_seconds(), ESPERA_MAX))
+    except (TypeError, ValueError, IndexError):
+        return padrao
+
+
 _ritmo = threading.Lock()
 _proximo = [0.0]
 
 
 def no_ritmo(intervalo=None):
-    """Espaça o COMEÇO dos pedidos feitos em paralelo: no máximo 1 a cada `intervalo` segundos, somando todas as threads."""
-    intervalo = INTERVALO_PARALELO if intervalo is None else intervalo
+    """Espaça o COMEÇO de todo pedido, de qualquer thread e inclusive as novas tentativas: no máximo 1 a cada `intervalo` segundos."""
+    intervalo = INTERVALO if intervalo is None else intervalo
     with _ritmo:
         agora_ = time.monotonic()
         espera = _proximo[0] - agora_
@@ -370,9 +388,12 @@ def resultado_veto(v, so_montar):
     cod = str(v["Codigo"])
     nome = f"veto/{cod}.json"
     dados = cache_ler(nome, VALIDADE if v["Materia"]["EmTramitacao"] == "Sim" else VALIDADE_FECHADA, so_montar)
+    if dados is not None and not isinstance(dados, dict):
+        if so_montar:
+            raise FonteFalhou(f"--so-montar com o resultado do veto {cod} no formato antigo do cache: rode sem --so-montar antes")
+        dados = None                                   # formato antigo (só a lista de dispositivos, sem os PDFs): pede de novo
     if dados is None:
-        no_ritmo()
-        r = pedir(SENADO + f"/plenario/resultado/veto/{cod}", intervalo=0, aceitar_404=True)
+        r = pedir(SENADO + f"/plenario/resultado/veto/{cod}", aceitar_404=True)
         if r is None:
             return None
         corpo = next(iter(r.values()), None) if isinstance(r, dict) and len(r) == 1 else None
@@ -381,8 +402,13 @@ def resultado_veto(v, so_montar):
             raise FonteFalhou(f"Congresso, resultado do veto {cod} (VET {v['Materia']['Numero']}/{v['Materia']['Ano']}): a resposta não é deste veto")
         ds = (vv.get("Dispositivos") or {}).get("Dispositivo") or []
         ds = ds if isinstance(ds, list) else [ds]
-        dados = [{k: x.get(k) for k in ("Codigo", "Identificador", "Descricao", "Situacao", "PossuiVotos", "TipoVotacao", "DataSessao")}
-                 for x in ds if isinstance(x, dict)]
+        pdfs = ((vv.get("PdfsResultadoVotacao") or {}).get("PdfResultadoVotacao")) or []
+        pdfs = pdfs if isinstance(pdfs, list) else [pdfs]
+        dados = {"dispositivos": [{k: x.get(k) for k in ("Codigo", "Identificador", "Descricao", "Situacao", "PossuiVotos", "TipoVotacao", "DataSessao")}
+                                  for x in ds if isinstance(x, dict)],
+                 # o documento do resultado oficial, só como LINK (o arquivo não é lido): no veto total é o único lugar com o placar
+                 "pdfs": [{"url": str(x.get("URL")), "descricao": str(x.get("Descricao") or "").strip() or None}
+                          for x in pdfs if isinstance(x, dict) and str(x.get("URL") or "").startswith("https://")]}
         cache_gravar(nome, dados)
     return dados
 
@@ -396,8 +422,7 @@ def votos_dispositivo(disp, so_montar):
     if dados is not None and not so_montar and dados.get("dataSessao") != disp.get("DataSessao"):
         dados = None                                   # votado de novo noutra sessão: pede outra vez
     if dados is None:
-        no_ritmo()
-        r = pedir(SENADO + f"/plenario/resultado/veto/dispositivo/{cod}", intervalo=0, aceitar_404=True)
+        r = pedir(SENADO + f"/plenario/resultado/veto/dispositivo/{cod}", aceitar_404=True)
         corpo = next(iter(r.values()), None) if isinstance(r, dict) and len(r) == 1 else None
         vot = corpo.get("Votacao") if isinstance(corpo, dict) else None
         if not isinstance(vot, dict):
@@ -525,7 +550,7 @@ def fmt_placar(p):
     return "não apurado" if p is None else f"{p[0]} Sim, {p[1]} Não, {p[2]} abstenção, {p[3]} em branco"
 
 
-def classificar_veto(v, disps, votos, tramitando, encerrados):
+def classificar_veto(v, disps, votos, tramitando, encerrados, pdfs=()):
     """(item, None) ou (None, motivo da retenção). Valor novo da fonte (situação de dispositivo, tipo de voto) levanta: a rodada para."""
     cod, m, mv = str(v["Codigo"]), v["Materia"], v["MateriaVetada"]
     ident = f"VET {int(m['Numero'])}/{m['Ano']}"
@@ -577,7 +602,9 @@ def classificar_veto(v, disps, votos, tramitando, encerrados):
                          if str(msg.get("Numero") or "").isdigit() and str(msg.get("Ano") or "").isdigit()
                          and str(msg.get("UrlPlanalto") or "").startswith("https://") else None),
             "sobrestandoDesde": (str(v.get("DataSobrestacaoPauta") or "")[:10] or None) if v.get("SobrestandoPauta") == "Sim" else None,
-            "contagem": cont, "dispositivos": linhas}
+            "contagem": cont, "dispositivos": linhas,
+            # veto total: o placar só existe no documento do resultado; vai o LINK (o arquivo não é lido nem transcrito)
+            "resultadoPdf": [{"url": x["url"], "descricao": x.get("descricao")} for x in pdfs] if total else []}
     return item, None
 
 
@@ -588,7 +615,8 @@ def montar_vetos(mandato, listas, tramitando, encerrados, resultados, votos):
         lst = [v for v in listas[ano] if mandato["inicio"] <= str(v.get("DataPublicacao") or "")[:10] <= (mandato["fim"] or "9999")]
         por_ano.append({"ano": ano, "fonte": len(listas[ano]), "noMandato": len(lst)})
         for v in lst:
-            item, motivo = classificar_veto(v, resultados.get(str(v["Codigo"])), votos, tramitando, encerrados)
+            r = resultados.get(str(v["Codigo"]))
+            item, motivo = classificar_veto(v, r["dispositivos"] if r else None, votos, tramitando, encerrados, (r or {}).get("pdfs") or ())
             if motivo:
                 retidos.append({"identificacao": f"VET {int(v['Materia']['Numero'])}/{ano}", "motivo": motivo})
             else:
@@ -868,7 +896,9 @@ def testar():
             return {"ListaVetos": {"Vetos": {"Veto": [veto(1, ano=a) for a in range(2023, 2027)]}}}
         m = re.search(r"/plenario/resultado/veto/(\d+)$", url)
         if m:
-            return {"ResultadoVetoCN": {"Veto": {"Codigo": m[1], "Dispositivos": {"Dispositivo": disp("1.xx.000", "Mantido", desc="Veto total")}}}}
+            return {"ResultadoVetoCN": {"Veto": {"Codigo": m[1], "Dispositivos": {"Dispositivo": disp("1.xx.000", "Mantido", desc="Veto total")},
+                                                 "PdfsResultadoVotacao": {"PdfResultadoVotacao": {"URL": f"https://legis.senado.leg.br/r/{m[1]}",
+                                                                                                  "Descricao": "Resultado da cédula"}}}}}
         raise FonteFalhou(f"rota não simulada: {url}")
 
     # 1. as três MPs de 2023 sem situação: vale a deliberação oficial (perda de eficácia), com o motivo
@@ -911,8 +941,9 @@ def testar():
     # 6. esquema sem campos extras
     s = montar(mand, sen, cam, {1003: det(3)})
     s["vetos"] = montar_vetos(mand, {2023: [veto(1), veto(2, total=False, qtd=2)]}, set(), {"16001", "16002"},
-                              {"16001": [disp("1.23.000", "Mantido", desc="Veto total")],
-                               "16002": [disp("2.23.001", "Rejeitado", cod=7), disp("2.23.002", "Mantido", cod=8)]},
+                              {"16001": {"dispositivos": [disp("1.23.000", "Mantido", desc="Veto total")],
+                                         "pdfs": [{"url": "https://legis.senado.leg.br/r/16001", "descricao": "Resultado da cédula"}]},
+                               "16002": {"dispositivos": [disp("2.23.001", "Rejeitado", cod=7), disp("2.23.002", "Mantido", cod=8)], "pdfs": []}},
                               {"7": vt(300, 50), "8": vt(100)})
     igual(validar_esquema(s), [], "a saída passa no esquema")
     extra = json.loads(serializar(s))
@@ -922,6 +953,9 @@ def testar():
     # 7. palavras proibidas: nos textos da saída e na página
     igual(proibidos(s), [], "textos da saída sem derrota/vitória/culpa")
     igual(bool(proibidos(s | {"_x": "uma vitória do governo"})), True, "palavra proibida é pega")
+    for frase, deve in (("o veto está parado", True), ("houve atraso na votação", True), ("a demora do Congresso", True),
+                        ("a derrota do governo", True), ("uma vitória", True), ("votando em separado", False), ("o prazo terminou", False)):
+        igual(bool(PROIBIDAS.search(frase)), deve, f"palavra proibida em {frase!r}")
     if TEXTO_PAGINA.exists():                          # a página inteira: texto fixo, rótulos e os textos que o script dela escreve
         m = PROIBIDAS.search(TEXTO_PAGINA.read_text(encoding="utf-8"))
         igual(m and m[0], None, "presidente.html sem derrota, vitória ou culpa")
@@ -1023,7 +1057,11 @@ def testar():
     def cv(v, ds, votos=None):
         return classificar_veto(v, ds, votos or {}, tram, enc)
     item, mot = cv(veto(1), [disp("1.23.000", "Rejeitado", desc="Veto total")])
-    igual((mot, item["situacao"], item["dispositivos"][0][5:]), (None, "derrubado", [None, None]), "veto total derrubado: sem placar")
+    igual((mot, item["situacao"], item["dispositivos"][0][5:], item["resultadoPdf"]), (None, "derrubado", [None, None], []),
+          "veto total derrubado: sem placar (e sem PDF quando a fonte não traz)")
+    item, _ = classificar_veto(veto(2, total=False, qtd=1), [disp("2.23.001", "Mantido", cod=7)], {"7": vt(10)}, tram, enc,
+                               [{"url": "https://legis.senado.leg.br/r/x", "descricao": None}])
+    igual(item["resultadoPdf"], [], "veto parcial não leva o PDF (o placar está nos dados abertos)")
     igual(cv(veto(5), [disp("5.23.000", "Mantido")])[1] is not None, True, "em nenhuma das listas de situação: retido")
     igual(cv(veto(4), [disp("4.23.000", "Mantido")])[1] is not None, True, "lista diz em tramitação, campo diz encerrado: retido")
     item, mot = cv(veto(4, tram="Sim"), [disp("4.23.000", "Não Apreciado", votos="Não")])
@@ -1067,8 +1105,12 @@ def testar():
     ok += 1
     # montar: retido fora das contagens; dispositivos só dos parciais; checagens passam
     vv = montar_vetos(mand, {2023: [veto(1), p2, veto(3, data="2022-12-30")]}, set(), enc,
-                      {"16001": [disp("1.23.000", "Mantido", desc="Veto total")],
-                       "16002": [disp("2.23.001", "Rejeitado", cod=7), disp("2.23.002", "Mantido", cod=8)]}, {"7": vt(256, 50), "8": vt(100)})
+                      {"16001": {"dispositivos": [disp("1.23.000", "Mantido", desc="Veto total")],
+                                 "pdfs": [{"url": "https://legis.senado.leg.br/r/16001", "descricao": "Resultado da cédula"}]},
+                       "16002": {"dispositivos": [disp("2.23.001", "Rejeitado", cod=7), disp("2.23.002", "Mantido", cod=8)], "pdfs": []}},
+                      {"7": vt(256, 50), "8": vt(100)})
+    igual(vv["itens"][0]["resultadoPdf"], [{"url": "https://legis.senado.leg.br/r/16001", "descricao": "Resultado da cédula"}],
+          "veto total leva o link do resultado oficial (PDF), sem ler o arquivo")
     igual((vv["total"], len(vv["retidos"]), vv["porAno"][0]["noMandato"], vv["dispositivos"]["mantido"]), (1, 1, 2, 0),
           "veto de antes do mandato fica fora; o retido sai das contagens; o veto total não entra nos dispositivos")
     s2 = montar(mand, sen, cam, {1003: det(3)}) | {"vetos": vv}
@@ -1104,13 +1146,26 @@ def testar():
             with mock.patch(f"{__name__}.pedir", falso), mock.patch(f"{__name__}.CACHE_P", T / "cache"), mock.patch(f"{__name__}.SAIDA", pub), \
                     mock.patch(f"{__name__}.CANDIDATO", T / "cand.json"), mock.patch(f"{__name__}.RELATORIO", T / "rel.txt"), \
                     mock.patch(f"{__name__}.AMOSTRA", T / "amostra.csv"), mock.patch(f"{__name__}.INTERVALO", 0), \
-                    mock.patch(f"{__name__}.INTERVALO_PARALELO", 0), mock.patch(f"{__name__}.agora", lambda: datetime(2023, 6, 1, 8, tzinfo=BRASILIA)):
+                    mock.patch(f"{__name__}.agora", lambda: datetime(2023, 6, 1, 8, tzinfo=BRASILIA)):
                 saiu = None
                 try:
                     main(["--publicar"], hoje=date(2023, 6, 1))
                 except SystemExit as e:
                     saiu = e.code
                 igual((saiu not in (None, 0), pub.read_text(encoding="utf-8")), (True, '{"intacto":1}'), f"vetos com erro ({nome}): para e o publicado fica")
+    # 13. ritmo: 2 por segundo somando as threads; Retry-After em segundos ou em data HTTP, com teto
+    class R:
+        def __init__(self, h):
+            self.headers = h
+    igual(espera_pedida(R({"Retry-After": "7"}), 1), 7.0, "Retry-After em segundos")
+    igual(espera_pedida(R({"Retry-After": "9999"}), 1), float(ESPERA_MAX), "Retry-After acima do teto vira o teto")
+    igual(espera_pedida(R({}), 4), 4, "sem Retry-After: a espera padrão")
+    futura = email.utils.format_datetime(datetime.now(timezone.utc) + timedelta(seconds=30), usegmt=True)
+    igual(25 <= espera_pedida(R({"Retry-After": futura}), 1) <= 31, True, "Retry-After em data HTTP")
+    _proximo[0] = 0.0
+    t0 = time.monotonic()
+    em_paralelo(lambda _: no_ritmo(0.1), range(6))
+    igual(time.monotonic() - t0 >= 0.45, True, "6 começos em paralelo com 0,1 s de intervalo levam pelo menos 0,5 s (um por vez)")
     print(f"{ok} verificações passaram")
 
 
@@ -1158,7 +1213,7 @@ def main(argv=None, hoje=None):
                 raise FonteFalhou(f"Congresso, vetos de {a}: a lista do ano veio vazia, mas as listas de em tramitação e encerrados têm vetos de {a}")
         do_mandato = [v for a in anos for v in lv[a] if mandato["inicio"] <= str(v.get("DataPublicacao") or "")[:10] <= (mandato["fim"] or "9999")]
         res = dict(zip([str(v["Codigo"]) for v in do_mandato], em_paralelo(lambda v: resultado_veto(v, args.so_montar), do_mandato)))
-        alvos = [x for v in do_mandato if v["Total"] == "Não" for x in (res.get(str(v["Codigo"])) or [])
+        alvos = [x for v in do_mandato if v["Total"] == "Não" for x in ((res.get(str(v["Codigo"])) or {}).get("dispositivos") or [])
                  if x.get("PossuiVotos") == "Sim" and x.get("Codigo")]
         votos = dict(zip([str(x["Codigo"]) for x in alvos], em_paralelo(lambda x: votos_dispositivo(x, args.so_montar), alvos)))
         saida["vetos"] = montar_vetos(mandato, lv, {x["codigo"] for x in sit["tramitando"]}, {x["codigo"] for x in sit["encerrados"]}, res, votos)

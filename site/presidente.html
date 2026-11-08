@@ -168,8 +168,9 @@
   <section class="painel" id="vListaSec" aria-labelledby="vListaTit" hidden>
     <h2 id="vListaTit">Cada veto</h2>
     <p class="pr-sub">Do mais recente para o mais antigo. O número leva à página do veto no Congresso. No veto parcial, “ver os dispositivos” mostra cada
-       parte vetada, a situação e o placar de cada Casa: <b>Sim é manter o veto, Não é derrubar</b>; derrubar exige 257 votos Não na Câmara e 41 no Senado,
-       contados em separado. A segunda Casa só é apurada quando a primeira derruba.</p>
+       parte vetada, a situação e o placar dos deputados e dos senadores na sessão conjunta: <b>Sim é manter o veto, Não é derrubar</b>; derrubar exige
+       257 votos Não entre os deputados e 41 entre os senadores, contados em separado. A segunda Casa só é apurada quando a primeira derruba. No veto
+       total, o placar não está nos dados abertos: a linha leva ao documento do resultado oficial (PDF), que a página não transcreve.</p>
     <div class="pr-filtros">
       <label class="pr-campo">Situação<select class="sel" id="vSit"><option value="">Todas</option></select></label>
       <label class="pr-campo">Tipo<select class="sel" id="vTipo"><option value="">Todos</option><option value="t">Veto total</option><option value="p">Veto parcial</option></select></label>
@@ -217,7 +218,15 @@
             257 dos 513 deputados e 41 dos 81 senadores votando Não (Constituição, art. 66, § 4º). Derrubado em parte: parte dos dispositivos
             derrubada e parte mantida.</dd></div>
       <div><dt>Prejudicado (veto ou dispositivo)</dt>
-        <dd>Declarado prejudicado, sem votação, segundo o registro do Congresso. Fica à parte dos mantidos e dos derrubados.</dd></div>
+        <dd>Declarado prejudicado (sem objeto), sem votação, segundo o registro do Congresso. Fica à parte dos mantidos e dos derrubados.</dd></div>
+      <div><dt>Não apreciado</dt>
+        <dd>Situação, no registro, do dispositivo que o Congresso ainda não votou. Basta um dispositivo assim para o veto aparecer como em tramitação.</dd></div>
+      <div><dt>Em branco</dt>
+        <dd>Na votação por cédula, o parlamentar pode votar em branco. O voto em branco aparece no placar, mas não é Sim nem Não: não conta para manter nem para
+            derrubar o veto.</dd></div>
+      <div><dt>“Art. 17”</dt>
+        <dd>É como o registro marca quem preside a sessão conjunta, o Presidente do Senado, que preside o Congresso (Constituição, art. 57, § 5º). Quem preside
+            não vota; o registro fica fora do placar.</dd></div>
       <div><dt>Veto em tramitação</dt>
         <dd>Pelo menos um dispositivo ainda não foi votado (no registro, “não apreciado”). A página mostra quantos já foram decididos e quantos faltam.</dd></div>
       <div><dt>Sobrestando a pauta</dt>
@@ -225,7 +234,8 @@
             votação dele (Constituição, art. 66, § 6º). A data vem do registro do Congresso.</dd></div>
       <div><dt>Placar do veto total</dt>
         <dd>Os dados abertos do Congresso trazem os votos de cada dispositivo de veto parcial, mas não os do veto total: o resultado dele está só
-            no documento em PDF da sessão. A página diz “placar não disponível nos dados abertos” em vez de transcrever o documento.</dd></div>
+            no documento em PDF da sessão. A página diz “placar não disponível nos dados abertos” e leva ao documento (“resultado oficial (PDF)”), sem
+            transcrevê-lo.</dd></div>
     </dl>
   </section>
 </main>
@@ -380,7 +390,7 @@ function vFiltros(){
   $('vQ').addEventListener('input',()=>{VPAG=1;vLista();});
   $('vMais').addEventListener('click',()=>{VPAG++;vLista();});
 }
-const placarTxt=p=>p?`${nf.format(p[0])} Sim · ${nf.format(p[1])} Não · ${nf.format(p[2])} abst. · ${nf.format(p[3])} em branco`:'não apurada';
+const placarTxt=p=>p?`${nf.format(p[0])} Sim · ${nf.format(p[1])} Não · ${nf.format(p[2])} abst. · ${nf.format(p[3])} em branco`:'não apurado';
 function vDispositivos(x){
   if(x.total) return '';
   const nome=Object.fromEntries(D.vetos.definicoesDispositivo.map(d=>[d.id,d.rotulo]));
@@ -388,9 +398,10 @@ function vDispositivos(x){
     `<td class="n">${d[3]?dataBR(d[3]):'—'}</td><td class="n">${d[2]==='mantido'||d[2]==='rejeitado'?placarTxt(d[5]):'—'}</td>`+
     `<td class="n">${d[2]==='mantido'||d[2]==='rejeitado'?placarTxt(d[6]):'—'}</td></tr>`).join('');
   return `<details><summary>Ver os ${nf.format(x.dispositivos.length)} dispositivos e o placar</summary><div class="pr-tabw"><table class="pr-tab">`+
-    `<caption>Sim = manter o veto; Não = derrubar (são precisos 257 na Câmara e 41 no Senado). “Não apurada”: a Casa não chegou a ser contada.</caption>`+
+    `<caption>Sim = manter o veto; Não = derrubar (são precisos 257 votos Não dos deputados e 41 dos senadores). “Não apurado”: os votos daquela Casa não `+
+    `chegaram a ser contados. Quem preside a sessão (“Art. 17”) não vota e fica fora do placar.</caption>`+
     `<thead><tr><th scope="col">Dispositivo</th><th scope="col">Parte vetada</th><th scope="col">Situação</th><th scope="col">Sessão</th>`+
-    `<th scope="col">Câmara</th><th scope="col">Senado</th></tr></thead><tbody>${linhas}</tbody></table></div></details>`;
+    `<th scope="col">Deputados na sessão conjunta</th><th scope="col">Senadores na sessão conjunta</th></tr></thead><tbody>${linhas}</tbody></table></div></details>`;
 }
 function vLinha(x){
   const U=D.urls, c=x.contagem;
@@ -401,7 +412,9 @@ function vLinha(x){
     const pend=c.nao_apreciado, dec=x.dispositivos.length-pend;
     disp=`dispositivos: ${plural(dec,'decidido','decididos')}, ${plural(pend,'pendente','pendentes')}`;
   } else disp='dispositivos: '+Object.entries(c).filter(([,n])=>n).map(([k,n])=>FORMAS[k]?plural(n,...FORMAS[k]):`${nf.format(n)} ${k}`).join(', ');
-  const plac=x.total&&x.situacao!=='em_tramitacao'&&x.situacao!=='prejudicado'?'placar não disponível nos dados abertos':'';
+  const pdfs=(x.resultadoPdf||[]).map((d,i,a)=>`<a href="${esc(d.url)}" target="_blank" rel="noopener"${d.descricao?` title="${esc(d.descricao)}"`:''}>`+
+    `resultado oficial (PDF${a.length>1?' '+(i+1):''})</a>`).join(' · ');
+  const plac=x.total&&x.situacao!=='em_tramitacao'&&x.situacao!=='prejudicado'?'placar não disponível nos dados abertos'+(pdfs?` · ${pdfs}`:''):(x.total?pdfs:'');
   const sob=x.sobrestandoDesde?`sobrestando a pauta desde ${dataBR(x.sobrestandoDesde)}`:'';
   const fonte=[`<a class="lk" href="${esc(url(U.veto,x))}" target="_blank" rel="noopener">Congresso</a>`,
                `<a class="lk" href="${esc(url(U.vetoApi,x))}" target="_blank" rel="noopener">dados abertos</a>`]
