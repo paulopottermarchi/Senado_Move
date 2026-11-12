@@ -226,14 +226,16 @@ jobs:
         timeout-minutes: 25
         run: python scripts/passo.py --opcional origem_leis.py
 
-      # Presidente: as medidas provisórias do mandato atual (presidencia.py). Publica site/dados/presidencia.json (o menu leva à página, que não pode
-      # ficar vazia); para voltar a só medir, trocar --publicar por --dry-run. A frio, 46 s e 63 pedidos (7/11/2026); com o cache do dia, 1 s.
-      # Erro da fonte (lista vazia, formato, contagem que não bate com a Câmara, variação de mais de 10%) para o passo e site/dados/presidencia.json fica;
-      # o frescor.py (no fim da rodada) avisa se o arquivo passar de 1 dia sem atualizar.
-      - name: Presidente (medidas provisórias)
+      # Presidente: as medidas provisórias e os vetos do mandato atual (presidencia.py). Publica site/dados/presidencia.json (o menu leva à página, que
+      # não pode ficar vazia); para voltar a só medir, trocar --publicar por --dry-run. No máximo 2 pedidos por segundo, com o Retry-After respeitado.
+      # Medido em 8/11/2026 (API real): a frio 768 s e 1.475 pedidos (205 resultados de veto e 1.201 votações de dispositivo); duas rodadas diárias
+      # seguidas, 94 s e 84 s, 127 pedidos cada (listas, os vetos em tramitação e as MPs aprovadas sem lei; voto apurado fica 1 ano no cache).
+      # Cortado pelo teto, nada é publicado e o cache guarda o que veio: a rodada seguinte continua. Erro da fonte (lista vazia, numeração com buraco,
+      # contagem que não bate com a Câmara, variação de mais de 10%) para o passo e site/dados/presidencia.json fica; o frescor.py avisa depois de 1 dia.
+      - name: Presidente (medidas provisórias e vetos)
         continue-on-error: true
-        timeout-minutes: 20
-        run: python scripts/passo.py --opcional --minutos 15 presidencia.py --publicar --minutos 10
+        timeout-minutes: 25
+        run: python scripts/passo.py --opcional --minutos 20 presidencia.py --publicar --minutos 15
 
       - name: Páginas indexáveis e sitemap
         continue-on-error: true

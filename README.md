@@ -23,7 +23,7 @@ dos Deputados, o Senado Federal ou o TSE.
 | **Perfil do deputado** (`deputado.html?id=…`) | Todas as PEC e PL de autoria, por tema, com o tempo e o caminho de cada uma na Câmara. Em cartões: o que fez (com as aprovadas em Plenário ao lado das que viraram lei), como vota (alinhamento ao Governo e votos diferentes da orientação da própria bancada, com a mediana da Câmara e os colegas de partido ao lado, **o tema das leis em que votou Sim, Não ou se absteve** (por bloco e por categoria, com a contagem de cada um) e quem vota parecido), **mandatos** (linha do tempo desde 2003, a condição de posse e a eleição de 2022), leituras na Wikipédia e obras com emenda dele. Mesmo desenho do perfil do senador. |
 | **Senadores** (`senadores.html`) | Os 81 senadores no mesmo gráfico: autoria, leis, relatorias e votos no Plenário, com composição da esquerda à direita, alinhamento ao Governo e filtro de legislatura desde 2003, com todos os que exerceram o mandato (inclusive quem já saiu), seus suplentes e a data e a causa da saída. Em abas: gráfico, tabela e **partidos** (proposições, conversão, alinhamento ao Governo e coesão de cada bancada, na legislatura atual e, quando o arquivo dos senadores que já saíram existe, nas anteriores desde 2003; calculado no navegador a partir dos mesmos arquivos). A ficha de cada senador abre sobre a página. |
 | **Perfil do senador** (`senador.html?id=…`) | Para cada senador, em exercício ou que já saiu: todas as PEC e PL de que é o **primeiro autor**, por tema (as mesmas categorias do perfil do deputado, atribuídas pela ementa oficial do Senado), com a situação de cada uma e, nas que viraram lei, o número e a data da norma; como vota (alinhamento ao Governo e votos diferentes da orientação da própria bancada, com a mediana do Senado ao lado, e o tema das matérias em que votou Sim, Não ou se absteve, com a contagem de cada um), mandatos, suplentes e saída. No topo, o **mapa de assentos do plenário** em 3D (com vaivém leve, e uma vista de cima parada) marca a bancada do estado: as 3 cadeiras que o Senado destaca no perfil de cada senador; a cadeira de cada um não é publicada, e o site não a inventa. É a mesma lista que dá os números do gráfico, conferida contra `senadores.json` a cada rodada. Não tem o caminho por órgão (o Senado não o entrega junto da lista de autoria), nem leituras na Wikipédia nem obras com emenda. |
-| **Presidente** (`presidente.html`) | O mandato presidencial em curso (de `entradas/governos.json`) e cada medida provisória editada nele, com a situação que o Congresso registra: convertida em lei (com o número da lei), aprovada sem lei registrada, perdeu a eficácia (o prazo terminou sem votação; não é rejeição), revogada, rejeitada, prejudicada ou em tramitação. Abre pelas contagens, cada uma com a definição, sem comentário. Cada linha leva à ficha do Congresso, ao registro nos dados abertos e à ficha da Câmara, e tem "Reportar erro". |
+| **Presidente** (`presidente.html`) | O mandato presidencial em curso (de `entradas/governos.json`), cada medida provisória editada nele e cada veto, com a situação que o Congresso registra. MP: convertida em lei (com o número da lei), aprovada sem lei registrada, perdeu a eficácia (o prazo terminou sem votação; não é rejeição), revogada, rejeitada, prejudicada ou em tramitação. Veto: em tramitação (com os dispositivos decididos e os pendentes), mantido, derrubado em parte, derrubado (no registro oficial, "rejeitado") e, à parte, prejudicado; no veto parcial, o placar de cada dispositivo em cada Casa contra os 257 e 41 votos necessários para derrubar. Abre pelas contagens ("111 de 205 vetos ainda em tramitação"), cada uma com a definição, sem comentário. Cada linha leva à página no Congresso e ao registro nos dados abertos, e tem "Reportar erro". |
 | **Como votou, por tema** (`votos.html?casa=…&id=…&tema=…`) | Clicando num tema em "Como votou, por tema" nos perfis de deputado e de senador: as leis (ou votações, no Senado) daquele tema que o parlamentar votou, separadas em Sim, Não e abstenção, com o número, a data, o resultado, a ementa e os demais temas de cada uma. A lista reproduz exatamente os números do perfil. |
 | **Leis votadas** (`leis.html`) | As votações finais nominais desde 2023: placar, posição média de quem votou sim e não, adesão por faixa do espectro, quem votou diferente da orientação da própria bancada, enquete da Câmara e consulta do Senado. |
 | **Quem vota com quem** (`blocos.html`) | Os blocos que se formam pela semelhança dos votos, sem olhar o partido, para a **Câmara** e, pelo botão "Senado" (`?casa=s`), para o **Senado**: o mesmo método sobre as votações nominais abertas do Plenário desde 2023 (`blocos_senado.py`). O Senado não tem a seção por tema (sem a votação de texto-base, o Sim não quer dizer aprovar), e a página diz isso. |
@@ -140,10 +140,23 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
   o próprio registro traz (`normaGerada`), com o mesmo número nas duas listas; sem ela, a MP fica retida e listada. Situação ou
   deliberação que o script não conhece **para a rodada** em vez de virar uma categoria nova. Erro da fonte (página que falha,
   lista vazia, formato, contagens que não batem, variação de mais de 10% contra o publicado) nunca vira "sem MPs": nada é
-  publicado e o JSON anterior fica. Nenhuma taxa, ranking ou adjetivo: só contagens com a definição ao lado. **robots.txt**: o de
-  `legis.senado.leg.br` responde 403 (também no navegador), então não foi possível lê-lo; o que o script consulta ali é a API
-  oficial de dados abertos do Senado (`/dadosabertos`, documentada em `/dadosabertos/v3/api-docs`), com um User-Agent que
-  identifica o projeto e o endereço do repositório, sem e-mail, no máximo dois pedidos por segundo e cache de um dia.
+  publicado e o JSON anterior fica. Nenhuma taxa, ranking ou adjetivo: só contagens com a definição ao lado.
+- **Presidente — vetos** (mesmo script). A lista de cada ano (`/materia/vetos/{ano}`) tem de vir numerada de 1 em diante, sem
+  buraco nem repetição. O registro de cada veto (`EmTramitacao`) tem de bater com duas outras listas do Congresso (vetos em
+  tramitação e encerrados) e com os dispositivos do resultado (`/plenario/resultado/veto/{código}`). O rótulo sai dos dispositivos:
+  qualquer um "não apreciado" = em tramitação; todos mantidos = mantido; todos rejeitados = derrubado; os dois = derrubado em parte;
+  só prejudicados = prejudicado. O veto total conta como 1 veto, e a contagem de dispositivos vem só dos vetos parciais. O
+  **placar** (Sim = manter, Não = derrubar, mais abstenção e em branco; quem preside a sessão fica fora) vem dos votos de cada
+  dispositivo votado de veto parcial (`/plenario/resultado/veto/dispositivo/{código}`). Cada resposta é conferida contra o
+  dispositivo pela parte vetada, pelo tipo e pela data da sessão, porque o código do veto e o do dispositivo são numerações que se
+  cruzam. Fica retido, com o motivo: o dispositivo "rejeitado" sem 257 votos Não na Câmara e 41 no Senado, o "mantido" que alcança
+  os dois e a votação que não confere. **O placar do veto total não está nos dados abertos**: a página diz isso e leva ao documento
+  do resultado oficial (o PDF da sessão, que a fonte indica no próprio registro), sem ler nem transcrever o arquivo.
+- **robots.txt**: o de `legis.senado.leg.br` responde 403 (também no navegador), então não foi possível lê-lo. O que o script
+  consulta ali é a API oficial de dados abertos do Senado (`/dadosabertos`, documentada em `/dadosabertos/v3/api-docs`), com um
+  User-Agent que identifica o projeto e o endereço do repositório, sem e-mail. São no máximo dois pedidos por segundo, somando
+  todas as conexões e as novas tentativas, e o script espera o que a fonte pedir no `Retry-After`. O cache é de um dia (um ano para
+  o voto de um dispositivo já apurado).
 - **Alinhamento ao Governo (deputados e senadores)**: coluna no ranking dos deputados e na tabela dos senadores. É a parcela dos
   votos Sim ou Não, nas votações nominais do Plenário desde 2023 em que o líder do Governo orientou Sim ou Não (o registro de
   orientação de cada Casa), em que a pessoa votou como ele orientou; mínimo de 50 votações na Câmara e 30 no Senado. Mede
@@ -160,7 +173,7 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 | Fonte | Para quê |
 |---|---|
 | [Dados Abertos da Câmara](https://dadosabertos.camara.leg.br) (API e arquivos anuais) | deputados, proposições, tramitações, votações, votos e orientações de bancada |
-| [Dados Abertos do Senado](https://legis.senado.leg.br/dadosabertos/) e e-Cidadania | senadores, autoria, relatorias, votações; consulta pública das matérias; medidas provisórias do mandato atual (situação, deliberação e lei gerada) |
+| [Dados Abertos do Senado](https://legis.senado.leg.br/dadosabertos/) e e-Cidadania | senadores, autoria, relatorias, votações; consulta pública das matérias; medidas provisórias e vetos do mandato atual (situação, deliberação, lei gerada, dispositivos e votos de cada dispositivo) |
 | TSE — Divulgação de Resultados 2022 | votos de cada deputado e quociente eleitoral (tabela fixa em `entradas/`) |
 | Brazilian Legislative Survey (Power e Zucco) | posição dos partidos no espectro |
 | IBGE (API SIDRA), Banco Central (SGS e página de metas) e Tesouro Nacional (API de Séries Temporais) | IPCA, PIB, meta de inflação e banda, dívida, despesa, resultado primário e nominal do Governo Central |
@@ -182,7 +195,7 @@ Cada página traz, no fim, a seção "Como é calculado" com as regras completas
 site/                 o que vai ao ar — o GitHub Pages publica a pasta inteira, e só ela
   index.html          página inicial; deputados.html, a dos deputados (prototipo.html só redireciona)
   deputado.html  senador.html  votos.html  leis.html  blocos.html  fluxo.html  obras.html  senadores.html  contexto.html
-  presidente.html     o mandato presidencial em curso e as medidas provisórias editadas nele (scripts/presidencia.py)
+  presidente.html     o mandato presidencial em curso, as medidas provisórias editadas nele e os vetos (scripts/presidencia.py)
   origem.html         "De onde vêm as leis": fora da barra do topo (inicial, deputados, ficha e rodapé levam a ela)
   origem.js           a barra de composição e o texto de "De onde vêm as leis", iguais nas quatro telas que os mostram
   deputado/ senador/  uma página estática por parlamentar atual (<id>-<slug>/index.html e og.png), gerada por scripts/paginas.py, com sitemap.xml e robots.txt
