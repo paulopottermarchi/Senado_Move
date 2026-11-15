@@ -1,3 +1,3 @@
-{"_fonte": "ObrasGov.br (API pública) + Contratos.gov.br (API) + CGU (emendas parlamentares)", "_uf": "SP", "_obrasgovAtualizado": "2026-11-13T00:00:00", "_sancoes": "2026-11-13", "_emendasCgu": "2026-11-13", "_geradoEm": "2026-11-14T13:26-03:00", "_cobertura": {"obrasNaUf": 21068, "obrasComContrato": 0, "ligacoes": 0, "foraDaConferencia": {}, "emendas": {}},"obras":[
+{"_fonte": "ObrasGov.br (API pública) + Contratos.gov.br (API) + CGU (emendas parlamentares)", "_uf": "SP", "_obrasgovAtualizado": "2026-11-13T00:00:00", "_sancoes": "2026-11-13", "_emendasCgu": "2026-11-13", "_geradoEm": "2026-11-15T13:54-03:00", "_cobertura": {"obrasNaUf": 21069, "obrasComContrato": 0, "ligacoes": 0, "foraDaConferencia": {}, "emendas": {}},"obras":[
 
 ]}
