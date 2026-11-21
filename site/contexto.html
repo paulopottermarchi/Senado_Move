@@ -355,12 +355,13 @@ dialog.entenda .fechar{margin-top:20px}
 <dialog class="entenda" id="entenda" aria-labelledby="entTit">
   <h3 id="entTit">Resultado primário e resultado nominal</h3>
   <p><b>Resultado primário</b> é o que sobra (ou falta) depois que o Governo Central — Tesouro Nacional, Previdência Social e Banco Central —
-     paga suas despesas com as receitas que arrecada, <b>sem contar os juros da dívida</b>. Positivo é superávit; negativo, déficit.
-     A série mostrada é a do Tesouro, apurada “acima da linha”: soma receitas e despesas de cada mês.</p>
-  <p><b>Resultado nominal</b> é o resultado primário <b>mais os juros nominais</b> da dívida pública. A série mostrada é a que o Banco Central
-     apura “abaixo da linha”, pela variação do financiamento do governo, e que o Tesouro publica junto: não inclui a variação cambial.</p>
-  <p>Os dois métodos são independentes e podem diferir um pouco no mesmo mês. Aqui cada linha é a <b>soma dos últimos 12 meses</b>, em reais
-     corrigidos pelo IPCA para o último mês da série, para que meses de épocas diferentes possam ser comparados.</p>
+     paga suas despesas com as receitas que arrecada, <b>sem contar os juros da dívida</b>. Positivo é superávit; negativo, déficit.</p>
+  <p><b>Resultado nominal</b> é o resultado primário <b>mais os juros nominais</b> da dívida pública. Não inclui a variação cambial.</p>
+  <p>Há dois jeitos oficiais de medir. O <b>Banco Central</b> apura “abaixo da linha”, pela variação da dívida do governo; o <b>Tesouro</b> apura o
+     primário “acima da linha”, somando receitas e despesas de cada mês. Os dois podem diferir no mesmo mês. <span id="entMedida">A série mostrada
+     é a do Banco Central, para o primário e para o nominal.</span></p>
+  <p>Aqui cada linha é a <b>soma dos últimos 12 meses</b>, em reais corrigidos pelo IPCA para o último mês da série, para que meses de épocas
+     diferentes possam ser comparados.</p>
   <p>Este gráfico não mostra que uma lei causou a variação de nenhum indicador.</p>
   <button class="mais fechar" type="button" id="entFechar">Fechar</button>
 </dialog>
@@ -372,9 +373,10 @@ dialog.entenda .fechar{margin-top:20px}
        lei complementar e emenda constitucional vêm do despacho do evento “Transformação em Norma Jurídica” da própria Câmara, conferido com a
        data do <i>Diário Oficial</i> escrita no mesmo despacho; quando as duas datas diferem, a página mostra as duas.</p>
     <p><b>Indicadores:</b> IPCA e PIB, API do IBGE (SIDRA); meta de inflação e banda, página oficial do Banco Central conferida contra a
-       série 13521 do SGS e contra o IPCA; dívida, séries 13762 e 4536 do SGS (Banco Central); despesa, resultado primário e nominal, API de
-       Séries Temporais do Tesouro Nacional (Resultado do Tesouro Nacional), em reais corrigidos pelo IPCA. A cada rodada a série inteira é
-       baixada de novo, porque as fontes revisam o passado.</p>
+       série 13521 do SGS e contra o IPCA; dívida, séries 13762 e 4536 do SGS (Banco Central); resultado primário e nominal do Governo Central,
+       séries 4639 e 4573 do SGS (Banco Central), corrigidas pelo IPCA do IBGE por este site (se o Banco Central não tiver dado recente, entra a
+       série do Tesouro, e o gráfico diz qual é); despesa, API de Séries Temporais do Tesouro Nacional (Resultado do Tesouro Nacional), em reais
+       corrigidos pelo IPCA pela própria API. A cada rodada a série inteira é baixada de novo, porque as fontes revisam o passado.</p>
     <p><b>Exportações:</b> Comex Stat, do Ministério do Desenvolvimento, Indústria, Comércio e Serviços (API pública do MDIC): valor exportado em US$ FOB, em dólares correntes, por país de destino
        e por posição SH4, com os nomes das tabelas oficiais. Os dados gerais vão de 1997 até o último mês completo e a coleta é semanal, porque a fonte atualiza por mês e revisa o passado.</p>
     <p id="fonteMand" hidden><b>Mandatos presidenciais:</b> Wikidata (cargo “Presidente do Brasil”), consultado por API. As posses em exercício de Itamar Franco e de Michel Temer têm
@@ -718,7 +720,9 @@ function montarIndicador(id){
     cfg={series:[{...S.primario,pontos:S.primario.pontos.map(p=>[p[0],p[1]/1000])},{...S.nominal,pontos:S.nominal.pontos.map(p=>[p[0],p[1]/1000])}],rotulos:['Primário','Nominal'],
          fmtY:v=>fmt(v,0),fmtV:v=>`${sinal(v)}R$ ${fmt(abs(v),1)} bi`,rotData:rotMes,anotacoes:b.anotacoes,zero:true};
     presets=[['Série completa',{ini:null}],['20 anos',{anos:20}],['10 anos',{anos:10}]];
-    legenda=`<span><i></i>Resultado primário (acima da linha, Tesouro)</span><span><i class="t"></i>Resultado nominal (abaixo da linha, Banco Central)</span><span>Eixo em R$ bilhões</span>`;
+    // a legenda vem do bloco: desde 13/11/2026 a série é a do Banco Central, e a do Tesouro só entra quando o BC não tem dado recente (contexto.py)
+    const lg=b.legendas||{primario:'Resultado primário (acima da linha, Tesouro)',nominal:'Resultado nominal (abaixo da linha, Banco Central)'};
+    legenda=`<span><i></i>${esc(lg.primario)}</span><span><i class="t"></i>${esc(lg.nominal)}</span><span>Eixo em R$ bilhões</span>`;
   }
   cfg.rotulo=b.titulo+'. '+b.definicao+(MAN?' Traços verticais tracejados marcam o início de cada mandato presidencial.':''); cfg.marcos=marcosFiltrados();
   cfg.mandatos=MAN?MAN.mandatos:null;
@@ -737,6 +741,12 @@ function montarIndicador(id){
   if(id==='ipca') extra=`<h4>Metas por ano, como o Banco Central as publica</h4><div class="tab-val"><table><thead><tr><th>Ano</th><th>Meta</th><th>Tolerância (±)</th><th>IPCA do ano</th></tr></thead><tbody>${
     b.metasPorAno.slice().reverse().map(m=>`<tr><td>${m.ano}${m.normas.length?' · '+m.normas.map(n=>'Res. CMN '+n).join(' e '):''}</td><td>${fmt(m.meta,2)}%</td><td>${fmt(m.tolerancia,2)} p.p.</td><td>${fmt(m.efetiva,2)}%</td></tr>`).join('')}</tbody></table></div>
     <p class="ind-fonte">De 1999 a 2024 a meta valia para o ano-calendário; desde jan/2025 é contínua (inflação em 12 meses, verificada todo mês). A linha da meta mostra o valor fixado em resolução do CMN para cada ano.</p>`;
+  if(id==='resultado'&&b.medida==='bancoCentral'){
+    const o=b.outraMedida, c=b.conferenciaTesouro;
+    extra=`<h4>As duas medidas do resultado</h4><p class="ind-fonte">O Banco Central apura o resultado “abaixo da linha”, pela variação da dívida do governo; o Tesouro apura o primário “acima da linha”, somando receitas e despesas. Os dois números podem diferir no mesmo mês.${
+      o?` No último mês com as duas apurações, ${rotMes(o.mes+'-01')}, o resultado primário do mês foi de ${bilhoes(o.bancoCentral)} pelo Banco Central e de ${bilhoes(o.tesouro)} pelo Tesouro, em reais da época.`:''}${
+      c&&c.mesesNominal?` O resultado nominal que o Tesouro publica é o do Banco Central: conferido em ${nf0.format(c.mesesNominal)} meses, nesta coleta.`:''}</p>`;
+  }
   av.innerHTML=(notas?`<h4>Notas (fato datado, com fonte)</h4><ol>${notas}</ol>`:'<h4>Notas</h4><p class="ind-fonte">Nenhuma mudança de metodologia anotada nesta série.</p>')+extra
     +`<h4>Valores</h4><p class="ind-fonte">Frequência da fonte: ${cfg.series[0].freq==='T'?'trimestral':'mensal'}, sem interpolação. <button class="limpar" type="button" data-tab>Mostrar a tabela</button></p><div class="tab-val valores" hidden></div>`;
   av.querySelector('[data-tab]').addEventListener('click',e=>{ const box=av.querySelector('.tab-val.valores'); box.hidden=false; e.target.hidden=true;
@@ -751,6 +761,10 @@ function montarIndicadores(){
   ordem.forEach(id=>{ if(IND.blocos[id]) montarIndicador(id); });
   montarMandatos();
   const ifi=IND.blocos.ifi; if(ifi){ document.getElementById('ifiBloco').hidden=false; document.getElementById('ifiDef').textContent=ifi.definicao; document.getElementById('ifiLink').href=ifi.url; }
+  const med=(IND.blocos.resultado||{}).medida, em=document.getElementById('entMedida');
+  if(em&&med!=='bancoCentral') em.textContent=med==='tesouro'
+    ?'Nesta atualização a série mostrada é a do Tesouro (o primário acima da linha; o nominal é o do Banco Central, que o Tesouro publica junto), porque a do Banco Central não estava disponível.'
+    :'A série mostrada é a do Tesouro para o primário e a do Banco Central para o nominal.';
   document.querySelectorAll('[data-entenda]').forEach(bt=>bt.addEventListener('click',()=>document.getElementById('entenda').showModal()));
   document.getElementById('entFechar').addEventListener('click',()=>document.getElementById('entenda').close());
   document.getElementById('entenda').addEventListener('click',e=>{ if(e.target.id==='entenda') e.target.close(); });

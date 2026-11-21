@@ -8,8 +8,9 @@ Uso:
 
 Quatro blocos, todos por API (nada de planilha, nada de tabela curada à mão onde há API):
   1. INDICADORES — IPCA (IBGE/SIDRA), meta de inflação e banda (JSON do site do Banco Central, conferido contra o
-     SGS 13521 e contra o IPCA), PIB (IBGE/SIDRA), dívida bruta e líquida do Governo Geral (BCB/SGS) e despesa,
-     resultado primário e nominal do Governo Central (API de Séries Temporais do Tesouro, valores reais pelo IPCA).
+     SGS 13521 e contra o IPCA), PIB (IBGE/SIDRA), dívida bruta e líquida do Governo Geral (BCB/SGS), resultado primário
+     e nominal do Governo Central (BCB/SGS 4639 e 4573, corrigidos pelo IPCA aqui; reserva: a API do Tesouro) e despesa
+     do Governo Central (API de Séries Temporais do Tesouro, valores reais pelo IPCA).
   2. AGENDA — PEC e PLP com tema oficial "Economia" ou "Finanças Públicas e Orçamento" (/proposicoes?codTema=),
      em três abas: sancionadas/promulgadas, em tramitação (andamento nos últimos 365 dias) e paradas (mais de 365).
      PL ordinário só entra nas sancionadas (filtro). Data e número da norma vêm do despacho do evento "Transformação
@@ -334,13 +335,18 @@ def parse_metas(texto_json):
 GRUPOS = {
     "ibge": ("IBGE", ("ipca12", "ipcaMes", "pib4t", "pibTri")),
     "bcb": ("Banco Central", ("dbgg", "dlgg", "meta_sgs", "metas_pagina", "bcb12m")),
+    # o resultado do Governo Central pelo Banco Central é uma fonte à parte: se falhar, não segura a dívida e as metas (nem o contrário)
+    "bcb_fiscal": ("Banco Central (resultado fiscal)", ("primarioBC", "nominalBC")),
     "tesouro": ("Tesouro Nacional", ("despesa", "primario", "nominal")),
 }
-BLOCO_GRUPOS = {"ipca": ("ibge", "bcb"), "pib": ("ibge",), "despesa": ("tesouro", "ibge"), "divida": ("bcb",), "resultado": ("tesouro",)}
-
-
-class FonteAusente(Exception):
-    """A fonte de um bloco não respondeu nesta rodada e não há coleta anterior dela no cache."""
+# As versões de cada bloco, em ordem de preferência: (fontes, construtor). O resultado primário e nominal vem do Banco Central desde 13/11/2026
+# (a API do Tesouro estava fora do ar desde pelo menos 7/11); se o Banco Central faltar, entra a versão do Tesouro, o bloco INTEIRO na medida do
+# Tesouro e com o nome dela na página, nunca uma série com metade de cada fonte. Ver escolher_versao().
+BLOCO_GRUPOS = {"ipca": [("ibge", "bcb")], "pib": [("ibge",)], "despesa": [("tesouro", "ibge")], "divida": [("bcb",)],
+                "resultado": [("bcb_fiscal", "ibge"), ("tesouro",)]}
+# Dado da fonte preferida guardado no cache há até tantos dias vem antes da fonte de reserva fresca: o resultado é mensal, e a coleta de ontem do
+# Banco Central quase sempre É a de hoje. Trocar de medida por um dia de fonte fora do ar faria o gráfico mudar de número e de volta.
+DIAS_PREFERIDA = 7
 
 
 def coletar_grupo(g):
@@ -351,6 +357,9 @@ def coletar_grupo(g):
     if g == "bcb":
         return {"dbgg": sgs(13762), "dlgg": sgs(4536), "meta_sgs": sgs(13521),
                 "metas_pagina": json.dumps(buscar(URL_BCB_METAS), ensure_ascii=False), "bcb12m": buscar(URL_BCB_12M)}
+    if g == "bcb_fiscal":
+        # NFSP sem desvalorização cambial, fluxo mensal corrente, Governo Federal e Banco Central (= Governo Central): 4639 primário, 4573 nominal
+        return {"primarioBC": sgs(4639), "nominalBC": sgs(4573)}
     if g == "tesouro":
         return {"despesa": tesouro("10.03.1", True), "primario": tesouro("10.04.1", True), "nominal": tesouro("10.09.1", True)}
     raise ValueError(f"fonte desconhecida: {g}")
@@ -378,7 +387,7 @@ def montar_indicadores(forcar_rede, coletar=coletar_grupo):
         if not datas_antes:
             raise Aborta("--so-montar sem cache de indicadores: rode contexto.py inteiro antes")
         return antes, []
-    print("Indicadores: IPCA, PIB (IBGE), metas e dívida (Banco Central), despesa e resultado (Tesouro)…", flush=True)
+    print("Indicadores: IPCA, PIB (IBGE), metas, dívida e resultado fiscal (Banco Central), despesa e resultado (Tesouro)…", flush=True)
     br, datas, falhas = {}, {}, []
     for g, (nome, chaves) in GRUPOS.items():
         try:
@@ -425,6 +434,67 @@ def checar_tesouro(S):
                         ("nominal", "Resultado Nominal do Governo Central")):
         if S[k]["nome"] != esperado:
             raise Aborta(f"Tesouro: o nome da série mudou ({S[k]['nome']!r}, esperado {esperado!r})")
+
+
+# O resultado do Governo Central pelo Banco Central: o nome e a unidade como o conjunto de dados aberto do BC os escreve (conferidos em 13/11/2026).
+# NFSP = necessidades de financiamento: POSITIVO é déficit; a página usa negativo = déficit, então o sinal é trocado.
+NOMES_BC = {"primarioBC": "NFSP sem desvalorização cambial - Fluxo mensal corrente - Resultado primário - Total - Governo Federal e Banco Central",
+            "nominalBC": "NFSP sem desvalorização cambial - Fluxo mensal corrente - Resultado nominal - Total - Governo Federal e Banco Central"}
+# O mesmo começo da série do Tesouro (a página nunca mostrou antes disso). O BC tem desde 1991, mas fluxos mensais de antes do Real não se corrigem
+# pelo IPCA com sentido, e começar em outro mês mudaria o gráfico só por trocar de fonte.
+INICIO_RESULTADO = "1997-01-01"
+TOL_NOMINAL = 5.0      # R$ milhões por mês entre o nominal do BC e o do Tesouro (que republica o do BC): medido, 0,7 no máximo em 356 meses
+
+
+def checar_bcb_fiscal(S):
+    for k, nome in (("primarioBC", "Resultado primário (Banco Central)"), ("nominalBC", "Resultado nominal (Banco Central)")):
+        checar_serie(nome, [p for p in S[k]["pontos"] if p[0] >= INICIO_RESULTADO], "M", -1_500_000, 1_500_000)
+        # sem o portal de dados abertos do BC (fora do ar e sem cache) o nome vem vazio: aí vale a série pelo código, com aviso de meta_sgs
+        if S[k].get("nome") is not None and S[k]["nome"] != NOMES_BC[k]:
+            raise Aborta(f"Banco Central: o nome da série mudou ({S[k]['nome']!r}, esperado {NOMES_BC[k]!r})")
+        if S[k].get("unidade") is not None and S[k]["unidade"] != "Milhões de reais":
+            raise Aborta(f"Banco Central: a unidade de {nome} mudou ({S[k]['unidade']!r}, esperado 'Milhões de reais')")
+
+
+def indice_ipca(ipca_mes):
+    """Número-índice do IPCA encadeado das variações mensais do IBGE (tabela 1737, variável 63): {mês: índice}."""
+    idx, v = {}, 1.0
+    for d, var in ipca_mes:
+        v *= 1 + var / 100
+        idx[d] = v
+    return idx
+
+
+def a_precos_de(pontos, idx, base):
+    """Valores correntes → reais de `base`, pelo IPCA: valor × índice(base) ÷ índice(mês). É a conta da API do Tesouro (correcao_ipca=true):
+    conferido em 13/11/2026, o nominal do Tesouro em reais de ago/2026, desfeito com este índice, volta ao valor corrente do Banco Central com
+    diferença máxima de R$ 0,7 milhão em 356 meses."""
+    falta = [d for d, _ in pontos if d not in idx] + ([] if base in idx else [base])
+    if falta:
+        raise Aborta(f"o IPCA do IBGE ainda não tem {', '.join(sorted(set(falta))[:3])}: sem ele não há como corrigir o resultado do Banco Central")
+    return [(d, v * idx[base] / idx[d]) for d, v in pontos]
+
+
+def conferir_nominal_com_tesouro(S, idx, nom_bc):
+    """O Tesouro republica o nominal do Banco Central (série 10.09.1, "fonte BCB"): quando há série do Tesouro (de hoje ou do cache), os dois têm de
+    bater mês a mês em valores correntes. Divergência em muitos meses = sinal, deflator ou série errada: aborta. Em poucos meses = revisão do BC
+    depois da coleta do Tesouro: só aviso. Devolve quantos meses foram comparados (0 sem série do Tesouro)."""
+    if "nominal" not in S or not S["nominal"].get("pontos"):
+        return 0
+    tes = dict(S["nominal"]["pontos"])
+    base_t = max(tes)
+    if base_t not in idx:
+        return 0
+    comuns = [d for d in sorted(tes) if d in nom_bc and d in idx]
+    difs = [(d, tes[d] * idx[d] / idx[base_t] - nom_bc[d]) for d in comuns]
+    fora = [(d, x) for d, x in difs if abs(x) > TOL_NOMINAL]
+    if len(fora) > 3:
+        raise Aborta(f"o nominal do Banco Central e o do Tesouro (que republica o mesmo) divergem em {len(fora)} de {len(comuns)} meses "
+                     f"(ex.: {fora[0][0][:7]}, R$ {fora[0][1]:,.1f} milhões): sinal, deflator ou série errada")
+    if fora:
+        aviso("o nominal do Banco Central difere do republicado pelo Tesouro em " + ", ".join(f"{d[:7]} (R$ {x:,.1f} mi)" for d, x in fora)
+              + ": revisão do Banco Central depois da coleta do Tesouro?")
+    return len(comuns)
 
 
 def metas_conferidas(S, br):
@@ -599,7 +669,49 @@ def bloco_divida(S, br):
     }
 
 
-def bloco_resultado(S, br):
+def bloco_resultado_bc(S, br):
+    """Versão preferida: as duas séries do Banco Central (abaixo da linha), corrigidas pelo IPCA por este site. Primário + juros = nominal fecha
+    dentro da mesma apuração (na versão do Tesouro, o primário era de um método e o nominal de outro)."""
+    checar_bcb_fiscal(S)
+    checar_ibge(S)
+    prim = [(d, -v) for d, v in S["primarioBC"]["pontos"] if d >= INICIO_RESULTADO]
+    nom = [(d, -v) for d, v in S["nominalBC"]["pontos"] if d >= INICIO_RESULTADO]
+    if [d for d, _ in prim] != [d for d, _ in nom]:
+        raise Aborta("Banco Central: o primário e o nominal vieram com meses diferentes")
+    idx = indice_ipca(S["ipcaMes"]["pontos"])
+    base = prim[-1][0]
+    conferidos = conferir_nominal_com_tesouro(S, idx, dict(nom))
+    prim12 = soma_12m(a_precos_de(prim, idx, base))
+    nom12 = soma_12m(a_precos_de(nom, idx, base))
+    b = {
+        "titulo": "Resultado primário e nominal do Governo Central",
+        "definicao": "Resultado primário: receitas menos despesas do Governo Central (Tesouro Nacional, Previdência Social e Banco Central), sem contar os "
+                     "juros da dívida. Resultado nominal: o primário mais os juros nominais. As duas séries são do Banco Central, apuradas 'abaixo da "
+                     "linha', pela variação da dívida do governo. Negativo = déficit.",
+        "medida": "bancoCentral",
+        "legendas": {"primario": "Resultado primário (abaixo da linha, Banco Central)", "nominal": "Resultado nominal (abaixo da linha, Banco Central)"},
+        "fontes": [fonte_sgs(4639), fonte_sgs(4573), fonte_ibge(1737, 63)], "referencia": prim12[-1][0], "unidade": "R$ milhões",
+        "deflator": {"indice": "IPCA", "mesBase": base[:7], "quem": "conta deste site com o IPCA mensal do IBGE, a mesma da API do Tesouro"},
+        "series": [{"id": "primario", "nome": "Resultado primário, soma de 12 meses", "unidade": "R$ milhões", "freq": "M", "pontos": pontos_json(prim12, 1)},
+                   {"id": "nominal", "nome": "Resultado nominal, soma de 12 meses", "unidade": "R$ milhões", "freq": "M", "pontos": pontos_json(nom12, 1)}],
+        "ultimo": {"primario": fato_variacao(prim12, "R$ milhões"), "nominal": fato_variacao(nom12, "R$ milhões")},
+        "conferenciaTesouro": {"mesesNominal": conferidos},
+        "anotacoes": [],
+    }
+    # o primário do Tesouro (acima da linha) no último mês que as duas fontes têm, em valores correntes: o leitor vê que as medidas diferem e quanto
+    if conferidos and "primario" in S and S["primario"].get("pontos"):
+        tes = dict(S["primario"]["pontos"])
+        base_t = max(tes)
+        comuns = sorted(d for d in tes if d in dict(prim) and d in idx and base_t in idx)
+        if comuns:
+            m = comuns[-1]
+            b["outraMedida"] = {"mes": m[:7], "tesouro": round(tes[m] * idx[m] / idx[base_t], 1), "bancoCentral": round(dict(prim)[m], 1),
+                                "nota": "resultado primário do mês, em reais correntes: o Tesouro apura 'acima da linha' (receitas menos despesas)"}
+    return b
+
+
+def bloco_resultado_tesouro(S, br):
+    """Versão de reserva: a do Tesouro, como a página mostrava até 13/11/2026. Entra quando o Banco Central não tem dado recente (ver escolher_versao)."""
     checar_tesouro(S)
     mes_base = S["despesa"]["pontos"][-1][0][:7]
     prim12 = soma_12m(S["primario"]["pontos"])
@@ -607,7 +719,11 @@ def bloco_resultado(S, br):
     return {
         "titulo": "Resultado primário e nominal do Governo Central",
         "definicao": "Resultado primário: receitas menos despesas do Governo Central, sem contar os juros da dívida (apurado pelo Tesouro, 'acima da linha'). "
-                     "Resultado nominal: o primário mais os juros nominais, apurado pelo Banco Central ('abaixo da linha'). Negativo = déficit.",
+                     "Resultado nominal: o primário mais os juros nominais, apurado pelo Banco Central ('abaixo da linha') e publicado pelo Tesouro. "
+                     "Negativo = déficit. Esta é a série do Tesouro, usada quando a do Banco Central não está disponível: o primário do Tesouro é medido "
+                     "de outro jeito e pode diferir do que o Banco Central apura.",
+        "medida": "tesouro",
+        "legendas": {"primario": "Resultado primário (acima da linha, Tesouro)", "nominal": "Resultado nominal (abaixo da linha, Banco Central, publicado pelo Tesouro)"},
         "fontes": [FONTE_TES], "referencia": prim12[-1][0], "unidade": "R$ milhões",
         "deflator": {"indice": "IPCA", "mesBase": mes_base, "quem": "calculado pela própria API do Tesouro (correcao_ipca=true)"},
         "series": [{"id": "primario", "nome": "Resultado primário, soma de 12 meses", "unidade": "R$ milhões", "freq": "M", "pontos": pontos_json(prim12, 1)},
@@ -617,7 +733,26 @@ def bloco_resultado(S, br):
     }
 
 
-CONSTRUTORES = {"ipca": bloco_ipca, "pib": bloco_pib, "despesa": bloco_despesa, "divida": bloco_divida, "resultado": bloco_resultado}
+# as listas seguem a ordem das versões de BLOCO_GRUPOS
+CONSTRUTORES = {"ipca": [bloco_ipca], "pib": [bloco_pib], "despesa": [bloco_despesa], "divida": [bloco_divida],
+                "resultado": [bloco_resultado_bc, bloco_resultado_tesouro]}
+
+
+def escolher_versao(versoes, datas, hoje=None):
+    """Os índices das versões de um bloco que têm todas as fontes (de hoje ou do cache), na ordem em que são tentadas.
+    A idade de uma versão é a da coleta da sua fonte PRINCIPAL (a 1ª da lista: o IPCA que só corrige valores não conta).
+      1. versões com a fonte principal de até DIAS_PREFERIDA dias, na ordem de preferência: a coleta de ontem do Banco Central vem antes do Tesouro
+         de hoje (mesma medida, quase sempre os mesmos números);
+      2. as mais velhas, da coleta mais recente para a mais antiga (empate: a preferida).
+    Se a construção de uma falhar (checagem), tenta a seguinte; se nenhuma der, o bloco fica com a versão publicada."""
+    hoje = hoje or HOJE
+    ordem = []
+    for i, grupos in enumerate(versoes):
+        if not all(g in datas for g in grupos):
+            continue
+        d = date.fromisoformat(datas[grupos[0]])
+        ordem.append(((0, i) if (hoje - d).days <= DIAS_PREFERIDA else (1, -d.toordinal(), i), i))
+    return [i for _, i in sorted(ordem)]
 
 
 def construir_indicadores(br, anterior=None):
@@ -629,16 +764,31 @@ def construir_indicadores(br, anterior=None):
     ant = (anterior or {}).get("blocos") or {}
     data_ant = (anterior or {}).get("coletadoEm") or ((anterior or {}).get("geradoEm") or "")[:10] or None
     B, falhas = {}, []
-    for bid, grupos in BLOCO_GRUPOS.items():
-        try:
-            faltam = [GRUPOS[g][0] for g in grupos if g not in datas]
-            if faltam:
-                raise FonteAusente(" e ".join(faltam) + ": sem dados nesta rodada nem no cache")
-            b = CONSTRUTORES[bid](S, br)
-            b["coletadoEm"] = min(datas[g] for g in grupos)
+    for bid, versoes in BLOCO_GRUPOS.items():
+        erros = []
+        for i in escolher_versao(versoes, datas):
+            try:
+                b = CONSTRUTORES[bid][i](S, br)
+            except Exception as e:      # checagem que não passa nesta versão: tenta a seguinte
+                erros.append(str(e) if isinstance(e, Aborta) else f"{type(e).__name__}: {e}")
+                continue
+            b["coletadoEm"] = min(datas[g] for g in versoes[i])
             B[bid] = b
-        except Exception as e:
-            txt = str(e) if isinstance(e, (Aborta, FonteAusente)) else f"{type(e).__name__}: {e}"
+            if i > 0:       # a versão de reserva: diz por que a preferida não entrou
+                reserva = ", ".join(GRUPOS[g][0] for g in versoes[i])
+                principal = versoes[0][0]
+                motivo = erros[0] if erros else (f"{GRUPOS[principal][0]}: última coleta em {datas[principal]}" if principal in datas
+                                                 else f"{GRUPOS[principal][0]}: sem coleta nesta rodada nem no cache")
+                aviso(f"bloco {bid}: entrou a versão de reserva ({reserva}). Motivo: {motivo}")
+                if erros:       # uma checagem da versão preferida não passou: isso é falha, não só fonte fora do ar (que já foi contada)
+                    falhas.append((bid, f"{erros[0]} (o bloco usou a versão de reserva: {reserva})"))
+            break
+        else:
+            if erros:
+                txt = erros[0]
+            else:
+                faltam = sorted({GRUPOS[g][0] for v in versoes for g in v if g not in datas})
+                txt = " e ".join(faltam) + ": sem dados nesta rodada nem no cache"
             velho = ant.get(bid)
             if isinstance(velho, dict) and velho.get("series"):
                 B[bid] = dict(velho, coletadoEm=velho.get("coletadoEm") or data_ant)
@@ -656,6 +806,80 @@ def frescos(B):
     return sum(1 for b in B.values() if isinstance(b, dict) and b.get("series") and b.get("coletadoEm") == HOJE.isoformat())
 
 
+def testar_resultado_bc():
+    """A versão do Banco Central do resultado, com séries inventadas no formato das de verdade: sinal, correção pelo IPCA, conferência com o
+    Tesouro e as recusas. Devolve quantas verificações passaram."""
+    ok = 0
+
+    def igual(a, b, msg):
+        nonlocal ok
+        assert a == b, f"{msg}: {a!r} != {b!r}"
+        ok += 1
+
+    def recusa(S, trecho, msg):
+        nonlocal ok
+        try:
+            bloco_resultado_bc(S, {})
+        except Aborta as e:
+            assert trecho in str(e), f"{msg}: a mensagem não diz {trecho!r}: {e}"
+            ok += 1
+            return
+        raise AssertionError(f"{msg}: deveria ter recusado")
+
+    def meses(ini, fim):
+        out, d = [], f"{ini}-01"
+        while d <= f"{fim}-01":
+            out.append(d)
+            d = proximo_mes(d)
+        return out
+
+    M = meses("1996-01", "2026-09")
+    tri = [d for d in meses("1996-01", "2026-06") if d[5:7] in ("01", "04", "07", "10")]
+    bc_p = {d: 1000.0 + i for i, d in enumerate(meses("1991-01", "2026-09"))}       # NFSP: positivo = déficit
+    bc_n = {d: 5000.0 + 3 * i for i, d in enumerate(meses("1991-01", "2026-09"))}
+    idx = indice_ipca([(d, 0.5) for d in M])
+    base_t = "2026-08-01"
+    tes_meses = meses("1997-01", "2026-08")
+
+    def S_(**troca):
+        S = {"ipcaMes": {"pontos": [(d, 0.5) for d in M], "unidade": "%"}, "ipca12": {"pontos": [(d, 6.17) for d in M], "unidade": "%"},
+             "pib4t": {"pontos": [(d, 2.0) for d in tri], "unidade": "%"}, "pibTri": {"pontos": [(d, 0.5) for d in tri], "unidade": "%"},
+             "primarioBC": {"pontos": sorted(bc_p.items()), "nome": NOMES_BC["primarioBC"], "unidade": "Milhões de reais"},
+             "nominalBC": {"pontos": sorted(bc_n.items()), "nome": NOMES_BC["nominalBC"], "unidade": "Milhões de reais"},
+             # o Tesouro: o nominal é o do BC em reais de ago/2026; o primário é outra medida (50 milhões a menos de déficit por mês)
+             "nominal": {"pontos": [(d, -bc_n[d] * idx[base_t] / idx[d]) for d in tes_meses]},
+             "primario": {"pontos": [(d, (-bc_p[d] + 50) * idx[base_t] / idx[d]) for d in tes_meses]}}
+        S.update(troca)
+        return S
+
+    b = bloco_resultado_bc(S_(), {})
+    prim = dict(b["series"][0]["pontos"])
+    esperado = sum(-bc_p[d] * idx["2026-09-01"] / idx[d] for d in meses("2025-10", "2026-09"))
+    igual((b["medida"], min(prim), max(prim), b["deflator"]["mesBase"]), ("bancoCentral", "1997-12-01", "2026-09-01", "2026-09"),
+          "a série começa em 1997 (soma de 12 meses desde dez/1997) e vai até o último mês do BC")
+    igual(abs(prim["2026-09-01"] - round(esperado, 1)) < 1e-6 and esperado < 0, True, "sinal trocado (déficit negativo) e corrigido pelo IPCA para set/2026")
+    igual(b["conferenciaTesouro"]["mesesNominal"], len(tes_meses), "o nominal confere com o do Tesouro mês a mês")
+    igual((b["outraMedida"]["mes"], b["outraMedida"]["bancoCentral"], round(b["outraMedida"]["tesouro"] - b["outraMedida"]["bancoCentral"], 1)),
+          ("2026-08", -bc_p["2026-08-01"], 50.0), "o primário do Tesouro no último mês comum, em valores correntes")
+    sem_tes = S_()
+    del sem_tes["nominal"], sem_tes["primario"]
+    b2 = bloco_resultado_bc(sem_tes, {})
+    igual((b2["conferenciaTesouro"]["mesesNominal"], "outraMedida" in b2), (0, False), "sem o Tesouro: sem conferência e sem comparação, sem quebrar")
+    revisto = S_()
+    revisto["nominal"] = {"pontos": [(d, v + (100 if d in ("2020-01-01", "2021-01-01") else 0)) for d, v in revisto["nominal"]["pontos"]]}
+    igual(bloco_resultado_bc(revisto, {})["medida"], "bancoCentral", "dois meses revistos pelo BC depois da coleta do Tesouro: só aviso")
+    recusa(S_(nominal={"pontos": [(d, -v) for d, v in S_()["nominal"]["pontos"]]}), "divergem", "Tesouro com o sinal oposto = série ou sinal errado")
+    recusa(S_(ipcaMes={"pontos": [(d, 0.5) for d in M[:-1]], "unidade": "%"}), "IPCA do IBGE ainda não tem", "sem o IPCA do último mês não corrige")
+    recusa(S_(primarioBC={"pontos": sorted(bc_p.items()), "nome": "NFSP com desvalorização cambial", "unidade": "Milhões de reais"}),
+           "nome da série mudou", "nome diferente no portal do BC")
+    recusa(S_(nominalBC={"pontos": sorted(bc_n.items()), "nome": NOMES_BC["nominalBC"], "unidade": "Bilhões de reais"}), "unidade", "unidade diferente")
+    recusa(S_(primarioBC={"pontos": [p for p in sorted(bc_p.items()) if p[0] != "2010-05-01"], "nome": None, "unidade": None}), "buraco",
+           "buraco na série do BC")
+    igual(bloco_resultado_bc(S_(primarioBC={"pontos": sorted(bc_p.items()), "nome": None, "unidade": None}), {})["medida"], "bancoCentral",
+          "sem o nome do portal do BC (fora do ar): vale a série pelo código")
+    return ok
+
+
 def testar():
     """python scripts/contexto.py --teste: a regra "cada fonte falha sozinha", com fontes e blocos falsos (sem rede)."""
     import tempfile
@@ -668,54 +892,90 @@ def testar():
         ok += 1
     hoje = HOJE.isoformat()
     falso = lambda nome: (lambda S, br: {"titulo": nome, "series": [{"id": nome, "pontos": [["2026-01-01", 1.0]]}]})
-    construtores = {k: falso(k) for k in BLOCO_GRUPOS}
+    # a versão preferida tem o nome do bloco; a de reserva, "(reserva)"
+    construtores = {k: [falso(k if i == 0 else f"{k} (reserva)") for i in range(len(v))] for k, v in BLOCO_GRUPOS.items()}
     def coletor(fora):
         def c(g):
             if g in fora:
                 raise RuntimeError(f"falhou após 5 tentativas (HTTP 503, 'Application is not available'): {g}")
             return {k: {"pontos": [["2026-01-01", 1.0]]} if k not in ("metas_pagina", "bcb12m") else "x" for k in GRUPOS[g][1]}
         return c
+    def dia(n):
+        return (HOJE - timedelta(days=n)).isoformat()
+    def br_com(datas):
+        """Um cache com as fontes de `datas` ({fonte: data da coleta}), sem passar pela rede."""
+        return {k: {"pontos": [["2026-01-01", 1.0]]} if k not in ("metas_pagina", "bcb12m") else "x"
+                for g in datas for k in GRUPOS[g][1]} | {"_coleta": datas, "coletadoEm": min(datas.values())}
+    def quebra(S, br):
+        raise Aborta("Banco Central: o nome da série mudou")
     with tempfile.TemporaryDirectory() as t, mock.patch.dict(CONSTRUTORES, construtores), mock.patch(f"{__name__}.CACHE_C", __import__("pathlib").Path(t)):
-        # 1. Tesouro fora do ar e sem cache: IBGE e BC atualizam; despesa e resultado vêm do arquivo publicado, com a data dele
+        # 1. Tesouro fora do ar e sem cache: IBGE e BC atualizam; a despesa vem do arquivo publicado, com a data dele; o resultado é do BC
         anterior = {"geradoEm": "2026-10-21T11:56-03:00", "coletadoEm": "2026-10-21",
                     "blocos": {k: {"titulo": f"{k} velho", "series": [{"id": k, "pontos": [["2025-01-01", 0.0]]}]} for k in BLOCO_GRUPOS}}
         br, f1 = montar_indicadores(True, coletor({"tesouro"}))
         igual([n for n, _ in f1], ["Tesouro Nacional"], "só o Tesouro falha na coleta")
         igual("Application is not available" in f1[0][1] and "sem coleta anterior" in f1[0][1], True, "o motivo vai na mensagem")
-        igual(sorted(coleta_por_grupo(br)), ["bcb", "ibge"], "o cache guarda só o que veio da fonte")
+        igual(sorted(coleta_por_grupo(br)), ["bcb", "bcb_fiscal", "ibge"], "o cache guarda só o que veio da fonte")
         B, f2 = construir_indicadores(br, anterior)
-        igual({k: B[k]["titulo"] for k in BLOCO_GRUPOS}, {"ipca": "ipca", "pib": "pib", "despesa": "despesa velho", "divida": "divida", "resultado": "resultado velho"},
-              "os blocos do Tesouro ficam com a versão publicada; os outros atualizam")
-        igual({k: B[k]["coletadoEm"] for k in BLOCO_GRUPOS}, {"ipca": hoje, "pib": hoje, "despesa": "2026-10-21", "divida": hoje, "resultado": "2026-10-21"},
+        igual({k: B[k]["titulo"] for k in BLOCO_GRUPOS}, {"ipca": "ipca", "pib": "pib", "despesa": "despesa velho", "divida": "divida", "resultado": "resultado"},
+              "a despesa (só do Tesouro) fica com a versão publicada; o resultado vem do Banco Central")
+        igual({k: B[k]["coletadoEm"] for k in BLOCO_GRUPOS}, {"ipca": hoje, "pib": hoje, "despesa": "2026-10-21", "divida": hoje, "resultado": hoje},
               "cada bloco diz a data da própria coleta")
-        igual(sorted(b for b, _ in f2), ["despesa", "resultado"], "as falhas de bloco são contadas")
-        igual(frescos(B), 3, "três blocos com dado de hoje")
+        igual(sorted(b for b, _ in f2), ["despesa"], "as falhas de bloco são contadas")
+        igual(frescos(B), 4, "quatro blocos com dado de hoje")
         # 2. no dia seguinte o Tesouro volta: tudo atualiza
         br, f3 = montar_indicadores(True, coletor(set()))
         B, f4 = construir_indicadores(br, {"blocos": B})
-        igual((f3, f4, frescos(B)), ([], [], 5), "com as três fontes, os cinco blocos atualizam")
+        igual((f3, f4, frescos(B), B["resultado"]["titulo"]), ([], [], 5, "resultado"), "com as quatro fontes, os cinco blocos atualizam, o resultado pelo BC")
         # 3. depois o IBGE cai: fica a coleta do cache (de hoje, neste teste), sem tocar no que veio do BC e do Tesouro
         br, f5 = montar_indicadores(True, coletor({"ibge"}))
         igual(([n for n, _ in f5], "fica a coleta de" in f5[0][1]), (["IBGE"], True), "fonte que falha usa a coleta anterior do cache")
-        igual(sorted(coleta_por_grupo(br)), ["bcb", "ibge", "tesouro"], "com o cache, as três fontes seguem disponíveis")
+        igual(sorted(coleta_por_grupo(br)), ["bcb", "bcb_fiscal", "ibge", "tesouro"], "com o cache, as quatro fontes seguem disponíveis")
         # 4. --so-montar lê o cache e não chama a rede
-        br2, f6 = montar_indicadores(False, coletor({"ibge", "bcb", "tesouro"}))
+        br2, f6 = montar_indicadores(False, coletor({"ibge", "bcb", "bcb_fiscal", "tesouro"}))
         igual((br2["_coleta"], f6), (br["_coleta"], []), "--so-montar usa o cache")
-        # 5. uma checagem que não passa derruba só o bloco dela
-        def quebra(S, br):
-            raise Aborta("Tesouro: o nome da série mudou")
-        with mock.patch.dict(CONSTRUTORES, {"resultado": quebra}):
+        # 5. checagem da versão do BC que não passa: entra a do Tesouro, e a falha é contada (não é só fonte fora do ar)
+        with mock.patch.dict(CONSTRUTORES, {"resultado": [quebra, construtores["resultado"][1]]}):
+            B2, f7 = construir_indicadores(br, {"blocos": B})
+        igual((B2["resultado"]["titulo"], [b for b, _ in f7], "versão de reserva" in f7[0][1], frescos(B2)),
+              ("resultado (reserva)", ["resultado"], True, 5), "checagem do BC que falha: o bloco usa o Tesouro e a falha aparece")
+        # 6. as duas versões falham: fica o bloco publicado, com a data dele
+        with mock.patch.dict(CONSTRUTORES, {"resultado": [quebra, quebra]}):
             B2, f7 = construir_indicadores(br, {"blocos": dict(B, resultado=dict(B["resultado"], titulo="resultado de ontem", coletadoEm="2026-11-06"))})
         igual((B2["resultado"]["titulo"], [b for b, _ in f7], frescos(B2)), ("resultado de ontem", ["resultado"], 4), "checagem que falha mantém o bloco anterior, com a data dele")
-        # 6. sem versão publicada, o bloco sai (a página escreve "Dados indisponíveis") e nada é inventado
-        with mock.patch.dict(CONSTRUTORES, {"resultado": quebra}):
+        # 7. sem versão publicada, o bloco sai (a página escreve "Dados indisponíveis") e nada é inventado
+        with mock.patch.dict(CONSTRUTORES, {"resultado": [quebra, quebra]}):
             B3, f8 = construir_indicadores(br, None)
         igual(("resultado" in B3, "sai da página" in f8[0][1]), (False, True), "sem versão anterior, o bloco não aparece")
-    # cache antigo, de uma data só: vale para as três fontes
-    velho = {k: {"pontos": []} for _, (_, ch) in GRUPOS.items() for k in ch} | {"coletadoEm": "2026-10-23"}
+        # 8. o BC não respondeu hoje, mas a coleta de ontem está no cache: ela vem antes do Tesouro de hoje (mesma medida, sem trocar o gráfico)
+        B4, f9 = construir_indicadores(br_com({"ibge": hoje, "bcb": hoje, "bcb_fiscal": dia(1), "tesouro": hoje}), None)
+        igual((B4["resultado"]["titulo"], B4["resultado"]["coletadoEm"], f9), ("resultado", dia(1), []), "BC de ontem antes do Tesouro de hoje")
+        # 9. o BC parado há 10 dias e o Tesouro de hoje: entra o Tesouro (o bloco inteiro na medida dele)
+        B4, f9 = construir_indicadores(br_com({"ibge": hoje, "bcb": hoje, "bcb_fiscal": dia(10), "tesouro": hoje}), None)
+        igual((B4["resultado"]["titulo"], B4["resultado"]["coletadoEm"], f9), ("resultado (reserva)", hoje, []), "BC velho: entra o Tesouro de hoje")
+        # 10. as duas paradas: a coleta mais recente (aqui o BC, de 10 dias, contra o Tesouro de 30)
+        B4, f9 = construir_indicadores(br_com({"ibge": hoje, "bcb": hoje, "bcb_fiscal": dia(10), "tesouro": dia(30)}), None)
+        igual((B4["resultado"]["titulo"], B4["resultado"]["coletadoEm"]), ("resultado", dia(10)), "as duas velhas: a mais recente")
+        # 11. sem nenhuma das duas: o bloco publicado, e a mensagem diz quais fontes faltam
+        B4, f9 = construir_indicadores(br_com({"ibge": hoje, "bcb": hoje}), {"blocos": {"resultado": {"titulo": "publicado", "series": [{"id": "x"}],
+                                                                                                      "coletadoEm": "2026-10-21"}}})
+        igual((B4["resultado"]["titulo"], "Banco Central (resultado fiscal)" in dict(f9)["resultado"]), ("publicado", True), "sem as fontes: o bloco publicado")
+    # a ordem das versões, por idade da fonte PRINCIPAL (o IPCA, que só corrige valores, não conta)
+    V = [("bcb_fiscal", "ibge"), ("tesouro",)]
+    for datas, esperado, msg in (({"bcb_fiscal": hoje, "ibge": hoje, "tesouro": hoje}, [0, 1], "as duas de hoje: a preferida primeiro"),
+                                 ({"bcb_fiscal": dia(7), "ibge": hoje, "tesouro": hoje}, [0, 1], "a preferida de até 7 dias primeiro"),
+                                 ({"bcb_fiscal": dia(8), "ibge": hoje, "tesouro": hoje}, [1, 0], "a preferida de 8 dias depois da reserva de hoje"),
+                                 ({"bcb_fiscal": dia(8), "ibge": hoje, "tesouro": dia(9)}, [0, 1], "as duas velhas: a mais recente"),
+                                 ({"bcb_fiscal": hoje, "ibge": dia(30), "tesouro": hoje}, [0, 1], "o IBGE parado não troca a medida"),
+                                 ({"ibge": hoje, "tesouro": hoje}, [1], "sem o BC: só o Tesouro"),
+                                 ({}, [], "sem fonte nenhuma")):
+        igual(escolher_versao(V, datas), esperado, msg)
+    # cache antigo, de uma data só: vale para as três fontes que ele tinha (o resultado do BC não estava lá)
+    velho = {k: {"pontos": []} for g in ("ibge", "bcb", "tesouro") for k in GRUPOS[g][1]} | {"coletadoEm": "2026-10-23"}
     igual(coleta_por_grupo(velho), {"ibge": "2026-10-23", "bcb": "2026-10-23", "tesouro": "2026-10-23"}, "cache de antes de 7/11/2026")
     igual(coleta_por_grupo({"_coleta": {"ibge": "2026-11-07"}, "coletadoEm": "2026-11-07", "despesa": {}, "primario": {}, "nominal": {}}), {},
           "fonte com as séries mas sem data própria não conta (nem a do IBGE incompleto)")
+    ok += testar_resultado_bc()
 
     class R:
         def __init__(self, texto):
