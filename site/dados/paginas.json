@@ -1,7 +1,7 @@
 {
 "baseUrl": "https://congressoclaro.com.br",
 "versao": "paginas-1",
-"geradoEm": "2026-11-27",
+"geradoEm": "2026-11-28",
 "padrao": "2a09f008ac2669af",
 "deputados": {
   "62881": {"slug":"danilo-forte","h":"ec146bd482c377bf","hi":"c680e251987fd71b","lastmod":"2026-11-26"},
@@ -332,7 +332,7 @@
   "205550": {"slug":"jorge-braz","h":"679f32080546713e","hi":"18becfe3ef3990d4","lastmod":"2026-11-26"},
   "206018": {"slug":"celia-xakriaba","h":"359b92e982f1ebbc","hi":"1aaac7657bc32f39","lastmod":"2026-11-26"},
   "209189": {"slug":"joseildo-ramos","h":"8de58bcd07ace3a7","hi":"97af20de23047d5a","lastmod":"2026-11-27"},
-  "209787": {"slug":"nikolas-ferreira","h":"c9c34e6347316178","hi":"e219b521f76beefc","lastmod":"2026-11-26"},
+  "209787": {"slug":"nikolas-ferreira","h":"aafc2550a55a22f8","hi":"762a6dbbb0faa102","lastmod":"2026-11-28"},
   "210989": {"slug":"bruno-farias","h":"90fb176caf938124","hi":"7e01b0551aba9210","lastmod":"2026-11-26"},
   "213762": {"slug":"carla-dickson","h":"4560044e9d638dd9","hi":"4692a6c15ca4cb3e","lastmod":"2026-11-26"},
   "214694": {"slug":"jorge-goetten","h":"d8cb15bd460e2c66","hi":"0ba32b3d9acbb835","lastmod":"2026-11-26"},
@@ -425,7 +425,7 @@
   "220625": {"slug":"delegada-ione","h":"7b284281cbd205b8","hi":"07455fe0fe23b00b","lastmod":"2026-11-26"},
   "220626": {"slug":"rafael-simoes","h":"00c45ca85dec1333","hi":"506f8502a419e463","lastmod":"2026-11-26"},
   "220628": {"slug":"mauricio-do-volei","h":"99fcdf20bb849b6c","hi":"16bbfcbb51431c78","lastmod":"2026-11-26"},
-  "220629": {"slug":"dandara","h":"4699976063be1a37","hi":"36b0679f6ccd6e31","lastmod":"2026-11-27"},
+  "220629": {"slug":"dandara","h":"37ca6afa78609e70","hi":"5a3031231c67d44d","lastmod":"2026-11-28"},
   "220630": {"slug":"pedro-aihara","h":"5702417040eaa590","hi":"91349f37d8d20007","lastmod":"2026-11-26"},
   "220631": {"slug":"samuel-viana","h":"bf6c518aae70a648","hi":"236b34774631797e","lastmod":"2026-11-26"},
   "220632": {"slug":"ana-pimentel","h":"8ae5da12ef7d3de2","hi":"59b7d9f96f809706","lastmod":"2026-11-26"},
